@@ -6,9 +6,8 @@
 
 package com.elytradev.architecture.client;
 
-import com.elytradev.architecture.*;
+import com.elytradev.architecture.base.BaseModClient;
 import com.elytradev.architecture.common.ArchitectureCraft;
-import gcewing.architecture.*;
 
 public class ArchitectureCraftClient extends BaseModClient<ArchitectureCraft> {
 

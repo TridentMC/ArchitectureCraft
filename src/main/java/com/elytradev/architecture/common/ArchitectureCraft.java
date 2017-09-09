@@ -6,8 +6,8 @@
 
 package com.elytradev.architecture.common;
 
-import com.elytradev.architecture.*;
-import gcewing.architecture.*;
+import com.elytradev.architecture.base.BaseDataChannel;
+import com.elytradev.architecture.base.BaseMod;
 import com.elytradev.architecture.client.ArchitectureCraftClient;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
