@@ -93,10 +93,10 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     }
 
     protected void registerItems() {
-        itemSawblade = newItem("sawblade");
-        itemLargePulley = newItem("largePulley");
-        itemChisel = newItem("chisel", ChiselItem.class);
-        itemHammer = newItem("hammer", HammerItem.class);
+        itemSawblade = newItem("sawblade").setFull3D();
+        itemLargePulley = newItem("largePulley").setFull3D();
+        itemChisel = newItem("chisel", ChiselItem.class).setFull3D();
+        itemHammer = newItem("hammer", HammerItem.class).setFull3D();
         itemCladding = newItem("cladding", CladdingItem.class);
     }
 

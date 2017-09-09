@@ -7,6 +7,7 @@
 package com.elytradev.architecture.base;
 
 import com.elytradev.architecture.common.Trans3;
+import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -20,7 +21,6 @@ import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -36,9 +36,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -55,7 +53,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     protected static Trans3 itemTrans = Trans3.blockCenterSideTurn(0, 2);
     protected static String[] texturePrefixes = {"blocks/", "textures/"};
     public boolean debugRenderingManager = false;
-    public boolean debugModelRegistration = true;
+    public boolean debugModelRegistration = false;
     protected BaseModClient<MOD> client;
     protected Map<Block, BaseModClient.ICustomRenderer> blockRenderers = new HashMap<Block, BaseModClient.ICustomRenderer>();
     protected Map<Item, BaseModClient.ICustomRenderer> itemRenderers = new HashMap<Item, BaseModClient.ICustomRenderer>();
@@ -108,6 +106,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     public void preInit() {
         if (debugRenderingManager)
             System.out.printf("BaseRenderingManager.preInit\n");
+        ConcreteResourcePack concreteResourcePack = new ConcreteResourcePack(client.base.modID);
 //         registerDummyStateMappers();
     }
 

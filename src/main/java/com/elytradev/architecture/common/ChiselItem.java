@@ -9,7 +9,6 @@ package com.elytradev.architecture.common;
 import com.elytradev.architecture.base.BaseBlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -25,11 +24,6 @@ public class ChiselItem extends Item {
 
     public ChiselItem() {
         setMaxStackSize(1);
-    }
-
-    @Override
-    public CreativeTabs getCreativeTab() {
-        return CreativeTabs.TOOLS;
     }
 
     @Override

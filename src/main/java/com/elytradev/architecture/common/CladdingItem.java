@@ -11,6 +11,7 @@ import com.elytradev.architecture.base.BaseItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -44,7 +45,6 @@ public class CladdingItem extends BaseItem {
         return null;
     }
 
-
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn) {
         NBTTagCompound tag = stack.getTagCompound();
@@ -56,6 +56,10 @@ public class CladdingItem extends BaseItem {
         }
     }
 
+    @Override
+    protected boolean isInCreativeTab(CreativeTabs targetTab) {
+        return false;
+    }
 
     @Override
     public int getNumSubtypes() {

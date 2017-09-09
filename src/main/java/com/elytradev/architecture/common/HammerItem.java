@@ -6,7 +6,6 @@
 
 package com.elytradev.architecture.common;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumActionResult;
@@ -19,11 +18,6 @@ public class HammerItem extends Item {
 
     public HammerItem() {
         setMaxStackSize(1);
-    }
-
-    @Override
-    public CreativeTabs getCreativeTab() {
-        return CreativeTabs.TOOLS;
     }
 
     @Override
