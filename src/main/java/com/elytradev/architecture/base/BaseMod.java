@@ -6,13 +6,13 @@
 
 package com.elytradev.architecture.base;
 
+import com.elytradev.architecture.base.BaseModClient.IModel;
 import com.elytradev.architecture.common.Trans3;
 import com.elytradev.architecture.common.Vector3;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
-import com.elytradev.architecture.base.BaseModClient.IModel;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -399,10 +399,10 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return addItem(item, name);
+        return addItem(item, name, true);
     }
 
-    public <ITEM extends Item> ITEM addItem(ITEM item, String name) {
+    public <ITEM extends Item> ITEM addItem(ITEM item, String name, boolean addToList) {
         String qualName = assetKey + ":" + name;
         item.setUnlocalizedName(qualName);
         preRegisteredItems.add(item);
@@ -413,7 +413,8 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
                 System.out.printf("BaseMod.addItem: Setting creativeTab of %s to %s\n", name, creativeTab);
             item.setCreativeTab(creativeTab);
         }
-        registeredItems.add(item);
+        if (addToList)
+            registeredItems.add(item);
         return item;
     }
 
@@ -459,9 +460,9 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         try {
             if (Arrays.stream(itemClass.getConstructors()).anyMatch((Predicate<Constructor<?>>)
                     input -> input != null && input.getParameterCount() == 1 && Block.class.isAssignableFrom(input.getParameterTypes()[0]))) {
-                addItem(itemClass.getConstructor(Block.class).newInstance(block), name + ".item");
+                addItem(itemClass.getConstructor(Block.class).newInstance(block), name + ".item", false);
             } else {
-                addItem(itemClass.getConstructor().newInstance(), name + ".item");
+                addItem(itemClass.getConstructor().newInstance(), name + ".item", false);
             }
         } catch (Exception e) {
             e.printStackTrace();

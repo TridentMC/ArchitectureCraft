@@ -39,7 +39,7 @@ public class BaseContainer extends Container {
             for (int var4 = 0; var4 < 9; ++var4)
                 this.addSlotToContainer(new Slot(inventory, var4 + var3 * 9 + 9, x + var4 * 18, y + var3 * 18));
         for (int var3 = 0; var3 < 9; ++var3)
-            this.addSlotToContainer(new Slot(inventory, var3, x + var3 * 18, y + 58));
+            this.addSlotToContainer(new Slot(inventory, var3, x + var3 * 18, y + 57));
         playerSlotRange.end();
     }
 

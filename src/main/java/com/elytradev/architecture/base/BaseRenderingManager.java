@@ -8,6 +8,7 @@ package com.elytradev.architecture.base;
 
 import com.elytradev.architecture.common.Trans3;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -31,12 +33,16 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +55,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     protected static Trans3 itemTrans = Trans3.blockCenterSideTurn(0, 2);
     protected static String[] texturePrefixes = {"blocks/", "textures/"};
     public boolean debugRenderingManager = false;
-    public boolean debugModelRegistration = false;
+    public boolean debugModelRegistration = true;
     protected BaseModClient<MOD> client;
     protected Map<Block, BaseModClient.ICustomRenderer> blockRenderers = new HashMap<Block, BaseModClient.ICustomRenderer>();
     protected Map<Item, BaseModClient.ICustomRenderer> itemRenderers = new HashMap<Item, BaseModClient.ICustomRenderer>();
@@ -102,11 +108,16 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     public void preInit() {
         if (debugRenderingManager)
             System.out.printf("BaseRenderingManager.preInit\n");
-        registerDefaultRenderers();
 //         registerDummyStateMappers();
     }
 
     //------------------------------------------------------------------------------------------------
+
+    public void init() {
+        //Moved from preInit due to block registration not being complete.
+        registerDefaultRenderers();
+        registerDefaultModelLocations();
+    }
 
     public void postInit() {
         if (debugRenderingManager)
@@ -210,8 +221,12 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         if (debugModelRegistration)
             System.out.printf("BaseModClient: Registering model location %s for %d subtypes of %s\n",
                     location, numVariants, item.getUnlocalizedName());
-        for (int i = 0; i < numVariants; i++)
-            ModelLoader.setCustomModelResourceLocation(item, i, location);
+        for (int i = 0; i < numVariants; i++) {
+            if (Minecraft.getMinecraft().getRenderItem() != null)
+                Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, i, location);
+            else
+                ModelLoader.setCustomModelResourceLocation(item, i, location);
+        }
     }
 
     private int getNumBlockSubtypes(Block block) {
@@ -379,12 +394,14 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     //------------------------------------------------------------------------------------------------
 
     @SubscribeEvent
+    public void onModelRegistryEvent(ModelRegistryEvent event) {
+        registerDefaultModelLocations();
+    }
+
+    @SubscribeEvent
     public void onModelBakeEvent(ModelBakeEvent event) {
         if (debugModelRegistration)
             System.out.printf("BaseModClient.ModelBakeEvent\n");
-
-        //Moved from preInit due to block registration not being complete.
-        registerDefaultModelLocations();
 
         //getCustomBlockRenderDispatch().install(event);
         getItemBakedModel().install(event);
@@ -504,8 +521,45 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
             } else
-                return null;
+                return emptyModel;
         }
+
+        private IBakedModel emptyModel = new IBakedModel() {
+            @Override
+            public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+                return Lists.newArrayList();
+            }
+
+            @Override
+            public boolean isAmbientOcclusion() {
+                return false;
+            }
+
+            @Override
+            public boolean isGui3d() {
+                return false;
+            }
+
+            @Override
+            public boolean isBuiltInRenderer() {
+                return false;
+            }
+
+            @Override
+            public TextureAtlasSprite getParticleTexture() {
+                return null;
+            }
+
+            @Override
+            public ItemCameraTransforms getItemCameraTransforms() {
+                return ItemCameraTransforms.DEFAULT;
+            }
+
+            @Override
+            public ItemOverrideList getOverrides() {
+                return ItemOverrideList.NONE;
+            }
+        };
 
     }
 

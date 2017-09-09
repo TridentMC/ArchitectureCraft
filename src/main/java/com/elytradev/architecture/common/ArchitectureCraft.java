@@ -10,6 +10,7 @@ import com.elytradev.architecture.base.BaseDataChannel;
 import com.elytradev.architecture.base.BaseMod;
 import com.elytradev.architecture.client.ArchitectureCraftClient;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -30,7 +31,7 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
 
     public static final String MOD_NAME = "ArchitectureCraft";
     public static final String MOD_ID = "architecturecraft";
-    public static final String VERSION = "1.7.3";
+    public static final String VERSION = "@VERSION@";
     public final static int guiSawbench = 1;
     public static ArchitectureCraft mod;
 
@@ -50,6 +51,12 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
         super();
         mod = this;
         channel = new BaseDataChannel(MOD_ID);
+        creativeTab = new CreativeTabs("architecture") {
+            @Override
+            public ItemStack getTabIconItem() {
+                return new ItemStack(itemHammer);
+            }
+        };
         //debugCreativeTabs = true;
     }
 

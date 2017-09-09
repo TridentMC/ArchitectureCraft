@@ -28,6 +28,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -36,6 +37,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 import java.lang.reflect.Constructor;
@@ -77,22 +79,32 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
 //  }
 
     public void preInit(FMLPreInitializationEvent e) {
+        MinecraftForge.EVENT_BUS.register(this);
+
         //System.out.printf("BaseModClient.preInit\n");
         registerSavedVillagerSkins();
-        for (BaseSubsystem sub : base.subsystems) {
-            sub.registerBlockRenderers();
-            sub.registerItemRenderers();
-        }
+
         if (renderingManager == null && renderingManagerRequired())
             getRenderingManager();
         if (renderingManager != null)
             renderingManager.preInit();
     }
 
+    @SubscribeEvent
+    public void onModelRegistration(ModelRegistryEvent event) {
+        for (BaseSubsystem sub : base.subsystems) {
+            sub.registerBlockRenderers();
+            sub.registerItemRenderers();
+        }
+    }
+
+
     //-------------- Screen registration --------------------------------------------------------
 
     public void init(FMLInitializationEvent e) {
         //System.out.printf("BaseModClient.init\n");
+        if (renderingManager != null)
+            renderingManager.init();
     }
 
     public void postInit(FMLPostInitializationEvent e) {
@@ -196,10 +208,8 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
      * On the client side, this needs to return a instance of GuiScreen
      * On the server side, this needs to return a instance of Container
      *
-     * @param ID     The Gui ID Number
      * @param player The player viewing the Gui
      * @param world  The current world
-     * @param pos    Position in world
      * @return A GuiScreen/Container to be displayed to the user, null if none.
      */
 
@@ -339,6 +349,8 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
     public interface IRenderingManager {
         void preInit();
 
+        void init();
+
         void postInit();
 
         void addBlockRenderer(Block block, ICustomRenderer renderer);
@@ -346,6 +358,7 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
         void addItemRenderer(Item item, ICustomRenderer renderer);
 
         IModel getModel(String name);
+
     }
 
     public interface ICustomRenderer {
