@@ -1,0 +1,7 @@
+tile.architecturecraft:sawbench.name=Table de sciage de l'architeque
+tile.architecturecraft:shape.name=Bloc architectural
+item.architecturecraft:largePulley.name=Grande poulie
+item.architecturecraft:sawblade.name=Lame de scie circulaire
+item.architecturecraft:chisel.name=Ciseau d'architecte
+item.architecturecraft:hammer.name=Marteau d'architecte
+item.architecturecraft:cladding.name=Revêtement

@@ -1,0 +1,32 @@
+// See https://github.com/elytra/Skeleton/wiki for what all these values mean
+
+ext {
+	group = 'com.elytradev'
+	projectName = 'architecturecraft'
+
+	useElytraVersionFormat = true
+	version = '1'
+
+	concreteVersion = '0.3.1-SNAPSHOT'
+	concreteModules = [ 'common' ]
+
+	coremod = null
+	miniVersion = null
+
+	language = 'java'
+
+	forge = '1.12-14.21.0.2359'
+	mappings = 'snapshot_20170624'
+
+	enforceLicenseHeaders = false
+
+	verbose = false
+}
+
+repositories {
+	// the skeleton already defines mavenCentral, jcenter, and the Elytra repo
+	// will also have Shadowfacts' maven if the language is set to kotlin
+}
+
+dependencies {
+}
