@@ -4,10 +4,12 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.base.BaseMod;
 import com.elytradev.architecture.base.BaseTileInventory;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.ShapePage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.init.Blocks;
@@ -19,7 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-public class SawbenchTE extends BaseTileInventory {
+public class TileSawbench extends BaseTileInventory {
 
     final public static int materialSlot = 0;
     final public static int resultSlot = 1;

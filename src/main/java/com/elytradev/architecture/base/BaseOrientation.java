@@ -6,9 +6,9 @@
 
 package com.elytradev.architecture.base;
 
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Vector3;
 import com.elytradev.architecture.base.BaseBlock.IOrientationHandler;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;

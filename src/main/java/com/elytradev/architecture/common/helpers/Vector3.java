@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.helpers;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;

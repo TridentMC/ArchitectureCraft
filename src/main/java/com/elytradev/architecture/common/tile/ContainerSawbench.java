@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.base.BaseContainer;
 import com.elytradev.architecture.base.BaseDataChannel;
@@ -19,7 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SawbenchContainer extends BaseContainer {
+public class ContainerSawbench extends BaseContainer {
 
     public static int guWidth = 242;
     public static int guiHeight = 224;
@@ -28,11 +28,11 @@ public class SawbenchContainer extends BaseContainer {
     public static int outputSlotLeft = 12;
     public static int outputSlotTop = 57;
 
-    SawbenchTE te;
+    TileSawbench te;
     SlotRange sawbenchSlotRange;
     Slot materialSlot, resultSlot;
 
-    public SawbenchContainer(EntityPlayer player, SawbenchTE te) {
+    public ContainerSawbench(EntityPlayer player, TileSawbench te) {
         super(guWidth, guiHeight);
         this.te = te;
         sawbenchSlotRange = new SlotRange();
@@ -44,8 +44,8 @@ public class SawbenchContainer extends BaseContainer {
 
     public static Container create(EntityPlayer player, World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof SawbenchTE)
-            return new SawbenchContainer(player, (SawbenchTE) te);
+        if (te instanceof TileSawbench)
+            return new ContainerSawbench(player, (TileSawbench) te);
         else
             return null;
     }
@@ -152,10 +152,10 @@ public class SawbenchContainer extends BaseContainer {
 
 class SlotSawbench extends Slot {
 
-    SawbenchTE te;
+    TileSawbench te;
     int index;
 
-    public SlotSawbench(SawbenchTE te, int index, int x, int y) {
+    public SlotSawbench(TileSawbench te, int index, int x, int y) {
         super(te, index, x, y);
         this.te = te;
         this.index = index;
@@ -171,7 +171,7 @@ class SlotSawbench extends Slot {
 
 class SlotSawbenchResult extends SlotSawbench {
 
-    public SlotSawbenchResult(SawbenchTE te, int index, int x, int y) {
+    public SlotSawbenchResult(TileSawbench te, int index, int x, int y) {
         super(te, index, x, y);
     }
 

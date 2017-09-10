@@ -4,15 +4,15 @@
 //
 //------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.base.BaseModClient.ICustomRenderer;
 import com.elytradev.architecture.base.BaseModClient.IRenderTarget;
 import com.elytradev.architecture.base.BaseModClient.ITexture;
 import com.elytradev.architecture.base.BaseTexture;
-import com.elytradev.architecture.common.ShapeTE;
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Utils;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
@@ -28,7 +28,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     @Override
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, IRenderTarget target,
                             BlockRenderLayer layer, Trans3 t) {
-        ShapeTE te = ShapeTE.get(world, pos);
+        TileShape te = TileShape.get(world, pos);
         if (te != null) {
             Trans3 t2 = t.t(te.localToGlobalRotation());
             boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
@@ -43,13 +43,13 @@ public class ShapeRenderDispatch implements ICustomRenderer {
 
     @Override
     public void renderItemStack(ItemStack stack, IRenderTarget target, Trans3 t) {
-        ShapeTE te = new ShapeTE();
+        TileShape te = new TileShape();
         te.readFromItemStack(stack);
         renderShapeTE(te, target, t,
                 te.baseBlockState != null, te.secondaryBlockState != null);
     }
 
-    protected void renderShapeTE(ShapeTE te, IRenderTarget target, Trans3 t,
+    protected void renderShapeTE(TileShape te, IRenderTarget target, Trans3 t,
                                  boolean renderBase, boolean renderSecondary) {
         if (te.shape != null && (renderBase || renderSecondary)) {
             IBlockState base = te.baseBlockState;

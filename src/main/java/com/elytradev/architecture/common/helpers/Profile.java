@@ -4,10 +4,9 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.helpers;
 
-import com.elytradev.architecture.common.Shape;
-import com.elytradev.architecture.common.Trans3;
+import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.util.EnumFacing;
 
 import java.util.HashMap;

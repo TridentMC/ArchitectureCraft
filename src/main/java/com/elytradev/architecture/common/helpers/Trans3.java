@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.helpers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3i;
 
 import java.util.List;
 
-import static com.elytradev.architecture.common.Vector3.getDirectionVec;
+import static com.elytradev.architecture.common.helpers.Vector3.getDirectionVec;
 import static java.lang.Math.round;
 
 public class Trans3 {
@@ -48,9 +48,11 @@ public class Trans3 {
         rotation = m;
         scaling = s;
     }
+
     public Trans3(double dx, double dy, double dz) {
         this(new Vector3(dx, dy, dz), Matrix3.ident, 1.0);
     }
+
     public Trans3(BlockPos pos) {
         this(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }

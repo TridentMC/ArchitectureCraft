@@ -4,13 +4,13 @@
 //
 //------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.base.BaseModClient;
-import com.elytradev.architecture.common.Shape;
-import com.elytradev.architecture.common.ShapeTE;
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
 
 //import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -36,7 +36,7 @@ public class RenderRoof extends RenderShape {
     protected boolean outerFace;
     protected boolean renderBase, renderSecondary;
 
-    public RenderRoof(ShapeTE te, BaseModClient.ITexture[] textures, Trans3 t, BaseModClient.IRenderTarget target,
+    public RenderRoof(TileShape te, BaseModClient.ITexture[] textures, Trans3 t, BaseModClient.IRenderTarget target,
                       boolean renderBase, boolean renderSecondary) {
         super(te, textures, t, target);
         this.renderBase = renderBase;
@@ -713,7 +713,7 @@ public class RenderRoof extends RenderShape {
 
     protected boolean hasNeighbour(int dx, int dy, int dz, Shape[] shapes) {
         EnumFacing dir = t.v(dx, dy, dz).facing();
-        ShapeTE nte = te.getConnectedNeighbourGlobal(dir);
+        TileShape nte = te.getConnectedNeighbourGlobal(dir);
         if (nte != null) {
             for (int i = 0; i < shapes.length; i++)
                 if (nte.shape == shapes[i])

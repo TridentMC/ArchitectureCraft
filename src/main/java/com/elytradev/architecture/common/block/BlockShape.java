@@ -4,10 +4,13 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.base.BaseBlock;
 import com.elytradev.architecture.base.BaseOrientation;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -34,13 +37,13 @@ import java.util.List;
 
 //import net.minecraft.client.particle.EffectRenderer;
 
-public class ShapeBlock extends BaseBlock<ShapeTE> {
+public class BlockShape extends BaseBlock<TileShape> {
 
     public static IProperty<Integer> LIGHT = PropertyInteger.create("light", 0, 15);
     protected AxisAlignedBB boxHit;
 
-    public ShapeBlock() {
-        super(Material.ROCK, ShapeTE.class);
+    public BlockShape() {
+        super(Material.ROCK, TileShape.class);
         //renderID = -1;
     }
 
@@ -130,7 +133,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         if (boxHit != null) {
-            ShapeTE te = ShapeTE.get(world, pos);
+            TileShape te = TileShape.get(world, pos);
             if (te != null && te.shape.kind.highlightZones())
                 return boxHit;
         }
@@ -157,7 +160,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
 
     protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockAccess world, BlockPos pos,
                                                           IBlockState state, Entity entity) {
-        ShapeTE te = getTileEntity(world, pos);
+        TileShape te = getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation();
             return getCollisionBoxes(te, world, pos, state, t, entity);
@@ -167,7 +170,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
 
     protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockAccess world, BlockPos pos,
                                                          IBlockState state, Entity entity) {
-        ShapeTE te = getTileEntity(world, pos);
+        TileShape te = getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return getCollisionBoxes(te, world, pos, state, t, entity);
@@ -177,7 +180,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
 
     protected AxisAlignedBB getLocalBounds(IBlockAccess world, BlockPos pos,
                                            IBlockState state, Entity entity) {
-        ShapeTE te = getTileEntity(world, pos);
+        TileShape te = getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.blockCenter);
             return te.shape.kind.getBounds(te, world, pos, state, entity, t);
@@ -185,7 +188,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
         return null; // Causes getBoundingBox to fall back on super implementation
     }
 
-    protected List<AxisAlignedBB> getCollisionBoxes(ShapeTE te,
+    protected List<AxisAlignedBB> getCollisionBoxes(TileShape te,
                                                     IBlockAccess world, BlockPos pos, IBlockState state, Trans3 t, Entity entity) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
         te.shape.kind.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
@@ -202,8 +205,8 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
     protected List<ItemStack> getDropsFromTileEntity(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te, int fortune) {
         //System.out.printf("ShapeBlock.getDropsFromTileEntity: %s with fortune %s\n", te, fortune);
         List<ItemStack> result = new ArrayList<ItemStack>();
-        if (te instanceof ShapeTE) {
-            ShapeTE ste = (ShapeTE) te;
+        if (te instanceof TileShape) {
+            TileShape ste = (TileShape) te;
             ItemStack stack = ste.shape.kind.newStack(ste.shape, ste.baseBlockState, 1);
             result.add(stack);
             if (ste.secondaryBlockState != null) {
@@ -216,7 +219,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
 
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        ShapeTE te = ShapeTE.get(world, pos);
+        TileShape te = TileShape.get(world, pos);
         if (te != null)
             return te.newItemStack(1);
         else
@@ -224,7 +227,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
     }
 
     public IBlockState getBaseBlockState(IBlockAccess world, BlockPos pos) {
-        ShapeTE te = getTileEntity(world, pos);
+        TileShape te = getTileEntity(world, pos);
         if (te != null)
             return te.baseBlockState;
         return null;
@@ -254,7 +257,7 @@ public class ShapeBlock extends BaseBlock<ShapeTE> {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.inventory.getCurrentItem();
         if (stack != null) {
-            ShapeTE te = ShapeTE.get(world, pos);
+            TileShape te = TileShape.get(world, pos);
             if (te != null)
                 return te.applySecondaryMaterial(stack, player);
         }

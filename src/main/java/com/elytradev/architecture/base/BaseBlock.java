@@ -6,8 +6,8 @@
 
 package com.elytradev.architecture.base;
 
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
@@ -66,6 +66,7 @@ public class BaseBlock<TE extends TileEntity>
     protected BaseMod mod;
     protected AxisAlignedBB boxHit;
     protected ThreadLocal<TileEntity> harvestingTileEntity = new ThreadLocal();
+
     public BaseBlock(Material material) {
         this(material, null, null, null);
     }

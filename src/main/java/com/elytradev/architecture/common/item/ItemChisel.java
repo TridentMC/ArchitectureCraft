@@ -4,9 +4,10 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.item;
 
 import com.elytradev.architecture.base.BaseBlockUtils;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,18 +21,18 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ChiselItem extends Item {
+public class ItemChisel extends Item {
 
-    public ChiselItem() {
+    public ItemChisel() {
         setMaxStackSize(1);
     }
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ShapeTE) {
+        if (te instanceof TileShape) {
             if (!world.isRemote) {
-                ShapeTE ste = (ShapeTE) te;
+                TileShape ste = (TileShape) te;
                 ste.onChiselUse(player, side, hitX, hitY, hitZ);
             }
             return EnumActionResult.SUCCESS;

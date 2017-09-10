@@ -4,10 +4,11 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.item;
 
 import com.elytradev.architecture.base.BaseBlockUtils;
 import com.elytradev.architecture.base.BaseItem;
+import com.elytradev.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -19,7 +20,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class CladdingItem extends BaseItem {
+public class ItemCladding extends BaseItem {
 
     public ItemStack newStack(IBlockState state, int stackSize) {
         Block block = state.getBlock();

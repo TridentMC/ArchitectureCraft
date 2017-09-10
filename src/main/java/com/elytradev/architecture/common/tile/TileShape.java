@@ -4,9 +4,14 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.base.BaseTileEntity;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.item.ItemCladding;
+import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +29,7 @@ import static com.elytradev.architecture.base.BaseBlockUtils.getNameForBlock;
 
 //import static gcewing.architecture.BaseUtils.*;
 
-public class ShapeTE extends BaseTileEntity {
+public class TileShape extends BaseTileEntity {
 
     public Shape shape;
     public IBlockState baseBlockState;
@@ -32,34 +37,34 @@ public class ShapeTE extends BaseTileEntity {
     public int disabledConnections;
     private byte offsetX;
 
-    public ShapeTE() {
+    public TileShape() {
         super();
         shape = Shape.RoofTile;
         baseBlockState = Blocks.PLANKS.getDefaultState();
     }
 
-    public ShapeTE(Shape s, IBlockState b) {
+    public TileShape(Shape s, IBlockState b) {
         super();
         shape = s;
         baseBlockState = b;
     }
 
-    public ShapeTE(Shape s, Block b, int d) {
+    public TileShape(Shape s, Block b, int d) {
         super();
         shape = s;
         baseBlockState = b.getStateFromMeta(d);
     }
 
-    public static ShapeTE get(IBlockAccess world, BlockPos pos) {
+    public static TileShape get(IBlockAccess world, BlockPos pos) {
         if (world != null) {
             TileEntity te = world.getTileEntity(pos);
-            if (te instanceof ShapeTE)
-                return (ShapeTE) te;
+            if (te instanceof TileShape)
+                return (TileShape) te;
         }
         return null;
     }
 
-    double getOffsetX() {
+    public double getOffsetX() {
         return offsetX * (1 / 16.0);
     }
 
@@ -88,7 +93,7 @@ public class ShapeTE extends BaseTileEntity {
     public void toggleConnectionGlobal(EnumFacing dir) {
         boolean newState = !connectionIsEnabledGlobal(dir);
         setConnectionEnabledGlobal(dir, newState);
-        ShapeTE nte = getNeighbourGlobal(dir);
+        TileShape nte = getNeighbourGlobal(dir);
         if (nte != null)
             nte.setConnectionEnabledGlobal(dir.getOpposite(), newState);
     }
@@ -187,8 +192,8 @@ public class ShapeTE extends BaseTileEntity {
     public boolean applySecondaryMaterial(ItemStack stack, EntityPlayer player) {
         IBlockState materialState = null;
         Item item = stack.getItem();
-        if (item instanceof CladdingItem && shape.kind.acceptsCladding())
-            materialState = ((CladdingItem) item).blockStateFromStack(stack);
+        if (item instanceof ItemCladding && shape.kind.acceptsCladding())
+            materialState = ((ItemCladding) item).blockStateFromStack(stack);
         else {
             Block block = Block.getBlockFromItem(item);
             if (block != null) {
@@ -222,14 +227,14 @@ public class ShapeTE extends BaseTileEntity {
         return false;
     }
 
-    public ShapeTE getNeighbourGlobal(EnumFacing dir) {
-        return ShapeTE.get(world, pos.offset(dir));
+    public TileShape getNeighbourGlobal(EnumFacing dir) {
+        return TileShape.get(world, pos.offset(dir));
     }
 
-    public ShapeTE getConnectedNeighbourGlobal(EnumFacing dir) {
+    public TileShape getConnectedNeighbourGlobal(EnumFacing dir) {
         if (world != null) {
             if (connectionIsEnabledGlobal(dir)) {
-                ShapeTE nte = getNeighbourGlobal(dir);
+                TileShape nte = getNeighbourGlobal(dir);
                 if (nte != null && nte.connectionIsEnabledGlobal(dir.getOpposite()))
                     return nte;
             }

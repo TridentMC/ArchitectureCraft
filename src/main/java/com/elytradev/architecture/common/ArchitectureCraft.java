@@ -9,6 +9,13 @@ package com.elytradev.architecture.common;
 import com.elytradev.architecture.base.BaseDataChannel;
 import com.elytradev.architecture.base.BaseMod;
 import com.elytradev.architecture.client.ArchitectureCraftClient;
+import com.elytradev.architecture.common.block.BlockSawbench;
+import com.elytradev.architecture.common.block.BlockShape;
+import com.elytradev.architecture.common.item.ItemChisel;
+import com.elytradev.architecture.common.item.ItemCladding;
+import com.elytradev.architecture.common.item.ItemHammer;
+import com.elytradev.architecture.common.shape.ShapeItem;
+import com.elytradev.architecture.common.tile.ContainerSawbench;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,13 +46,13 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     //   Blocks and Items
     //
     public static BaseDataChannel channel;
-    public static SawbenchBlock blockSawbench;
+    public static BlockSawbench blockSawbench;
     public static Block blockShape;
     public static Item itemSawblade;
     public static Item itemLargePulley;
     public static Item itemChisel;
     public static Item itemHammer;
-    public static CladdingItem itemCladding;
+    public static ItemCladding itemCladding;
 
     public ArchitectureCraft() {
         super();
@@ -81,9 +88,9 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     }
 
     protected void registerBlocks() {
-        blockSawbench = newBlock("sawbench", SawbenchBlock.class);
+        blockSawbench = newBlock("sawbench", BlockSawbench.class);
         blockSawbench.setHardness(2.0F);
-        blockShape = newBlock("shape", ShapeBlock.class, ShapeItem.class);
+        blockShape = newBlock("shape", BlockShape.class, ShapeItem.class);
     }
 
     protected void registerTileEntities() {
@@ -95,9 +102,9 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     protected void registerItems() {
         itemSawblade = newItem("sawblade").setFull3D();
         itemLargePulley = newItem("largePulley").setFull3D();
-        itemChisel = newItem("chisel", ChiselItem.class).setFull3D();
-        itemHammer = newItem("hammer", HammerItem.class).setFull3D();
-        itemCladding = newItem("cladding", CladdingItem.class);
+        itemChisel = newItem("chisel", ItemChisel.class).setFull3D();
+        itemHammer = newItem("hammer", ItemHammer.class).setFull3D();
+        itemCladding = newItem("cladding", ItemCladding.class);
     }
 
     //--------------- GUIs ----------------------------------------------------------
@@ -133,7 +140,7 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
 
     @Override
     protected void registerContainers() {
-        addContainer(guiSawbench, SawbenchContainer.class);
+        addContainer(guiSawbench, ContainerSawbench.class);
     }
 
     public void openGuiSawbench(World world, BlockPos pos, EntityPlayer player) {

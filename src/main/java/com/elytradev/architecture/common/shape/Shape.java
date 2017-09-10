@@ -4,8 +4,12 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.common.helpers.Profile;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,9 +19,9 @@ import net.minecraft.util.math.BlockPos;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.elytradev.architecture.common.ShapeFlags.placeOffset;
-import static com.elytradev.architecture.common.ShapeFlags.placeUnderneath;
-import static com.elytradev.architecture.common.ShapeSymmetry.*;
+import static com.elytradev.architecture.common.shape.ShapeFlags.placeOffset;
+import static com.elytradev.architecture.common.shape.ShapeFlags.placeUnderneath;
+import static com.elytradev.architecture.common.shape.ShapeSymmetry.*;
 import static java.lang.Math.abs;
 
 public enum Shape {
@@ -202,7 +206,7 @@ public enum Shape {
         }
     }
 
-    protected void orientOnPlacement(EntityPlayer player, ShapeTE te,
+    protected void orientOnPlacement(EntityPlayer player, TileShape te,
                                      BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing face, Vector3 hit) {
         if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
@@ -210,7 +214,7 @@ public enum Shape {
             orientFromHitPosition(player, te, face, hit);
     }
 
-    protected void orientFromHitPosition(EntityPlayer player, ShapeTE te, EnumFacing face, Vector3 hit) {
+    protected void orientFromHitPosition(EntityPlayer player, TileShape te, EnumFacing face, Vector3 hit) {
         int side, turn;
         switch (face) {
             case UP:

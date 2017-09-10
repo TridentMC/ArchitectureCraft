@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.helpers;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

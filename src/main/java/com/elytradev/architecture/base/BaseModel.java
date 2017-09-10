@@ -6,12 +6,12 @@
 
 package com.elytradev.architecture.base;
 
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Vector3;
-import com.google.gson.Gson;
 import com.elytradev.architecture.base.BaseModClient.IModel;
 import com.elytradev.architecture.base.BaseModClient.IRenderTarget;
 import com.elytradev.architecture.base.BaseModClient.ITexture;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.google.gson.Gson;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 

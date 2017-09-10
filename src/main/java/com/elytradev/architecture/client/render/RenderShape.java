@@ -4,12 +4,12 @@
 //
 //-----------------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.base.BaseModClient;
 import com.elytradev.architecture.common.ArchitectureCraft;
-import com.elytradev.architecture.common.ShapeTE;
-import com.elytradev.architecture.common.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
@@ -17,12 +17,12 @@ public abstract class RenderShape {
 
     protected IBlockAccess blockWorld;
     protected BlockPos blockPos;
-    protected ShapeTE te;
+    protected TileShape te;
     protected BaseModClient.ITexture[] textures;
     protected Trans3 t;
     protected BaseModClient.IRenderTarget target;
 
-    public RenderShape(ShapeTE te, BaseModClient.ITexture[] textures, Trans3 t, BaseModClient.IRenderTarget target) {
+    public RenderShape(TileShape te, BaseModClient.ITexture[] textures, Trans3 t, BaseModClient.IRenderTarget target) {
         this.te = te;
         this.blockWorld = te.getWorld();
         this.blockPos = te.getPos();

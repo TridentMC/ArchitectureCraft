@@ -4,12 +4,13 @@
 //
 //-----------------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.base.BaseModClient;
-import com.elytradev.architecture.common.ShapeKind;
-import com.elytradev.architecture.common.ShapeTE;
-import com.elytradev.architecture.common.Trans3;
+import com.elytradev.architecture.client.ArchitectureCraftClient;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.shape.ShapeKind;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
 
 public class RenderWindow extends RenderShape {
@@ -23,7 +24,7 @@ public class RenderWindow extends RenderShape {
     protected boolean renderBase, renderSecondary;
     protected ShapeKind.Window kind;
 
-    public RenderWindow(ShapeTE te, BaseModClient.ITexture[] textures, Trans3 t,
+    public RenderWindow(TileShape te, BaseModClient.ITexture[] textures, Trans3 t,
                         BaseModClient.IRenderTarget target, boolean renderBase, boolean renderSecondary) {
         super(te, textures, t, target);
         this.renderBase = renderBase;
@@ -137,14 +138,14 @@ public class RenderWindow extends RenderShape {
                 frame[i][1] = true;
         } else {
             EnumFacing[] gdir = new EnumFacing[4];
-            ShapeTE neighbour[] = new ShapeTE[4];
+            TileShape neighbour[] = new TileShape[4];
             for (int i = 0; i <= 3; i++)
                 gdir[i] = t.t(kind.frameSides[i]);
             for (int i = 0; i <= 3; i++) {
                 if (kind.frameAlways[i])
                     frame[i][1] = true;
                 else {
-                    ShapeTE nte = getConnectedNeighbourGlobal(te, gdir[i]);
+                    TileShape nte = getConnectedNeighbourGlobal(te, gdir[i]);
                     if (nte == null)
                         frame[i][1] = true;
                     else {
@@ -196,7 +197,7 @@ public class RenderWindow extends RenderShape {
         }
     }
 
-    protected ShapeTE getConnectedNeighbourGlobal(ShapeTE te, EnumFacing globalDir) {
+    protected TileShape getConnectedNeighbourGlobal(TileShape te, EnumFacing globalDir) {
         return kind.getConnectedWindowGlobal(te, globalDir);
     }
 
@@ -210,8 +211,8 @@ public class RenderWindow extends RenderShape {
         public BaseModClient.IModel centre, centreEnd[], side[], end0[], end1[], glass, glassEdge[];
 
         public WindowModels(BaseModClient.IModel centre, BaseModClient.IModel[] centreEnd, BaseModClient.IModel side[],
-							BaseModClient.IModel end0[], BaseModClient.IModel end1[],
-							BaseModClient.IModel glass, BaseModClient.IModel glassEdge[]) {
+                            BaseModClient.IModel end0[], BaseModClient.IModel end1[],
+                            BaseModClient.IModel glass, BaseModClient.IModel glassEdge[]) {
             this.centre = centre;
             this.centreEnd = centreEnd;
             this.side = side;

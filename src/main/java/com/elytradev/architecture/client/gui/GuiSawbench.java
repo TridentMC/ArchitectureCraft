@@ -4,11 +4,15 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.gui;
 
-import com.elytradev.architecture.base.BaseGui;
-import com.elytradev.architecture.common.*;
 import com.elytradev.architecture.base.BaseDataChannel.ChannelOutput;
+import com.elytradev.architecture.base.BaseGui;
+import com.elytradev.architecture.common.ArchitectureCraft;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.ShapePage;
+import com.elytradev.architecture.common.tile.ContainerSawbench;
+import com.elytradev.architecture.common.tile.TileSawbench;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -16,7 +20,7 @@ import net.minecraft.world.World;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class SawbenchGui extends BaseGui.Screen {
+public class GuiSawbench extends BaseGui.Screen {
 
     public static int pageMenuLeft = 176;
     public static int pageMenuTop = 19;
@@ -42,17 +46,17 @@ public class SawbenchGui extends BaseGui.Screen {
     public static float shapeMenuItemWidth = shapeMenuItemUSize / shapeMenuItemScale;
     public static float shapeMenuItemHeight = shapeMenuItemVSize / shapeMenuItemScale;
 
-    SawbenchTE te;
+    TileSawbench te;
 
-    public SawbenchGui(EntityPlayer player, SawbenchTE te) {
-        super(new SawbenchContainer(player, te));
+    public GuiSawbench(EntityPlayer player, TileSawbench te) {
+        super(new ContainerSawbench(player, te));
         this.te = te;
     }
 
-    public static SawbenchGui create(EntityPlayer player, World world, BlockPos pos) {
+    public static GuiSawbench create(EntityPlayer player, World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof SawbenchTE)
-            return new SawbenchGui(player, (SawbenchTE) te);
+        if (te instanceof TileSawbench)
+            return new GuiSawbench(player, (TileSawbench) te);
         else
             return null;
     }

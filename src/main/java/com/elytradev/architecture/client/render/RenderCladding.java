@@ -4,16 +4,16 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.client;
+package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.base.BaseTexture;
-import com.elytradev.architecture.common.ArchitectureCraft;
 import com.elytradev.architecture.base.BaseModClient.ICustomRenderer;
 import com.elytradev.architecture.base.BaseModClient.IModel;
 import com.elytradev.architecture.base.BaseModClient.IRenderTarget;
 import com.elytradev.architecture.base.BaseModClient.ITexture;
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Utils;
+import com.elytradev.architecture.base.BaseTexture;
+import com.elytradev.architecture.common.ArchitectureCraft;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -23,7 +23,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class CladdingRenderer implements ICustomRenderer {
+public class RenderCladding implements ICustomRenderer {
 
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state,
                             IRenderTarget target, BlockRenderLayer layer, Trans3 t) {

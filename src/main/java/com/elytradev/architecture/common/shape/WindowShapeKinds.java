@@ -4,16 +4,19 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.base.BaseUtils;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 
-import static com.elytradev.architecture.common.ShapeKind.Window;
-import static com.elytradev.architecture.common.ShapeKind.Window.FrameKind.*;
+import static com.elytradev.architecture.common.shape.ShapeKind.Window;
+import static com.elytradev.architecture.common.shape.ShapeKind.Window.FrameKind.*;
 import static net.minecraft.util.EnumFacing.*;
 
 public class WindowShapeKinds {
@@ -42,7 +45,7 @@ public class WindowShapeKinds {
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, ShapeTE te, ShapeTE nte, EnumFacing face,
+        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing face,
                                          Vector3 hit) {
             if (nte != null && !player.isSneaking()) {
                 if (nte.shape.kind instanceof PlainWindow) {
@@ -126,7 +129,7 @@ public class WindowShapeKinds {
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, ShapeTE te, ShapeTE nte, EnumFacing face,
+        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing face,
                                          Vector3 hit) {
             if (nte != null && !player.isSneaking()) {
                 if (nte.shape.kind instanceof Window) {
@@ -148,8 +151,8 @@ public class WindowShapeKinds {
             return super.orientOnPlacement(player, te, nte, face, hit);
         }
 
-        protected boolean orientFromAdjacentCorner(ShapeTE te, EnumFacing face, Vector3 hit) {
-            ShapeTE nte = ShapeTE.get(te.getWorld(), te.getPos().offset(face.getOpposite()));
+        protected boolean orientFromAdjacentCorner(TileShape te, EnumFacing face, Vector3 hit) {
+            TileShape nte = TileShape.get(te.getWorld(), te.getPos().offset(face.getOpposite()));
             if (nte != null && nte.shape.kind instanceof Window) {
                 Window nsk = (Window) nte.shape.kind;
                 EnumFacing nlf = nte.localFace(face);

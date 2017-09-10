@@ -18,8 +18,8 @@ import java.lang.reflect.Constructor;
 
 public class BaseContainer extends Container {
 
-    int xSize, ySize;
     protected SlotRange playerSlotRange;
+    int xSize, ySize;
 
 //  public BaseContainer() {}
 

@@ -7,8 +7,8 @@
 package com.elytradev.architecture.base;
 
 import com.elytradev.architecture.base.BaseModClient.IModel;
-import com.elytradev.architecture.common.Trans3;
-import com.elytradev.architecture.common.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
@@ -91,51 +91,11 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
     protected Map<ResourceLocation, IModel> modelCache = new HashMap<ResourceLocation, IModel>();
     Map<Integer, Class<? extends Container>> containerClasses =
             new HashMap<Integer, Class<? extends Container>>();
-
+    int recipeCounter = 0;
     private List<SoundEvent> preRegisteredSounds = new ArrayList<>();
     private List<IRecipe> preRegisteredRecipes = new ArrayList<>();
     private List<Block> preRegisteredBlocks = new ArrayList<>();
     private List<Item> preRegisteredItems = new ArrayList<>();
-
-    @SubscribeEvent
-    public void onSoundRegistration(RegistryEvent.Register<SoundEvent> event) {
-        for (SoundEvent preRegisteredSound : preRegisteredSounds) {
-            preRegisteredSound.setRegistryName(modID, preRegisteredSound.getSoundName().getResourcePath());
-            event.getRegistry().register(preRegisteredSound);
-        }
-    }
-
-    @SubscribeEvent
-    public void onRecipeRegistration(RegistryEvent.Register<IRecipe> event) {
-        for (IRecipe preRegisteredRecipe : preRegisteredRecipes) {
-            int suffix = 0;
-            while (event.getRegistry().containsKey(new ResourceLocation(modID,
-                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
-                            + (suffix == 0 ? "" : suffix)))) {
-                suffix++;
-            }
-            preRegisteredRecipe.setRegistryName((new ResourceLocation(modID,
-                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
-                            + (suffix == 0 ? "" : suffix))));
-            event.getRegistry().register(preRegisteredRecipe);
-        }
-    }
-
-    @SubscribeEvent
-    public void onBlockRegistration(RegistryEvent.Register<Block> event) {
-        for (Block preRegisteredBlock : preRegisteredBlocks) {
-            preRegisteredBlock.setRegistryName(new ResourceLocation(preRegisteredBlock.getUnlocalizedName().substring(5)));
-            event.getRegistry().register(preRegisteredBlock);
-        }
-    }
-
-    @SubscribeEvent
-    public void onItemRegistration(RegistryEvent.Register<Item> event) {
-        for (Item preRegisteredItem : preRegisteredItems) {
-            preRegisteredItem.setRegistryName(new ResourceLocation(preRegisteredItem.getUnlocalizedName().substring(5)));
-            event.getRegistry().register(preRegisteredItem);
-        }
-    }
 
     public BaseMod() {
         Class modClass = getClass();
@@ -220,6 +180,46 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
             e.printStackTrace();
     }
 
+    @SubscribeEvent
+    public void onSoundRegistration(RegistryEvent.Register<SoundEvent> event) {
+        for (SoundEvent preRegisteredSound : preRegisteredSounds) {
+            preRegisteredSound.setRegistryName(modID, preRegisteredSound.getSoundName().getResourcePath());
+            event.getRegistry().register(preRegisteredSound);
+        }
+    }
+
+    @SubscribeEvent
+    public void onRecipeRegistration(RegistryEvent.Register<IRecipe> event) {
+        for (IRecipe preRegisteredRecipe : preRegisteredRecipes) {
+            int suffix = 0;
+            while (event.getRegistry().containsKey(new ResourceLocation(modID,
+                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
+                            + (suffix == 0 ? "" : suffix)))) {
+                suffix++;
+            }
+            preRegisteredRecipe.setRegistryName((new ResourceLocation(modID,
+                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
+                            + (suffix == 0 ? "" : suffix))));
+            event.getRegistry().register(preRegisteredRecipe);
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockRegistration(RegistryEvent.Register<Block> event) {
+        for (Block preRegisteredBlock : preRegisteredBlocks) {
+            preRegisteredBlock.setRegistryName(new ResourceLocation(preRegisteredBlock.getUnlocalizedName().substring(5)));
+            event.getRegistry().register(preRegisteredBlock);
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemRegistration(RegistryEvent.Register<Item> event) {
+        for (Item preRegisteredItem : preRegisteredItems) {
+            preRegisteredItem.setRegistryName(new ResourceLocation(preRegisteredItem.getUnlocalizedName().substring(5)));
+            event.getRegistry().register(preRegisteredItem);
+        }
+    }
+
     public void setModOf(Object obj) {
         if (obj instanceof ISetMod)
             ((ISetMod) obj).setMod(this);
@@ -268,6 +268,8 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
                 sub.init(e);
     }
 
+    //----- BaseSubsystem -----
+
     public void postInit(FMLPostInitializationEvent e) {
         for (BaseSubsystem sub : subsystems) {
             if (sub != this)
@@ -282,8 +284,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
         saveConfig();
     }
-
-    //----- BaseSubsystem -----
 
     public void loadConfig() {
         config = new BaseConfiguration(cfgFile);
@@ -316,13 +316,15 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
             client.registerBlockRenderers();
     }
 
+    //-------------------- Configuration ---------------------------------------------------------
+
     @Override
     protected void registerItemRenderers() {
         if (client != null)
             client.registerItemRenderers();
     }
 
-    //-------------------- Configuration ---------------------------------------------------------
+    //----------------- Client Proxy -------------------------------------------------------------
 
     @Override
     protected void registerEntityRenderers() {
@@ -330,15 +332,13 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
             client.registerEntityRenderers();
     }
 
-    //----------------- Client Proxy -------------------------------------------------------------
+    //--------------- Third-party mod integration ------------------------------------------------
 
     @Override
     protected void registerTileEntityRenderers() {
         if (client != null)
             client.registerTileEntityRenderers();
     }
-
-    //--------------- Third-party mod integration ------------------------------------------------
 
     @Override
     protected void registerOtherClient() {
@@ -360,14 +360,14 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
             return null;
     }
 
+    //--------------- Item registration ----------------------------------------------------------
+
     public BaseSubsystem integrateWithClass(String className, String subsystemClassName) {
         if (classAvailable(className))
             return loadSubsystem(subsystemClassName);
         else
             return null;
     }
-
-    //--------------- Item registration ----------------------------------------------------------
 
     public BaseSubsystem loadSubsystem(String className) {
         BaseSubsystem sub = newSubsystem(className);
@@ -385,11 +385,11 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         }
     }
 
+    //--------------- Block registration ----------------------------------------------------------
+
     public Item newItem(String name) {
         return newItem(name, Item.class);
     }
-
-    //--------------- Block registration ----------------------------------------------------------
 
     public <ITEM extends Item> ITEM newItem(String name, Class<ITEM> cls) {
         ITEM item;
@@ -426,6 +426,9 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         return newBlock(name, cls, ItemBlock.class);
     }
 
+
+    //--------------- Ore registration ----------------------------------------------------------
+
     public <BLOCK extends Block> BLOCK newBlock(String name, Class<BLOCK> cls, Class<? extends Item> itemClass) {
         BLOCK block;
         try {
@@ -436,9 +439,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         }
         return addBlock(block, name, itemClass);
     }
-
-
-    //--------------- Ore registration ----------------------------------------------------------
 
     public <BLOCK extends Block> BLOCK addBlock(BLOCK block, String name) {
         return addBlock(block, name, ItemBlock.class);
@@ -478,11 +478,11 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         OreDictionary.registerOre(name, item);
     }
 
+    //--------------- Recipe construction ----------------------------------------------------------
+
     public void newRecipe(Item product, int qty, Object... params) {
         newRecipe(new ItemStack(product, qty), params);
     }
-
-    //--------------- Recipe construction ----------------------------------------------------------
 
     public void newRecipe(Block product, int qty, Object... params) {
         newRecipe(new ItemStack(product, qty), params);
@@ -503,8 +503,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
     public void newShapelessRecipe(ItemStack product, Object... params) {
         preRegisteredRecipes.add(new ShapelessOreRecipe(null, product, params));
     }
-
-    int recipeCounter = 0;
 
     public void newSmeltingRecipe(Item product, int qty, Item input) {
         newSmeltingRecipe(product, qty, input, 0);

@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.helpers;
 
 public class Matrix3 {
 

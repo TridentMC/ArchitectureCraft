@@ -4,11 +4,13 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.base.BaseBlock;
 import com.elytradev.architecture.base.BaseMod;
 import com.elytradev.architecture.base.BaseOrientation;
+import com.elytradev.architecture.common.ArchitectureCraft;
+import com.elytradev.architecture.common.tile.TileSawbench;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,15 +20,14 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SawbenchBlock extends BaseBlock<SawbenchTE> {
+public class BlockSawbench extends BaseBlock<TileSawbench> {
 
     static String model = "block/sawbench.smeg";
     static String[] textures = {"sawbench-wood", "sawbench-metal"};
     static BaseMod.ModelSpec modelSpec = new BaseMod.ModelSpec(model, textures);
 
-    public SawbenchBlock() {
-        super(Material.WOOD, SawbenchTE.class);
-        //renderID = -1;
+    public BlockSawbench() {
+        super(Material.WOOD, TileSawbench.class);
     }
 
     @Override
@@ -44,11 +45,6 @@ public class SawbenchBlock extends BaseBlock<SawbenchTE> {
         return modelSpec;
     }
 
-//	@Override
-//	public String getModelNameForState(IBlockState state) {
-//		return model;
-//	}
-
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
@@ -63,7 +59,6 @@ public class SawbenchBlock extends BaseBlock<SawbenchTE> {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!player.isSneaking()) {
             if (!world.isRemote) {
-                //System.out.printf("SawbenchBlock.onBlockActivated: opening gui\n");
                 ArchitectureCraft.mod.openGuiSawbench(world, pos, player);
             }
             return true;
@@ -73,13 +68,7 @@ public class SawbenchBlock extends BaseBlock<SawbenchTE> {
 
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
-        return new SawbenchTE();
+        return new TileSawbench();
     }
-
-//	@Override
-//	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int data) {
-//		Utils.dumpInventoryIntoWorld(world, x, y, z);
-//		super.onBlockDestroyedByPlayer(world, x, y, z, data);
-//	}
 
 }

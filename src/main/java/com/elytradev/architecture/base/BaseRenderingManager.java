@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.base;
 
-import com.elytradev.architecture.common.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -495,34 +495,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     protected class CustomItemRenderOverrideList extends ItemOverrideList {
 
-        public CustomItemRenderOverrideList() {
-            super(ImmutableList.<ItemOverride>of());
-        }
-
-        @Override
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
-            //System.out.printf("BaseModClient.CustomItemBakedModel.handleItemState: %s\n", stack);
-            Item item = stack.getItem();
-            BaseModClient.ICustomRenderer rend = itemRenderers.get(item);
-            if (rend == null && item instanceof BaseMod.IItem) {
-                BaseMod.ModelSpec spec = ((BaseMod.IItem) item).getModelSpec(stack);
-                if (spec != null)
-                    rend = getCustomRendererForSpec(1, spec);
-            }
-            if (rend == null) {
-                Block block = Block.getBlockFromItem(item);
-                if (block != null)
-                    rend = getCustomRendererForState(block.getDefaultState());
-            }
-            if (rend != null) {
-                GlStateManager.shadeModel(GL_SMOOTH);
-                BaseBakedRenderTarget target = new BaseBakedRenderTarget();
-                rend.renderItemStack(stack, target, itemTrans);
-                return target.getBakedModel();
-            } else
-                return emptyModel;
-        }
-
         private IBakedModel emptyModel = new IBakedModel() {
             @Override
             public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
@@ -559,6 +531,34 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
                 return ItemOverrideList.NONE;
             }
         };
+
+        public CustomItemRenderOverrideList() {
+            super(ImmutableList.<ItemOverride>of());
+        }
+
+        @Override
+        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+            //System.out.printf("BaseModClient.CustomItemBakedModel.handleItemState: %s\n", stack);
+            Item item = stack.getItem();
+            BaseModClient.ICustomRenderer rend = itemRenderers.get(item);
+            if (rend == null && item instanceof BaseMod.IItem) {
+                BaseMod.ModelSpec spec = ((BaseMod.IItem) item).getModelSpec(stack);
+                if (spec != null)
+                    rend = getCustomRendererForSpec(1, spec);
+            }
+            if (rend == null) {
+                Block block = Block.getBlockFromItem(item);
+                if (block != null)
+                    rend = getCustomRendererForState(block.getDefaultState());
+            }
+            if (rend != null) {
+                GlStateManager.shadeModel(GL_SMOOTH);
+                BaseBakedRenderTarget target = new BaseBakedRenderTarget();
+                rend.renderItemStack(stack, target, itemTrans);
+                return target.getBakedModel();
+            } else
+                return emptyModel;
+        }
 
     }
 

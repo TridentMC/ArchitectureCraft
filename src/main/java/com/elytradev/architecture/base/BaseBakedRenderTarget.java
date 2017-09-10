@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.base;
 
-import com.elytradev.architecture.common.Vector3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;

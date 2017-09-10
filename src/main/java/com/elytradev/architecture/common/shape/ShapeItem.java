@@ -4,8 +4,11 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -49,7 +52,7 @@ public class ShapeItem extends ItemBlock {
             return false;
         Vec3i d = Vector3.getDirectionVec(face);
         Vector3 hit = new Vector3(hitX - d.getX() - 0.5, hitY - d.getY() - 0.5, hitZ - d.getZ() - 0.5);
-        ShapeTE te = ShapeTE.get(world, pos);
+        TileShape te = TileShape.get(world, pos);
         if (te != null) {
             te.readFromItemStack(stack);
             if (te.shape != null) {
