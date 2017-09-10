@@ -1,19 +1,14 @@
 [
     {
-        "modid": "${modid}",
+        "modid": "architecturecraft",
         "name": "ArchitectureCraft",
         "description": "Distinguished architectural features for your Minecraft buildings.",
-        "version": "${version}",
-        "mcversion": "${mcversion}",
-        "url": "https://github.com/elytra/architecturecraft",
-        "updateUrl": "",
-        "authors": [
-            "Greg Ewing (Original Developer)",
-            "darkevilmac (Current Developer)"
-        ],
-        "credits": "",
-        "logoFile": "",
-        "screenshots": [],
-        "dependencies": []
+        "version": "@VERSION@",
+        "logoFile": "assets/examplemod/textures/logo.png",
+        "url": "https://github.com/elytra/ArchitectureCraft",
+        "authorList": [
+            "gcewing (Original Developer)",
+            "darkevilmac (Maintainer)"
+        ]
     }
 ]
