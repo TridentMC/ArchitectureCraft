@@ -193,13 +193,15 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         for (IRecipe preRegisteredRecipe : preRegisteredRecipes) {
             int suffix = 0;
             while (event.getRegistry().containsKey(new ResourceLocation(modID,
-                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
+                    preRegisteredRecipe.getRecipeOutput().getItem().getRegistryName().getResourcePath()
                             + (suffix == 0 ? "" : suffix)))) {
                 suffix++;
             }
-            preRegisteredRecipe.setRegistryName((new ResourceLocation(modID,
-                    preRegisteredRecipe.getRecipeOutput().getUnlocalizedName()
-                            + (suffix == 0 ? "" : suffix))));
+            ResourceLocation registryName = new ResourceLocation(modID,
+                    preRegisteredRecipe.getRecipeOutput().getItem().getRegistryName().getResourcePath()
+                            + (suffix == 0 ? "" : suffix));
+            preRegisteredRecipe.setRegistryName(registryName);
+            System.out.println("Registered recipe " + preRegisteredRecipe);
             event.getRegistry().register(preRegisteredRecipe);
         }
     }
@@ -217,6 +219,10 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         for (Item preRegisteredItem : preRegisteredItems) {
             preRegisteredItem.setRegistryName(new ResourceLocation(preRegisteredItem.getUnlocalizedName().substring(5)));
             event.getRegistry().register(preRegisteredItem);
+        }
+
+        for (BaseSubsystem sub : subsystems) {
+            sub.registerRecipes();
         }
     }
 
@@ -274,7 +280,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         for (BaseSubsystem sub : subsystems) {
             if (sub != this)
                 sub.postInit(e);
-            sub.registerRecipes();
             sub.registerOther();
         }
         if (client != null)

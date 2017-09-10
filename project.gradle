@@ -5,7 +5,7 @@ ext {
 	projectName = 'architecturecraft'
 
 	useElytraVersionFormat = true
-	version = '0' // 0 for now, not stable enough imo.
+	version = '1'
 
 	concreteVersion = '0.3.2-SNAPSHOT'
 	concreteModules = [ 'all' ]
