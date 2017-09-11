@@ -58,13 +58,6 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
         super();
         mod = this;
         channel = new BaseDataChannel(MOD_ID);
-        creativeTab = new CreativeTabs("architecture") {
-            @Override
-            public ItemStack getTabIconItem() {
-                return new ItemStack(itemHammer);
-            }
-        };
-        //debugCreativeTabs = true;
     }
 
     @Override

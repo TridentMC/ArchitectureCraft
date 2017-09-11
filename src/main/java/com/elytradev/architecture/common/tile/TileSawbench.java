@@ -7,7 +7,6 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.legacy.base.BaseMod;
-import com.elytradev.architecture.common.tile.TileArchitectureInventory;
 import com.elytradev.architecture.legacy.common.shape.Shape;
 import com.elytradev.architecture.legacy.common.shape.ShapePage;
 import net.minecraft.block.Block;
@@ -89,7 +88,6 @@ public class TileSawbench extends TileArchitectureInventory {
 
     @Override
     public ItemStack decrStackSize(int slot, int amount) {
-        //System.out.printf("SawbenchTE.decrStackSize: %d by %d on %s\n", slot, amount, worldObj);
         if (slot == resultSlot)
             usePendingMaterial();
         ItemStack result = super.decrStackSize(slot, amount);
@@ -98,7 +96,6 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     public ItemStack usePendingMaterial() {
-        //System.out.printf("SawbenchTE.usePendingMaterial: pmu = %s on %s\n", pendingMaterialUsage, worldObj);
         ItemStack origMaterialStack = getStackInSlot(materialSlot);
         if (pendingMaterialUsage) {
             pendingMaterialUsage = false;
@@ -108,9 +105,6 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     public void returnUnusedMaterial(ItemStack origMaterialStack) {
-        //if (!worldObj.isRemote)
-        //    System.out.printf("SawbenchTE.returnUnusedMaterial: before: pmu = %s, material = %s, result = %s\n",
-        //        pendingMaterialUsage, getStackInSlot(materialSlot), getStackInSlot(resultSlot));
         if (!pendingMaterialUsage) {
             ItemStack materialStack = getStackInSlot(materialSlot);
             ItemStack resultStack = getStackInSlot(resultSlot);
@@ -127,9 +121,6 @@ public class TileSawbench extends TileArchitectureInventory {
                 pendingMaterialUsage = true;
             }
         }
-        //if (!worldObj.isRemote)
-        //    System.out.printf("SawbenchTE.returnUnusedMaterial: after: pmu = %s, material = %s, result = %s\n",
-        //        pendingMaterialUsage, getStackInSlot(materialSlot), getStackInSlot(resultSlot));
     }
 
     /**
@@ -183,14 +174,12 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     void updateResultSlot() {
-        //System.out.printf("SawbenchTE.updateResultSlot: pmu = %s on %s\n", pendingMaterialUsage, worldObj);
         ItemStack oldResult = getStackInSlot(resultSlot);
         if (oldResult.isEmpty() || pendingMaterialUsage) {
             ItemStack resultStack = makeResultStack();
             if (!ItemStack.areItemStacksEqual(resultStack, oldResult))
                 inventory.setInventorySlotContents(resultSlot, resultStack);
             pendingMaterialUsage = !resultStack.isEmpty();
-            //System.out.printf("SawbenchTE.updateResultSlot: now pmu = %s on %s\n", pendingMaterialUsage, worldObj);
         }
     }
 
@@ -235,7 +224,6 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     public int resultMultiple() {
-        //return productMadeForShape[selectedShape];
         Shape shape = getSelectedShape();
         if (shape != null)
             return shape.itemsProduced;

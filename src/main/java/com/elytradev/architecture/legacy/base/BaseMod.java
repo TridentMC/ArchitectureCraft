@@ -452,11 +452,8 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
     public <BLOCK extends Block> BLOCK addBlock(BLOCK block, String name, Class<? extends Item> itemClass) {
         String qualName = assetKey + ":" + name;
         block.setUnlocalizedName(qualName);
-//      block.setBlockTextureName(qualName);
-        //System.out.printf("BaseMod.addBlock: name '%s' qualName '%s' %s\n", name, qualName, block);
         preRegisteredBlocks.add(block);
         if (creativeTab != null) {
-            //System.out.printf("BaseMod.addBlock: Setting creativeTab to %s\n", creativeTab);
             block.setCreativeTab(creativeTab);
         }
         if (block instanceof BlockArchitecture)
@@ -566,25 +563,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
             throw new RuntimeException(e);
         }
     }
-
-    //--------------- Villager registration -------------------------------------------------
-
-//     static class VSBinding extends IDBinding<ResourceLocation> {};
-//     
-//     public List<VSBinding> registeredVillagers = new ArrayList<VSBinding>();
-
-//     int addVillager(String name, ResourceLocation skin) {
-//         int id = config.getVillager(name);
-//         VSBinding b = new VSBinding();
-//         b.id = id;
-//         b.object = skin;
-//         registeredVillagers.add(b);
-//         return id;
-//     }
-
-//  public void addTradeHandler(int villagerID, IVillageTradeHandler handler) {
-//      VillagerRegistry.instance().registerVillageTradeHandler(villagerID, handler);
-//  }
 
     //--------------- Sound Registration -------------------------------------------------
 

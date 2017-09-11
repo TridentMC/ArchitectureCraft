@@ -26,7 +26,6 @@ import net.minecraft.world.IBlockAccess;
 
 import static com.elytradev.architecture.common.block.BaseBlockUtils.getNameForBlock;
 
-//import static gcewing.architecture.BaseUtils.*;
 
 public class TileShape extends TileArchitecture {
 

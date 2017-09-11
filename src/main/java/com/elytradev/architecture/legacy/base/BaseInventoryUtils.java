@@ -92,7 +92,7 @@ public class BaseInventoryUtils {
             if (base.canExtractItem(slot, stack, side))
                 return stack;
             else
-                return null;
+                return ItemStack.EMPTY;
         }
 
     }
