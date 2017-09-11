@@ -6,12 +6,11 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.base.BaseTileEntity;
-import com.elytradev.architecture.common.helpers.Trans3;
-import com.elytradev.architecture.common.helpers.Utils;
-import com.elytradev.architecture.common.helpers.Vector3;
-import com.elytradev.architecture.common.item.ItemCladding;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.legacy.common.helpers.Utils;
+import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.legacy.common.item.ItemCladding;
+import com.elytradev.architecture.legacy.common.shape.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,11 +24,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import static com.elytradev.architecture.base.BaseBlockUtils.getNameForBlock;
+import static com.elytradev.architecture.common.block.BaseBlockUtils.getNameForBlock;
 
 //import static gcewing.architecture.BaseUtils.*;
 
-public class TileShape extends BaseTileEntity {
+public class TileShape extends TileArchitecture {
 
     public Shape shape;
     public IBlockState baseBlockState;
@@ -77,6 +76,11 @@ public class TileShape extends BaseTileEntity {
         return super.localToGlobalTransformation(origin).translate(getOffsetX(), 0, 0);
     }
 
+    @Override
+    public void onAddedToWorld() {
+        //NO-OP
+    }
+
     public boolean connectionIsEnabledGlobal(EnumFacing dir) {
         return (disabledConnections & (1 << dir.ordinal())) == 0;
     }
@@ -98,6 +102,7 @@ public class TileShape extends BaseTileEntity {
             nte.setConnectionEnabledGlobal(dir.getOpposite(), newState);
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound nbt) {
         //System.out.printf("ShapeTE.readFromNBT: %s\n", pos);
         super.readFromNBT(nbt);
@@ -134,6 +139,7 @@ public class TileShape extends BaseTileEntity {
         return null;
     }
 
+    @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         writeShapeToNBT(nbt);

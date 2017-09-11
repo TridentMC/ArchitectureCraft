@@ -6,10 +6,10 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.base.BaseMod;
-import com.elytradev.architecture.base.BaseTileInventory;
-import com.elytradev.architecture.common.shape.Shape;
-import com.elytradev.architecture.common.shape.ShapePage;
+import com.elytradev.architecture.legacy.base.BaseMod;
+import com.elytradev.architecture.common.tile.TileArchitectureInventory;
+import com.elytradev.architecture.legacy.common.shape.Shape;
+import com.elytradev.architecture.legacy.common.shape.ShapePage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.init.Blocks;
@@ -21,7 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-public class TileSawbench extends BaseTileInventory {
+public class TileSawbench extends TileArchitectureInventory {
 
     final public static int materialSlot = 0;
     final public static int resultSlot = 1;
@@ -141,6 +141,11 @@ public class TileSawbench extends BaseTileInventory {
             return materialSideSlots;
         else
             return resultSideSlots;
+    }
+
+    @Override
+    public void onAddedToWorld() {
+        // NO-OP
     }
 
     @Override
