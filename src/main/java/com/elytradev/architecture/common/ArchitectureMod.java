@@ -21,15 +21,15 @@ public class ArchitectureMod {
 
     public static final ArchitectureContent CONTENT = new ArchitectureContent();
     public static boolean INDEV = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-    @Mod.Instance()
+    //@Mod.Instance()
     public static ArchitectureMod INSTANCE;
 
     public static Logger LOG;
 
-    @SidedProxy(serverSide = "com.elytradev.architecture.common.proxy.CommonProxy", clientSide = "com.elytradev.architecture.client.proxy.ClientProxy")
+    //@SidedProxy(serverSide = "com.elytradev.architecture.common.proxy.CommonProxy", clientSide = "com.elytradev.architecture.client.proxy.ClientProxy")
     public static CommonProxy PROXY;
 
-    @Mod.EventHandler
+    //@Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent e) {
         PROXY.registerHandlers();
         LOG = e.getModLog();
@@ -39,13 +39,13 @@ public class ArchitectureMod {
         PROXY.registerRenderers(e.getModState());
     }
 
-    @Mod.EventHandler
+    //@Mod.EventHandler
     public void onInit(FMLInitializationEvent e) {
         CONTENT.init(e);
         PROXY.registerRenderers(e.getModState());
     }
 
-    @Mod.EventHandler
+    //@Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent e) {
         CONTENT.postInit(e);
         PROXY.registerRenderers(e.getModState());
