@@ -7,12 +7,12 @@
 package com.elytradev.architecture.legacy.client.render;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.legacy.base.BaseModClient.ICustomRenderer;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.common.tile.TileShape;
+import com.elytradev.architecture.legacy.base.BaseModClient.ICustomRenderer;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
-import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
@@ -37,6 +37,15 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         }
     }
 
+    public void renderShape(IBlockAccess world, BlockPos pos, RenderTargetBase target,
+                            boolean renderBase, boolean renderSecondary, Trans3 t) {
+        TileShape te = TileShape.get(world, pos);
+        if (te != null) {
+            Trans3 t2 = t.t(te.localToGlobalRotation());
+            renderShapeTE(te, target, t2, renderBase, renderSecondary);
+        }
+    }
+
     protected boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
         return state != null && state.getBlock().canRenderInLayer(state, layer);
     }
@@ -54,8 +63,6 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (te.shape != null && (renderBase || renderSecondary)) {
             IBlockState base = te.baseBlockState;
             if (base != null) {
-                //System.out.printf("ShapeRenderDispatch.renderShapeTE: in layer %s renderBase = %s renderSecondary = %s\n",
-                //    MinecraftForgeClient.getRenderLayer(), renderBase, renderSecondary);
                 TextureAtlasSprite icon = Utils.getSpriteForBlockState(base);
                 TextureAtlasSprite icon2 = Utils.getSpriteForBlockState(te.secondaryBlockState);
                 if (icon != null) {
@@ -82,6 +89,14 @@ public class ShapeRenderDispatch implements ICustomRenderer {
                     te.shape.kind.renderShape(te, textures, target, t, renderBase, renderSecondary);
                 }
             }
+        }
+    }
+
+    @Override
+    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
+                            BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+        if (TileShape.get(world, pos) != null) {
+            renderShapeTE(TileShape.get(world, pos), target, t, renderPrimary, renderSecondary);
         }
     }
 

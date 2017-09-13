@@ -7,10 +7,10 @@
 package com.elytradev.architecture.legacy.client.render;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.legacy.base.BaseModClient.ICustomRenderer;
-import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.legacy.base.BaseModClient.ICustomRenderer;
+import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
@@ -28,6 +28,12 @@ public class RenderCladding implements ICustomRenderer {
     @Override
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state,
                             RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
+        //NOOP
+    }
+
+    @Override
+    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+        //NOOP
     }
 
     @Override

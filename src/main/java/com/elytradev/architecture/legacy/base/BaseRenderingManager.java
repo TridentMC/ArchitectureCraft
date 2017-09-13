@@ -259,8 +259,8 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     //------------------------------------------------------------------------------------------------
-
-    protected BaseModClient.ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
+    @Override
+    public BaseModClient.ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
         //System.out.printf("BaseModClient.getCustomRenderer: %s\n", state);
         Block block = state.getBlock();
         BaseModClient.ICustomRenderer rend = blockRenderers.get(block);

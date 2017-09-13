@@ -311,7 +311,7 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
         }
     }
 
-    protected IRenderingManager getRenderingManager() {
+    public IRenderingManager getRenderingManager() {
         if (renderingManager != null)
             return renderingManager;
         for (String name : renderingManagerClasses) {
@@ -358,6 +358,9 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
 
         void addItemRenderer(Item item, ICustomRenderer renderer);
 
+        //------------------------------------------------------------------------------------------------
+        ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state);
+
         IModel getModel(String name);
 
     }
@@ -365,6 +368,9 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
     public interface ICustomRenderer {
         void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                          BlockRenderLayer layer, Trans3 t);
+
+        void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
+                         BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary);
 
         void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t);
     }

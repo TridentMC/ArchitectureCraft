@@ -41,6 +41,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -54,13 +57,54 @@ import java.util.List;
 public class BlockArchitecture<TE extends TileEntity>
         extends BlockContainer implements ITextureConsumer {
 
-    public static boolean debugState = false;
+    public static final IUnlistedProperty<World> WORLD_PROP = new IUnlistedProperty<World>() {
+        @Override
+        public String getName() {
+            return "unlistedworld";
+        }
 
+        @Override
+        public boolean isValid(World value) {
+            return true;
+        }
+
+        @Override
+        public Class<World> getType() {
+            return World.class;
+        }
+
+        @Override
+        public String valueToString(World value) {
+            return value.toString();
+        }
+    };
+    public static final IUnlistedProperty<BlockPos> POS_PROP = new IUnlistedProperty<BlockPos>() {
+        @Override
+        public String getName() {
+            return "unlistedpos";
+        }
+
+        @Override
+        public boolean isValid(BlockPos value) {
+            return true;
+        }
+
+        @Override
+        public Class<BlockPos> getType() {
+            return BlockPos.class;
+        }
+
+        @Override
+        public String valueToString(BlockPos value) {
+            return value.toString();
+        }
+    };
+    public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
+    public BaseMod mod;
     protected MapColor mapColor;
     protected IProperty[] properties;
-
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
     protected int numProperties; // Do not explicitly initialise
@@ -69,7 +113,6 @@ public class BlockArchitecture<TE extends TileEntity>
     protected IOrientationHandler orientationHandler = orient1Way;
     protected String[] textureNames;
     protected ModelSpec modelSpec;
-    public BaseMod mod;
     protected AxisAlignedBB boxHit;
     protected ThreadLocal<TileEntity> harvestingTileEntity = new ThreadLocal();
 
@@ -151,7 +194,7 @@ public class BlockArchitecture<TE extends TileEntity>
         IProperty[] props = Arrays.copyOf(properties, numProperties);
         if (debugState)
             System.out.printf("BaseBlock.createBlockState: Creating BlockState with %s properties\n", props.length);
-        return new BlockStateContainer(this, props);
+        return new ExtendedBlockState(this, props, new IUnlistedProperty[]{WORLD_PROP, POS_PROP});
     }
 
     private void dumpProperties() {
@@ -303,6 +346,17 @@ public class BlockArchitecture<TE extends TileEntity>
     }
 
     @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        if (worldIn instanceof World && state instanceof IExtendedBlockState) {
+            IExtendedBlockState eState = (IExtendedBlockState) state;
+            return super.getActualState(eState.withProperty(WORLD_PROP, (World) worldIn)
+                    .withProperty(POS_PROP, pos), worldIn, pos);
+        } else {
+            return super.getActualState(state, worldIn, pos);
+        }
+    }
+
+    @Override
     public boolean hasTileEntity(IBlockState state) {
         return tileEntityClass != null;
     }
@@ -340,6 +394,7 @@ public class BlockArchitecture<TE extends TileEntity>
     @Override
     public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
         super.onBlockAdded(world, pos, state);
+
         if (hasTileEntity(state)) {
             TileEntity te = getTileEntity(world, pos);
             if (te instanceof TileArchitecture)

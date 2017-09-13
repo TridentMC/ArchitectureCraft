@@ -8,12 +8,14 @@ package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.legacy.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;

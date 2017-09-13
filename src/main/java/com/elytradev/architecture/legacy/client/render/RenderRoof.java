@@ -8,11 +8,13 @@ package com.elytradev.architecture.legacy.client.render;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import com.elytradev.architecture.legacy.common.shape.Shape;
-import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
+
+import java.util.Arrays;
 
 //import net.minecraft.client.renderer.block.model.BakedQuad;
 //import net.minecraft.client.renderer.BlockModelRenderer;
@@ -66,7 +68,12 @@ public class RenderRoof extends RenderShape {
                 renderValley();
                 break;
             case RoofSmartValley:
-                renderSmartValley();
+                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                boolean handleItemState = Arrays.stream(stackTrace).anyMatch(stackTraceElement -> stackTraceElement.getMethodName().startsWith("handleItemState"));
+                if (!handleItemState)
+                    renderSmartValley();
+                else
+                    renderSmartValley();
                 break;
         }
     }
@@ -723,37 +730,6 @@ public class RenderRoof extends RenderShape {
         }
         return false;
     }
-
-//	protected boolean hasNeighbour(int dx, int dy, int dz, Shape[] shapes) {
-//		EnumFacing dir = t.v(dx, dy, dz).facing();
-//		if (!this.te.connectionIsEnabledGlobal(dir))
-//			return false;
-//		TileEntity te = getNeighbouringTileEntity(dx, dy, dz);
-//		if (te instanceof ShapeTE) {
-//			ShapeTE ste = (ShapeTE)te;
-//			if (!ste.connectionIsEnabledGlobal(dir.getOpposite()))
-//				return false;
-//			Shape shape = ste.shape;
-//			for (int i = 0; i < shapes.length; i++)
-//				if (shape == shapes[i])
-//					return true;
-//		}
-//		return false;
-//	}
-
-//	protected TileEntity getNeighbouringTileEntity(int dx, int dy, int dz) {
-////		System.out.printf("ShapeRenderer.getNeighbouringTileEntity: rel (%s,%s,%s)\n", dx, dy, dz);
-//		if (blockWorld != null) {
-//			Vector3 d = t.v(dx, dy, dz);
-//			int x = (int)(blockPos.getX() + d.x);
-//			int y = (int)(blockPos.getY() + d.y);
-//			int z = (int)(blockPos.getZ() + d.z);
-////			System.out.printf("ShapeRenderer.getNeighbouringTileEntity: abs (%s,%s,%s)\n", x, y, z);
-//			return blockWorld.getTileEntity(new BlockPos(x, y, z));
-//		}
-//		else
-//			return null;
-//	}
 
     //-------------------------------------------------------------------------------------
 

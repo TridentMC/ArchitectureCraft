@@ -48,7 +48,6 @@ public class ArchitectureContent {
     }
 
 
-
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
         ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getUnlocalizedName() + recipeID++);
         registry.register(new ShapedOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));

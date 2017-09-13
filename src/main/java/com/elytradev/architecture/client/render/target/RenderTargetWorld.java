@@ -25,13 +25,13 @@ public class RenderTargetWorld extends RenderTargetBase {
     protected BlockPos blockPos;
     protected IBlockState blockState;
     protected Block block;
-    protected BufferBuilder tess;
     protected float cmr = 1, cmg = 1, cmb = 1;
     protected boolean ao;
     protected boolean axisAlignedNormal;
     protected boolean renderingOccurred;
     protected float vr, vg, vb, va; // Colour to be applied to next vertex
     protected int vlm1, vlm2; // Light map values to be applied to next vertex
+    private BufferBuilder tess;
 
     public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
@@ -40,14 +40,11 @@ public class RenderTargetWorld extends RenderTargetBase {
         this.blockPos = pos;
         this.blockState = world.getBlockState(pos);
         this.block = blockState.getBlock();
-        this.tess = tess;
+        this.setTess(tess);
         ao = Minecraft.isAmbientOcclusionEnabled() && block.getLightValue(blockState) == 0;
         expandTrianglesToQuads = true;
     }
 
-    public BufferBuilder getWorldRenderer() {
-        return tess;
-    }
 
     // ---------------------------- IRenderTarget ----------------------------
 
@@ -64,11 +61,11 @@ public class RenderTargetWorld extends RenderTargetBase {
         lightVertex(p);
         //System.out.printf("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
         //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // tess.getCurrentOffset());
-        tess.pos(p.x, p.y, p.z);
-        tess.color(vr, vg, vb, va);
-        tess.tex(u, v);
-        tess.lightmap(vlm1, vlm2);
-        tess.endVertex();
+        getWorldRenderer().pos(p.x, p.y, p.z);
+        getWorldRenderer().color(vr, vg, vb, va);
+        getWorldRenderer().tex(u, v);
+        getWorldRenderer().lightmap(vlm1, vlm2);
+        getWorldRenderer().endVertex();
         renderingOccurred = true;
 //      if (textureOverride)
 //          tess.dumpLastVertex();
@@ -179,4 +176,12 @@ public class RenderTargetWorld extends RenderTargetBase {
         return renderingOccurred;
     }
 
+
+    public BufferBuilder getWorldRenderer() {
+        return tess;
+    }
+
+    public void setTess(BufferBuilder tess) {
+        this.tess = tess;
+    }
 }

@@ -36,7 +36,6 @@ public class BaseBakedRenderTarget extends RenderTargetBase {
     protected static List<BakedQuad> emptyQuads = new ArrayList<BakedQuad>();
     protected static Map<EnumFacing, List<BakedQuad>> faceQuads = new HashMap<>();
     static protected ItemTransformVec3f
-
             transThirdPerson = new ItemTransformVec3f(
             new Vector3f(75f, -45f, 0f),
             new Vector3f(0f, 2.5f / 16f, 0f),
@@ -186,10 +185,7 @@ public class BaseBakedRenderTarget extends RenderTargetBase {
     }
 
     public IBakedModel getBakedModel(TextureAtlasSprite particleTexture) {
-        //System.out.printf("BaseRenderTarget.getBakedModel: Returning model with %s quads\n", quads.size());
-        //System.out.printf("BaseRenderTarget.getBakedModel: %s of %s unprocessed vertices\n", vertexCount, verticesPerFace);
-        //System.out.printf("BaseBakedRenderTarget.getBakedModel: WorldRenderer is using vertex format %s\n",
-        //  Tessellator.getInstance().getWorldRenderer().getVertexFormat());
+
         if (verticesPerFace != 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
         return new SimpleBakedModel(quads, faceQuads, false, true, particleTexture, transforms, ItemOverrideList.NONE);

@@ -7,10 +7,10 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
+import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.legacy.base.BaseModClient.ICustomRenderer;
 import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
-import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import net.minecraft.block.Block;
@@ -49,12 +49,17 @@ public class BaseModelRenderer implements ICustomRenderer {
     }
 
     @Override
+    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+        if (renderPrimary) renderBlock(world, pos, state, target, layer, t);
+    }
+
+    @Override
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
         Item item = stack.getItem();
         if (item instanceof ItemBlock) {
             Block block = Block.getBlockFromItem(item);
-            if (block instanceof BlockArchitecture )
-                t = t.t(((BlockArchitecture ) block).itemTransformation());
+            if (block instanceof BlockArchitecture)
+                t = t.t(((BlockArchitecture) block).itemTransformation());
         }
         model.render(t.translate(origin), target, textures);
     }
