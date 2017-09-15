@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.common.block;
+package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.block.BlockArchitecture;

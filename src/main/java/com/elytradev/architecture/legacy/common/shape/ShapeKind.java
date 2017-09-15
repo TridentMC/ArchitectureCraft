@@ -7,16 +7,16 @@
 package com.elytradev.architecture.legacy.common.shape;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.common.block.BaseBlockUtils;
+import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.base.BaseRenderable;
 import com.elytradev.architecture.common.tile.TileArchitecture;
-import com.elytradev.architecture.legacy.base.BaseUtils;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import com.elytradev.architecture.legacy.client.render.RenderRoof;
 import com.elytradev.architecture.legacy.client.render.RenderWindow;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.legacy.common.block.BlockShape;
+import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.legacy.common.helpers.Profile;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
@@ -546,7 +546,7 @@ public abstract class ShapeKind {
 
         @Override
         public ItemStack newSecondaryMaterialStack(IBlockState state) {
-            return BaseBlockUtils.blockStackWithState(state, 1);
+            return BlockHelper.blockStackWithState(state, 1);
         }
 
 //		@Override
@@ -686,7 +686,7 @@ public abstract class ShapeKind {
                 if (BlockStairs.isBlockStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
                     placedOnStair = true;
                     nside = stairsSide(nstate);
-                    nturn = BaseUtils.turnToFace(SOUTH, stairsFacing(nstate));
+                    nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nstate));
                     if (nside == 1 && (nturn & 1) == 0)
                         nturn ^= 2;
                 } else if (nblock instanceof BlockShape) {

@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.common.shape;
 
-import com.elytradev.architecture.legacy.base.BaseUtils;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
@@ -61,10 +61,10 @@ public class WindowShapeKinds {
                         te.setSide(nte.side);
                         switch (nlf) {
                             case SOUTH:
-                                te.setTurn(BaseUtils.turnToFace(WEST, lf));
+                                te.setTurn(MiscUtils.turnToFace(WEST, lf));
                                 return true;
                             case WEST:
-                                te.setTurn(BaseUtils.turnToFace(EAST, lf));
+                                te.setTurn(MiscUtils.turnToFace(EAST, lf));
                                 return true;
                         }
                     }

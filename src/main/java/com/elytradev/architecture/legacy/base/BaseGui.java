@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
-import com.elytradev.architecture.common.IModHolder;
+import com.elytradev.architecture.common.utils.IModHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.elytradev.architecture.legacy.base.BaseUtils.packedColor;
+import static com.elytradev.architecture.common.utils.MiscUtils.packedColor;
 import static org.lwjgl.opengl.GL11.*;
 
 //------------------------------------------------------------------------------------------------

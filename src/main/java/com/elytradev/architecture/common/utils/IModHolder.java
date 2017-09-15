@@ -1,4 +1,4 @@
-package com.elytradev.architecture.common;
+package com.elytradev.architecture.common.utils;
 
 import com.elytradev.architecture.legacy.base.BaseMod;
 

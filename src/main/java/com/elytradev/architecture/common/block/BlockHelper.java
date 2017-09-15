@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.common.block;
 
-import com.elytradev.architecture.legacy.base.BaseUtils;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class BaseBlockUtils {
+public class BlockHelper {
 
     public static String getNameForBlock(Block block) {
         return Block.REGISTRY.getNameForObject(block).toString();
@@ -33,7 +33,7 @@ public class BaseBlockUtils {
      *   any direction.
      */
     public static boolean blockIsGettingExternallyPowered(World world, BlockPos pos) {
-        for (EnumFacing side : BaseUtils.facings) {
+        for (EnumFacing side : MiscUtils.facings) {
             if (isPoweringSide(world, pos.offset(side), side))
                 return true;
         }
@@ -46,7 +46,7 @@ public class BaseBlockUtils {
         if (block.getWeakPower(state, world, pos, side) > 0)
             return true;
         if (block.shouldCheckWeakPower(state, world, pos, side)) {
-            for (EnumFacing side2 : BaseUtils.facings)
+            for (EnumFacing side2 : MiscUtils.facings)
                 if (side2 != side.getOpposite())
                     if (world.getStrongPower(pos.offset(side2), side2) > 0)
                         return true;
@@ -83,10 +83,6 @@ public class BaseBlockUtils {
     public static void setWorldBlockState(World world, BlockPos pos, IBlockState state) {
         world.setBlockState(pos, state, 3);
     }
-
-//     public static void markWorldBlockForUpdate(World world, BlockPos pos) {
-//         world.markBlockForUpdate(pos);
-//     }   
 
     public static void notifyWorldNeighborsOfStateChange(World world, BlockPos pos, Block block) {
         world.notifyNeighborsOfStateChange(pos, block, true);

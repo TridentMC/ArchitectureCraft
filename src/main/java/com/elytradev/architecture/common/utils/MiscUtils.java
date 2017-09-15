@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.common.utils;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
@@ -16,7 +16,7 @@ import net.minecraftforge.common.DimensionManager;
 
 import java.util.Collection;
 
-public class BaseUtils {
+public class MiscUtils {
 
     public static EnumFacing[] facings = EnumFacing.values();
 

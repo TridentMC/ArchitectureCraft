@@ -12,7 +12,7 @@ import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
-import com.elytradev.architecture.common.block.BaseBlockUtils;
+import com.elytradev.architecture.common.block.BlockHelper;
 
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
@@ -59,6 +59,7 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_SMOOTH;
 
+//TODO: delet this
 public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> {
 
     protected static Trans3 itemTrans = Trans3.blockCenterSideTurn(0, 2);
@@ -272,7 +273,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     public void renderItemStackUsingModelSpec(ItemStack stack, RenderTargetBase target, Trans3 t) {
-        IBlockState state = BaseBlockUtils.getBlockStateFromItemStack(stack);
+        IBlockState state = BlockHelper.getBlockStateFromItemStack(stack);
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
         ModelSpec spec = block.getModelSpec(state);
         ICustomRenderer rend = getCustomRendererForSpec(0, spec);

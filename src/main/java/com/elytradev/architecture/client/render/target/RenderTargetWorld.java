@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import static com.elytradev.architecture.legacy.base.BaseUtils.ifloor;
-import static com.elytradev.architecture.legacy.base.BaseUtils.iround;
+import static com.elytradev.architecture.common.utils.MiscUtils.ifloor;
+import static com.elytradev.architecture.common.utils.MiscUtils.iround;
 import static java.lang.Math.floor;
 
 public class RenderTargetWorld extends RenderTargetBase {

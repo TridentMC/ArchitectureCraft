@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.common.item;
 
-import com.elytradev.architecture.common.block.BaseBlockUtils;
+import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
 import net.minecraft.block.Block;
@@ -31,7 +31,7 @@ public class ItemCladding extends ItemArchitecture {
     public ItemStack newStack(Block block, int meta, int stackSize) {
         ItemStack result = new ItemStack(this, stackSize, meta);
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("block", BaseBlockUtils.getNameForBlock(block));
+        nbt.setString("block", BlockHelper.getNameForBlock(block));
         result.setTagCompound(nbt);
         return result;
     }

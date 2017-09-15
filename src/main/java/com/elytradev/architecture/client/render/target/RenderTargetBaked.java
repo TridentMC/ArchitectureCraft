@@ -24,8 +24,6 @@ import java.util.Map;
 
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.*;
 
-//import javax.vecmath.Vector3f;
-
 public class RenderTargetBaked extends RenderTargetBase {
 
     // It seems to be necessary to put the padding byte *before* the

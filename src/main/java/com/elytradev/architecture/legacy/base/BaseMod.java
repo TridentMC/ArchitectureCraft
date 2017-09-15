@@ -6,7 +6,8 @@
 
 package com.elytradev.architecture.legacy.base;
 
-import com.elytradev.architecture.common.IModHolder;
+import com.elytradev.architecture.common.utils.ReflectionUtils;
+import com.elytradev.architecture.common.utils.IModHolder;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.google.common.base.Charsets;
@@ -65,9 +66,9 @@ import java.util.*;
 public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         extends BaseSubsystem implements IGuiHandler {
 
-    static Field lootGsonField = BaseReflectionUtils.getFieldDef(LootTableManager.class, "GSON_INSTANCE", "field_186526_b");
-    static Field lootPoolsField = BaseReflectionUtils.getFieldDef(LootTable.class, "pools", "field_186466_c");
-    static Field lootNameField = BaseReflectionUtils.getFieldDef(LootPool.class, "name", "");
+    static Field lootGsonField = ReflectionUtils.getFieldDef(LootTableManager.class, "GSON_INSTANCE", "field_186526_b");
+    static Field lootPoolsField = ReflectionUtils.getFieldDef(LootTable.class, "pools", "field_186466_c");
+    static Field lootNameField = ReflectionUtils.getFieldDef(LootPool.class, "name", "");
     public boolean debugLoot = true;
     public String modID;
     public BaseConfiguration config;
@@ -799,13 +800,13 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
                 } catch (Exception e) {
                     throw new RuntimeException("Error loading " + path + ": " + e);
                 }
-                Gson gson = (Gson) BaseReflectionUtils.getField(null, lootGsonField);
+                Gson gson = (Gson) ReflectionUtils.getField(null, lootGsonField);
                 LootTable table = event.getTable();
                 LootTable newTable = ForgeHooks.loadLootTable(gson, locn, data, true);
-                List<LootPool> newPools = (List<LootPool>) BaseReflectionUtils.getField(newTable, lootPoolsField);
+                List<LootPool> newPools = (List<LootPool>) ReflectionUtils.getField(newTable, lootPoolsField);
                 int i = 0;
                 for (LootPool pool : newPools) {
-                    BaseReflectionUtils.setField(pool, lootNameField, modID + (i++));
+                    ReflectionUtils.setField(pool, lootNameField, modID + (i++));
                     if (debugLoot)
                         System.out.printf("BaseMod.onLootTableLoad: Adding pool %s\n", pool.getName());
                     table.addPool(pool);

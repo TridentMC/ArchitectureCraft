@@ -4,14 +4,14 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.common.utils;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
-public class BaseInventoryUtils {
+public class InventoryUtils {
 
     public static InventorySide inventorySide(IInventory base, EnumFacing side) {
         if (base instanceof ISidedInventory)

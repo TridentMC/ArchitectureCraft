@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.common.item;
 
-import com.elytradev.architecture.common.block.BaseBlockUtils;
+import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -52,7 +52,7 @@ public class ItemChisel extends Item {
     }
 
     void dropBlockAsItem(World world, BlockPos pos, IBlockState state) {
-        ItemStack stack = BaseBlockUtils.blockStackWithState(state, 1);
+        ItemStack stack = BlockHelper.blockStackWithState(state, 1);
         Block.spawnAsEntity(world, pos, stack);
     }
 

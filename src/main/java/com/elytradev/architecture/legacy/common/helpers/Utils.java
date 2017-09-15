@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.common.helpers;
 
 import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.legacy.common.block.BlockShape;
+import com.elytradev.architecture.common.block.BlockShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

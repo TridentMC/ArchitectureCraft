@@ -4,12 +4,12 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.common.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseStringUtils {
+public class StringUtils {
 
     public static String[] split(String sep, String string) {
         List<String> list = new ArrayList<String>();

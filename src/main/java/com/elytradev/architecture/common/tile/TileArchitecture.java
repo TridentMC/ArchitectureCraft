@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.common.block.BaseBlockUtils;
+import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
@@ -27,7 +27,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 import java.lang.reflect.Field;
 
-import static com.elytradev.architecture.legacy.base.BaseReflectionUtils.*;
+import static com.elytradev.architecture.common.utils.ReflectionUtils.*;
 
 public abstract class TileArchitecture extends TileEntity {
 
@@ -132,7 +132,7 @@ public abstract class TileArchitecture extends TileEntity {
 
     public void markBlockForUpdate() {
         updateChunk = true;
-        BaseBlockUtils.markBlockForUpdate(world, pos);
+        BlockHelper.markBlockForUpdate(world, pos);
     }
 
     public void markForUpdate() {

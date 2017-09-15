@@ -6,6 +6,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.common.utils.StringUtils;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -37,9 +38,9 @@ public class BaseConfiguration extends Configuration {
     }
 
     public String[] getStringList(String category, String key, String... defaultValueList) {
-        String defaultValue = BaseStringUtils.join(",", defaultValueList);
+        String defaultValue = StringUtils.join(",", defaultValueList);
         String value = getString(category, key, defaultValue);
-        return BaseStringUtils.split(",", value);
+        return StringUtils.split(",", value);
     }
 
 //     public int getVillager(String key) {

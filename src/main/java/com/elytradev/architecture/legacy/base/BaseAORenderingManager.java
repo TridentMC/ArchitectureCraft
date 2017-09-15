@@ -9,6 +9,7 @@ package com.elytradev.architecture.legacy.base;
 import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
+import com.elytradev.architecture.common.utils.ReflectionUtils;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,7 +34,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
         super.enableCustomRendering();
         Minecraft mc = Minecraft.getMinecraft();
         blockRendererDispatcher = new CustomBlockRendererDispatcher(blockRendererDispatcher);
-        BaseReflectionUtils.setField(mc, "blockRenderDispatcher", "field_175618_aM", blockRendererDispatcher);
+        ReflectionUtils.setField(mc, "blockRenderDispatcher", "field_175618_aM", blockRendererDispatcher);
     }
 
     protected class CustomBlockRendererDispatcher extends BlockRendererDispatcher {

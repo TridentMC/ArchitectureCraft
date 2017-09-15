@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.common.block;
+package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.legacy.base.BaseOrientation;
@@ -34,8 +34,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//import net.minecraft.client.particle.EffectRenderer;
 
 public class BlockShape extends BlockArchitecture<TileShape> {
 

@@ -11,7 +11,7 @@ import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.legacy.base.BaseMod;
-import com.elytradev.architecture.legacy.base.BaseUtils;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import net.minecraft.block.Block;
@@ -173,7 +173,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
         if (numProperties < 4) {
             int i = numProperties++;
             properties[i] = property;
-            Object[] values = BaseUtils.arrayOf(property.getAllowedValues());
+            Object[] values = MiscUtils.arrayOf(property.getAllowedValues());
             propertyValues[i] = values;
         } else
             throw new IllegalStateException("Block " + getClass().getName() +

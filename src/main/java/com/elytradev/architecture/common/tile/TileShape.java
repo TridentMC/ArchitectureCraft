@@ -24,7 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import static com.elytradev.architecture.common.block.BaseBlockUtils.getNameForBlock;
+import static com.elytradev.architecture.common.block.BlockHelper.getNameForBlock;
 
 
 public class TileShape extends TileArchitecture {

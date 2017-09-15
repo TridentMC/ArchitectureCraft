@@ -4,12 +4,12 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.common.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class BaseReflectionUtils {
+public class ReflectionUtils {
 
     public static Class classForName(String name) {
         try {
@@ -18,7 +18,6 @@ public class BaseReflectionUtils {
             throw new RuntimeException(e);
         }
     }
-
 
     public static Field getFieldDef(Class cls, String unobfName, String obfName) {
         try {
