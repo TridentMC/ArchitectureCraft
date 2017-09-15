@@ -1,8 +1,26 @@
-//------------------------------------------------------------------------------
-//
-//   ArchitectureCraft - Sawbench Tile Entity
-//
-//------------------------------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.common.tile;
 
@@ -32,32 +50,32 @@ public class TileSawbench extends TileArchitectureInventory {
 
     public static ShapePage[] pages = {
             new ShapePage("Roofing",
-                    Shape.RoofTile, Shape.RoofOuterCorner, Shape.RoofInnerCorner,
-                    Shape.RoofRidge, Shape.RoofSmartRidge, Shape.RoofValley,
-                    Shape.RoofSmartValley, Shape.RoofOverhang, Shape.RoofOverhangOuterCorner,
-                    Shape.RoofOverhangInnerCorner, Shape.RoofOverhangGableLH, Shape.RoofOverhangGableRH,
-                    Shape.RoofOverhangGableEndLH, Shape.RoofOverhangGableEndRH, Shape.RoofOverhangRidge,
-                    Shape.RoofOverhangValley, Shape.BevelledOuterCorner, Shape.BevelledInnerCorner),
+                    Shape.ROOF_TILE, Shape.ROOF_OUTER_CORNER, Shape.ROOF_INNER_CORNER,
+                    Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE, Shape.ROOF_VALLEY,
+                    Shape.ROOF_SMART_VALLEY, Shape.ROOF_OVERHANG, Shape.ROOF_OVERHANG_OUTER_CORNER,
+                    Shape.ROOF_OVERHANG_INNER_CORNER, Shape.ROOF_OVERHANG_GABLE_LH, Shape.ROOF_OVERHANG_GABLE_RH,
+                    Shape.ROOF_OVERHANG_GABLE_END_LH, Shape.ROOF_OVERHANG_GABLE_END_RH, Shape.ROOF_OVERHANG_RIDGE,
+                    Shape.ROOF_OVERHANG_VALLEY, Shape.BEVELLED_OUTER_CORNER, Shape.BEVELLED_INNER_CORNER),
             new ShapePage("Rounded",
-                    Shape.Cylinder, Shape.CylinderHalf, Shape.CylinderQuarter, Shape.CylinderLargeQuarter, Shape.AnticylinderLargeQuarter,
-                    Shape.Pillar, Shape.Post, Shape.Pole, Shape.SphereFull, Shape.SphereHalf,
-                    Shape.SphereQuarter, Shape.SphereEighth, Shape.SphereEighthLarge, Shape.SphereEighthLargeRev),
+                    Shape.CYLINDER, Shape.CYLINDER_HALF, Shape.CYLINDER_QUARTER, Shape.CYLINDER_LARGE_QUARTER, Shape.ANTICYLINDER_LARGE_QUARTER,
+                    Shape.PILLAR, Shape.POST, Shape.POLE, Shape.SPHERE_FULL, Shape.SPHERE_HALF,
+                    Shape.SPHERE_QUARTER, Shape.SPHERE_EIGHTH, Shape.SPHERE_EIGHTH_LARGE, Shape.SPHERE_EIGHTH_LARGE_REV),
             new ShapePage("Classical",
-                    Shape.PillarBase, Shape.Pillar, Shape.DoricCapital, Shape.DoricTriglyph, Shape.DoricTriglyphCorner, Shape.DoricMetope,
-                    Shape.IonicCapital, Shape.CorinthianCapital, Shape.Architrave, Shape.ArchitraveCorner, Shape.CorniceLH, Shape.CorniceRH,
-                    Shape.CorniceEndLH, Shape.CorniceEndRH, Shape.CorniceRidge, Shape.CorniceValley, Shape.CorniceBottom),
+                    Shape.PILLAR_BASE, Shape.PILLAR, Shape.DORIC_CAPITAL, Shape.DORIC_TRIGLYPH, Shape.DORIC_TRIGLYPH_CORNER, Shape.DORIC_METOPE,
+                    Shape.IONIC_CAPITAL, Shape.CORINTHIAN_CAPITAL, Shape.ARCHITRAVE, Shape.ARCHITRAVE_CORNER, Shape.CORNICE_LH, Shape.CORNICE_RH,
+                    Shape.CORNICE_END_LH, Shape.CORNICE_END_RH, Shape.CORNICE_RIDGE, Shape.CORNICE_VALLEY, Shape.CORNICE_BOTTOM),
             new ShapePage("Window",
-                    Shape.WindowFrame, Shape.WindowCorner, Shape.WindowMullion),
+                    Shape.WINDOW_FRAME, Shape.WINDOW_CORNER, Shape.WINDOW_MULLION),
             new ShapePage("Arches",
-                    Shape.ArchD1, Shape.ArchD2, Shape.ArchD3A, Shape.ArchD3B, Shape.ArchD3C, Shape.ArchD4A, Shape.ArchD4B, Shape.ArchD4C),
+                    Shape.ARCH_D_1, Shape.ARCH_D_2, Shape.ARCH_D_3_A, Shape.ARCH_D_3_B, Shape.ARCH_D_3_C, Shape.ARCH_D_4_A, Shape.ARCH_D_4_B, Shape.ARCH_D_4_C),
             new ShapePage("Railings",
-                    Shape.BalustradePlain, Shape.BalustradePlainOuterCorner, Shape.BalustradePlainInnerCorner,
-                    Shape.BalustradePlainWithNewel, Shape.BalustradePlainEnd,
-                    Shape.BanisterPlainTop, Shape.BanisterPlain, Shape.BanisterPlainBottom, Shape.BanisterPlainEnd, Shape.BanisterPlainInnerCorner,
-                    Shape.BalustradeFancy, Shape.BalustradeFancyCorner, Shape.BalustradeFancyWithNewel, Shape.BalustradeFancyNewel,
-                    Shape.BanisterFancyTop, Shape.BanisterFancy, Shape.BanisterFancyBottom, Shape.BanisterFancyEnd, Shape.BanisterFancyNewelTall),
+                    Shape.BALUSTRADE_PLAIN, Shape.BALUSTRADE_PLAIN_OUTER_CORNER, Shape.BALUSTRADE_PLAIN_INNER_CORNER,
+                    Shape.BALUSTRADE_PLAIN_WITH_NEWEL, Shape.BALUSTRADE_PLAIN_END,
+                    Shape.BANISTER_PLAIN_TOP, Shape.BANISTER_PLAIN, Shape.BANISTER_PLAIN_BOTTOM, Shape.BANISTER_PLAIN_END, Shape.BANISTER_PLAIN_INNER_CORNER,
+                    Shape.BALUSTRADE_FANCY, Shape.BALUSTRADE_FANCY_CORNER, Shape.BALUSTRADE_FANCY_WITH_NEWEL, Shape.BALUSTRADE_FANCY_NEWEL,
+                    Shape.BANISTER_FANCY_TOP, Shape.BANISTER_FANCY, Shape.BANISTER_FANCY_BOTTOM, Shape.BANISTER_FANCY_END, Shape.BANISTER_FANCY_NEWEL_TALL),
             new ShapePage("Other",
-                    Shape.CladdingSheet, Shape.Slab, Shape.Stairs, Shape.StairsOuterCorner, Shape.StairsInnerCorner),
+                    Shape.CLADDING_SHEET, Shape.SLAB, Shape.STAIRS, Shape.STAIRS_OUTER_CORNER, Shape.STAIRS_INNER_CORNER),
     };
 
     public IInventory inventory = new InventoryBasic("Items", false, 2);

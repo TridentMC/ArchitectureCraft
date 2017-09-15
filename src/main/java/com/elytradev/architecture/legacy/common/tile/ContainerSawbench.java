@@ -1,8 +1,26 @@
-//------------------------------------------------------------------------------
-//
-//   ArchitectureCraft - SawbenchContainer
-//
-//------------------------------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.legacy.common.tile;
 
@@ -64,10 +82,6 @@ public class ContainerSawbench extends BaseContainer {
             return playerSlotRange;
     }
 
-    //
-    //   Server
-    //
-
     @Override
     public void detectAndSendChanges() {
         for (int i = 0; i < this.inventorySlots.size(); ++i) {
@@ -104,7 +118,6 @@ public class ContainerSawbench extends BaseContainer {
         // Slot update packet has arrived from server. Do not trigger crafting behaviour.
         Slot slot = getSlot(i);
         if (slot instanceof SlotSawbench) {
-            //System.out.printf("SawbenchContainer.putStackInSlot: %d %s on %s\n", i, stack, te.worldObj);
             ((SlotSawbench) slot).updateFromServer(stack);
         } else
             super.putStackInSlot(i, stack);
@@ -122,34 +135,14 @@ public class ContainerSawbench extends BaseContainer {
     }
 
     protected ItemStack transferStackInResultSlot(EntityPlayer player, int index) {
-        //if (!te.getWorld().isRemote)
-        //    System.out.printf("SawbenchContainer.transferStackInSlot: %s material %s result %s\n",
-        //        index, te.getStackInSlot(te.materialSlot), te.getStackInSlot(te.resultSlot));
         boolean materialWasPending = te.pendingMaterialUsage;
         ItemStack origMaterialStack = te.usePendingMaterial();
         ItemStack result = super.transferStackInSlot(player, index);
-        //if (!te.getWorld().isRemote)
-        //    System.out.printf(
-        //        "SawbenchContainer.transferStackInSlot: returning %s material %s result %s\n",
-        //        result, te.getStackInSlot(te.materialSlot), te.getStackInSlot(te.resultSlot));
         if (materialWasPending)
             te.returnUnusedMaterial(origMaterialStack);
         return result;
     }
-
-//	@Override
-//	public void updateProgressBar(int i, int value) {
-//		//System.out.printf("SawbenchContainer.updateProgressBar: %d %d\n", i, value);
-//		switch (i) {
-//			case 0: te.selectedPage = value;
-//			case 1: te.selectedSlots[selectedPage] = value;
-//			case 2: te.pendingMaterialUsage = value != 0;
-//		}
-//	}
-
 }
-
-//------------------------------------------------------------------------------
 
 class SlotSawbench extends Slot {
 

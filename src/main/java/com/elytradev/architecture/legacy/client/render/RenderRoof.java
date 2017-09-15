@@ -1,8 +1,26 @@
-//------------------------------------------------------
-//
-//   ArchitectureCraft - Roof Block Renderer
-//
-//------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.legacy.client.render;
 
@@ -16,24 +34,21 @@ import net.minecraft.util.EnumFacing;
 
 import java.util.Arrays;
 
-//import net.minecraft.client.renderer.block.model.BakedQuad;
-//import net.minecraft.client.renderer.BlockModelRenderer;
-
 public class RenderRoof extends RenderShape {
 
     protected final static Shape ridgeShapes[] = {
-            Shape.RoofRidge, Shape.RoofSmartRidge};
+            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE};
 
     protected final static Shape ridgeOrSlopeShapes[] = {
-            Shape.RoofRidge, Shape.RoofSmartRidge,
-            Shape.RoofTile, Shape.RoofOuterCorner, Shape.RoofInnerCorner};
+            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE,
+            Shape.ROOF_TILE, Shape.ROOF_OUTER_CORNER, Shape.ROOF_INNER_CORNER};
 
     protected final static Shape valleyShapes[] = {
-            Shape.RoofValley, Shape.RoofSmartValley};
+            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY};
 
     protected final static Shape valleyOrSlopeShapes[] = {
-            Shape.RoofValley, Shape.RoofSmartValley,
-            Shape.RoofTile, Shape.RoofInnerCorner};
+            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY,
+            Shape.ROOF_TILE, Shape.ROOF_INNER_CORNER};
 
     protected EnumFacing face;
     protected boolean outerFace;
@@ -49,25 +64,25 @@ public class RenderRoof extends RenderShape {
     @Override
     public void render() {
         switch (te.shape) {
-            case RoofTile:
+            case ROOF_TILE:
                 renderSlope();
                 break;
-            case RoofOuterCorner:
+            case ROOF_OUTER_CORNER:
                 renderOuterCorner();
                 break;
-            case RoofInnerCorner:
+            case ROOF_INNER_CORNER:
                 renderInnerCorner();
                 break;
-            case RoofRidge:
+            case ROOF_RIDGE:
                 renderRidge();
                 break;
-            case RoofSmartRidge:
+            case ROOF_SMART_RIDGE:
                 renderSmartRidge();
                 break;
-            case RoofValley:
+            case ROOF_VALLEY:
                 renderValley();
                 break;
-            case RoofSmartValley:
+            case ROOF_SMART_VALLEY:
                 StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
                 boolean handleItemState = Arrays.stream(stackTrace).anyMatch(stackTraceElement -> stackTraceElement.getMethodName().startsWith("handleItemState"));
                 if (!handleItemState)

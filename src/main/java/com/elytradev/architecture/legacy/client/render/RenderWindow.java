@@ -1,18 +1,36 @@
-//-----------------------------------------------------------------
-//
-//   ArchitectureCraft - Window frame renderer
-//
-//-----------------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.legacy.client.render;
 
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.legacy.client.ArchitectureCraftClient;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.shape.ShapeKind;
-import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
 
 public class RenderWindow extends RenderShape {
@@ -91,13 +109,13 @@ public class RenderWindow extends RenderShape {
     @Override
     public void render() {
         switch (te.shape) {
-            case WindowFrame:
+            case WINDOW_FRAME:
                 renderWindow(frameModels);
                 break;
-            case WindowCorner:
+            case WINDOW_CORNER:
                 renderWindow(cornerModels);
                 break;
-            case WindowMullion:
+            case WINDOW_MULLION:
                 renderWindow(mullionModels);
                 break;
         }

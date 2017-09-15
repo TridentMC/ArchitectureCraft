@@ -1,27 +1,45 @@
-//------------------------------------------------------------------------------
-//
-//	 ArchitectureCraft - Shape kinds
-//
-//------------------------------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.legacy.common.shape;
 
-import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.legacy.base.BaseRenderable;
+import com.elytradev.architecture.common.block.BlockHelper;
+import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.tile.TileArchitecture;
+import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.utils.MiscUtils;
+import com.elytradev.architecture.legacy.base.BaseRenderable;
 import com.elytradev.architecture.legacy.client.render.RenderRoof;
 import com.elytradev.architecture.legacy.client.render.RenderWindow;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.legacy.common.helpers.Profile;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
-import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
@@ -39,8 +57,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static net.minecraft.util.EnumFacing.*;
-
-//------------------------------------------------------------------------------
 
 public abstract class ShapeKind {
 
@@ -232,16 +248,16 @@ public abstract class ShapeKind {
                 r = param / 16.0;
                 addBox(new Vector3(-r, -0.5, -r), new Vector3(r, 0.5, r), t, list);
                 break;
-            case 0x200: // Slab, full size in X and Y
+            case 0x200: // SLAB, full size in X and Y
                 r = param / 32.0;
                 addBox(new Vector3(-0.5, -0.5, -r), new Vector3(0.5, 0.5, r), t, list);
                 break;
-            case 0x300: // Slab in back corner
+            case 0x300: // SLAB in back corner
                 r = ((param & 0xf) + 1) / 16.0; // width and length of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
                 addBox(new Vector3(-0.5, -0.5, 0.5 - r), new Vector3(-0.5 + r, -0.5 + h, 0.5), t, list);
                 break;
-            case 0x400: // Slab at back
+            case 0x400: // SLAB at back
             case 0x500: // Slabs at back and right
                 r = ((param & 0xf) + 1) / 16.0; // thickness of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
@@ -318,8 +334,8 @@ public abstract class ShapeKind {
         @Override
         public Object profileForLocalFace(Shape shape, EnumFacing face) {
             switch (shape) {
-                case RoofTile:
-                case RoofOverhang:
+                case ROOF_TILE:
+                case ROOF_OVERHANG:
                     switch (face) {
                         case EAST:
                             return RoofProfile.Left;
@@ -327,8 +343,8 @@ public abstract class ShapeKind {
                             return RoofProfile.Right;
                     }
                     break;
-                case RoofOuterCorner:
-                case RoofOverhangOuterCorner:
+                case ROOF_OUTER_CORNER:
+                case ROOF_OVERHANG_OUTER_CORNER:
                     switch (face) {
                         case SOUTH:
                             return RoofProfile.Left;
@@ -336,8 +352,8 @@ public abstract class ShapeKind {
                             return RoofProfile.Right;
                     }
                     break;
-                case RoofInnerCorner:
-                case RoofOverhangInnerCorner:
+                case ROOF_INNER_CORNER:
+                case ROOF_OVERHANG_INNER_CORNER:
                     switch (face) {
                         case EAST:
                             return RoofProfile.Left;
@@ -345,13 +361,13 @@ public abstract class ShapeKind {
                             return RoofProfile.Right;
                     }
                     break;
-                case RoofRidge:
-                case RoofSmartRidge:
-                case RoofOverhangRidge:
+                case ROOF_RIDGE:
+                case ROOF_SMART_RIDGE:
+                case ROOF_OVERHANG_RIDGE:
                     return RoofProfile.Ridge;
-                case RoofValley:
-                case RoofSmartValley:
-                case RoofOverhangValley:
+                case ROOF_VALLEY:
+                case ROOF_SMART_VALLEY:
+                case ROOF_OVERHANG_VALLEY:
                     return RoofProfile.Valley;
             }
             return RoofProfile.None;
@@ -369,36 +385,36 @@ public abstract class ShapeKind {
 
 //		protected EnumFacing localFaceForProfile(Shape shape, Profile p) {
 //			switch (shape) {
-//				case RoofTile:
-//				case RoofOverhang:
+//				case ROOF_TILE:
+//				case ROOF_OVERHANG:
 //					switch (p) {
 //						case Left: return EAST;
 //						case Right: return WEST;
 //					}
 //					break;
-//				case RoofOuterCorner:
-//				case RoofOverhangOuterCorner:
+//				case ROOF_OUTER_CORNER:
+//				case ROOF_OVERHANG_OUTER_CORNER:
 //					switch (p) {
 //						case Left: return SOUTH;
 //						case Right: return WEST;
 //					}
 //					break;
-//				case RoofInnerCorner:
-//				case RoofOverhangInnerCorner:
+//				case ROOF_INNER_CORNER:
+//				case ROOF_OVERHANG_INNER_CORNER:
 //					switch (p) {
 //						case Left: return EAST;
 //						case Right: return NORTH;
 //					}
 //					break;
-//				case RoofRidge:
-//				case RoofOverhangRidge:
+//				case ROOF_RIDGE:
+//				case ROOF_OVERHANG_RIDGE:
 //					switch (p) {
 //						case Ridge:
 //							return EAST;
 //					}
 //					break;
-//				case RoofValley:
-//				case RoofOverhangValley:
+//				case ROOF_VALLEY:
+//				case ROOF_OVERHANG_VALLEY:
 //					switch (p) {
 //						case Valley:
 //							return EAST;

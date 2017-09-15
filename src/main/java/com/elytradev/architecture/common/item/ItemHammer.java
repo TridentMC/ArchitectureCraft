@@ -22,14 +22,33 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.common.proxy;
+package com.elytradev.architecture.common.item;
 
-import net.minecraftforge.fml.common.LoaderState;
+import com.elytradev.architecture.common.tile.TileShape;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class CommonProxy {
-    public void registerHandlers() {
+public class ItemHammer extends Item {
+
+    public ItemHammer() {
+        setMaxStackSize(1);
     }
 
-    public void registerRenderers(LoaderState.ModState modState) {
+    @Override
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        System.out.printf("HammerItem.onItemUse\n");
+        TileShape te = TileShape.get(world, pos);
+        if (te != null) {
+            System.out.printf("HammerItem.onItemUse: te = %s\n", te);
+            te.onHammerUse(player, side, hitX, hitY, hitZ);
+            return EnumActionResult.SUCCESS;
+        }
+        return EnumActionResult.FAIL;
     }
+
 }

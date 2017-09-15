@@ -1,13 +1,31 @@
-//------------------------------------------------------
-//
-//   ArchitectureCraft - Utilities
-//
-//------------------------------------------------------
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017 Benjamin K
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 package com.elytradev.architecture.legacy.common.helpers;
 
-import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.block.BlockShape;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -30,38 +48,6 @@ import static java.lang.Math.*;
 public class Utils {
 
     public static Random random = new Random();
-
-//	public static void dumpInventoryIntoWorld(World world, int x, int y, int z) {
-//		// Based on BlockChest.breakBlock()
-//		IInventory te = (IInventory)world.getTileEntity(x, y, z);
-//		if (te != null) {
-//			for (int i = 0; i < te.getSizeInventory(); ++i) {
-//				ItemStack stack = te.getStackInSlot(i);
-//				if (stack != null) {
-//					float dx = random.nextFloat() * 0.8F + 0.1F;
-//					float dy = random.nextFloat() * 0.8F + 0.1F;
-//					float dz = random.nextFloat() * 0.8F + 0.1F;
-//					while (stack.stackSize > 0) {
-//						int n = random.nextInt(21) + 10;
-//						if (n > stack.stackSize) {
-//							n = stack.stackSize;
-//						}
-//						stack.stackSize -= n;
-//						EntityItem entity = new EntityItem(world, x + dx, y + dy, z + dz,
-//							new ItemStack(stack.getItem(), n, stack.getItemDamage()));
-//						if (stack.hasTagCompound()) {
-//							entity.getEntityItem().setTagCompound((NBTTagCompound)stack.getTagCompound().copy());
-//						}
-//						float f = 0.05F;
-//						entity.motionX = random.nextGaussian() * f;
-//						entity.motionY = random.nextGaussian() * f + 0.2F;
-//						entity.motionZ = random.nextGaussian() * f;
-//						world.spawnEntityInWorld(entity);
-//					}
-//				}
-//			}
-//		}
-//	}
 
     public static int playerTurn(EntityLivingBase player) {
         return MathHelper.floor((player.rotationYaw * 4.0 / 360.0) + 0.5) & 3;
