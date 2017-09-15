@@ -6,10 +6,10 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
-import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.common.block.BaseBlockUtils;
 
 
@@ -26,7 +26,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
@@ -48,7 +47,6 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
@@ -66,9 +64,9 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     public boolean debugRenderingManager = false;
     public boolean debugModelRegistration = false;
     protected BaseModClient<MOD> client;
-    protected Map<Block, BaseModClient.ICustomRenderer> blockRenderers = new HashMap<Block, BaseModClient.ICustomRenderer>();
-    protected Map<Item, BaseModClient.ICustomRenderer> itemRenderers = new HashMap<Item, BaseModClient.ICustomRenderer>();
-    protected Map<IBlockState, BaseModClient.ICustomRenderer> stateRendererCache = new HashMap<IBlockState, BaseModClient.ICustomRenderer>();
+    protected Map<Block, ICustomRenderer> blockRenderers = new HashMap<Block, ICustomRenderer>();
+    protected Map<Item, ICustomRenderer> itemRenderers = new HashMap<Item, ICustomRenderer>();
+    protected Map<IBlockState, ICustomRenderer> stateRendererCache = new HashMap<IBlockState, ICustomRenderer>();
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
     protected boolean customRenderingRequired;
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
@@ -85,32 +83,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
             System.out.printf("BaseRenderingManager: Creating\n");
         this.client = client;
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
     }
-
-    public static void renderBlockUsingModelSpec(BaseModClient client,
-                                                 IBlockAccess world, BlockPos pos, IBlockState state,
-                                                 RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
-        ((BaseRenderingManager) client.renderingManager).renderBlockUsingModelSpec(
-                world, pos, state, target, layer, t);
-    }
-
-    //------------------------------------------------------------------------------------------------
-
-    // Call this from renderItemStack of an ICustomRenderer to fall back to model spec
-    public static void renderItemStackUsingModelSpec(BaseModClient client,
-                                                     ItemStack stack, RenderTargetBase target, Trans3 t) {
-        ((BaseRenderingManager) client.renderingManager).renderItemStackUsingModelSpec(
-                stack, target, t);
-    }
-
-    public static boolean renderAlternateBlock(BaseModClient client,
-                                               IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target) {
-        return ((BaseRenderingManager) client.renderingManager).renderAlternateBlock(
-                world, pos, state, target);
-    }
-
-    //------------------------------------------------------------------------------------------------
 
     @Override
     public void preInit() {
@@ -145,7 +118,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
                     if (name != null) {
                         try {
                             Class cls = Class.forName(name);
-                            addBlockRenderer(block, (BaseModClient.ICustomRenderer) cls.newInstance());
+                            addBlockRenderer(block, (ICustomRenderer) cls.newInstance());
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -156,7 +129,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     @Override
-    public void addBlockRenderer(Block block, BaseModClient.ICustomRenderer renderer) {
+    public void addBlockRenderer(Block block, ICustomRenderer renderer) {
         blockRenderers.put(block, renderer);
         customRenderingRequired = true;
         Item item = Item.getItemFromBlock(block);
@@ -165,7 +138,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     @Override
-    public void addItemRenderer(Item item, BaseModClient.ICustomRenderer renderer) {
+    public void addItemRenderer(Item item, ICustomRenderer renderer) {
         itemRenderers.put(item, renderer);
     }
 
@@ -260,10 +233,10 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     //------------------------------------------------------------------------------------------------
     @Override
-    public BaseModClient.ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
+    public ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
         //System.out.printf("BaseModClient.getCustomRenderer: %s\n", state);
         Block block = state.getBlock();
-        BaseModClient.ICustomRenderer rend = blockRenderers.get(block);
+        ICustomRenderer rend = blockRenderers.get(block);
         if (rend == null && block instanceof BlockArchitecture /*&& block.getRenderType() == -1*/) {
             IBlockState astate = block.getActualState(state, world, pos);
             rend = getCustomRendererForState(astate);
@@ -271,24 +244,16 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         return rend;
     }
 
-    protected BaseModClient.ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-//         System.out.printf("BaseModClient.getCustomRendererForSpec: %s\n", spec.modelName);
-//         for (int i = 0; i < spec.textureNames.length; i++)
-//           System.out.printf(" %s", spec.textureNames[i]);
-//         System.out.printf("\n");
+    protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
         BaseModClient.IModel model = getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = getTexture(textureType, spec.textureNames[i]);
-//         System.out.printf("BaseModClient.getCustomRendererForSpec: model = %s\n", model);
-//         for (int i = 0; i < spec.textureNames.length; i++)
-//           System.out.printf("BaseModClient.getCustomRendererForSpec: texture[%s] = %s\n",
-//               i, textures[i]);
         return new BaseModelRenderer(model, spec.origin, textures);
     }
 
-    protected BaseModClient.ICustomRenderer getCustomRendererForState(IBlockState astate) {
-        BaseModClient.ICustomRenderer rend = stateRendererCache.get(astate);
+    protected ICustomRenderer getCustomRendererForState(IBlockState astate) {
+        ICustomRenderer rend = stateRendererCache.get(astate);
         if (rend == null) {
 //             System.out.printf("BaseModClient.getCustomRendererForState: %s\n", astate);
             Block block = astate.getBlock();
@@ -305,7 +270,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     public void renderBlockUsingModelSpec(IBlockAccess world, BlockPos pos, IBlockState state,
                                           RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
-        BaseModClient.ICustomRenderer rend = getCustomRendererForState(state);
+        ICustomRenderer rend = getCustomRendererForState(state);
         if (rend != null)
             rend.renderBlock(world, pos, state, target, layer, t);
     }
@@ -314,7 +279,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         IBlockState state = BaseBlockUtils.getBlockStateFromItemStack(stack);
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
         ModelSpec spec = block.getModelSpec(state);
-        BaseModClient.ICustomRenderer rend = getCustomRendererForSpec(0, spec);
+        ICustomRenderer rend = getCustomRendererForSpec(0, spec);
         rend.renderItemStack(stack, target, t);
     }
 
@@ -340,10 +305,8 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     @SubscribeEvent
     public void onTextureStitchEventPre(TextureStitchEvent.Pre e) {
-        //System.out.printf("BaseModClient.onTextureStitchEventPre: %s\n", e.map);
         textureCache.clear();
         for (Block block : client.base.registeredBlocks) {
-            //System.out.printf("BaseModClient.onTextureStitchEvent: Block %s\n", block.getUnlocalizedName());
             registerSprites(0, e.getMap(), block);
         }
         for (Item item : client.base.registeredItems)
@@ -372,11 +335,10 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     protected IBakedModel customRenderBlockToBakedModel(IBlockAccess world, BlockPos pos, IBlockState state,
-                                                        BaseModClient.ICustomRenderer rend) {
+                                                        ICustomRenderer rend) {
         BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos);
         Trans3 t = Trans3.blockCenter;
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-//        BlockModelShapes shapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
         BlockModelShapes shapes = blockRendererDispatcher.getBlockModelShapes();
         TextureAtlasSprite particle = shapes.getTexture(getBlockParticleState(state, world, pos));
         rend.renderBlock(world, pos, state, target, layer, t);
@@ -390,22 +352,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         else
             return block.getActualState(state, world, pos);
     }
-
-    public boolean renderAlternateBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target) {
-        Block block = state.getBlock();
-        if (!block.hasTileEntity(state)) {
-            try {
-                BufferBuilder tess = ((RenderTargetWorld) target).getWorldRenderer();
-                return blockRendererDispatcher.renderBlock(state, pos, world, tess);
-            } catch (Exception e) {
-                // Some blocks are averse to being abused this way. Try to avoid crashing in that case.
-                return false;
-            }
-        }
-        return false;
-    }
-
-    //------------------------------------------------------------------------------------------------
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelRegistryEvent event) {
@@ -433,16 +379,13 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     protected static class CustomBlockStateMapper extends DefaultStateMapper {
-
-        // DefaultStateMapper.getModelResourceLocation is protected
         @Override
         public ModelResourceLocation getModelResourceLocation(IBlockState state) {
             return super.getModelResourceLocation(state);
         }
-
     }
 
-    protected abstract class CustomBakedModel implements IBakedModel {
+    public abstract class CustomBakedModel implements IBakedModel {
 
         public ModelResourceLocation location;
 
@@ -451,8 +394,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
                 System.out.printf("BaseModClient: Installing %s at %s\n", this, location);
             event.getModelRegistry().putObject(location, this);
         }
-
-        // ----- IBakedModel -----
 
         @Override
         public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
@@ -486,8 +427,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     }
 
-    //------------------------------------------------------------------------------------------------
-
     protected class BlockParticleModel extends CustomBakedModel {
 
         protected IBlockState state;
@@ -496,8 +435,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
             this.state = state;
             this.location = location;
         }
-
-        // ----- IBakedModel -----
 
         @Override
         public ItemOverrideList getOverrides() {
@@ -562,9 +499,8 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
         @Override
         public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
-            //System.out.printf("BaseModClient.CustomItemBakedModel.handleItemState: %s\n", stack);
             Item item = stack.getItem();
-            BaseModClient.ICustomRenderer rend = itemRenderers.get(item);
+            ICustomRenderer rend = itemRenderers.get(item);
             if (rend == null && item instanceof ItemArchitecture) {
                 ModelSpec spec = ((ItemArchitecture) item).getModelSpec(stack);
                 if (spec != null)
@@ -594,12 +530,10 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
             location = client.modelResourceLocation("__custitem__", "");
         }
 
-
         @Override
         public ItemOverrideList getOverrides() {
             return itemOverrideList;
         }
-
     }
 
 }

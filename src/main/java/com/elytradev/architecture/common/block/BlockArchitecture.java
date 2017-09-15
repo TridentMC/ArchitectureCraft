@@ -54,7 +54,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("ALL")
-public class BlockArchitecture<TE extends TileEntity>
+public class BlockArchitecture<TE extends TileArchitecture>
         extends BlockContainer implements ITextureConsumer {
 
     public static final IUnlistedProperty<World> WORLD_PROP = new IUnlistedProperty<World>() {

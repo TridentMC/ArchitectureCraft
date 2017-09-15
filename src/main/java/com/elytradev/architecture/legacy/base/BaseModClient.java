@@ -6,12 +6,12 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -21,13 +21,10 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -343,36 +340,6 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
 
     protected boolean objectNeedsCustomRendering(Object obj) {
         return obj instanceof ITextureConsumer && ((ITextureConsumer) obj).getTextureNames() != null;
-    }
-
-    //--------------- Rendering - Internal ----------------------------------------------
-
-    public interface IRenderingManager {
-        void preInit();
-
-        void init();
-
-        void postInit();
-
-        void addBlockRenderer(Block block, ICustomRenderer renderer);
-
-        void addItemRenderer(Item item, ICustomRenderer renderer);
-
-        //------------------------------------------------------------------------------------------------
-        ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state);
-
-        IModel getModel(String name);
-
-    }
-
-    public interface ICustomRenderer {
-        void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
-                         BlockRenderLayer layer, Trans3 t);
-
-        void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
-                         BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary);
-
-        void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t);
     }
 
     public interface ITiledTexture extends ITexture {

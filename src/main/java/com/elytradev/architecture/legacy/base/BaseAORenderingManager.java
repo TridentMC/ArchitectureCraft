@@ -6,21 +6,21 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.MinecraftForgeClient;
 
+//TODO: Kill this horrible mess.
 public class BaseAORenderingManager extends BaseRenderingManager {
 
     public BaseAORenderingManager(BaseModClient client) {
@@ -34,8 +34,6 @@ public class BaseAORenderingManager extends BaseRenderingManager {
         blockRendererDispatcher = new CustomBlockRendererDispatcher(blockRendererDispatcher);
         BaseReflectionUtils.setField(mc, "blockRenderDispatcher", "field_175618_aM", blockRendererDispatcher);
     }
-
-    //------------------------------------------------------------------------------------------------
 
     protected class CustomBlockRendererDispatcher extends BlockRendererDispatcher {
 
@@ -68,7 +66,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
 
         @Override
         public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite icon, IBlockAccess world) {
-            BaseModClient.ICustomRenderer rend = getCustomRenderer(world, pos, state);
+            ICustomRenderer rend = getCustomRenderer(world, pos, state);
             if (rend != null) {
                 BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos, icon);
                 Trans3 t = Trans3.blockCenter;
@@ -85,7 +83,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
 
         @Override
         public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, BufferBuilder tess) {
-            BaseModClient.ICustomRenderer rend = getCustomRenderer(world, pos, state);
+            ICustomRenderer rend = getCustomRenderer(world, pos, state);
             if (rend != null)
                 return customRenderBlockToWorld(world, pos, state, tess, null, rend);
             else
@@ -93,7 +91,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
         }
 
         protected boolean customRenderBlockToWorld(IBlockAccess world, BlockPos pos, IBlockState state, BufferBuilder tess,
-                                                   TextureAtlasSprite icon, BaseModClient.ICustomRenderer rend) {
+                                                   TextureAtlasSprite icon, ICustomRenderer rend) {
             RenderTargetWorld target = new RenderTargetWorld(world, pos, tess, icon);
             BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
             rend.renderBlock(world, pos, state, target, layer, Trans3.blockCenter(pos));

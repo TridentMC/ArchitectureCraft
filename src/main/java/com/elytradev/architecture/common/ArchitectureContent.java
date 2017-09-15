@@ -1,5 +1,7 @@
 package com.elytradev.architecture.common;
 
+import com.elytradev.architecture.common.block.BlockArchitecture;
+import com.elytradev.architecture.common.item.ItemArchitecture;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;

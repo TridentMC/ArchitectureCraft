@@ -1,5 +1,6 @@
 package com.elytradev.architecture.client.render.model;
 
+import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.legacy.base.BaseBakedRenderTarget;
 import com.elytradev.architecture.legacy.base.BaseModClient;
@@ -35,7 +36,7 @@ public class VertexBakedModel implements IBakedModel {
     private IBakedModel getModel(World world, BlockPos pos, IBlockState state) {
         IBakedModel out = null;
         BaseModClient.IRenderingManager renderingManager = ArchitectureCraft.mod.client.getRenderingManager();
-        BaseModClient.ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
+        ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
         if (rend != null) {
             Trans3 t = Trans3.blockCenter;
             Block block = state.getBlock();

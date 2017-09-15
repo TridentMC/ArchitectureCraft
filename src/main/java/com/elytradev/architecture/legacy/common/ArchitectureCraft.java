@@ -17,7 +17,6 @@ import com.elytradev.architecture.legacy.common.item.ItemHammer;
 import com.elytradev.architecture.legacy.common.shape.ShapeItem;
 import com.elytradev.architecture.legacy.common.tile.ContainerSawbench;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -40,6 +39,7 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     public static final String MOD_ID = "architecturecraft";
     public static final String VERSION = "@VERSION@";
     public final static int guiSawbench = 1;
+    public static final String RESOURCE_DOMAIN = MOD_ID + ":";
     public static ArchitectureCraft mod;
 
     //
