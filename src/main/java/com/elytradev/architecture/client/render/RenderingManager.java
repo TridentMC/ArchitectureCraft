@@ -1,6 +1,7 @@
 package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.common.block.BlockArchitecture;
@@ -267,7 +268,7 @@ public class RenderingManager {
             }
             if (rend != null) {
                 GlStateManager.shadeModel(GL_SMOOTH);
-                BaseBakedRenderTarget target = new BaseBakedRenderTarget();
+                RenderTargetBaked target = new RenderTargetBaked();
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
             } else

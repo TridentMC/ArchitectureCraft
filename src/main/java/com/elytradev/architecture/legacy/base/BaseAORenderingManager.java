@@ -7,6 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
+import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import net.minecraft.block.Block;
@@ -68,7 +69,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
         public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite icon, IBlockAccess world) {
             ICustomRenderer rend = getCustomRenderer(world, pos, state);
             if (rend != null) {
-                BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos, icon);
+                RenderTargetBaked target = new RenderTargetBaked(pos, icon);
                 Trans3 t = Trans3.blockCenter;
                 Block block = state.getBlock();
                 for (BlockRenderLayer layer : BlockRenderLayer.values())

@@ -8,6 +8,7 @@ package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
@@ -330,7 +331,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     protected IBakedModel customRenderBlockToBakedModel(IBlockAccess world, BlockPos pos, IBlockState state,
                                                         ICustomRenderer rend) {
-        BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos);
+        RenderTargetBaked target = new RenderTargetBaked(pos);
         Trans3 t = Trans3.blockCenter;
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
         BlockModelShapes shapes = blockRendererDispatcher.getBlockModelShapes();
@@ -507,7 +508,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
             }
             if (rend != null) {
                 GlStateManager.shadeModel(GL_SMOOTH);
-                BaseBakedRenderTarget target = new BaseBakedRenderTarget();
+                RenderTargetBaked target = new RenderTargetBaked();
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
             } else

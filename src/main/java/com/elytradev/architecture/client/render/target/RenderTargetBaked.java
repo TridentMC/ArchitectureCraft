@@ -4,9 +4,8 @@
 //
 //------------------------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.client.render.target;
 
-import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -27,7 +26,7 @@ import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.*;
 
 //import javax.vecmath.Vector3f;
 
-public class BaseBakedRenderTarget extends RenderTargetBase {
+public class RenderTargetBaked extends RenderTargetBase {
 
     // It seems to be necessary to put the padding byte *before* the
     // normal bytes, even though DefaultVertexFormats.ITEM says it
@@ -97,25 +96,25 @@ public class BaseBakedRenderTarget extends RenderTargetBase {
     protected ByteBuffer buf = ByteBuffer.allocate(bytesPerVertex * 4);
     protected List<BakedQuad> quads;
 
-    public BaseBakedRenderTarget() {
+    public RenderTargetBaked() {
         this(0, 0, 0, null);
     }
 
-    public BaseBakedRenderTarget(BlockPos pos) {
+    public RenderTargetBaked(BlockPos pos) {
         this(pos, null);
     }
 
-    public BaseBakedRenderTarget(TextureAtlasSprite overrideIcon) {
+    public RenderTargetBaked(TextureAtlasSprite overrideIcon) {
         this(0, 0, 0, overrideIcon);
     }
 
     //--------------------------------- IRenderTarget ------------------------------------------
 
-    public BaseBakedRenderTarget(BlockPos pos, TextureAtlasSprite overrideIcon) {
+    public RenderTargetBaked(BlockPos pos, TextureAtlasSprite overrideIcon) {
         this(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
     }
 
-    public BaseBakedRenderTarget(double x, double y, double z, TextureAtlasSprite overrideIcon) {
+    public RenderTargetBaked(double x, double y, double z, TextureAtlasSprite overrideIcon) {
         super(x, y, z, overrideIcon);
         quads = new ArrayList<BakedQuad>();
     }

@@ -2,8 +2,7 @@ package com.elytradev.architecture.client.render.model;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.common.block.BlockArchitecture;
-import com.elytradev.architecture.legacy.base.BaseBakedRenderTarget;
-import com.elytradev.architecture.legacy.base.BaseModClient;
+import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.legacy.base.BaseRenderingManager;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
@@ -47,7 +46,7 @@ public class VertexBakedModel implements IBakedModel {
             if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
                 TextureAtlasSprite sprite = Utils.getSpriteForPos(world, pos, true);
                 if (sprite != null) {
-                    BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos, sprite);
+                    RenderTargetBaked target = new RenderTargetBaked(pos, sprite);
 
                     rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t, true, false);
                     primary = target.getBakedModel();
@@ -57,7 +56,7 @@ public class VertexBakedModel implements IBakedModel {
             if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
                 TextureAtlasSprite sprite = Utils.getSpriteForPos(world, pos, false);
                 if (sprite != null) {
-                    BaseBakedRenderTarget target = new BaseBakedRenderTarget(pos, sprite);
+                    RenderTargetBaked target = new RenderTargetBaked(pos, sprite);
 
                     rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t, false, true);
                     secondary = target.getBakedModel();
