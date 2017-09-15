@@ -162,7 +162,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {
-        block.setUnlocalizedName("teckle." + id);
+        block.setUnlocalizedName("architecturecraft." + id);
         block.setRegistryName(REGISTRY_PREFIX, id);
         block.setCreativeTab(creativeTab);
         registry.register(block);
