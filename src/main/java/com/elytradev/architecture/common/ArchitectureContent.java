@@ -162,7 +162,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {
-        block.setUnlocalizedName("architecturecraft." + id);
+        block.setUnlocalizedName(MOD_ID + "." + id);
         block.setRegistryName(REGISTRY_PREFIX, id);
         block.setCreativeTab(creativeTab);
         registry.register(block);
@@ -174,7 +174,7 @@ public class ArchitectureContent {
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, Class<? extends ItemBlock> itemBlockClass) {
         try {
-            block.setUnlocalizedName("architecturecraft." + id);
+            block.setUnlocalizedName(MOD_ID + "." + id);
             block.setRegistryName(REGISTRY_PREFIX, id);
             registry.register(block);
 
@@ -192,7 +192,7 @@ public class ArchitectureContent {
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id) {
         ItemArchitecture item = new ItemArchitecture();
-        item.setUnlocalizedName("architecturecraft." + id);
+        item.setUnlocalizedName(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
         item.setCreativeTab(creativeTab);
         registry.register(item);
@@ -202,7 +202,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, T item) {
-        item.setUnlocalizedName("architecturecraft." + id);
+        item.setUnlocalizedName(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
         item.setCreativeTab(creativeTab);
         registry.register(item);
