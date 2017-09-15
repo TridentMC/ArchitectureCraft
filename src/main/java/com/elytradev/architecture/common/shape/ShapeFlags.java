@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.shape;
+package com.elytradev.architecture.common.shape;
 
 public class ShapeFlags {
 

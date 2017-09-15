@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.helpers;
+package com.elytradev.architecture.common.helpers;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;

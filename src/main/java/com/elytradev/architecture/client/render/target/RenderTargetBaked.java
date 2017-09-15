@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.client.render.target;
 
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;

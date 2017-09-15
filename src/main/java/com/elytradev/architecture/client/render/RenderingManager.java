@@ -33,10 +33,10 @@ import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.legacy.base.BaseModelRenderer;
-import com.elytradev.architecture.legacy.base.BaseRenderable;
+import com.elytradev.architecture.client.render.model.RenderableModel;
 import com.elytradev.architecture.legacy.base.BaseRenderingManager;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -98,7 +98,7 @@ public class RenderingManager {
         ResourceLocation loc = modelLocation(name);
         IRenderableModel model = modelCache.get(loc);
         if (model == null) {
-            model = BaseRenderable.fromResource(loc);
+            model = RenderableModel.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;

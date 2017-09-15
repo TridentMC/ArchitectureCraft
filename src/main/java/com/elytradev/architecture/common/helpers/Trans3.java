@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.helpers;
+package com.elytradev.architecture.common.helpers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
@@ -33,7 +33,7 @@ import net.minecraft.util.math.Vec3i;
 
 import java.util.List;
 
-import static com.elytradev.architecture.legacy.common.helpers.Vector3.getDirectionVec;
+import static com.elytradev.architecture.common.helpers.Vector3.getDirectionVec;
 import static java.lang.Math.round;
 
 public class Trans3 {

@@ -35,7 +35,7 @@ import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

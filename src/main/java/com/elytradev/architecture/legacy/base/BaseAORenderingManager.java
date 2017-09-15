@@ -28,7 +28,7 @@ import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.common.utils.ReflectionUtils;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

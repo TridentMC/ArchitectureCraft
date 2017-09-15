@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.helpers;
+package com.elytradev.architecture.common.helpers;
 
 import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.tile.TileShape;

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.shape;
+package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
@@ -32,14 +32,14 @@ import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.utils.MiscUtils;
-import com.elytradev.architecture.legacy.base.BaseRenderable;
-import com.elytradev.architecture.legacy.client.render.RenderRoof;
-import com.elytradev.architecture.legacy.client.render.RenderWindow;
+import com.elytradev.architecture.client.render.model.RenderableModel;
+import com.elytradev.architecture.client.render.shape.RenderRoof;
+import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.legacy.common.helpers.Profile;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Utils;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Profile;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
@@ -465,8 +465,8 @@ public abstract class ShapeKind {
 
         @Override
         public boolean acceptsCladding() {
-            BaseRenderable model = (BaseRenderable) getModel();
-            for (BaseRenderable.Face face : model.faces)
+            RenderableModel model = (RenderableModel) getModel();
+            for (RenderableModel.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;

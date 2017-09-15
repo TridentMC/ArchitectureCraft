@@ -25,7 +25,7 @@
 package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;

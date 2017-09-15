@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.shape;
+package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.utils.MiscUtils;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 
-import static com.elytradev.architecture.legacy.common.shape.ShapeKind.Window;
-import static com.elytradev.architecture.legacy.common.shape.ShapeKind.Window.FrameKind.*;
+import static com.elytradev.architecture.common.shape.ShapeKind.Window;
+import static com.elytradev.architecture.common.shape.ShapeKind.Window.FrameKind.*;
 import static net.minecraft.util.EnumFacing.*;
 
 public class WindowShapeKinds {

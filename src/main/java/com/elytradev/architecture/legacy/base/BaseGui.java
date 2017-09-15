@@ -147,7 +147,6 @@ public class BaseGui {
 
     public static class Screen extends GuiContainer implements IModHolder {
 
-        protected BaseMod mod;
         protected Root root;
         protected String title;
         protected Tessellator tess;

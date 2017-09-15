@@ -25,8 +25,8 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.legacy.base.BaseMod;
-import com.elytradev.architecture.legacy.common.shape.Shape;
-import com.elytradev.architecture.legacy.common.shape.ShapePage;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.ShapePage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.init.Blocks;

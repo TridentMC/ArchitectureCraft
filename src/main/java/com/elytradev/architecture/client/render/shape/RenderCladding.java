@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.client.render;
+package com.elytradev.architecture.client.render.shape;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
@@ -30,8 +30,8 @@ import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Utils;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

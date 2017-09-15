@@ -26,8 +26,8 @@ package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockHelper;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;

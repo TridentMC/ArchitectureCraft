@@ -26,9 +26,9 @@ package com.elytradev.architecture.legacy.client;
 
 import com.elytradev.architecture.client.gui.GuiSawbench;
 import com.elytradev.architecture.legacy.base.BaseModClient;
-import com.elytradev.architecture.legacy.client.render.RenderCladding;
-import com.elytradev.architecture.legacy.client.render.RenderWindow;
-import com.elytradev.architecture.legacy.client.render.ShapeRenderDispatch;
+import com.elytradev.architecture.client.render.shape.RenderCladding;
+import com.elytradev.architecture.client.render.shape.RenderWindow;
+import com.elytradev.architecture.client.render.shape.ShapeRenderDispatch;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 
 public class ArchitectureCraftClient extends BaseModClient<ArchitectureCraft> {

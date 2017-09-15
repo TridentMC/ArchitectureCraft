@@ -26,7 +26,7 @@ package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.base.BaseModClient;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 

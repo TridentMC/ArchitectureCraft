@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.common.render;
 
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Vector3;
 
 import java.util.Arrays;
 

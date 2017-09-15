@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.shape;
+package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.legacy.common.helpers.Profile;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Profile;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -37,9 +37,9 @@ import net.minecraft.util.math.BlockPos;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.elytradev.architecture.legacy.common.shape.ShapeFlags.PLACE_OFFSET;
-import static com.elytradev.architecture.legacy.common.shape.ShapeFlags.PLACE_UNDERNEATH;
-import static com.elytradev.architecture.legacy.common.shape.ShapeSymmetry.*;
+import static com.elytradev.architecture.common.shape.ShapeFlags.PLACE_OFFSET;
+import static com.elytradev.architecture.common.shape.ShapeFlags.PLACE_UNDERNEATH;
+import static com.elytradev.architecture.common.shape.ShapeSymmetry.*;
 import static java.lang.Math.abs;
 
 public enum Shape {

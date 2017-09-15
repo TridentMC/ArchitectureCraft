@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.tile;
+package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.legacy.base.BaseContainer;
 import com.elytradev.architecture.legacy.base.BaseDataChannel;
 import net.minecraft.entity.player.EntityPlayer;

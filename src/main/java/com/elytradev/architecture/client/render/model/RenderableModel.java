@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.base;
+package com.elytradev.architecture.client.render.model;
 
-import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
-import com.elytradev.architecture.legacy.common.helpers.Vector3;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import com.google.gson.Gson;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -37,18 +36,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class BaseRenderable implements IRenderableModel {
+public class RenderableModel implements IRenderableModel {
 
     static Gson gson = new Gson();
     public double[] bounds;
     public Face[] faces;
     public double[][] boxes;
 
-    public static BaseRenderable fromResource(ResourceLocation location) {
+    public static RenderableModel fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
         String path = String.format("/assets/%s/%s", location.getResourceDomain(), location.getResourcePath());
-        InputStream in = BaseRenderable.class.getResourceAsStream(path);
-        BaseRenderable model = gson.fromJson(new InputStreamReader(in), BaseRenderable.class);
+        InputStream in = RenderableModel.class.getResourceAsStream(path);
+        RenderableModel model = gson.fromJson(new InputStreamReader(in), RenderableModel.class);
         if (in == null)
             throw new RuntimeException("Model file not found: " + path);
         model.prepare();

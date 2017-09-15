@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.legacy.common.helpers;
+package com.elytradev.architecture.common.helpers;
 
-import com.elytradev.architecture.legacy.common.shape.Shape;
+import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.util.EnumFacing;
 
 import java.util.HashMap;

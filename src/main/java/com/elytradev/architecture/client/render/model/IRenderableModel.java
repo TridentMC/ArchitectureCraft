@@ -26,7 +26,7 @@ package com.elytradev.architecture.client.render.model;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Trans3;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
