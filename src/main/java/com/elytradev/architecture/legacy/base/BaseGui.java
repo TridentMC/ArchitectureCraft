@@ -6,6 +6,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.common.IModHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -42,7 +43,6 @@ public class BaseGui {
     }
 
     static void tellFocusChanged(IWidget widget, boolean state) {
-        //System.out.printf("BaseGui.tellFocusChanged: to %s for %s\n", state, name(widget));
         if (widget != null) {
             widget.focusChanged(state);
             if (widget instanceof IWidgetContainer)
@@ -113,17 +113,11 @@ public class BaseGui {
         void layout();
     }
 
-    //------------------------------------------------------------------------------------------------
-
     public interface IWidgetContainer extends IWidget {
-        //void add(int left, int top, IWidget widget);
         IWidget getFocus();
 
         void setFocus(IWidget widget);
-        //void onAction(IWidget sender, String action);
     }
-
-    //------------------------------------------------------------------------------------------------
 
     public interface Ref {
         Object get();
@@ -131,15 +125,11 @@ public class BaseGui {
         void set(Object value);
     }
 
-    //------------------------------------------------------------------------------------------------
-
     public interface Action {
         void perform();
     }
 
-//------------------------------------------------------------------------------------------------
-
-    public static class Screen extends GuiContainer implements BaseMod.ISetMod {
+    public static class Screen extends GuiContainer implements IModHolder {
 
         protected BaseMod mod;
         protected Root root;
@@ -242,8 +232,6 @@ public class BaseGui {
             mc.getTextureManager().bindTexture(rsrc);
             gstate.uscale = 1.0 / usize;
             gstate.vscale = 1.0 / vsize;
-            //System.out.printf("BaseGuiContainer.bindTexture: %s size (%s, %s) scale (%s, %s)\n",
-            //  rsrc, usize, vsize, gstate.uscale, gstate.vscale);
         }
 
         public void gSave() {
@@ -306,30 +294,12 @@ public class BaseGui {
             drawTexturedRect(x, y, w, h, u, v, w, h);
         }
 
-//      public void drawTexturedRectUV(double x, double y, double w, double h,
-//          double u, double v, double us, double vs)
-//      {
-//          //System.out.printf("BaseGuiContainer.drawTexturedRectUV: (%s, %s, %s, %s) (%s, %s, %s, %s)\n",
-//          //  x, y, w, h, u, v, us, vs);
-//          wr.startDrawingQuads();
-//          wr.setColorOpaque_F(gstate.red, gstate.green, gstate.blue);
-//          wr.addVertexWithUV(x, y+h, zLevel, u, v+vs);
-//          wr.addVertexWithUV(x+w, y+h, zLevel, u+us, v+vs);
-//          wr.addVertexWithUV(x+w, y, zLevel, u+us, v);
-//          wr.addVertexWithUV(x, y, zLevel, u, v);
-//          tess.draw();
-//      }
-
         public void drawTexturedRect(double x, double y, double w, double h, double u, double v, double us, double vs) {
-            //System.out.printf("BaseGuiContainer.drawTexturedRect: (%s, %s, %s, %s) (%s, %s, %s, %s)\n",
-            //  x, y, w, h, u, v, us, vs);
             drawTexturedRectUV(x, y, w, h, u * gstate.uscale, v * gstate.vscale, us * gstate.uscale, vs * gstate.vscale);
         }
 
         public void drawTexturedRectUV(double x, double y, double w, double h,
                                        double u, double v, double us, double vs) {
-            //System.out.printf("BaseGuiContainer.drawTexturedRectUV: (%s, %s, %s, %s) (%s, %s, %s, %s)\n",
-            //  x, y, w, h, u, v, us, vs);
             glBegin(GL_QUADS);
             glColor3f(gstate.red, gstate.green, gstate.blue);
             glTexCoord2d(u, v + vs);
@@ -389,20 +359,6 @@ public class BaseGui {
             drawString(playerInventoryName(), 8, ySize - 96 + 2);
         }
 
-//      @Override
-//      protected void mouseMovedOrUp(int x, int y, int button) {
-//          super.mouseMovedOrUp(x, y, button);
-//          if (mouseWidget != null) {
-//              MouseCoords m = new MouseCoords(mouseWidget, x, y);
-//              if (button == -1)
-//                  mouseWidget.mouseMoved(m);
-//              else {
-//                  mouseWidget.mouseReleased(m, button);
-//                  mouseWidget = null;
-//              }
-//          }
-//      }
-
         @Override
         protected void mouseClicked(int x, int y, int button) throws IOException {
             super.mouseClicked(x, y, button);
@@ -411,8 +367,6 @@ public class BaseGui {
 
         protected void mousePressed(int x, int y, int button) {
             mouseWidget = root.dispatchMousePress(x, y, button);
-            //System.out.printf("BaseGui.mouseClicked: mouseWidget = %s\n",
-            //  mouseWidget.getClass().getSimpleName());
             if (mouseWidget != null && mouseWidget.parent() != null) {
                 closeOldFocus(mouseWidget);
                 focusOn(mouseWidget);
@@ -472,20 +426,16 @@ public class BaseGui {
         }
 
         public void focusOn(IWidget newFocus) {
-            //System.out.printf("BaseGui.Screen.focusOn: %s\n", name(newFocus));
             IWidgetContainer parent = newFocus.parent();
             if (parent != null) {
                 IWidget oldFocus = parent.getFocus();
-                //System.out.printf("BaseGui.Screen.focusOn: Old parent focus = %s\n", name(oldFocus));
                 if (isFocused()) {
-                    //System.out.printf("BaseGui.Screen.focusOn: Parent is focused\n");
                     if (oldFocus != newFocus) {
                         tellFocusChanged(oldFocus, false);
                         parent.setFocus(newFocus);
                         tellFocusChanged(newFocus, true);
                     }
                 } else {
-                    //System.out.printf("BaseGui.Screen.focusOn: Parent is not focused\n");
                     parent.setFocus(newFocus);
                     focusOn(parent);
                 }
@@ -494,10 +444,6 @@ public class BaseGui {
 
         public void focusChanged(boolean state) {
         }
-
-        //  public void onAction(IWidget sender, String action) {
-        //  }
-
     }
 
     public static class MouseCoords {

@@ -68,10 +68,6 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
         tm.bindTexture(rsrc);
     }
 
-//  String qualifyName(String name) {
-//      return getClass().getPackage().getName() + "." + name;
-//  }
-
     public void preInit(FMLPreInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(this);
 

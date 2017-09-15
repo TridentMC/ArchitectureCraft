@@ -4,7 +4,7 @@
 //
 //------------------------------------------------------------------------------
 
-package com.elytradev.architecture.legacy.client.gui;
+package com.elytradev.architecture.client.gui;
 
 import com.elytradev.architecture.legacy.base.BaseDataChannel.ChannelOutput;
 import com.elytradev.architecture.legacy.base.BaseGui;

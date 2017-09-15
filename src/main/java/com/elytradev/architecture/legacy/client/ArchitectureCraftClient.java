@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.client;
 
 import com.elytradev.architecture.legacy.base.BaseModClient;
-import com.elytradev.architecture.legacy.client.gui.GuiSawbench;
+import com.elytradev.architecture.client.gui.GuiSawbench;
 import com.elytradev.architecture.legacy.client.render.RenderCladding;
 import com.elytradev.architecture.legacy.client.render.RenderWindow;
 import com.elytradev.architecture.legacy.client.render.ShapeRenderDispatch;

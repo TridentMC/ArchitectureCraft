@@ -6,6 +6,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.common.IModHolder;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.google.common.base.Charsets;
@@ -224,8 +225,8 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
     }
 
     public void setModOf(Object obj) {
-        if (obj instanceof ISetMod)
-            ((ISetMod) obj).setMod(this);
+        if (obj instanceof IModHolder)
+            ((IModHolder) obj).setMod(this);
     }
 
     public String resourcePath(String fileName) {
@@ -785,13 +786,9 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
-        //if (debugLoot)
-        //    System.out.printf("BaseMod.onLootTableLoad\n");
         ResourceLocation locn = event.getName();
         if (locn.getResourceDomain().equals("minecraft")) {
             String path = String.format("/assets/%s/loot_tables/%s.json", assetKey, locn.getResourcePath());
-            //if (debugLoot)
-            //    System.out.printf("BaseMod.onLootTableLoad: Looking for %s\n", path);
             URL url = getClass().getResource(path);
             if (url != null) {
                 if (debugLoot)
@@ -802,8 +799,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
                 } catch (Exception e) {
                     throw new RuntimeException("Error loading " + path + ": " + e);
                 }
-                //if (debugLoot)
-                //    System.out.printf("BaseMod.onLootTableLoad: data = %s\n", data);
                 Gson gson = (Gson) BaseReflectionUtils.getField(null, lootGsonField);
                 LootTable table = event.getTable();
                 LootTable newTable = ForgeHooks.loadLootTable(gson, locn, data, true);
@@ -817,10 +812,6 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
                 }
             }
         }
-    }
-
-    interface ISetMod {
-        void setMod(BaseMod mod);
     }
 
 }
