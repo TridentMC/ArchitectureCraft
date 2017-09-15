@@ -45,6 +45,7 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
 
     public BlockSawbench() {
         super(Material.WOOD, TileSawbench.class);
+        this.setHardness(2.0F);
     }
 
     @Override

@@ -64,96 +64,12 @@ public class ArchitectureCraft extends BaseMod<ArchitectureCraftClient> {
     //   Blocks and Items
     //
     public static BaseDataChannel channel;
-    public static BlockSawbench blockSawbench;
-    public static Block blockShape;
-    public static Item itemSawblade;
-    public static Item itemLargePulley;
-    public static Item itemChisel;
-    public static Item itemHammer;
-    public static ItemCladding itemCladding;
+
 
     public ArchitectureCraft() {
         super();
         mod = this;
         channel = new BaseDataChannel(MOD_ID);
-    }
-
-    @Override
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent e) {
-        super.preInit(e);
-    }
-
-    @Override
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent e) {
-        super.init(e);
-    }
-
-    @Override
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent e) {
-        super.postInit(e);
-    }
-
-    @Override
-    public ArchitectureCraftClient initClient() {
-        return new ArchitectureCraftClient(this);
-    }
-
-    @Override
-    protected void registerBlocks() {
-        blockSawbench = newBlock("sawbench", BlockSawbench.class);
-        blockSawbench.setHardness(2.0F);
-        blockShape = newBlock("shape", BlockShape.class, ShapeItem.class);
-    }
-
-    @Override
-    protected void registerTileEntities() {
-        //Done in BaseBlock I guess...
-        //GameRegistry.registerTileEntity(SawbenchTE.class, "gcewing.sawbench");
-        //GameRegistry.registerTileEntity(ShapeTE.class, "gcewing.shape");
-    }
-
-    @Override
-    protected void registerItems() {
-        itemSawblade = newItem("sawblade").setFull3D();
-        itemLargePulley = newItem("largePulley").setFull3D();
-        itemChisel = newItem("chisel", ItemChisel.class).setFull3D();
-        itemHammer = newItem("hammer", ItemHammer.class).setFull3D();
-        itemCladding = newItem("cladding", ItemCladding.class);
-    }
-
-    //--------------- GUIs ----------------------------------------------------------
-
-    @Override
-    protected void registerRecipes() {
-        ItemStack orangeDye = new ItemStack(Items.DYE, 1, EnumDyeColor.ORANGE.getDyeDamage());
-        newRecipe(blockSawbench, 1,
-                "I*I",
-                "/0/",
-                "/_/",
-                'I', Items.IRON_INGOT, '*', itemSawblade, '/', Items.STICK,
-                '_', Blocks.WOODEN_PRESSURE_PLATE, '0', itemLargePulley);
-        newRecipe(itemSawblade, 1,
-                " I ",
-                "I/I",
-                " I ",
-                'I', Items.IRON_INGOT, '/', Items.STICK);
-        newRecipe(itemLargePulley, 1,
-                " W ",
-                "W/W",
-                " W ",
-                'W', Blocks.PLANKS, '/', Items.STICK);
-        newRecipe(itemChisel, 1,
-                "I ",
-                "ds",
-                'I', Items.IRON_INGOT, 's', Items.STICK, 'd', orangeDye);
-        newRecipe(itemHammer, 1,
-                "II ",
-                "dsI",
-                "ds ",
-                'I', Items.IRON_INGOT, 's', Items.STICK, 'd', orangeDye);
     }
 
     @Override
