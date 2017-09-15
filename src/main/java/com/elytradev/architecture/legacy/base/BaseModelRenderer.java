@@ -10,7 +10,7 @@ import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import net.minecraft.block.Block;
@@ -24,17 +24,17 @@ import net.minecraft.world.IBlockAccess;
 
 public class BaseModelRenderer implements ICustomRenderer {
 
-    protected IModel model;
+    protected IRenderableModel model;
     protected ITexture[] textures;
     protected Vector3 origin;
 
 //     private static Trans3 itemTrans = Trans3.blockCenterSideTurn(0, 2);
 
-    public BaseModelRenderer(IModel model, ITexture... textures) {
+    public BaseModelRenderer(IRenderableModel model, ITexture... textures) {
         this(model, Vector3.zero, textures);
     }
 
-    public BaseModelRenderer(IModel model, Vector3 origin, ITexture... textures) {
+    public BaseModelRenderer(IRenderableModel model, Vector3 origin, ITexture... textures) {
         this.model = model;
         this.textures = textures;
         this.origin = origin;

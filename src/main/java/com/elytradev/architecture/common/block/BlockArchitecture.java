@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.common.block;
 
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.tile.TileArchitecture;
@@ -543,7 +543,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                            Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IModel model = mod.getModel(spec.modelName);
+            IRenderableModel model = mod.getModel(spec.modelName);
             Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
@@ -576,7 +576,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                                     Trans3 t, Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IModel model = mod.getModel(spec.modelName);
+            IRenderableModel model = mod.getModel(spec.modelName);
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
             model.addBoxesToList(t.translate(spec.origin), list);
             return list;

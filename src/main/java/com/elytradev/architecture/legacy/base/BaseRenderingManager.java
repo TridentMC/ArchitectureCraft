@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
@@ -240,7 +240,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-        IModel model = getModel(spec.modelName);
+        IRenderableModel model = getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = getTexture(textureType, spec.textureNames[i]);
@@ -278,7 +278,7 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         rend.renderItemStack(stack, target, t);
     }
 
-    public IModel getModel(String name) {
+    public IRenderableModel getModel(String name) {
         return client.base.getModel(name);
     }
 

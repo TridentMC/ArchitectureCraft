@@ -8,9 +8,9 @@ package com.elytradev.architecture.legacy.common.shape;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.common.block.BaseBlockUtils;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.legacy.base.BaseModel;
+import com.elytradev.architecture.legacy.base.BaseRenderable;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.legacy.base.BaseUtils;
 import com.elytradev.architecture.legacy.client.render.RenderRoof;
@@ -415,7 +415,7 @@ public abstract class ShapeKind {
     public static class Model extends ShapeKind {
 
         protected String modelName;
-        private IModel model;
+        private IRenderableModel model;
 
         public Model(String name, Object[] profiles) {
             this.modelName = "shape/" + name + ".smeg";
@@ -437,11 +437,11 @@ public abstract class ShapeKind {
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
                                 boolean renderBase, boolean renderSecondary) {
-            IModel model = getModel();
+            IRenderableModel model = getModel();
             model.render(t, target, textures);
         }
 
-        protected IModel getModel() {
+        protected IRenderableModel getModel() {
             if (model == null)
                 model = ArchitectureCraft.mod.getModel(modelName);
             return model;
@@ -449,8 +449,8 @@ public abstract class ShapeKind {
 
         @Override
         public boolean acceptsCladding() {
-            BaseModel model = (BaseModel) getModel();
-            for (BaseModel.Face face : model.faces)
+            BaseRenderable model = (BaseRenderable) getModel();
+            for (BaseRenderable.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;

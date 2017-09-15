@@ -7,8 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IModel;
-import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -282,7 +281,7 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
         getRenderingManager().addItemRenderer(item, renderer);
     }
 
-    public IModel getModel(String name) {
+    public IRenderableModel getModel(String name) {
         return getRenderingManager().getModel(name);
     }
 

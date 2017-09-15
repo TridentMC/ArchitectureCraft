@@ -10,7 +10,7 @@ import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Utils;
@@ -49,7 +49,7 @@ public class RenderCladding implements ICustomRenderer {
                     TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
                     if (sprite != null) {
                         ITexture texture = TextureBase.fromSprite(sprite);
-                        IModel model = ArchitectureCraft.mod.client.getModel("shape/cladding.smeg");
+                        IRenderableModel model = ArchitectureCraft.mod.client.getModel("shape/cladding.smeg");
                         model.render(t, target, texture);
                     }
                 }

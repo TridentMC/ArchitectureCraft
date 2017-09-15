@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
@@ -85,7 +85,7 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
     public boolean debugGui = false;
     public boolean debugBlockRegistration = false;
     public boolean debugCreativeTabs = false;
-    protected Map<ResourceLocation, IModel> modelCache = new HashMap<ResourceLocation, IModel>();
+    protected Map<ResourceLocation, IRenderableModel> modelCache = new HashMap<ResourceLocation, IRenderableModel>();
     Map<Integer, Class<? extends Container>> containerClasses =
             new HashMap<Integer, Class<? extends Container>>();
     int recipeCounter = 0;
@@ -584,11 +584,11 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>>
         return resourceLocation("models/" + path);
     }
 
-    public IModel getModel(String name) {
+    public IRenderableModel getModel(String name) {
         ResourceLocation loc = modelLocation(name);
-        IModel model = modelCache.get(loc);
+        IRenderableModel model = modelCache.get(loc);
         if (model == null) {
-            model = BaseModel.fromResource(loc);
+            model = BaseRenderable.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;

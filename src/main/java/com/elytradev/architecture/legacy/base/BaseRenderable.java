@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
@@ -19,18 +19,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class BaseModel implements IModel {
+public class BaseRenderable implements IRenderableModel {
 
     static Gson gson = new Gson();
     public double[] bounds;
     public Face[] faces;
     public double[][] boxes;
 
-    public static BaseModel fromResource(ResourceLocation location) {
+    public static BaseRenderable fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
         String path = String.format("/assets/%s/%s", location.getResourceDomain(), location.getResourcePath());
-        InputStream in = BaseModel.class.getResourceAsStream(path);
-        BaseModel model = gson.fromJson(new InputStreamReader(in), BaseModel.class);
+        InputStream in = BaseRenderable.class.getResourceAsStream(path);
+        BaseRenderable model = gson.fromJson(new InputStreamReader(in), BaseRenderable.class);
         if (in == null)
             throw new RuntimeException("Model file not found: " + path);
         model.prepare();

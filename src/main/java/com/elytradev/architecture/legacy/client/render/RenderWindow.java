@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.client.render;
 
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.client.ArchitectureCraftClient;
@@ -34,23 +34,23 @@ public class RenderWindow extends RenderShape {
         this.kind = (ShapeKind.Window) te.shape.kind;
     }
 
-    protected static IModel model(String name) {
+    protected static IRenderableModel model(String name) {
         if (name != null)
             return client.getModel("shape/window_" + name + ".smeg");
         else
             return null;
     }
 
-    protected static IModel[] models(String... names) {
-        IModel[] result = new IModel[names.length];
+    protected static IRenderableModel[] models(String... names) {
+        IRenderableModel[] result = new IRenderableModel[names.length];
         for (int i = 0; i < names.length; i++)
             result[i] = model(names[i]);
         return result;
     }
 
-    protected static IModel[] models(int n, String name) {
-        IModel[] result = new IModel[n];
-        IModel m = model(name);
+    protected static IRenderableModel[] models(int n, String name) {
+        IRenderableModel[] result = new IRenderableModel[n];
+        IRenderableModel m = model(name);
         for (int i = 0; i < n; i++)
             result[i] = m;
         return result;
@@ -129,7 +129,7 @@ public class RenderWindow extends RenderShape {
         }
     }
 
-    protected void renderModel(Trans3 t, IModel model) {
+    protected void renderModel(Trans3 t, IRenderableModel model) {
         if (model != null)
             model.render(t, target, textures);
     }
@@ -211,11 +211,11 @@ public class RenderWindow extends RenderShape {
 
     protected static class WindowModels {
 
-        public IModel centre, centreEnd[], side[], end0[], end1[], glass, glassEdge[];
+        public IRenderableModel centre, centreEnd[], side[], end0[], end1[], glass, glassEdge[];
 
-        public WindowModels(IModel centre, IModel[] centreEnd, IModel side[],
-                            IModel end0[], IModel end1[],
-                            IModel glass, IModel glassEdge[]) {
+        public WindowModels(IRenderableModel centre, IRenderableModel[] centreEnd, IRenderableModel side[],
+                            IRenderableModel end0[], IRenderableModel end1[],
+                            IRenderableModel glass, IRenderableModel glassEdge[]) {
             this.centre = centre;
             this.centreEnd = centreEnd;
             this.side = side;

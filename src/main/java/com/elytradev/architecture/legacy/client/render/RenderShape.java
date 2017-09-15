@@ -6,7 +6,7 @@
 
 package com.elytradev.architecture.legacy.client.render;
 
-import com.elytradev.architecture.client.render.model.IModel;
+import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
@@ -35,7 +35,7 @@ public abstract class RenderShape {
 
     protected abstract void render();
 
-    protected IModel getModel(String name) {
+    protected IRenderableModel getModel(String name) {
         return ArchitectureCraft.mod.client.getModel(name);
     }
 

@@ -7,7 +7,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
-public interface IModel {
+public interface IRenderableModel {
     AxisAlignedBB getBounds();
 
     void addBoxesToList(Trans3 t, List list);
