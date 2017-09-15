@@ -57,7 +57,7 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.GL_SMOOTH;
 
-public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> implements BaseModClient.IRenderingManager {
+public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> {
 
     protected static Trans3 itemTrans = Trans3.blockCenterSideTurn(0, 2);
     protected static String[] texturePrefixes = {"blocks/", "textures/"};
@@ -85,7 +85,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @Override
     public void preInit() {
         if (debugRenderingManager)
             System.out.printf("BaseRenderingManager.preInit\n");
@@ -95,14 +94,12 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
 
     //------------------------------------------------------------------------------------------------
 
-    @Override
     public void init() {
         //Moved from preInit due to block registration not being complete.
         registerDefaultRenderers();
         registerDefaultModelLocations();
     }
 
-    @Override
     public void postInit() {
         if (debugRenderingManager)
             System.out.printf("BaseRenderingManager.postInit: customRenderingRequired = %s\n", customRenderingRequired);
@@ -128,7 +125,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         }
     }
 
-    @Override
     public void addBlockRenderer(Block block, ICustomRenderer renderer) {
         blockRenderers.put(block, renderer);
         customRenderingRequired = true;
@@ -137,7 +133,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
             addItemRenderer(item, renderer);
     }
 
-    @Override
     public void addItemRenderer(Item item, ICustomRenderer renderer) {
         itemRenderers.put(item, renderer);
     }
@@ -232,7 +227,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
     }
 
     //------------------------------------------------------------------------------------------------
-    @Override
     public ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
         //System.out.printf("BaseModClient.getCustomRenderer: %s\n", state);
         Block block = state.getBlock();
@@ -283,7 +277,6 @@ public class BaseRenderingManager<MOD extends BaseMod<? extends BaseModClient>> 
         rend.renderItemStack(stack, target, t);
     }
 
-    @Override
     public BaseModClient.IModel getModel(String name) {
         return client.base.getModel(name);
     }

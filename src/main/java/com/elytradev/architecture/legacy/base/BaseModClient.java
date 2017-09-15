@@ -48,7 +48,7 @@ import java.util.Map;
 public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> implements IGuiHandler {
 
     public MOD base;
-    protected IRenderingManager renderingManager;
+    protected BaseRenderingManager renderingManager;
     protected String[] renderingManagerClasses = {
             "com.elytradev.architecture.legacy.base.BaseAORenderingManager",
             "com.elytradev.architecture.legacy.base.BaseRenderingManager"
@@ -308,7 +308,7 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
         }
     }
 
-    public IRenderingManager getRenderingManager() {
+    public BaseRenderingManager getRenderingManager() {
         if (renderingManager != null)
             return renderingManager;
         for (String name : renderingManagerClasses) {
@@ -316,7 +316,7 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
             if (cls != null) {
                 try {
                     Constructor con = cls.getConstructor(BaseModClient.class);
-                    renderingManager = (IRenderingManager) con.newInstance(this);
+                    renderingManager = (BaseRenderingManager) con.newInstance(this);
                     return renderingManager;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
