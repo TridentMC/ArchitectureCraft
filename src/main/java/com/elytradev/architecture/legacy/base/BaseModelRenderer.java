@@ -10,7 +10,7 @@ import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
+import com.elytradev.architecture.client.render.model.IModel;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.legacy.common.helpers.Vector3;
 import net.minecraft.block.Block;

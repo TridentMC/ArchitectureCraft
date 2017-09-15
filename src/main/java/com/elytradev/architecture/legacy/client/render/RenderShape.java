@@ -6,9 +6,9 @@
 
 package com.elytradev.architecture.legacy.client.render;
 
+import com.elytradev.architecture.client.render.model.IModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.legacy.base.BaseModClient;
 import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import com.elytradev.architecture.common.tile.TileShape;
@@ -35,7 +35,7 @@ public abstract class RenderShape {
 
     protected abstract void render();
 
-    protected BaseModClient.IModel getModel(String name) {
+    protected IModel getModel(String name) {
         return ArchitectureCraft.mod.client.getModel(name);
     }
 

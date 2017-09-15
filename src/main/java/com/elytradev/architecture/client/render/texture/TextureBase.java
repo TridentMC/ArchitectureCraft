@@ -6,7 +6,6 @@
 
 package com.elytradev.architecture.client.render.texture;
 
-import com.elytradev.architecture.legacy.base.BaseModClient;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
@@ -97,7 +96,7 @@ public abstract class TextureBase implements ITexture {
     }
 
     @Override
-    public BaseModClient.ITiledTexture tiled(int numRows, int numCols) {
+    public ITiledTexture tiled(int numRows, int numCols) {
         return new TileSet(this, numRows, numCols);
     }
 
@@ -218,7 +217,7 @@ public abstract class TextureBase implements ITexture {
 
     //-------------------------------------------------------------------------------------------
 
-    public static class TileSet extends Proxy implements BaseModClient.ITiledTexture {
+    public static class TileSet extends Proxy implements ITiledTexture {
 
         public double tileSizeU, tileSizeV;
 

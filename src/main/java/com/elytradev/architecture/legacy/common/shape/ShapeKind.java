@@ -8,7 +8,7 @@ package com.elytradev.architecture.legacy.common.shape;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.common.block.BaseBlockUtils;
-import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
+import com.elytradev.architecture.client.render.model.IModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.legacy.base.BaseModel;
 import com.elytradev.architecture.common.tile.TileArchitecture;

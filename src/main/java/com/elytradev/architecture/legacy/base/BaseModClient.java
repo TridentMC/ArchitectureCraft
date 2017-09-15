@@ -7,10 +7,9 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.target.RenderTargetBase;
+import com.elytradev.architecture.client.render.model.IModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
-import com.elytradev.architecture.legacy.common.helpers.Trans3;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,7 +22,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -40,7 +38,6 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //import gcewing.architecture.BaseMod.IBlock;
@@ -340,18 +337,6 @@ public class BaseModClient<MOD extends BaseMod<? extends BaseModClient>> impleme
 
     protected boolean objectNeedsCustomRendering(Object obj) {
         return obj instanceof ITextureConsumer && ((ITextureConsumer) obj).getTextureNames() != null;
-    }
-
-    public interface ITiledTexture extends ITexture {
-        ITexture tile(int row, int col);
-    }
-
-    public interface IModel {
-        AxisAlignedBB getBounds();
-
-        void addBoxesToList(Trans3 t, List list);
-
-        void render(Trans3 t, RenderTargetBase renderer, ITexture... textures);
     }
 
 }

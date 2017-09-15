@@ -1,5 +1,6 @@
 package com.elytradev.architecture.client.render;
 
+import com.elytradev.architecture.client.render.model.IModel;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.common.block.BlockArchitecture;
@@ -47,7 +48,7 @@ public class RenderingManager {
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
     protected List<BaseRenderingManager.CustomBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
-    private Map<ResourceLocation, BaseModClient.IModel> modelCache;
+    private Map<ResourceLocation, IModel> modelCache;
 
 
     protected boolean blockNeedsCustomRendering(Block block) {
@@ -66,9 +67,9 @@ public class RenderingManager {
         return new ResourceLocation(ArchitectureCraft.MOD_ID, "models/" + path);
     }
 
-    public BaseModClient.IModel getModel(String name) {
+    public IModel getModel(String name) {
         ResourceLocation loc = modelLocation(name);
-        BaseModClient.IModel model = modelCache.get(loc);
+        IModel model = modelCache.get(loc);
         if (model == null) {
             model = BaseModel.fromResource(loc);
             modelCache.put(loc, model);
@@ -88,7 +89,7 @@ public class RenderingManager {
     }
 
     protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-        BaseModClient.IModel model = getModel(spec.modelName);
+        IModel model = getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = getTexture(textureType, spec.textureNames[i]);

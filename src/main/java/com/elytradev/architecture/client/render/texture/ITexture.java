@@ -1,6 +1,5 @@
 package com.elytradev.architecture.client.render.texture;
 
-import com.elytradev.architecture.legacy.base.BaseModClient;
 import net.minecraft.util.ResourceLocation;
 
 public interface ITexture {
@@ -32,5 +31,5 @@ public interface ITexture {
 
     ITexture emissive();
 
-    BaseModClient.ITiledTexture tiled(int numRows, int numCols);
+    ITiledTexture tiled(int numRows, int numCols);
 }

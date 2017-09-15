@@ -7,7 +7,7 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
-import com.elytradev.architecture.legacy.base.BaseModClient.IModel;
+import com.elytradev.architecture.client.render.model.IModel;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.io.Resources;
