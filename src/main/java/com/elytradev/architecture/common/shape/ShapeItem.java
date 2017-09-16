@@ -24,18 +24,22 @@
 
 package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.common.ArchitectureContent;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -50,6 +54,12 @@ public class ShapeItem extends ItemBlock {
 
     public ShapeItem(Block block) {
         super(block);
+        this.setCreativeTab(ArchitectureContent.creativeTab);
+    }
+
+    @Override
+    public boolean getHasSubtypes() {
+        return true;
     }
 
     /**
@@ -103,6 +113,19 @@ public class ShapeItem extends ItemBlock {
             int baseMetadata = tag.getInteger("BaseData");
             if (baseBlock != null)
                 lines.add(Utils.displayNameOfBlock(baseBlock, baseMetadata));
+        }
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (tab.equals(ArchitectureContent.creativeTab)) {
+            ItemStack defaultStack = new ItemStack(this, 1);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setInteger("Shape", Shape.ROOF_TILE.id);
+            tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
+            tag.setInteger("BaseData", 0);
+            defaultStack.setTagCompound(tag);
+            items.add(defaultStack);
         }
     }
 

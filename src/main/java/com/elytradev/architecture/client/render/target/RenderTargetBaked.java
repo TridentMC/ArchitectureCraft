@@ -104,8 +104,6 @@ public class RenderTargetBaked extends RenderTargetBase {
             faceQuads.put(face, emptyQuads);
     }
 
-    //protected VertexFormat format = Attributes.DEFAULT_BAKED_FORMAT;
-    //protected VertexFormat format = DefaultVertexFormats.ITEM;
     protected VertexFormat format = theFormat;
     protected int bytesPerVertex = format.getNextOffset();
     protected int intsPerVertex = bytesPerVertex / 4;
@@ -132,17 +130,8 @@ public class RenderTargetBaked extends RenderTargetBase {
 
     public RenderTargetBaked(double x, double y, double z, TextureAtlasSprite overrideIcon) {
         super(x, y, z, overrideIcon);
-        quads = new ArrayList<BakedQuad>();
+        quads = new ArrayList<>();
     }
-
-//  protected void dumpVertexData(int[] data, int n) {
-//      System.out.printf("BaseRenderTarget.endFace: Vertex data:\n");
-//      for (int i = 0; i < n; i++) {
-//          System.out.printf("%08x\n", data[i]);
-//          if ((i + 1) % intsPerVertex == 0)
-//              System.out.printf("\n");
-//      }
-//  }
 
     @Override
     protected void setMode(int m) {
@@ -164,14 +153,8 @@ public class RenderTargetBaked extends RenderTargetBase {
             ++n;
         }
         prescrambleVertexColors(data);
-        //dumpVertexData(data, n);
-        //quads.add(new BakedQuad(data, 0, normal.facing()));
-        //System.out.printf("BaseBakedRenderTarget.endFace: Adding quad facing %s\n", face);
-        //quads.add(new BakedQuad(data, 0, face));
         quads.add(new BakedQuad(data, 0, EnumFacing.UP, null)); //FIXME I don't think there should be a null here    }
     }
-
-    //------------------------------------------------------------------------------------------
 
     protected void dumpVertexData(int[] data, int n) {
         System.out.printf("BaseBakedRenderTarget.endFace: Vertex data:\n");
@@ -187,7 +170,6 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     protected void prescrambleVertexColors(int[] data) {
-        // Compensate for bug in Forge 11.14.1.1371 that puts color data in wrong order
         int[] c = new int[4];
         for (int i = 0; i < 4; i++)
             c[i] = data[i * intsPerVertex + 3];
@@ -200,7 +182,6 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     public IBakedModel getBakedModel(TextureAtlasSprite particleTexture) {
-
         if (verticesPerFace != 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
         return new SimpleBakedModel(quads, faceQuads, false, true, particleTexture, transforms, ItemOverrideList.NONE);
@@ -208,22 +189,15 @@ public class RenderTargetBaked extends RenderTargetBase {
 
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
-        //System.out.printf("BaseBakedRenderTarget.rawAddVertex: color (%.3f,%.3f,%.3f,%.3f) normal %s\n",
-        //  red, green, blue, alpha, normal);
-        //System.out.printf("BaseBakedRenderTarget.rawAddVertex:\n");
-        //for (VertexFormatElement e : (List<VertexFormatElement>)format.getElements()) {
         for (VertexFormatElement e : format.getElements()) {
-            //System.out.printf("%s\n", e);
             switch (e.getUsage()) {
                 case POSITION:
                     putElement(e, p.x, p.y, p.z);
                     break;
                 case COLOR:
-                    //putElement(e, alpha, shade * blue, shade * green, shade * red);
                     putElement(e, alpha, blue, green, red);
                     break;
                 case NORMAL:
-                    //System.out.printf("BaseBakedRenderTarget.rawAddVertex: NORMAL %s\n", normal);
                     putElement(e, normal.x, normal.y, normal.z);
                     break;
                 case UV:

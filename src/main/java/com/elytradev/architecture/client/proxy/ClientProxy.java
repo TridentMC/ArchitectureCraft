@@ -93,7 +93,7 @@ public class ClientProxy extends CommonProxy {
     public void registerTileEntitySpecialRenderers() {
     }
 
-    public void registerItemRenderers() {
+    public void registerDefaultModelLocations() {
         Item itemToRegister;
         ModelResourceLocation modelResourceLocation;
 
@@ -139,11 +139,17 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelRegistryEvent event) {
-        registerItemRenderers();
+        registerDefaultModelLocations();
     }
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent.Pre e) {
+        RENDERING_MANAGER.clearTextureCache();
+        for (Block block : ArchitectureContent.registeredBlocks.values())
+            RENDERING_MANAGER.registerSprites(0, e.getMap(), block);
+
+        for (Item item : ArchitectureContent.registeredItems.values())
+            RENDERING_MANAGER.registerSprites(1, e.getMap(), item);
     }
 
     @Override

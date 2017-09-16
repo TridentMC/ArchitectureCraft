@@ -26,25 +26,30 @@ package com.elytradev.architecture.client.render.model;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.common.ArchitectureMod;
+import com.google.common.collect.Lists;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 
+import java.util.List;
+
 public class VertexModelLoader implements ICustomModelLoader {
 
-    public static VertexModel MODEL;
+    public static VertexModel model;
+    public static List<String> acceptedLocations = Lists.newArrayList("sawbench");
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
         if (modelLocation.getResourceDomain().equals(ArchitectureMod.MOD_ID)) {
-            boolean response = ClientProxy.RENDERING_MANAGER.pathUsesVertexModel(modelLocation.getResourcePath());
+            boolean accept = ClientProxy.RENDERING_MANAGER.pathUsesVertexModel(modelLocation.getResourcePath());
+            accept = accept || acceptedLocations.stream().anyMatch(s -> modelLocation.getResourcePath().contains(s));
             if (ArchitectureMod.INDEV) {
                 ArchitectureMod.LOG.info("Asked for {}, responded with {}", modelLocation,
-                        response ? "yes." : "no.");
+                        accept ? "yes." : "no.");
             }
 
-            return response;
+            return accept;
         }
 
         return false;
@@ -52,14 +57,14 @@ public class VertexModelLoader implements ICustomModelLoader {
 
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-        if (MODEL == null)
-            MODEL = new VertexModel();
+        if (model == null)
+            model = new VertexModel();
 
-        return MODEL;
+        return model;
     }
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {
-        MODEL = null;
+        model = null;
     }
 }

@@ -46,6 +46,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -143,10 +144,9 @@ public class RenderingManager {
     }
 
     public ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
-        //System.out.printf("BaseModClient.getCustomRenderer: %s\n", state);
         Block block = state.getBlock();
         ICustomRenderer rend = blockRenderers.get(block);
-        if (rend == null && block instanceof BlockArchitecture /*&& block.getRenderType() == -1*/) {
+        if (rend == null && block instanceof BlockArchitecture) {
             IBlockState astate = block.getActualState(state, world, pos);
             rend = getCustomRendererForState(astate);
         }
@@ -161,15 +161,19 @@ public class RenderingManager {
         return new BaseModelRenderer(model, spec.origin, textures);
     }
 
-    protected ICustomRenderer getCustomRendererForState(IBlockState astate) {
-        ICustomRenderer rend = stateRendererCache.get(astate);
+    public ICustomRenderer getCustomRendererForState(IBlockState state) {
+        ICustomRenderer rend = stateRendererCache.get(state);
         if (rend == null) {
-            Block block = astate.getBlock();
+            Block block = state.getBlock();
             if (block instanceof BlockArchitecture) {
-                ModelSpec spec = ((BlockArchitecture) block).getModelSpec(astate);
+                ModelSpec spec = ((BlockArchitecture) block).getModelSpec(state);
                 if (spec != null) {
                     rend = getCustomRendererForSpec(0, spec);
-                    stateRendererCache.put(astate, rend);
+                    stateRendererCache.put(state, rend);
+                } else {
+                    if (blockNeedsCustomRendering(block)) {
+                        return blockRenderers.get(block);
+                    }
                 }
             }
         }
@@ -186,6 +190,24 @@ public class RenderingManager {
         ResourceLocation loc = textureResourceLocation(type, name);
         return textureCache.get(loc);
     }
+
+    public void registerSprites(int textureType, TextureMap reg, Object obj) {
+        if (obj instanceof ITextureConsumer) {
+            String names[] = ((ITextureConsumer) obj).getTextureNames();
+            if (names != null) {
+                customRenderingRequired = true;
+                for (String name : names) {
+                    ResourceLocation loc = textureResourceLocation(textureType, name);
+                    if (textureCache.get(loc) == null) {
+                        TextureAtlasSprite icon = reg.registerSprite(loc);
+                        ITexture texture = TextureBase.fromSprite(icon);
+                        textureCache.put(loc, texture);
+                    }
+                }
+            }
+        }
+    }
+
 
     public TextureAtlasSprite getIcon(int type, String name) {
         return ((TextureBase.Sprite) getTexture(type, name)).icon;
@@ -218,6 +240,10 @@ public class RenderingManager {
         if (itemBakedModel == null)
             itemBakedModel = new CustomItemBakedModel();
         return itemBakedModel;
+    }
+
+    public void clearTextureCache() {
+        textureCache.clear();
     }
 
     public static class CustomBlockStateMapper extends DefaultStateMapper {

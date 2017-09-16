@@ -59,7 +59,6 @@ public class BlockShape extends BlockArchitecture<TileShape> {
 
     public BlockShape() {
         super(Material.ROCK, TileShape.class);
-        //renderID = -1;
     }
 
     public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {

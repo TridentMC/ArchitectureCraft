@@ -31,8 +31,10 @@ import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
+import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
@@ -44,6 +46,8 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_SMOOTH;
 
 public class VertexBakedModel implements IBakedModel {
 
@@ -87,12 +91,30 @@ public class VertexBakedModel implements IBakedModel {
                 }
             }
 
+            boolean added = false;
             MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
-            if (primary != null)
+            if (primary != null) {
                 builder.putModel((o) -> true, primary);
-            if (secondary != null)
+                added = true;
+            }
+            if (secondary != null) {
                 builder.putModel((o) -> true, secondary);
-            out = builder.makeMultipartModel();
+                added = true;
+            }
+            if (added) {
+                out = builder.makeMultipartModel();
+            } else {
+                // Backup in case the multipart fails, fallback to state based render in the current layer.
+                if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
+                    rend = ClientProxy.RENDERING_MANAGER.getCustomRendererForState(state);
+                    if (rend != null) {
+                        RenderTargetBaked target = new RenderTargetBaked();
+                        rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t);
+                        return target.getBakedModel();
+                    }
+                }
+                return emptyModel;
+            }
         }
 
         return out;
@@ -129,4 +151,41 @@ public class VertexBakedModel implements IBakedModel {
     public ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
     }
+
+    private IBakedModel emptyModel = new IBakedModel() {
+        @Override
+        public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+            return Lists.newArrayList();
+        }
+
+        @Override
+        public boolean isAmbientOcclusion() {
+            return false;
+        }
+
+        @Override
+        public boolean isGui3d() {
+            return false;
+        }
+
+        @Override
+        public boolean isBuiltInRenderer() {
+            return false;
+        }
+
+        @Override
+        public TextureAtlasSprite getParticleTexture() {
+            return null;
+        }
+
+        @Override
+        public ItemCameraTransforms getItemCameraTransforms() {
+            return ItemCameraTransforms.DEFAULT;
+        }
+
+        @Override
+        public ItemOverrideList getOverrides() {
+            return ItemOverrideList.NONE;
+        }
+    };
 }
