@@ -28,7 +28,6 @@ import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import com.elytradev.architecture.common.tile.ContainerSawbench;
 import com.elytradev.architecture.common.tile.TileSawbench;
-import com.elytradev.architecture.legacy.base.BaseDataChannel.ChannelOutput;
 import com.elytradev.architecture.legacy.base.BaseGui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;

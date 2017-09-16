@@ -28,8 +28,8 @@ import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 

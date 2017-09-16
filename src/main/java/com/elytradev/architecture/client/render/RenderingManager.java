@@ -41,12 +41,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -54,6 +56,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -83,6 +86,42 @@ public class RenderingManager {
 
     public boolean itemNeedsCustomRendering(Item item) {
         return itemRenderers.containsKey(item) || specifiesTextures(item);
+    }
+
+    public void registerModelLocationForItem(Item item, CustomItemBakedModel disp) {
+        registerModelLocationForSubtypes(item, disp.location);
+    }
+
+    protected void registerModelLocationForSubtypes(Item item, ModelResourceLocation location) {
+        int numVariants = getNumItemSubtypes(item);
+        for (int i = 0; i < numVariants; i++) {
+            registerMesh(item, i, location);
+        }
+    }
+
+    private void registerMesh(Item item, int meta, ModelResourceLocation resourceLocation) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.getRenderItem() != null && mc.getRenderItem().getItemModelMesher() != null) {
+            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, resourceLocation);
+        } else {
+            ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
+        }
+    }
+
+    private int getNumBlockSubtypes(Block block) {
+        if (block instanceof BlockArchitecture)
+            return ((BlockArchitecture) block).getNumSubtypes();
+        else
+            return 1;
+    }
+
+    private int getNumItemSubtypes(Item item) {
+        if (item instanceof ItemArchitecture)
+            return ((ItemArchitecture) item).getNumSubtypes();
+        else if (item instanceof ItemBlock)
+            return getNumBlockSubtypes(Block.getBlockFromItem(item));
+        else
+            return 1;
     }
 
     protected boolean specifiesTextures(Object obj) {
@@ -175,15 +214,20 @@ public class RenderingManager {
         itemRenderers.put(item, renderer);
     }
 
-    protected static class CustomBlockStateMapper extends DefaultStateMapper {
+    public CustomItemBakedModel getItemBakedModel() {
+        if (itemBakedModel == null)
+            itemBakedModel = new CustomItemBakedModel();
+        return itemBakedModel;
+    }
+
+    public static class CustomBlockStateMapper extends DefaultStateMapper {
         @Override
         public ModelResourceLocation getModelResourceLocation(IBlockState state) {
             return super.getModelResourceLocation(state);
         }
     }
 
-    protected abstract class CustomBakedModel implements IBakedModel {
-
+    public abstract class CustomBakedModel implements IBakedModel {
         public ModelResourceLocation location;
 
         public void install(ModelBakeEvent event) {
@@ -222,7 +266,7 @@ public class RenderingManager {
 
     }
 
-    protected class BlockParticleModel extends CustomBakedModel {
+    public class BlockParticleModel extends CustomBakedModel {
 
         protected IBlockState state;
 
@@ -249,7 +293,7 @@ public class RenderingManager {
 
     }
 
-    protected class CustomItemRenderOverrideList extends ItemOverrideList {
+    public class CustomItemRenderOverrideList extends ItemOverrideList {
 
         private IBakedModel emptyModel = new IBakedModel() {
             @Override
@@ -317,7 +361,7 @@ public class RenderingManager {
 
     }
 
-    protected class CustomItemBakedModel extends CustomBakedModel {
+    public class CustomItemBakedModel extends CustomBakedModel {
 
         protected ItemOverrideList itemOverrideList = new CustomItemRenderOverrideList();
 

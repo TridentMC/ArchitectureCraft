@@ -38,13 +38,13 @@ import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.elytradev.concrete.resgen.IResourceHolder;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -87,7 +87,6 @@ public class ClientProxy extends CommonProxy {
 
         if (state == LoaderState.ModState.INITIALIZED) {
             registerTileEntitySpecialRenderers();
-            registerItemRenderers();
         }
     }
 
@@ -98,36 +97,49 @@ public class ClientProxy extends CommonProxy {
         Item itemToRegister;
         ModelResourceLocation modelResourceLocation;
 
-        // Do some general render registrations for OBJECTS, not considering meta.
-        ItemModelMesher modelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+        // Do some general render registrations for Content.
         for (int i = 0; i < ArchitectureContent.registeredBlocks.size(); i++) {
-            modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN + ArchitectureContent.registeredBlocks.keySet().toArray()[i], "inventory");
-            Item itemFromBlock = Item.getItemFromBlock((Block) ArchitectureContent.registeredBlocks.values().toArray()[i]);
-
-            modelMesher.register(itemFromBlock, 0, modelResourceLocation);
+            modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN
+                    + ArchitectureContent.registeredBlocks.keySet().toArray()[i], "inventory");
+            Block block = (Block) ArchitectureContent.registeredBlocks.values().toArray()[i];
+            Item itemFromBlock = Item.getItemFromBlock(block);
+            if (RENDERING_MANAGER.blockNeedsCustomRendering(block)) {
+                RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
+            } else {
+                registerMesh(itemFromBlock, 0, modelResourceLocation);
+            }
         }
 
         for (int i = 0; i < ArchitectureContent.registeredItems.size(); i++) {
             modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN + ArchitectureContent.registeredItems.keySet().toArray()[i], "inventory");
             itemToRegister = (Item) ArchitectureContent.registeredItems.values().toArray()[i];
-            if (itemToRegister instanceof ItemArchitecture) {
-
+            if (itemToRegister instanceof IResourceHolder)
+                continue;
+            if (RENDERING_MANAGER.itemNeedsCustomRendering(itemToRegister)) {
+                RENDERING_MANAGER.registerModelLocationForItem(itemToRegister, RENDERING_MANAGER.getItemBakedModel());
             } else {
-                if (itemToRegister instanceof IResourceHolder)
-                    continue;
+                registerMesh(itemToRegister, 0, modelResourceLocation);
             }
+        }
+    }
 
-            modelMesher.register(itemToRegister, 0, modelResourceLocation);
+    private void registerMesh(Item item, int meta, ModelResourceLocation resourceLocation) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.getRenderItem() != null && mc.getRenderItem().getItemModelMesher() != null) {
+            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, resourceLocation);
+        } else {
+            ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
         }
     }
 
     @SubscribeEvent
     public void onModelBakeEvent(ModelBakeEvent e) {
+        RENDERING_MANAGER.getItemBakedModel().install(e);
     }
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelRegistryEvent event) {
-
+        registerItemRenderers();
     }
 
     @SubscribeEvent

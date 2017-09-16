@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.proxy;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -41,6 +42,8 @@ public class CommonProxy {
     }
 
     public void registerHandlers() {
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(true);
     }
 
     public void registerRenderers(LoaderState.ModState modState) {

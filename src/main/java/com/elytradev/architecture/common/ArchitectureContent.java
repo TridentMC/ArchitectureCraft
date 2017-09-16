@@ -63,7 +63,10 @@ public class ArchitectureContent {
             return new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(MOD_ID, "hammer")));
         }
     };
-
+    private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
+    public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
+    public static HashMap<String, Item> registeredItems = Maps.newHashMap();
+    private static List<Item> itemBlocksToRegister = Lists.newArrayList();
     public BlockSawbench blockSawbench;
     public Block blockShape;
     public Item itemSawblade;
@@ -71,12 +74,6 @@ public class ArchitectureContent {
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
-
-    private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
-    public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
-    public static HashMap<String, Item> registeredItems = Maps.newHashMap();
-
-    private static List<Item> itemBlocksToRegister = Lists.newArrayList();
     private int recipeID = 0;
 
     public void preInit(FMLPreInitializationEvent e) {

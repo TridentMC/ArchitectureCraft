@@ -24,10 +24,10 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.helpers.Profile;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;

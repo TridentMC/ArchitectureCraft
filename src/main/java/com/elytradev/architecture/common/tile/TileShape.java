@@ -24,10 +24,10 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

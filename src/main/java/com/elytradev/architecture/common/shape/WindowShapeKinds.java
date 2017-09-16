@@ -24,10 +24,10 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.common.utils.MiscUtils;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 

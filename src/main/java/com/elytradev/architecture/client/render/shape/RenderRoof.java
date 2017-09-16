@@ -26,10 +26,10 @@ package com.elytradev.architecture.client.render.shape;
 
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
 
 import java.util.Arrays;

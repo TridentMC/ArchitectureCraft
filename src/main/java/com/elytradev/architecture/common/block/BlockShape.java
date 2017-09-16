@@ -24,10 +24,10 @@
 
 package com.elytradev.architecture.common.block;
 
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.legacy.base.BaseOrientation;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
+import com.elytradev.architecture.legacy.base.BaseOrientation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;

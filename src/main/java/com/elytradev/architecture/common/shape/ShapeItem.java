@@ -24,9 +24,9 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;

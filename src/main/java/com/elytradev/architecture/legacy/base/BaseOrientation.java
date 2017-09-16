@@ -26,9 +26,9 @@ package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockArchitecture.IOrientationHandler;
-import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileArchitecture;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
