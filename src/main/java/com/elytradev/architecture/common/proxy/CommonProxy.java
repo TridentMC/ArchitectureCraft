@@ -24,11 +24,14 @@
 
 package com.elytradev.architecture.common.proxy;
 
+import com.elytradev.architecture.common.ArchitectureGuiHandler;
+import com.elytradev.architecture.common.ArchitectureMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class CommonProxy {
 
@@ -43,7 +46,7 @@ public class CommonProxy {
 
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(true);
+        NetworkRegistry.INSTANCE.registerGuiHandler(ArchitectureMod.INSTANCE, new ArchitectureGuiHandler());
     }
 
     public void registerRenderers(LoaderState.ModState modState) {

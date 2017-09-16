@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.block;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.legacy.base.BaseOrientation;
@@ -76,9 +77,7 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!player.isSneaking()) {
-            if (!world.isRemote) {
-                //ArchitectureCraft.mod.openGuiSawbench(world, pos, player);
-            }
+            player.openGui(ArchitectureMod.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
         } else
             return false;
