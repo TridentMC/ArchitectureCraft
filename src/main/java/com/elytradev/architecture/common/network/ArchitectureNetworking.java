@@ -22,38 +22,19 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.common.proxy;
+package com.elytradev.architecture.common.network;
 
-import com.elytradev.architecture.common.ArchitectureGuiHandler;
 import com.elytradev.architecture.common.ArchitectureMod;
-import com.elytradev.architecture.common.network.ArchitectureNetworking;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import com.elytradev.concrete.network.NetworkContext;
 
-public class CommonProxy {
+public class ArchitectureNetworking {
 
-    public void preInit(FMLPreInitializationEvent e) {
-        ArchitectureNetworking.setupNetwork();
+    public static NetworkContext NETWORK;
+
+    public static void setupNetwork() {
+        NETWORK = NetworkContext.forChannel(ArchitectureMod.MOD_ID);
+
+        NETWORK.register(SelectShapeMessage.class);
     }
 
-    public void init(FMLInitializationEvent e) {
-    }
-
-    public void postInit(FMLPostInitializationEvent e) {
-    }
-
-    public void registerHandlers() {
-        MinecraftForge.EVENT_BUS.register(this);
-        NetworkRegistry.INSTANCE.registerGuiHandler(ArchitectureMod.INSTANCE, new ArchitectureGuiHandler());
-    }
-
-    public void registerRenderers(LoaderState.ModState modState) {
-    }
-
-    public void registerCustomRenderers() {
-    }
 }

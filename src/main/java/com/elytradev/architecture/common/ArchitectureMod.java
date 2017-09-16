@@ -55,23 +55,26 @@ public class ArchitectureMod {
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent e) {
-        PROXY.registerHandlers();
-        LOG = e.getModLog();
         MinecraftForge.EVENT_BUS.register(CONTENT);
-        CONTENT.preInit(e);
 
+        LOG = e.getModLog();
+        PROXY.preInit(e);
+        PROXY.registerHandlers();
+        CONTENT.preInit(e);
         PROXY.registerRenderers(e.getModState());
     }
 
     @Mod.EventHandler
     public void onInit(FMLInitializationEvent e) {
         CONTENT.init(e);
+        PROXY.init(e);
         PROXY.registerRenderers(e.getModState());
     }
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent e) {
         CONTENT.postInit(e);
+        PROXY.postInit(e);
         PROXY.registerRenderers(e.getModState());
     }
 }

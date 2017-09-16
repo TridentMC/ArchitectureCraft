@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.client.gui;
 
+import com.elytradev.architecture.common.network.SelectShapeMessage;
 import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import com.elytradev.architecture.common.tile.ContainerSawbench;
@@ -125,8 +126,6 @@ public class GuiSawbench extends BaseGui.Screen {
                     int mrow = i / shapeMenuCols, mcol = i % shapeMenuCols;
                     int id = shape.id;
                     int trow = id / 10, tcol = id % 10;
-                    //System.out.printf("SawbenchGUI: Item %s: Rendering shape id %s from (%s, %s) at (%s, %s)\n",
-                    //	i, id, trow, tcol, mrow, mcol);
                     drawTexturedRect(
                             (mcol + 0.5) * shapeMenuCellSize - 0.5 * shapeMenuItemWidth,
                             (mrow + 0.5) * shapeMenuCellSize - 0.5 * shapeMenuItemHeight,
@@ -146,7 +145,6 @@ public class GuiSawbench extends BaseGui.Screen {
         int col = i % shapeMenuCols;
         int x = shapeMenuLeft + shapeMenuCellSize * col;
         int y = shapeMenuTop + shapeMenuCellSize * row;
-        //System.out.printf("SawbenchGui.drawShapeSelection: sel=%d x=%d y=%d\n", i, x, y);
         drawTexturedRect(x, y, 24.5, 24.5, 44, 23, 49, 49);
     }
 
@@ -168,7 +166,6 @@ public class GuiSawbench extends BaseGui.Screen {
 
     @Override
     protected void mousePressed(int x, int y, int btn) {
-        //System.out.printf("SawbenchGui.mousePressed: %d, %d, %d\n", x, y, btn);
         if (x >= pageMenuLeft && y >= pageMenuTop && x < pageMenuLeft + pageMenuWidth)
             clickPageMenu(x - pageMenuLeft, y - pageMenuTop);
         else if (x >= shapeMenuLeft && y >= shapeMenuTop &&
@@ -179,14 +176,12 @@ public class GuiSawbench extends BaseGui.Screen {
     }
 
     void clickPageMenu(int x, int y) {
-        //System.out.printf("SawbenchGui.clickPageMenu: %d, %d\n", x, y);
         int i = y / pageMenuRowHeight;
         if (i >= 0 && i < TileSawbench.pages.length)
             sendSelectShape(i, te.selectedSlots[i]);
     }
 
     void clickShapeMenu(int x, int y) {
-        //System.out.printf("SawbenchGui.clickShapeMenu: %d, %d\n", x, y);
         int row = y / shapeMenuCellSize;
         int col = x / shapeMenuCellSize;
         if (row >= 0 && row < shapeMenuRows && col >= 0 && col < shapeMenuCols) {
@@ -196,11 +191,6 @@ public class GuiSawbench extends BaseGui.Screen {
     }
 
     protected void sendSelectShape(int page, int slot) {
-        //TODO: Concrete networking.
-        //ChannelOutput data = ArchitectureCraft.channel.openServerContainer("SelectShape");
-        //data.writeInt(page);
-        //data.writeInt(slot);
-        //data.close();
+        new SelectShapeMessage(te, page, slot).sendToServer();
     }
-
 }
