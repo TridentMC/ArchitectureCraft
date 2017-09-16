@@ -435,7 +435,7 @@ public abstract class ShapeKind {
         private IRenderableModel model;
 
         public Model(String name, Object[] profiles) {
-            this.modelName = "shape/" + name + ".smeg";
+            this.modelName = "shape/" + name + ".objson";
             this.profiles = profiles;
         }
 

@@ -39,7 +39,7 @@ import net.minecraft.world.World;
 
 public class BlockSawbench extends BlockArchitecture<TileSawbench> {
 
-    static String model = "block/sawbench.smeg";
+    static String model = "block/sawbench.objson";
     static String[] textures = {"sawbench-wood", "sawbench-metal"};
     static ModelSpec modelSpec = new ModelSpec(model, textures);
 

@@ -67,7 +67,7 @@ public class RenderCladding implements ICustomRenderer {
                     TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
                     if (sprite != null) {
                         ITexture texture = TextureBase.fromSprite(sprite);
-                        IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.smeg");
+                        IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
                         model.render(t, target, texture);
                     }
                 }

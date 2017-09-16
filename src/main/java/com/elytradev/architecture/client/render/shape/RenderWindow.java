@@ -52,7 +52,7 @@ public class RenderWindow extends RenderShape {
 
     protected static IRenderableModel model(String name) {
         if (name != null)
-            return ClientProxy.RENDERING_MANAGER.getModel("shape/window_" + name + ".smeg");
+            return ClientProxy.RENDERING_MANAGER.getModel("shape/window_" + name + ".objson");
         else
             return null;
     }
