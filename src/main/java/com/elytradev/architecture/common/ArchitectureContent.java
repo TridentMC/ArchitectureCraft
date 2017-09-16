@@ -108,6 +108,8 @@ public class ArchitectureContent {
         this.itemCladding = registerItem(registry, "cladding", new ItemCladding());
 
         this.itemBlocksToRegister.forEach(registry::register);
+
+        ArchitectureMod.PROXY.registerCustomRenderers();
     }
 
     @SubscribeEvent

@@ -45,4 +45,7 @@ public class CommonProxy {
 
     public void registerRenderers(LoaderState.ModState modState) {
     }
+
+    public void registerCustomRenderers() {
+    }
 }

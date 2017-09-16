@@ -38,6 +38,7 @@ import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.legacy.base.BaseModelRenderer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
@@ -74,7 +75,7 @@ public class RenderingManager {
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
     protected List<CustomBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
-    private Map<ResourceLocation, IRenderableModel> modelCache;
+    private Map<ResourceLocation, IRenderableModel> modelCache = Maps.newHashMap();
 
     public boolean blockNeedsCustomRendering(Block block) {
         return blockRenderers.containsKey(block) || specifiesTextures(block);

@@ -26,12 +26,12 @@ package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.utils.MiscUtils;
-import com.elytradev.architecture.common.helpers.Trans3;
-import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
@@ -75,27 +75,28 @@ import java.util.List;
 public class BlockArchitecture<TE extends TileArchitecture>
         extends BlockContainer implements ITextureConsumer {
 
-    public static final IUnlistedProperty<World> WORLD_PROP = new IUnlistedProperty<World>() {
+    public static final IUnlistedProperty<IBlockAccess> BLOCKACCESS_PROP = new IUnlistedProperty<IBlockAccess>() {
         @Override
         public String getName() {
-            return "unlistedworld";
+            return "blockaccessprop";
         }
 
         @Override
-        public boolean isValid(World value) {
+        public boolean isValid(IBlockAccess value) {
             return true;
         }
 
         @Override
-        public Class<World> getType() {
-            return World.class;
+        public Class<IBlockAccess> getType() {
+            return IBlockAccess.class;
         }
 
         @Override
-        public String valueToString(World value) {
+        public String valueToString(IBlockAccess value) {
             return value.toString();
         }
     };
+
     public static final IUnlistedProperty<BlockPos> POS_PROP = new IUnlistedProperty<BlockPos>() {
         @Override
         public String getName() {
@@ -211,7 +212,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
         IProperty[] props = Arrays.copyOf(properties, numProperties);
         if (debugState)
             System.out.printf("BaseBlock.createBlockState: Creating BlockState with %s properties\n", props.length);
-        return new ExtendedBlockState(this, props, new IUnlistedProperty[]{WORLD_PROP, POS_PROP});
+        return new ExtendedBlockState(this, props, new IUnlistedProperty[]{BLOCKACCESS_PROP, POS_PROP});
     }
 
     private void dumpProperties() {
@@ -363,13 +364,14 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        if (worldIn instanceof World && state instanceof IExtendedBlockState) {
+    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+        state = super.getExtendedState(state, world, pos);
+        if (state instanceof IExtendedBlockState) {
             IExtendedBlockState eState = (IExtendedBlockState) state;
-            return super.getActualState(eState.withProperty(WORLD_PROP, (World) worldIn)
-                    .withProperty(POS_PROP, pos), worldIn, pos);
+            eState = eState.withProperty(POS_PROP, pos).withProperty(BLOCKACCESS_PROP, world);
+            return eState;
         } else {
-            return super.getActualState(state, worldIn, pos);
+            return super.getExtendedState(state, world, pos);
         }
     }
 

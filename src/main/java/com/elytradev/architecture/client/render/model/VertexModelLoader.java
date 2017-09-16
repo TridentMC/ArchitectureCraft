@@ -25,12 +25,11 @@
 package com.elytradev.architecture.client.render.model;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
+import com.elytradev.architecture.common.ArchitectureMod;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
-
-import static com.elytradev.architecture.common.ArchitectureMod.MOD_ID;
 
 public class VertexModelLoader implements ICustomModelLoader {
 
@@ -38,8 +37,17 @@ public class VertexModelLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
-        return modelLocation.getResourceDomain().equals(MOD_ID) &&
-                ClientProxy.RENDERING_MANAGER.pathUsesVertexModel(modelLocation.getResourcePath());
+        if (modelLocation.getResourceDomain().equals(ArchitectureMod.MOD_ID)) {
+            boolean response = ClientProxy.RENDERING_MANAGER.pathUsesVertexModel(modelLocation.getResourcePath());
+            if (ArchitectureMod.INDEV) {
+                ArchitectureMod.LOG.info("Asked for {}, responded with {}", modelLocation,
+                        response ? "yes." : "no.");
+            }
+
+            return response;
+        }
+
+        return false;
     }
 
     @Override

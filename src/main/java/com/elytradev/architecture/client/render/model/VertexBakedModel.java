@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -51,13 +52,13 @@ public class VertexBakedModel implements IBakedModel {
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState eState = (IExtendedBlockState) state;
-            return getModel(eState.getValue(BlockArchitecture.WORLD_PROP), eState.getValue(BlockArchitecture.POS_PROP), state).getQuads(state, side, 0);
+            return getModel(eState.getValue(BlockArchitecture.BLOCKACCESS_PROP), eState.getValue(BlockArchitecture.POS_PROP), state).getQuads(state, side, 0);
         } else {
             return Collections.emptyList();
         }
     }
 
-    private IBakedModel getModel(World world, BlockPos pos, IBlockState state) {
+    private IBakedModel getModel(IBlockAccess world, BlockPos pos, IBlockState state) {
         IBakedModel out = null;
         RenderingManager renderingManager = ClientProxy.RENDERING_MANAGER;
         ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
