@@ -24,11 +24,11 @@
 
 package com.elytradev.architecture.client.render.model;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.ICustomRenderer;
+import com.elytradev.architecture.client.render.RenderingManager;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.common.block.BlockArchitecture;
-import com.elytradev.architecture.legacy.base.BaseRenderingManager;
-import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
@@ -59,7 +59,7 @@ public class VertexBakedModel implements IBakedModel {
 
     private IBakedModel getModel(World world, BlockPos pos, IBlockState state) {
         IBakedModel out = null;
-        BaseRenderingManager renderingManager = ArchitectureCraft.mod.client.getRenderingManager();
+        RenderingManager renderingManager = ClientProxy.RENDERING_MANAGER;
         ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
         if (rend != null) {
             Trans3 t = Trans3.blockCenter;

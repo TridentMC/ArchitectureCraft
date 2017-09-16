@@ -24,7 +24,6 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.legacy.base.BaseMod;
 import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import net.minecraft.block.Block;
@@ -186,7 +185,7 @@ public class TileSawbench extends TileArchitectureInventory {
                 selectedSlots[selectedPage] = slot;
                 markDirty();
                 updateResultSlot();
-                BaseMod.sendTileEntityUpdate(this);
+                sendTileEntityUpdate();
             }
         }
     }

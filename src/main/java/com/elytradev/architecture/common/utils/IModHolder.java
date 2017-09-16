@@ -24,8 +24,8 @@
 
 package com.elytradev.architecture.common.utils;
 
-import com.elytradev.architecture.legacy.base.BaseMod;
+import com.elytradev.architecture.common.ArchitectureMod;
 
 public interface IModHolder {
-    void setMod(BaseMod mod);
+    void setMod(ArchitectureMod mod);
 }

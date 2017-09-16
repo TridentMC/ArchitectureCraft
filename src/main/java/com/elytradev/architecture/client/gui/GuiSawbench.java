@@ -24,13 +24,12 @@
 
 package com.elytradev.architecture.client.gui;
 
-import com.elytradev.architecture.common.tile.TileSawbench;
-import com.elytradev.architecture.legacy.base.BaseDataChannel.ChannelOutput;
-import com.elytradev.architecture.legacy.base.BaseGui;
-import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import com.elytradev.architecture.common.tile.ContainerSawbench;
+import com.elytradev.architecture.common.tile.TileSawbench;
+import com.elytradev.architecture.legacy.base.BaseDataChannel.ChannelOutput;
+import com.elytradev.architecture.legacy.base.BaseGui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -142,26 +141,6 @@ public class GuiSawbench extends BaseGui.Screen {
         gRestore();
     }
 
-//	ITexture shapeMenuItemTextures[] = {
-//		new BaseTexture.Solid(0.25, 0.5, 1),
-//		new BaseTexture.Solid(1, 0, 0)
-//	};
-
-//	protected Trans3 shapeMenuItemTransformation =
-//		new Trans3(0, 0, 20).rotZ(180).rotX(-30).rotY(45).scale(10);
-
-//	void drawShapeMenuItem(Shape shape, float x, float y) {
-//		//glDisable(GL_DEPTH_TEST);
-//		glPushMatrix();
-//		glTranslatef(x, y, 0);
-//		BaseGLRenderTarget target = new BaseGLRenderTarget();
-//		target.start();
-//		ArchitectureCraftClient.shapeRenderDispatch.renderShape(null, null, shape,
-//			shapeMenuItemTextures,target, shapeMenuItemTransformation);
-//		target.finish();
-//		glPopMatrix();
-//	}
-
     void drawShapeSelection() {
         int i = te.selectedSlots[te.selectedPage];
         int row = i / shapeMenuCols;
@@ -218,10 +197,11 @@ public class GuiSawbench extends BaseGui.Screen {
     }
 
     protected void sendSelectShape(int page, int slot) {
-        ChannelOutput data = ArchitectureCraft.channel.openServerContainer("SelectShape");
-        data.writeInt(page);
-        data.writeInt(slot);
-        data.close();
+        //TODO: Concrete networking.
+        //ChannelOutput data = ArchitectureCraft.channel.openServerContainer("SelectShape");
+        //data.writeInt(page);
+        //data.writeInt(slot);
+        //data.close();
     }
 
 }

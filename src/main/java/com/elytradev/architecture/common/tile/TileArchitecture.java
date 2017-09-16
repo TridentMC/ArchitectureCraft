@@ -30,18 +30,23 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.lang.reflect.Field;
 
@@ -68,6 +73,23 @@ public abstract class TileArchitecture extends TileEntity {
             stack.setTagCompound(tag);
         }
         return stack;
+    }
+
+    public void sendTileEntityUpdate() {
+        Packet packet = getUpdatePacket();
+        if (packet != null) {
+            BlockPos pos = getPos();
+            int x = pos.getX() >> 4;
+            int z = pos.getZ() >> 4;
+            WorldServer world = (WorldServer) getWorld();
+            PlayerList cm = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
+            PlayerChunkMap pm = world.getPlayerChunkMap();
+            for (EntityPlayerMP player : cm.getPlayers()) {
+                if (pm.isPlayerWatchingChunk(player, x, z)) {
+                    player.connection.sendPacket(packet);
+                }
+            }
+        }
     }
 
     public int getX() {

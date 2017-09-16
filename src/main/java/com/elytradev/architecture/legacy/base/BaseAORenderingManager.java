@@ -24,14 +24,13 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
-import com.elytradev.architecture.common.utils.ReflectionUtils;
 import com.elytradev.architecture.common.helpers.Trans3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -41,19 +40,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 //TODO: Kill this horrible mess.
-public class BaseAORenderingManager extends BaseRenderingManager {
-
-    public BaseAORenderingManager(BaseModClient client) {
-        super(client);
-    }
-
-    @Override
-    protected void enableCustomRendering() {
-        super.enableCustomRendering();
-        Minecraft mc = Minecraft.getMinecraft();
-        blockRendererDispatcher = new CustomBlockRendererDispatcher(blockRendererDispatcher);
-        ReflectionUtils.setField(mc, "blockRenderDispatcher", "field_175618_aM", blockRendererDispatcher);
-    }
+public class BaseAORenderingManager {
 
     protected class CustomBlockRendererDispatcher extends BlockRendererDispatcher {
 
@@ -86,7 +73,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
 
         @Override
         public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite icon, IBlockAccess world) {
-            ICustomRenderer rend = getCustomRenderer(world, pos, state);
+            ICustomRenderer rend = ClientProxy.RENDERING_MANAGER.getCustomRenderer(world, pos, state);
             if (rend != null) {
                 RenderTargetBaked target = new RenderTargetBaked(pos, icon);
                 Trans3 t = Trans3.blockCenter;
@@ -103,7 +90,7 @@ public class BaseAORenderingManager extends BaseRenderingManager {
 
         @Override
         public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, BufferBuilder tess) {
-            ICustomRenderer rend = getCustomRenderer(world, pos, state);
+            ICustomRenderer rend = ClientProxy.RENDERING_MANAGER.getCustomRenderer(world, pos, state);
             if (rend != null)
                 return customRenderBlockToWorld(world, pos, state, tess, null, rend);
             else

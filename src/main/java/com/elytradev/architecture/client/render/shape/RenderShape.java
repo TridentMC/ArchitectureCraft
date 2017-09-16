@@ -24,11 +24,11 @@
 
 package com.elytradev.architecture.client.render.shape;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.legacy.common.ArchitectureCraft;
 import com.elytradev.architecture.common.helpers.Trans3;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -54,22 +54,7 @@ public abstract class RenderShape {
     protected abstract void render();
 
     protected IRenderableModel getModel(String name) {
-        return ArchitectureCraft.mod.client.getModel(name);
+        return ClientProxy.RENDERING_MANAGER.getModel(name);
     }
-
-//	protected TileEntity getTileEntityInGlobalDir(EnumFacing gdir) {
-//		if (blockWorld != null)
-//			return blockWorld.getTileEntity(blockPos.offset(gdir));
-//		else
-//			return null;
-//	}
-//
-//	protected ShapeTE getShapeTEInGlobalDir(EnumFacing gdir) {
-//		TileEntity te = getTileEntityInGlobalDir(gdir);
-//		if (te instanceof ShapeTE)
-//			return (ShapeTE)te;
-//		else
-//			return null;
-//	}
 
 }

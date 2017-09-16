@@ -24,12 +24,12 @@
 
 package com.elytradev.architecture.common.block;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.utils.MiscUtils;
-import com.elytradev.architecture.legacy.base.BaseMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
@@ -120,7 +120,6 @@ public class BlockArchitecture<TE extends TileArchitecture>
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
-    public BaseMod mod;
     protected MapColor mapColor;
     protected IProperty[] properties;
     // --------------------------- Members -------------------------------
@@ -561,7 +560,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                            Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IRenderableModel model = mod.getModel(spec.modelName);
+            IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel(spec.modelName);
             Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
@@ -594,7 +593,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                                     Trans3 t, Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IRenderableModel model = mod.getModel(spec.modelName);
+            IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel(spec.modelName);
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
             model.addBoxesToList(t.translate(spec.origin), list);
             return list;

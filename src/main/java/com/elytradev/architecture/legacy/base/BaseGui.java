@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
-import com.elytradev.architecture.common.utils.IModHolder;
+import com.elytradev.architecture.common.ArchitectureMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -145,7 +145,7 @@ public class BaseGui {
         void perform();
     }
 
-    public static class Screen extends GuiContainer implements IModHolder {
+    public static class Screen extends GuiContainer {
 
         protected Root root;
         protected String title;
@@ -178,11 +178,6 @@ public class BaseGui {
 
         public int getHeight() {
             return ySize;
-        }
-
-        @Override
-        public void setMod(BaseMod mod) {
-            this.mod = mod;
         }
 
         @Override
@@ -235,7 +230,7 @@ public class BaseGui {
         }
 
         public void bindTexture(String path, int usize, int vsize) {
-            bindTexture(mod.client.textureLocation(path), usize, vsize);
+            bindTexture(new ResourceLocation(ArchitectureMod.MOD_ID, "textures/" + path), usize, vsize);
         }
 
         public void bindTexture(ResourceLocation rsrc) {

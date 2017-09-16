@@ -31,11 +31,11 @@ import com.elytradev.architecture.common.item.ItemChisel;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.item.ItemHammer;
 import com.elytradev.architecture.common.shape.ShapeItem;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -73,11 +73,23 @@ public class ArchitectureContent {
     public ItemCladding itemCladding;
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
-    public static HashMap<String, Block> registeredBlocks;
-    public static HashMap<String, Item> registeredItems;
+    public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
+    public static HashMap<String, Item> registeredItems = Maps.newHashMap();
 
-    private static List<Item> itemBlocksToRegister;
+    private static List<Item> itemBlocksToRegister = Lists.newArrayList();
     private int recipeID = 0;
+
+    public void preInit(FMLPreInitializationEvent e) {
+
+    }
+
+    public void init(FMLInitializationEvent e) {
+
+    }
+
+    public void postInit(FMLPostInitializationEvent e) {
+
+    }
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
@@ -94,49 +106,47 @@ public class ArchitectureContent {
         this.itemChisel = registerItem(registry, "chisel", new ItemChisel());
         this.itemHammer = registerItem(registry, "hammer", new ItemHammer());
         this.itemCladding = registerItem(registry, "cladding", new ItemCladding());
+
+        this.itemBlocksToRegister.forEach(registry::register);
     }
 
     @SubscribeEvent
     public void onRecipeRegister(RegistryEvent.Register<IRecipe> event) {
         IForgeRegistry<IRecipe> registry = event.getRegistry();
-        ItemStack orangeDye = new ItemStack(Items.DYE, 1, EnumDyeColor.ORANGE.getDyeDamage());
-        registerShapedRecipe(registry, blockSawbench, 1,
+        registerShapedRecipe(registry, blockSawbench,
                 "I*I",
                 "/0/",
                 "/_/",
-                'I', Items.IRON_INGOT, '*', itemSawblade, '/', Items.STICK,
-                '_', Blocks.WOODEN_PRESSURE_PLATE, '0', itemLargePulley);
-        registerShapedRecipe(registry, itemSawblade, 1,
+                'I', "ingotIron",
+                '*', itemSawblade,
+                '/', "stickWood",
+                '_', Blocks.WOODEN_PRESSURE_PLATE,
+                '0', itemLargePulley);
+        registerShapedRecipe(registry, itemSawblade,
                 " I ",
                 "I/I",
                 " I ",
-                'I', Items.IRON_INGOT, '/', Items.STICK);
-        registerShapedRecipe(registry, itemLargePulley, 1,
+                'I', "ingotIron",
+                '/', "stickWood");
+        registerShapedRecipe(registry, itemLargePulley,
                 " W ",
                 "W/W",
                 " W ",
-                'W', Blocks.PLANKS, '/', Items.STICK);
-        registerShapedRecipe(registry, itemChisel, 1,
+                'W', "plankWood",
+                '/', "stickWood");
+        registerShapedRecipe(registry, itemChisel,
                 "I ",
                 "ds",
-                'I', Items.IRON_INGOT, 's', Items.STICK, 'd', orangeDye);
-        registerShapedRecipe(registry, itemHammer, 1,
+                'I', "ingotIron",
+                's', "stickWood",
+                'd', "dyeOrange");
+        registerShapedRecipe(registry, itemHammer,
                 "II ",
                 "dsI",
                 "ds ",
-                'I', Items.IRON_INGOT, 's', Items.STICK, 'd', orangeDye);
-    }
-
-    public void preInit(FMLPreInitializationEvent e) {
-
-    }
-
-    public void init(FMLInitializationEvent e) {
-
-    }
-
-    public void postInit(FMLPostInitializationEvent e) {
-
+                'I', "ingotIron",
+                's', "stickWood",
+                'd', "dyeOrange");
     }
 
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, Block out, Object... input) {

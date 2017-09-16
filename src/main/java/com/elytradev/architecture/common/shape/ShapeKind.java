@@ -24,22 +24,23 @@
 
 package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
-import com.elytradev.architecture.client.render.target.RenderTargetBase;
-import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.common.block.BlockHelper;
-import com.elytradev.architecture.common.block.BlockShape;
-import com.elytradev.architecture.common.tile.TileArchitecture;
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.common.utils.MiscUtils;
 import com.elytradev.architecture.client.render.model.RenderableModel;
 import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
-import com.elytradev.architecture.legacy.common.ArchitectureCraft;
+import com.elytradev.architecture.client.render.target.RenderTargetBase;
+import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.ArchitectureMod;
+import com.elytradev.architecture.common.block.BlockHelper;
+import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.helpers.Profile;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileArchitecture;
+import com.elytradev.architecture.common.tile.TileShape;
+import com.elytradev.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
@@ -94,7 +95,7 @@ public abstract class ShapeKind {
     public ItemStack newStack(Shape shape, IBlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
         int light = te.baseBlockState.getLightValue();
-        return TileArchitecture.blockStackWithTileEntity(ArchitectureCraft.blockShape, stackSize, light, te);
+        return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
     }
 
     public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
@@ -171,7 +172,7 @@ public abstract class ShapeKind {
 
     public ItemStack newSecondaryMaterialStack(IBlockState state) {
         if (acceptsCladding())
-            return ArchitectureCraft.itemCladding.newStack(state, 1);
+            return ArchitectureMod.CONTENT.itemCladding.newStack(state, 1);
         else
             return null;
     }
@@ -459,7 +460,7 @@ public abstract class ShapeKind {
 
         protected IRenderableModel getModel() {
             if (model == null)
-                model = ArchitectureCraft.mod.getModel(modelName);
+                model = ClientProxy.RENDERING_MANAGER.getModel(modelName);
             return model;
         }
 
@@ -668,7 +669,7 @@ public abstract class ShapeKind {
 
         @Override
         public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
-            return ArchitectureCraft.itemCladding.newStack(materialBlock, materialMeta, stackSize);
+            return ArchitectureMod.CONTENT.itemCladding.newStack(materialBlock, materialMeta, stackSize);
         }
 
     }

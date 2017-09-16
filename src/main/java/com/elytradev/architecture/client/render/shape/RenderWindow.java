@@ -24,22 +24,20 @@
 
 package com.elytradev.architecture.client.render.shape;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.architecture.legacy.client.ArchitectureCraftClient;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.shape.ShapeKind;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class RenderWindow extends RenderShape {
 
-    //-----------------------------------------------------------------
-
-    protected static ArchitectureCraftClient client;
-
-    //-----------------------------------------------------------------
     protected static WindowModels frameModels, cornerModels, mullionModels;
     protected boolean renderBase, renderSecondary;
     protected ShapeKind.Window kind;
@@ -54,7 +52,7 @@ public class RenderWindow extends RenderShape {
 
     protected static IRenderableModel model(String name) {
         if (name != null)
-            return client.getModel("shape/window_" + name + ".smeg");
+            return ClientProxy.RENDERING_MANAGER.getModel("shape/window_" + name + ".smeg");
         else
             return null;
     }
@@ -74,9 +72,7 @@ public class RenderWindow extends RenderShape {
         return result;
     }
 
-    public static void init(ArchitectureCraftClient client) {
-        RenderWindow.client = client;
-
+    public static void init() {
         frameModels = new WindowModels(
                 null,
                 null,

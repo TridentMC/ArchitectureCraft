@@ -25,18 +25,17 @@
 package com.elytradev.architecture.client.render;
 
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.model.RenderableModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
+import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.legacy.base.BaseModelRenderer;
-import com.elytradev.architecture.client.render.model.RenderableModel;
-import com.elytradev.architecture.legacy.base.BaseRenderingManager;
-import com.elytradev.architecture.legacy.common.ArchitectureCraft;
-import com.elytradev.architecture.common.helpers.Trans3;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
@@ -73,16 +72,15 @@ public class RenderingManager {
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
     protected boolean customRenderingRequired;
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
-    protected List<BaseRenderingManager.CustomBakedModel> bakedModels = new ArrayList<>();
+    protected List<CustomBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
     private Map<ResourceLocation, IRenderableModel> modelCache;
 
-
-    protected boolean blockNeedsCustomRendering(Block block) {
+    public boolean blockNeedsCustomRendering(Block block) {
         return blockRenderers.containsKey(block) || specifiesTextures(block);
     }
 
-    protected boolean itemNeedsCustomRendering(Item item) {
+    public boolean itemNeedsCustomRendering(Item item) {
         return itemRenderers.containsKey(item) || specifiesTextures(item);
     }
 
@@ -91,7 +89,7 @@ public class RenderingManager {
     }
 
     public ResourceLocation modelLocation(String path) {
-        return new ResourceLocation(ArchitectureCraft.MOD_ID, "models/" + path);
+        return new ResourceLocation(ArchitectureMod.MOD_ID, "models/" + path);
     }
 
     public IRenderableModel getModel(String name) {
@@ -140,7 +138,7 @@ public class RenderingManager {
 
     public ResourceLocation textureResourceLocation(int type, String name) {
         // TextureMap adds "textures/"
-        return new ResourceLocation(ArchitectureCraft.MOD_ID, texturePrefixes[type] + name);
+        return new ResourceLocation(ArchitectureMod.MOD_ID, texturePrefixes[type] + name);
     }
 
     public ITexture getTexture(int type, String name) {
@@ -159,6 +157,21 @@ public class RenderingManager {
             return ((BlockArchitecture) block).getParticleState(world, pos);
         else
             return block.getActualState(state, world, pos);
+    }
+
+    public boolean pathUsesVertexModel(String resourcePath) {
+        if (resourcePath.contains("item")) {
+            return false;
+        }
+        return blockRenderers.keySet().stream().anyMatch(block -> resourcePath.contains(block.getRegistryName().getResourcePath()));
+    }
+
+    public void addBlockRenderer(Block block, ICustomRenderer renderer) {
+        blockRenderers.put(block, renderer);
+    }
+
+    public void addItemRenderer(Item item, ICustomRenderer renderer) {
+        itemRenderers.put(item, renderer);
     }
 
     protected static class CustomBlockStateMapper extends DefaultStateMapper {
@@ -308,7 +321,7 @@ public class RenderingManager {
         protected ItemOverrideList itemOverrideList = new CustomItemRenderOverrideList();
 
         public CustomItemBakedModel() {
-            this.location = new ModelResourceLocation(new ResourceLocation(ArchitectureCraft.MOD_ID, "__custitem__"), "");
+            this.location = new ModelResourceLocation(new ResourceLocation(ArchitectureMod.MOD_ID, "__custitem__"), "");
         }
 
         @Override
