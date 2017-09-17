@@ -24,8 +24,10 @@
 
 package com.elytradev.architecture.client.render.target;
 
+import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -154,7 +156,23 @@ public class RenderTargetBaked extends RenderTargetBase {
             ++n;
         }
         prescrambleVertexColors(data);
-        quads.add(new BakedQuad(data, 0, EnumFacing.UP, null)); //FIXME I don't think there should be a null here    }
+        quads.add(new BakedQuad(data, 0, EnumFacing.UP, getActiveTexture())); //FIXME I don't think there should be a null here    }
+    }
+
+    private TextureAtlasSprite getActiveTexture() {
+        // Use missingno as a fallback
+        TextureAtlasSprite activeTexture = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        if (texture instanceof TextureBase.Sprite) {
+            TextureBase.Sprite sprite = (TextureBase.Sprite) texture;
+            activeTexture = sprite.icon;
+        } else if (texture instanceof TextureBase.Proxy) {
+            TextureBase.Proxy proxySprite = (TextureBase.Proxy) texture;
+            if (proxySprite.base instanceof TextureBase.Sprite) {
+                activeTexture = ((TextureBase.Sprite) proxySprite.base).icon;
+            }
+        }
+
+        return activeTexture;
     }
 
     protected void dumpVertexData(int[] data, int n) {

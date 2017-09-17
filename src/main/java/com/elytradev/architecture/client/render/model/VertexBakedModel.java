@@ -30,6 +30,7 @@ import com.elytradev.architecture.client.render.RenderingManager;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -38,6 +39,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -137,7 +139,7 @@ public class VertexBakedModel implements IBakedModel {
     public TextureAtlasSprite getParticleTexture() {
         // no blockstate param
         // TODO: Override default stuff in BlockArchitecture.
-        return null;
+        return Utils.getSpriteForBlockState(Blocks.PLANKS.getDefaultState());
     }
 
     @Override

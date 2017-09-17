@@ -65,6 +65,8 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     }
 
     protected boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+        if (layer == null)
+            return true;
         return state != null && state.getBlock().canRenderInLayer(state, layer);
     }
 
@@ -116,6 +118,8 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);
             Trans3 t2 = t.t(te.localToGlobalRotation());
+            renderPrimary = canRenderInLayer(te.baseBlockState, layer);
+            renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
             renderShapeTE(TileShape.get(world, pos), target, t2, renderPrimary, renderSecondary);
         }
     }
