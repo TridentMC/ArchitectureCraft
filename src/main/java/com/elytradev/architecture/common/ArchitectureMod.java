@@ -25,11 +25,8 @@
 package com.elytradev.architecture.common;
 
 import com.elytradev.architecture.common.proxy.CommonProxy;
-import com.elytradev.probe.api.IProbeDataProvider;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;

@@ -27,34 +27,12 @@ package com.elytradev.architecture.common.proxy;
 import com.elytradev.architecture.common.ArchitectureGuiHandler;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.network.ArchitectureNetworking;
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.probe.api.IProbeData;
-import com.elytradev.probe.api.IProbeDataProvider;
-import com.elytradev.probe.api.impl.ProbeData;
-import com.google.common.collect.ImmutableList;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class CommonProxy {
 

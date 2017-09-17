@@ -30,12 +30,13 @@ import com.elytradev.architecture.client.render.RenderingManager;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
-import com.elytradev.architecture.common.helpers.Utils;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -47,110 +48,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_SMOOTH;
-
 public class VertexBakedModel implements IBakedModel {
-
-    @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-        if (state instanceof IExtendedBlockState) {
-            IExtendedBlockState eState = (IExtendedBlockState) state;
-            return getModel(eState.getValue(BlockArchitecture.BLOCKACCESS_PROP), eState.getValue(BlockArchitecture.POS_PROP), state).getQuads(state, side, 0);
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    private IBakedModel getModel(IBlockAccess world, BlockPos pos, IBlockState state) {
-        IBakedModel out = null;
-        RenderingManager renderingManager = ClientProxy.RENDERING_MANAGER;
-        ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
-        if (rend != null) {
-            Trans3 t = Trans3.blockCenter;
-            Block block = state.getBlock();
-            IBakedModel primary, secondary;
-            primary = secondary = null;
-            // Render Primary.
-            if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
-                TextureAtlasSprite sprite = Utils.getSpriteForPos(world, pos, true);
-                if (sprite != null) {
-                    RenderTargetBaked target = new RenderTargetBaked(pos, sprite);
-
-                    rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t, true, false);
-                    primary = target.getBakedModel();
-                }
-            }
-            // Render Secondary.
-            if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
-                TextureAtlasSprite sprite = Utils.getSpriteForPos(world, pos, false);
-                if (sprite != null) {
-                    RenderTargetBaked target = new RenderTargetBaked(pos, sprite);
-
-                    rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t, false, true);
-                    secondary = target.getBakedModel();
-                }
-            }
-
-            boolean added = false;
-            MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
-            if (primary != null) {
-                builder.putModel((o) -> true, primary);
-                added = true;
-            }
-            if (secondary != null) {
-                builder.putModel((o) -> true, secondary);
-                added = true;
-            }
-            if (added) {
-                out = builder.makeMultipartModel();
-            } else {
-                // Backup in case the multipart fails, fallback to state based render in the current layer.
-                if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
-                    rend = ClientProxy.RENDERING_MANAGER.getCustomRendererForState(state);
-                    if (rend != null) {
-                        RenderTargetBaked target = new RenderTargetBaked();
-                        rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t);
-                        return target.getBakedModel();
-                    }
-                }
-                return emptyModel;
-            }
-        }
-
-        return out;
-    }
-
-    @Override
-    public boolean isAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return true;
-    }
-
-    @Override
-    public boolean isBuiltInRenderer() {
-        return false;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture() {
-        // no blockstate param
-        // TODO: Override default stuff in BlockArchitecture.
-        return null;
-    }
-
-    @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-        return ItemCameraTransforms.DEFAULT;
-    }
-
-    @Override
-    public ItemOverrideList getOverrides() {
-        return ItemOverrideList.NONE;
-    }
 
     private IBakedModel emptyModel = new IBakedModel() {
         @Override
@@ -188,4 +86,67 @@ public class VertexBakedModel implements IBakedModel {
             return ItemOverrideList.NONE;
         }
     };
+
+    @Override
+    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+        if (state instanceof IExtendedBlockState) {
+            IExtendedBlockState eState = (IExtendedBlockState) state;
+            return getModel(eState.getValue(BlockArchitecture.BLOCKACCESS_PROP), eState.getValue(BlockArchitecture.POS_PROP), state).getQuads(state, side, 0);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private IBakedModel getModel(IBlockAccess world, BlockPos pos, IBlockState state) {
+        IBakedModel out = emptyModel;
+        RenderingManager renderingManager = ClientProxy.RENDERING_MANAGER;
+        ICustomRenderer rend = renderingManager.getCustomRenderer(world, pos, state);
+        if (rend != null) {
+            Trans3 t = Trans3.blockCenter;
+            Block block = state.getBlock();
+            // Render model and export bakedmodel if present.
+            if (block.canRenderInLayer(state, MinecraftForgeClient.getRenderLayer())) {
+                rend = ClientProxy.RENDERING_MANAGER.getCustomRendererForState(state);
+                if (rend != null) {
+                    RenderTargetBaked target = new RenderTargetBaked();
+                    rend.renderBlock(world, pos, state, target, MinecraftForgeClient.getRenderLayer(), t);
+                    out = target.getBakedModel();
+                }
+            }
+        }
+
+        return out;
+    }
+
+    @Override
+    public boolean isAmbientOcclusion() {
+        return true;
+    }
+
+    @Override
+    public boolean isGui3d() {
+        return true;
+    }
+
+    @Override
+    public boolean isBuiltInRenderer() {
+        return false;
+    }
+
+    @Override
+    public TextureAtlasSprite getParticleTexture() {
+        // no blockstate param
+        // TODO: Override default stuff in BlockArchitecture.
+        return null;
+    }
+
+    @Override
+    public ItemCameraTransforms getItemCameraTransforms() {
+        return ItemCameraTransforms.DEFAULT;
+    }
+
+    @Override
+    public ItemOverrideList getOverrides() {
+        return ItemOverrideList.NONE;
+    }
 }

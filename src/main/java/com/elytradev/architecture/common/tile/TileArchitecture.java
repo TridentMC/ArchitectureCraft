@@ -57,10 +57,10 @@ public abstract class TileArchitecture extends TileEntity {
     protected static Field changedSectionFilter = getFieldDef(
             classForName("net.minecraft.server.management.PlayerChunkMapEntry"),
             "changedSectionFilter", "field_187288_h");
-    private byte side;
-    private byte turn;
     public Ticket chunkTicket;
     protected boolean updateChunk;
+    private byte side;
+    private byte turn;
 
     public static ItemStack blockStackWithTileEntity(Block block, int size, TileArchitecture te) {
         return blockStackWithTileEntity(block, size, 0, te);
