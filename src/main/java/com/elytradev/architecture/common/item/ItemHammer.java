@@ -41,10 +41,8 @@ public class ItemHammer extends Item {
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        System.out.printf("HammerItem.onItemUse\n");
         TileShape te = TileShape.get(world, pos);
         if (te != null) {
-            System.out.printf("HammerItem.onItemUse: te = %s\n", te);
             te.onHammerUse(player, side, hitX, hitY, hitZ);
             return EnumActionResult.SUCCESS;
         }

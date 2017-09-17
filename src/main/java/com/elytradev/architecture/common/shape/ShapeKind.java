@@ -114,16 +114,16 @@ public abstract class ShapeKind {
                                      Vector3 hit) {
         //boolean debug = !te.getWorld().isRemote;
         if (nte != null && !player.isSneaking()) {
-            Object otherProfile = Profile.getProfileGlobal(nte.shape, nte.side, nte.turn, otherFace);
+            Object otherProfile = Profile.getProfileGlobal(nte.shape, nte.getSide(), nte.getTurn(), otherFace);
             if (otherProfile != null) {
                 EnumFacing thisFace = otherFace.getOpposite();
                 for (int i = 0; i < 4; i++) {
-                    int turn = (nte.turn + i) & 3;
-                    Object thisProfile = Profile.getProfileGlobal(te.shape, nte.side, turn, thisFace);
+                    int turn = (nte.getTurn() + i) & 3;
+                    Object thisProfile = Profile.getProfileGlobal(te.shape, nte.getSide(), turn, thisFace);
                     if (Profile.matches(thisProfile, otherProfile)) {
                         //if (debug)
                         //	System.out.printf("ShapeKind.orientOnPlacement: side %s turn %s\n", nte.side, turn);
-                        te.setSide(nte.side);
+                        te.setSide(nte.getSide());
                         te.setTurn(turn);
                         te.setOffsetX(nte.getOffsetX());
                         return true;
@@ -178,9 +178,8 @@ public abstract class ShapeKind {
     }
 
     public void onHammerUse(TileShape te, EntityPlayer player, EnumFacing face, Vector3 hit) {
-        //System.out.printf("ShapeKind.onHammerUse\n");
         if (player.isSneaking())
-            te.setSide((te.side + 1) % 6);
+            te.setSide((te.getSide() + 1) % 6);
         else {
             double dx = te.getOffsetX();
             if (dx != 0) {
@@ -188,15 +187,13 @@ public abstract class ShapeKind {
                 te.setOffsetX(dx);
             }
             if (dx >= 0)
-                te.setTurn((te.turn + 1) % 4);
+                te.setTurn((te.getTurn() + 1) % 4);
         }
         te.markBlockChanged();
     }
 
     public EnumFacing zoneHit(EnumFacing face, Vector3 hit) {
         double r = 0.5 - sideZoneSize();
-        //System.out.printf("ShapeKind.zoneHit: hit = (%.3f,%.3f,%.3f) r = %.3f\n",
-        //	hit.x, hit.y, hit.z, r);
         if (hit.x <= -r && face != WEST) return WEST;
         if (hit.x >= r && face != EAST) return EAST;
         if (hit.y <= -r && face != DOWN) return DOWN;
@@ -280,8 +277,6 @@ public abstract class ShapeKind {
 
     public static class Roof extends ShapeKind {
 
-//		static boolean debugPlacement = true;
-
         static {
             Profile.declareOpposite(RoofProfile.Left, RoofProfile.Right);
         }
@@ -295,35 +290,6 @@ public abstract class ShapeKind {
         public boolean secondaryDefaultsToBase() {
             return true;
         }
-
-//		@Override
-//		public boolean orientOnPlacement(EntityPlayer player, ShapeTE te, ShapeTE nte, EnumFacing face,
-//			Vector3 hit)
-//		{
-////			if (!te.getWorld().isRemote)
-////				System.out.printf("Roof.orientOnPlacement\n");
-//			if (!player.isSneaking() && nte != null && nte.shape.kind instanceof Roof) {
-//				EnumFacing nlf = nte.localFace(face);
-//				Profile np = profileForLocalFace(nte.shape, nlf);
-//				Profile p = opposite(np);
-//				EnumFacing lf = localFaceForProfile(te.shape, p);
-//				if (lf != null) {
-//					int turn = BaseUtils.turnToFace(lf, face.getOpposite());
-//					if (debugPlacement && !te.getWorld().isRemote) {
-//						System.out.printf(
-//							"Roof.orientOnPlacement: Aligning profile %s on local side %s of neighbour " +
-//							"with profile %s on local side %s\n", np, nlf, p, lf);
-//						System.out.printf("Roof.orientOnPlacement: Turning local side %s to face global direction %s\n",
-//							lf, face.getOpposite());
-//						System.out.printf("Roof.orientOnPlacement: side %s turn %s\n", nte.side, turn);
-//					}
-//					te.setSide(nte.side);
-//					te.setTurn(turn);
-//					return true;
-//				}
-//			}
-//			return false;
-//		}
 
         @Override
         public void renderShape(TileShape te,
@@ -709,8 +675,8 @@ public abstract class ShapeKind {
                 } else if (nblock instanceof BlockShape) {
                     if (nte instanceof TileShape) {
                         placedOnStair = true;
-                        nside = ((TileShape) nte).side;
-                        nturn = ((TileShape) nte).turn;
+                        nside = ((TileShape) nte).getSide();
+                        nturn = ((TileShape) nte).getTurn();
                     }
                 }
                 if (placedOnStair) {

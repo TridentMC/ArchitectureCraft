@@ -57,7 +57,8 @@ public abstract class TileArchitecture extends TileEntity {
     protected static Field changedSectionFilter = getFieldDef(
             classForName("net.minecraft.server.management.PlayerChunkMapEntry"),
             "changedSectionFilter", "field_187288_h");
-    public byte side, turn;
+    private byte side;
+    private byte turn;
     public Ticket chunkTicket;
     protected boolean updateChunk;
 
@@ -105,15 +106,11 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public void setSide(int side) {
-        this.side = (byte) side;
+        this.setSide((byte) side);
     }
 
-//  public Trans3 localToGlobalTransformation(double x, double y, double z) {
-//      return localToGlobalTransformation(new Vector3(x + 0.5, y + 0.5, z + 0.5);
-//  }
-
     public void setTurn(int turn) {
-        this.turn = (byte) turn;
+        this.setTurn((byte) turn);
     }
 
     public Trans3 localToGlobalRotation() {
@@ -199,8 +196,8 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        side = nbt.getByte("side");
-        turn = nbt.getByte("turn");
+        setSide(nbt.getByte("side"));
+        setTurn(nbt.getByte("turn"));
         readContentsFromNBT(nbt);
     }
 
@@ -220,10 +217,10 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        if (side != 0)
-            nbt.setByte("side", side);
-        if (turn != 0)
-            nbt.setByte("turn", turn);
+        if (getSide() != 0)
+            nbt.setByte("side", getSide());
+        if (getTurn() != 0)
+            nbt.setByte("turn", getTurn());
         writeContentsToNBT(nbt);
         return nbt;
     }
@@ -262,4 +259,19 @@ public abstract class TileArchitecture extends TileEntity {
         return blockStackWithTileEntity(getBlockType(), size, this);
     }
 
+    public byte getSide() {
+        return side;
+    }
+
+    public void setSide(byte side) {
+        this.side = side;
+    }
+
+    public byte getTurn() {
+        return turn;
+    }
+
+    public void setTurn(byte turn) {
+        this.turn = turn;
+    }
 }

@@ -114,7 +114,9 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
         if (TileShape.get(world, pos) != null) {
-            renderShapeTE(TileShape.get(world, pos), target, t, renderPrimary, renderSecondary);
+            TileShape te = TileShape.get(world, pos);
+            Trans3 t2 = t.t(te.localToGlobalRotation());
+            renderShapeTE(TileShape.get(world, pos), target, t2, renderPrimary, renderSecondary);
         }
     }
 

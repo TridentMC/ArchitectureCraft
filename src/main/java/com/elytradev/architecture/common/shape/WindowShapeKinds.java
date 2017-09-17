@@ -67,8 +67,8 @@ public class WindowShapeKinds {
                                          Vector3 hit) {
             if (nte != null && !player.isSneaking()) {
                 if (nte.shape.kind instanceof PlainWindow) {
-                    te.setSide(nte.side);
-                    te.setTurn(nte.turn);
+                    te.setSide(nte.getSide());
+                    te.setTurn(nte.getTurn());
                     return true;
                 }
                 if (nte.shape.kind instanceof CornerWindow) {
@@ -76,7 +76,7 @@ public class WindowShapeKinds {
                     FrameKind nfk = ((Window) nte.shape.kind).frameKindForLocalSide(nlf);
                     if (nfk == FrameKind.Plain) {
                         EnumFacing lf = face.getOpposite();
-                        te.setSide(nte.side);
+                        te.setSide(nte.getSide());
                         switch (nlf) {
                             case SOUTH:
                                 te.setTurn(MiscUtils.turnToFace(WEST, lf));
@@ -156,8 +156,8 @@ public class WindowShapeKinds {
                     FrameKind nfk = nsk.frameKindForLocalSide(nlf);
                     switch (nfk) {
                         case Corner:
-                            te.setSide(nte.side);
-                            te.setTurn(nte.turn);
+                            te.setSide(nte.getSide());
+                            te.setTurn(nte.getTurn());
                             return true;
                         case Plain:
                             EnumFacing nfo = nte.globalFace(nsk.frameOrientationForLocalSide(nlf));
@@ -176,8 +176,8 @@ public class WindowShapeKinds {
                 EnumFacing nlf = nte.localFace(face);
                 FrameKind nfk = nsk.frameKindForLocalSide(nlf);
                 if (nfk == FrameKind.Corner) {
-                    te.setSide(nte.side);
-                    te.setTurn(nte.turn);
+                    te.setSide(nte.getSide());
+                    te.setTurn(nte.getTurn());
                     return true;
                 }
             }
