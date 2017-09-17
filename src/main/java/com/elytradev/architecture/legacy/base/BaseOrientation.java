@@ -120,7 +120,7 @@ public class BaseOrientation {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileArchitecture) {
                 TileArchitecture bte = (TileArchitecture) te;
-                return Trans3.sideTurn(origin, bte.side, bte.turn);
+                return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(world, pos, state, origin);
         }
