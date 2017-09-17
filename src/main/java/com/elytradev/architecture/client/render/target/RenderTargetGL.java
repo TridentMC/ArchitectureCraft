@@ -25,6 +25,7 @@
 package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -48,9 +49,9 @@ public class RenderTargetGL extends RenderTargetBase {
 
     public void start(boolean usingLightmap) {
         this.usingLightmap = usingLightmap;
-        if (debugGL) System.out.printf("BaseGLRenderTarget: glPushAttrib()\n");
+        if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glPushAttrib()\n");
         glPushAttrib(GL_LIGHTING_BIT | GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
-        if (debugGL) System.out.printf("BaseGLRenderTarget: glEnable(GL_RESCALE_NORMAL)\n");
+        if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glEnable(GL_RESCALE_NORMAL)\n");
         glEnable(GL_RESCALE_NORMAL);
         glMode = 0;
         emissiveMode = -1;
@@ -64,7 +65,7 @@ public class RenderTargetGL extends RenderTargetBase {
             ResourceLocation loc = tex.location();
             if (loc != null) {
                 setGLMode(0);
-                if (debugGL) System.out.printf("BaseGLRenderTarget: bindTexture(%s)\n", loc);
+                if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: bindTexture(%s)\n", loc);
                 Minecraft.getMinecraft().renderEngine.bindTexture(loc);
             }
             setTexturedMode(!tex.isSolid());
@@ -75,7 +76,7 @@ public class RenderTargetGL extends RenderTargetBase {
     protected void setEmissiveMode(boolean state) {
         int mode = state ? 1 : 0;
         if (emissiveMode != mode) {
-            if (debugGL) System.out.printf("BaseGLRenderTarget: glSetEnabled(GL_LIGHTING, %s)\n", !state);
+            if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glSetEnabled(GL_LIGHTING, %s)\n", !state);
             glSetEnabled(GL_LIGHTING, !state);
             if (usingLightmap)
                 setLightmapEnabled(!state);
@@ -86,9 +87,9 @@ public class RenderTargetGL extends RenderTargetBase {
     protected void setTexturedMode(boolean state) {
         int mode = state ? 1 : 0;
         if (texturedMode != mode) {
-            //System.out.printf("BaseGLRenderTarget.setTexturedMode: %s\n", state);
+            //ArchitectureMod.LOG.info("BaseGLRenderTarget.setTexturedMode: %s\n", state);
             setGLMode(0);
-            if (debugGL) System.out.printf("BaseGLRenderTarget: glSetEnabled(GL_TEXTURE_2D, %s)\n", state);
+            if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glSetEnabled(GL_TEXTURE_2D, %s)\n", state);
             glSetEnabled(GL_TEXTURE_2D, state);
             texturedMode = mode;
         }
@@ -110,19 +111,19 @@ public class RenderTargetGL extends RenderTargetBase {
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
         setGLMode(verticesPerFace);
-        //System.out.printf("BaseGLRenderTarget: glColor4f(%.2f, %.2f, %.2f, %.2f)\n",
+        //ArchitectureMod.LOG.info("BaseGLRenderTarget: glColor4f(%.2f, %.2f, %.2f, %.2f)\n",
         //  r(), g(), b(), a());
         glColor4f(r(), g(), b(), a());
         glNormal3d(normal.x, normal.y, normal.z);
         glTexCoord2d(u, v);
-        if (debugGL) System.out.printf("BaseGLRenderTarget: glVertex3d%s\n", p);
+        if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glVertex3d%s\n", p);
         glVertex3d(p.x, p.y, p.z);
     }
 
     protected void setGLMode(int mode) {
         if (glMode != mode) {
             if (glMode != 0) {
-                if (debugGL) System.out.printf("BaseGLRenderTarget: glEnd()\n");
+                if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glEnd()\n");
                 glEnd();
             }
             glMode = mode;
@@ -130,11 +131,11 @@ public class RenderTargetGL extends RenderTargetBase {
                 case 0:
                     break;
                 case 3:
-                    if (debugGL) System.out.printf("BaseGLRenderTarget: glBegin(GL_TRIANGLES)\n");
+                    if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glBegin(GL_TRIANGLES)\n");
                     glBegin(GL_TRIANGLES);
                     break;
                 case 4:
-                    if (debugGL) System.out.printf("BaseGLRenderTarget: glBegin(GL_QUADS)\n");
+                    if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glBegin(GL_QUADS)\n");
                     glBegin(GL_QUADS);
                     break;
                 default:
@@ -148,7 +149,7 @@ public class RenderTargetGL extends RenderTargetBase {
         setGLMode(0);
         setEmissiveMode(false);
         setTexturedMode(true);
-        if (debugGL) System.out.printf("BaseGLRenderTarget: glPopAttrib()\n");
+        if (debugGL) ArchitectureMod.LOG.info("BaseGLRenderTarget: glPopAttrib()\n");
         glPopAttrib();
         super.finish();
     }

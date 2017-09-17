@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Profile;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
@@ -254,15 +255,15 @@ public enum Shape {
         }
         turn = turnForPlacementHit(side, hit, symmetry);
         if (debugPlacement && !te.getWorld().isRemote) {
-            System.out.printf("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
-            System.out.printf("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
+            ArchitectureMod.LOG.info("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
+            ArchitectureMod.LOG.info("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
         }
         te.setSide(side);
         te.setTurn(turn);
         if ((flags & PLACE_OFFSET) != 0) {
             te.setOffsetX(offsetXForPlacementHit(side, turn, hit));
             if (debugPlacement && !te.getWorld().isRemote)
-                System.out.printf("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
+                ArchitectureMod.LOG.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
         }
     }
 

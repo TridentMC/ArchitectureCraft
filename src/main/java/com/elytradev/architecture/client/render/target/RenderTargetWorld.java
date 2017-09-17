@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.client.render.target;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -53,7 +54,7 @@ public class RenderTargetWorld extends RenderTargetBase {
 
     public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
-        //System.out.printf("BaseWorldRenderTarget(%s)\n", pos);
+        //ArchitectureMod.LOG.info("BaseWorldRenderTarget(%s)\n", pos);
         this.world = world;
         this.blockPos = pos;
         this.blockState = world.getBlockState(pos);
@@ -68,7 +69,7 @@ public class RenderTargetWorld extends RenderTargetBase {
 
     @Override
     public void setNormal(Vector3 n) {
-//      System.out.printf("BaseWorldRenderer.setNormal: %s (%.3f, %.3f, %.3f)\n",
+//      ArchitectureMod.LOG.info("BaseWorldRenderer.setNormal: %s (%.3f, %.3f, %.3f)\n",
 //          vertexCount, n.x, n.y, n.z);
         super.setNormal(n);
         axisAlignedNormal = n.dot(face) >= 0.99;
@@ -77,7 +78,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
         lightVertex(p);
-        //System.out.printf("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
+        //ArchitectureMod.LOG.info("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
         //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // tess.getCurrentOffset());
         getWorldRenderer().pos(p.x, p.y, p.z);
         getWorldRenderer().color(vr, vg, vb, va);
@@ -100,7 +101,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     }
 
     protected void aoLightVertex(Vector3 v) {
-        //System.out.printf("BaseWorldRenderer.aoLightVertex: %s normal %s\n", v, normal);
+        //ArchitectureMod.LOG.info("BaseWorldRenderer.aoLightVertex: %s normal %s\n", v, normal);
         Vector3 n = normal;
         double brSum1 = 0, brSum2 = 0, lvSum = 0, wt = 0;
         // Sample a unit cube offset half a block in the direction of the normal
@@ -114,14 +115,14 @@ public class RenderTargetWorld extends RenderTargetBase {
                     int X = ifloor(vx + 0.5 * dx);
                     int Y = ifloor(vy + 0.5 * dy);
                     int Z = ifloor(vz + 0.5 * dz);
-                    //System.out.printf("Examining (%s, %s, %s) delta (%s, %s, %s)\n", X, Y, Z, dx, dy, dz);
+                    //ArchitectureMod.LOG.info("Examining (%s, %s, %s) delta (%s, %s, %s)\n", X, Y, Z, dx, dy, dz);
                     BlockPos pos = new BlockPos(X, Y, Z);
-                    //System.out.printf("wnx = %.3f wny = %.3f wnz = %.3f\n", wnx, wny, wnz);
+                    //ArchitectureMod.LOG.info("wnx = %.3f wny = %.3f wnz = %.3f\n", wnx, wny, wnz);
                     // Calculate overlap of sampled block with sampling cube
                     double wox = (dx < 0) ? (X + 1) - (vx - 0.5) : (vx + 0.5) - X;
                     double woy = (dy < 0) ? (Y + 1) - (vy - 0.5) : (vy + 0.5) - Y;
                     double woz = (dz < 0) ? (Z + 1) - (vz - 0.5) : (vz + 0.5) - Z;
-                    //System.out.printf("wox = %.3f woy = %.3f woz = %.3f\n", wox, woy, woz);
+                    //ArchitectureMod.LOG.info("wox = %.3f woy = %.3f woz = %.3f\n", wox, woy, woz);
                     // Take weighted sample of brightness and light value
                     double w = wox * woy * woz;
                     if (w > 0) {
@@ -129,7 +130,7 @@ public class RenderTargetWorld extends RenderTargetBase {
                         try {
                             br = block.getPackedLightmapCoords(blockState, world, pos);
                         } catch (RuntimeException e) {
-                            System.out.printf("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
+                            ArchitectureMod.LOG.info("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
                                     pos, w, blockPos, e);
                             throw e;
                         }
@@ -139,11 +140,11 @@ public class RenderTargetWorld extends RenderTargetBase {
                             lv = state.getBlock().getAmbientOcclusionLightValue(state);
                         } else
                             lv = 1.0f;
-                        //System.out.printf("BaseWorldRenderTarget.aoLightVertex: (%s,%s,%s) br = 0x%08x lv = %.3f w = %.3f\n", X, Y, Z, br, lv, w);
+                        //ArchitectureMod.LOG.info("BaseWorldRenderTarget.aoLightVertex: (%s,%s,%s) br = 0x%08x lv = %.3f w = %.3f\n", X, Y, Z, br, lv, w);
                         if (br != 0) {
                             double br1 = ((br >> 16) & 0xff) / 240.0;
                             double br2 = (br & 0xff) / 240.0;
-                            //System.out.printf("br1 = %.3f br2 = %.3f\n", br1, br2);
+                            //ArchitectureMod.LOG.info("br1 = %.3f br2 = %.3f\n", br1, br2);
                             brSum1 += w * br1;
                             brSum2 += w * br2;
                             wt += w;
@@ -151,20 +152,20 @@ public class RenderTargetWorld extends RenderTargetBase {
                         lvSum += w * lv;
                     }
                 }
-        //System.out.printf("brSum1 = %.3f brSum2 = %.3f lvSum = %.3f\n", brSum1, brSum2, lvSum);
-        //System.out.printf("wt = %.3f\n", wt);
+        //ArchitectureMod.LOG.info("brSum1 = %.3f brSum2 = %.3f lvSum = %.3f\n", brSum1, brSum2, lvSum);
+        //ArchitectureMod.LOG.info("wt = %.3f\n", wt);
         int brv;
         if (wt > 0)
             brv = (iround(brSum1 / wt * 0xf0) << 16) | iround(brSum2 / wt * 0xf0);
         else
             brv = block.getPackedLightmapCoords(blockState, world, blockPos);
         float lvv = (float) lvSum;
-        //System.out.printf("BaseWorldRenderTarget.aoLightVertex: brv = 0x%08x lvv = %.3f shade = %.3f\n", brv, lvv, shade);
+        //ArchitectureMod.LOG.info("BaseWorldRenderTarget.aoLightVertex: brv = 0x%08x lvv = %.3f shade = %.3f\n", brv, lvv, shade);
         setLight(shade * lvv, brv);
     }
 
     protected void brLightVertex(Vector3 p) {
-        //System.out.printf("BaseWorldRenderTarget.brLightVertex: %s\n", p);
+        //ArchitectureMod.LOG.info("BaseWorldRenderTarget.brLightVertex: %s\n", p);
         Vector3 n = normal;
         BlockPos pos;
         if (axisAlignedNormal)
@@ -179,7 +180,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     }
 
     protected void setLight(float shadow, int br) {
-        //System.out.printf("BaseWorldRenderTarget.setLight: shadow %.3f br %08x cmr (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f)\n",
+        //ArchitectureMod.LOG.info("BaseWorldRenderTarget.setLight: shadow %.3f br %08x cmr (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f)\n",
         //    shadow, br, cmr, cmg, cmb, r(), g(), b(), a());
         vr = shadow * cmr * r();
         vg = shadow * cmg * g();

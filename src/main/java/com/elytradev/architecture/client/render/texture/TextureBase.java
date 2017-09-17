@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.client.render.texture;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
@@ -289,16 +290,16 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateU(double u) {
             double iu = super.interpolateU(u);
-            System.out.printf("BaseTexture: %s u (%s - %s)\n", icon.getIconName(), icon.getMinU(), icon.getMaxU());
-            System.out.printf("BaseTexture: u %s --> %s\n", u, iu);
+            ArchitectureMod.LOG.info("BaseTexture: %s u (%s - %s)\n", icon.getIconName(), icon.getMinU(), icon.getMaxU());
+            ArchitectureMod.LOG.info("BaseTexture: u %s --> %s\n", u, iu);
             return iu;
         }
 
         @Override
         public double interpolateV(double v) {
             double iv = super.interpolateV(v);
-            System.out.printf("BaseTexture: %s v (%s - %s)\n", icon.getIconName(), icon.getMinV(), icon.getMaxV());
-            System.out.printf("BaseTexture: v %s --> %s\n", v, iv);
+            ArchitectureMod.LOG.info("BaseTexture: %s v (%s - %s)\n", icon.getIconName(), icon.getMinV(), icon.getMaxV());
+            ArchitectureMod.LOG.info("BaseTexture: v %s --> %s\n", v, iv);
             return iv;
         }
 

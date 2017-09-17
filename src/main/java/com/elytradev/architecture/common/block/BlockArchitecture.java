@@ -26,6 +26,7 @@ package com.elytradev.architecture.common.block;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.render.ITextureConsumer;
@@ -187,7 +188,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
 
     public void addProperty(IProperty property) {
         if (debugState)
-            System.out.printf("BaseBlock.addProperty: %s to %s\n", property, getClass().getName());
+            ArchitectureMod.LOG.info("BaseBlock.addProperty: %s to %s\n", property, getClass().getName());
         if (numProperties < 4) {
             int i = numProperties++;
             properties[i] = property;
@@ -197,31 +198,31 @@ public class BlockArchitecture<TE extends TileArchitecture>
             throw new IllegalStateException("Block " + getClass().getName() +
                     " has too many properties");
         if (debugState)
-            System.out.printf("BaseBlock.addProperty: %s now has %s properties\n",
+            ArchitectureMod.LOG.info("BaseBlock.addProperty: %s now has %s properties\n",
                     getClass().getName(), numProperties);
     }
 
     @Override
     protected BlockStateContainer createBlockState() {
         if (debugState)
-            System.out.printf("BaseBlock.createBlockState: Defining properties\n");
+            ArchitectureMod.LOG.info("BaseBlock.createBlockState: Defining properties\n");
         defineProperties();
         if (debugState)
             dumpProperties();
         checkProperties();
         IProperty[] props = Arrays.copyOf(properties, numProperties);
         if (debugState)
-            System.out.printf("BaseBlock.createBlockState: Creating BlockState with %s properties\n", props.length);
+            ArchitectureMod.LOG.info("BaseBlock.createBlockState: Creating BlockState with %s properties\n", props.length);
         return new ExtendedBlockState(this, props, new IUnlistedProperty[]{BLOCKACCESS_PROP, POS_PROP});
     }
 
     private void dumpProperties() {
-        System.out.printf("BaseBlock: Properties of %s:\n", getClass().getName());
+        ArchitectureMod.LOG.info("BaseBlock: Properties of %s:\n", getClass().getName());
         for (int i = 0; i < numProperties; i++) {
-            System.out.printf("%s: %s\n", i, properties[i]);
+            ArchitectureMod.LOG.info("%s: %s\n", i, properties[i]);
             Object[] values = propertyValues[i];
             for (int j = 0; j < values.length; j++)
-                System.out.printf("   %s: %s\n", j, values[j]);
+                ArchitectureMod.LOG.info("   %s: %s\n", j, values[j]);
         }
     }
 
@@ -245,12 +246,12 @@ public class BlockArchitecture<TE extends TileArchitecture>
             while (k > 0 && !values[k].equals(value))
                 --k;
             if (debugState)
-                System.out.printf("BaseBlock.getMetaFromState: property %s value %s --> %s of %s\n",
+                ArchitectureMod.LOG.info("BaseBlock.getMetaFromState: property %s value %s --> %s of %s\n",
                         i, value, k, values.length);
             meta = meta * values.length + k;
         }
         if (debugState)
-            System.out.printf("BaseBlock.getMetaFromState: %s --> %s\n", state, meta);
+            ArchitectureMod.LOG.info("BaseBlock.getMetaFromState: %s --> %s\n", state, meta);
         return meta & 15; // To be on the safe side
     }
 
@@ -266,7 +267,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
             state = state.withProperty(properties[i], (Comparable) values[k]);
         }
         if (debugState)
-            System.out.printf("BaseBlock.getStateFromMeta: %s --> %s\n", meta, state);
+            ArchitectureMod.LOG.info("BaseBlock.getStateFromMeta: %s --> %s\n", meta, state);
         return state;
     }
 

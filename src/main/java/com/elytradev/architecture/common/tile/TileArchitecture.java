@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.tile;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -127,7 +128,7 @@ public abstract class TileArchitecture extends TileEntity {
         if (block instanceof BlockArchitecture)
             return ((BlockArchitecture) block).localToGlobalTransformation(world, pos, state, origin);
         else {
-            System.out.printf("BaseTileEntity.localToGlobalTransformation: Wrong block type at %s\n", pos);
+            ArchitectureMod.LOG.info("BaseTileEntity.localToGlobalTransformation: Wrong block type at %s\n", pos);
             return new Trans3(origin);
         }
     }
@@ -142,7 +143,7 @@ public abstract class TileArchitecture extends TileEntity {
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        //System.out.printf("BaseTileEntity.getDescriptionPacket for %s\n", this);
+        //ArchitectureMod.LOG.info("BaseTileEntity.getDescriptionPacket for %s\n", this);
         if (syncWithClient()) {
             NBTTagCompound nbt = new NBTTagCompound();
             writeToNBT(nbt);

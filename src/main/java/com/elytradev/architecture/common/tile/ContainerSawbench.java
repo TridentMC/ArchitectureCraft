@@ -25,7 +25,6 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.legacy.base.BaseContainer;
-import com.elytradev.architecture.legacy.base.BaseDataChannel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -91,7 +90,6 @@ public class ContainerSawbench extends BaseContainer {
                 this.inventoryItemStacks.set(i, oldstack);
                 for (Object listener : listeners) {
                     if (listener instanceof EntityPlayerMP) {
-                        //System.out.printf("SawbenchContainer.updateCraftingResults: sending %s in slot %d to player\n", newstack, i);
                         ((EntityPlayerMP) listener).connection.sendPacket(
                                 new SPacketSetSlot(windowId, i, newstack));
                     } else
@@ -99,13 +97,6 @@ public class ContainerSawbench extends BaseContainer {
                 }
             }
         }
-    }
-
-    @BaseDataChannel.ServerMessageHandler("SelectShape")
-    public void onSelectShape(EntityPlayer player, BaseDataChannel.ChannelInput data) {
-        int page = data.readInt();
-        int slot = data.readInt();
-        te.setSelectedShape(page, slot);
     }
 
     //
