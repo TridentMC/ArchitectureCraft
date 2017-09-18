@@ -15,7 +15,7 @@ ext {
 
     language = 'java'
 
-    forge = '1.12-14.21.0.2359'
+    forge = '1.12.1-14.22.1.2484'
     mappings = 'snapshot_20170624'
 
     enforceLicenseHeaders = false
