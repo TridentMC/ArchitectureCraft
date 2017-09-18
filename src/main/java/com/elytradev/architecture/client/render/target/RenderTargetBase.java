@@ -104,7 +104,6 @@ public abstract class RenderTargetBase {
     }
 
     public void addUVVertex(Vector3 p, double u, double v) {
-        //System.out.printf("BaseRenderTarget.addUVVertex: %s (%.3f, %.3f)\n", p, u, v);
         double iu, iv;
         if (verticesPerFace == 0)
             throw new IllegalStateException("No face active");

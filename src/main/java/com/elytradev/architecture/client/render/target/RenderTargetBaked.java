@@ -156,7 +156,7 @@ public class RenderTargetBaked extends RenderTargetBase {
             ++n;
         }
         prescrambleVertexColors(data);
-        quads.add(new BakedQuad(data, 0, EnumFacing.UP, getActiveTexture())); //FIXME I don't think there should be a null here    }
+        quads.add(new BakedQuad(data, 0, face, getActiveTexture(), false, format));
     }
 
     private TextureAtlasSprite getActiveTexture() {
