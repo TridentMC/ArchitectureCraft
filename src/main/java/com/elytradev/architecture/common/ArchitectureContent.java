@@ -57,12 +57,19 @@ import static com.elytradev.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
 
-    public static final CreativeTabs creativeTab = new CreativeTabs("architecture") {
+    public static final CreativeTabs TOOL_TAB = new CreativeTabs("architecture.tool") {
         @Override
         public ItemStack getTabIconItem() {
             return new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(MOD_ID, "hammer")));
         }
     };
+    public static final CreativeTabs SHAPE_TAB = new CreativeTabs("architecture.shape") {
+        @Override
+        public ItemStack getTabIconItem() {
+            return Item.getItemFromBlock(ArchitectureMod.CONTENT.blockShape).getDefaultInstance();
+        }
+    };
+
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
@@ -173,7 +180,7 @@ public class ArchitectureContent {
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {
         block.setUnlocalizedName(MOD_ID + "." + id);
         block.setRegistryName(REGISTRY_PREFIX, id);
-        block.setCreativeTab(creativeTab);
+        block.setCreativeTab(TOOL_TAB);
         registry.register(block);
         if (withItemBlock)
             itemBlocksToRegister.add(new ItemBlock(block).setRegistryName(block.getRegistryName()));
@@ -189,7 +196,7 @@ public class ArchitectureContent {
 
             ItemBlock itemBlock = itemBlockClass.getDeclaredConstructor(Block.class).newInstance(block);
             itemBlock.setRegistryName(REGISTRY_PREFIX, id);
-            itemBlock.setCreativeTab(creativeTab);
+            itemBlock.setCreativeTab(TOOL_TAB);
             itemBlocksToRegister.add(itemBlock);
             registeredBlocks.put(id, block);
         } catch (Exception e) {
@@ -203,7 +210,7 @@ public class ArchitectureContent {
         ItemArchitecture item = new ItemArchitecture();
         item.setUnlocalizedName(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
-        item.setCreativeTab(creativeTab);
+        item.setCreativeTab(TOOL_TAB);
         registry.register(item);
         registeredItems.put(id, item);
 
@@ -213,7 +220,7 @@ public class ArchitectureContent {
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, T item) {
         item.setUnlocalizedName(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
-        item.setCreativeTab(creativeTab);
+        item.setCreativeTab(TOOL_TAB);
         registry.register(item);
         registeredItems.put(id, item);
 

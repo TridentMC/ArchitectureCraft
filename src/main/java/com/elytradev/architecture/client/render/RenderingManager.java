@@ -81,6 +81,10 @@ public class RenderingManager {
     protected CustomItemBakedModel itemBakedModel;
     private Map<ResourceLocation, IRenderableModel> modelCache = Maps.newHashMap();
 
+    public CustomBlockStateMapper getBlockStateMapper() {
+        return blockStateMapper;
+    }
+
     public boolean blockNeedsCustomRendering(Block block) {
         return blockRenderers.containsKey(block) || specifiesTextures(block);
     }
@@ -315,8 +319,8 @@ public class RenderingManager {
                     return getIcon(0, textures[0]);
             }
             return null;
-        }
 
+    }
     }
 
     public class CustomItemRenderOverrideList extends ItemOverrideList {

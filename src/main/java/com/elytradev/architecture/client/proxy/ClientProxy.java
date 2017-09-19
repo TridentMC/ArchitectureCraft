@@ -24,8 +24,8 @@
 
 package com.elytradev.architecture.client.proxy;
 
+import com.elytradev.architecture.client.render.CustomBlockDispatcher;
 import com.elytradev.architecture.client.render.RenderingManager;
-import com.elytradev.architecture.client.render.model.VertexModelLoader;
 import com.elytradev.architecture.client.render.shape.RenderCladding;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.shape.ShapeRenderDispatch;
@@ -81,12 +81,15 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerRenderers(LoaderState.ModState state) {
         if (state == LoaderState.ModState.PREINITIALIZED) {
-            ModelLoaderRegistry.registerLoader(new VertexModelLoader());
             new ConcreteResourcePack(ArchitectureMod.MOD_ID);
         }
 
         if (state == LoaderState.ModState.INITIALIZED) {
             registerTileEntitySpecialRenderers();
+        }
+
+        if (state == LoaderState.ModState.POSTINITIALIZED) {
+            CustomBlockDispatcher.inject();
         }
     }
 
@@ -108,6 +111,7 @@ public class ClientProxy extends CommonProxy {
             } else {
                 registerMesh(itemFromBlock, 0, modelResourceLocation);
             }
+            ModelLoader.setCustomStateMapper(block, RENDERING_MANAGER.getBlockStateMapper());
         }
 
         for (int i = 0; i < ArchitectureContent.registeredItems.size(); i++) {

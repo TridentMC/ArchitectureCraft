@@ -5,7 +5,8 @@ item.architecturecraft.sawblade.name=Circular Saw Blade
 item.architecturecraft.chisel.name=Architect's Chisel
 item.architecturecraft.hammer.name=Architect's Hammer
 item.architecturecraft.cladding.name=Cladding
-itemGroup.architecture=Architecture Craft
+itemGroup.architecture.tool=Architecture Craft Tools
+itemGroup.architecture.shape=Architecture Craft Shapes
 
 tooltip.architecturecraft.basematerial=Base: %s
 tooltip.architecturecraft.secondarymaterial=Secondary: %s

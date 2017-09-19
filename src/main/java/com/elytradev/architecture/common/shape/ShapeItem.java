@@ -54,7 +54,7 @@ public class ShapeItem extends ItemBlock {
 
     public ShapeItem(Block block) {
         super(block);
-        this.setCreativeTab(ArchitectureContent.creativeTab);
+        this.setCreativeTab(ArchitectureContent.SHAPE_TAB);
     }
 
     @Override
@@ -118,15 +118,28 @@ public class ShapeItem extends ItemBlock {
 
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (tab.equals(ArchitectureContent.creativeTab)) {
-            ItemStack defaultStack = new ItemStack(this, 1);
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger("Shape", Shape.ROOF_TILE.id);
-            tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
-            tag.setInteger("BaseData", 0);
-            defaultStack.setTagCompound(tag);
-            items.add(defaultStack);
+        if (tab.equals(ArchitectureContent.SHAPE_TAB)) {
+            for (Shape shape : Shape.values()) {
+                ItemStack defaultStack = new ItemStack(this, 1);
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setInteger("Shape", shape.id);
+                tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
+                tag.setInteger("BaseData", 0);
+                defaultStack.setTagCompound(tag);
+                items.add(defaultStack);
+            }
         }
     }
 
+    @Override
+    public ItemStack getDefaultInstance() {
+        ItemStack defaultStack = new ItemStack(this, 1);
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setInteger("Shape", Shape.ROOF_TILE.id);
+        tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
+        tag.setInteger("BaseData", 0);
+        defaultStack.setTagCompound(tag);
+
+        return defaultStack;
+    }
 }

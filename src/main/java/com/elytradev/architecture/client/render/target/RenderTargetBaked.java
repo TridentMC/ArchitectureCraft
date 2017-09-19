@@ -30,6 +30,7 @@ import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
@@ -156,7 +157,7 @@ public class RenderTargetBaked extends RenderTargetBase {
             ++n;
         }
         prescrambleVertexColors(data);
-        quads.add(new BakedQuad(data, 0, face, getActiveTexture(), false, format));
+        quads.add(new BakedQuad(data, 0, face, getActiveTexture(), false, DefaultVertexFormats.ITEM));
     }
 
     private TextureAtlasSprite getActiveTexture() {
@@ -203,7 +204,8 @@ public class RenderTargetBaked extends RenderTargetBase {
     public IBakedModel getBakedModel(TextureAtlasSprite particleTexture) {
         if (verticesPerFace != 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
-        return new SimpleBakedModel(quads, faceQuads, false, true, particleTexture, transforms, ItemOverrideList.NONE);
+        return new SimpleBakedModel(quads, faceQuads, false, true,
+                particleTexture, transforms, ItemOverrideList.NONE);
     }
 
     @Override
