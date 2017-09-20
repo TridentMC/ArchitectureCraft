@@ -117,7 +117,7 @@ public class BaseContainer extends Container {
             if (destRange != null) {
                 result = stack.copy();
                 if (!mergeItemStackIntoRange(stack, destRange))
-                    return null;
+                    return ItemStack.EMPTY;
                 if (stack.getCount() == 0)
                     slot.putStack(ItemStack.EMPTY);
                 else
