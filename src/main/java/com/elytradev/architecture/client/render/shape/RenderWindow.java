@@ -146,7 +146,7 @@ public class RenderWindow extends RenderShape {
 
     protected void renderModel(Trans3 t, IRenderableModel model) {
         if (model != null)
-            model.render(t, target, textures);
+            model.render(t, target, baseColourMult, secondaryColourMult, textures);
     }
 
     protected boolean[][] getFrameFlags() {

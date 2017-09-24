@@ -36,5 +36,5 @@ public interface IRenderableModel {
 
     void addBoxesToList(Trans3 t, List list);
 
-    void render(Trans3 t, RenderTargetBase renderer, ITexture... textures);
+    void render(Trans3 t, RenderTargetBase renderer, int baseColourMult, int secondaryColourMult, ITexture... textures);
 }

@@ -37,7 +37,9 @@ import com.elytradev.architecture.common.proxy.CommonProxy;
 import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.elytradev.concrete.resgen.IResourceHolder;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -45,7 +47,6 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -106,12 +107,21 @@ public class ClientProxy extends CommonProxy {
                     + ArchitectureContent.registeredBlocks.keySet().toArray()[i], "inventory");
             Block block = (Block) ArchitectureContent.registeredBlocks.values().toArray()[i];
             Item itemFromBlock = Item.getItemFromBlock(block);
+
             if (RENDERING_MANAGER.blockNeedsCustomRendering(block)) {
-                RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
+                ModelLoader.setCustomStateMapper(block, RENDERING_MANAGER.getBlockStateMapper());
+                for (IBlockState state : block.getBlockState().getValidStates()) {
+                    ModelResourceLocation location = RENDERING_MANAGER.getBlockStateMapper().getModelResourceLocation(state);
+                    IBakedModel model = RENDERING_MANAGER.getCustomBakedModel(state, location);
+                    RENDERING_MANAGER.getBakedModels().add(model);
+                }
+
+                if (itemFromBlock != null) {
+                    RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
+                }
             } else {
                 registerMesh(itemFromBlock, 0, modelResourceLocation);
             }
-            ModelLoader.setCustomStateMapper(block, RENDERING_MANAGER.getBlockStateMapper());
         }
 
         for (int i = 0; i < ArchitectureContent.registeredItems.size(); i++) {

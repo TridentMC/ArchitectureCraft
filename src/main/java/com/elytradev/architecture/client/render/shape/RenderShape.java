@@ -41,6 +41,7 @@ public abstract class RenderShape {
     protected ITexture[] textures;
     protected Trans3 t;
     protected RenderTargetBase target;
+    protected int baseColourMult, secondaryColourMult;
 
     public RenderShape(TileShape te, ITexture[] textures, Trans3 t, RenderTargetBase target) {
         this.te = te;

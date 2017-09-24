@@ -90,7 +90,8 @@ public abstract class ShapeKind {
 
     public abstract void renderShape(TileShape te,
                                      ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                     boolean renderBase, boolean renderSecondary);
+                                     boolean renderBase, boolean renderSecondary,
+                                     int baseColourMult, int secondaryColourMult);
 
     public ItemStack newStack(Shape shape, IBlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
@@ -294,8 +295,8 @@ public abstract class ShapeKind {
         @Override
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary) {
-            new RenderRoof(te, textures, t, target, renderBase, renderSecondary).render();
+                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
+            new RenderRoof(te, textures, t, target, renderBase, renderSecondary, baseColourMult, secondaryColourMult).render();
         }
 
         @Override
@@ -340,57 +341,7 @@ public abstract class ShapeKind {
             return RoofProfile.None;
         }
 
-//		protected RoofProfile opposite(RoofProfile p) {
-//			switch (p) {
-//				case Left: return RoofProfile.Right;
-//				case Right: return RoofProfile.Left;
-//			}
-//			return p;
-//		}
-
         protected enum RoofProfile {None, Left, Right, Ridge, Valley}
-
-//		protected EnumFacing localFaceForProfile(Shape shape, Profile p) {
-//			switch (shape) {
-//				case ROOF_TILE:
-//				case ROOF_OVERHANG:
-//					switch (p) {
-//						case Left: return EAST;
-//						case Right: return WEST;
-//					}
-//					break;
-//				case ROOF_OUTER_CORNER:
-//				case ROOF_OVERHANG_OUTER_CORNER:
-//					switch (p) {
-//						case Left: return SOUTH;
-//						case Right: return WEST;
-//					}
-//					break;
-//				case ROOF_INNER_CORNER:
-//				case ROOF_OVERHANG_INNER_CORNER:
-//					switch (p) {
-//						case Left: return EAST;
-//						case Right: return NORTH;
-//					}
-//					break;
-//				case ROOF_RIDGE:
-//				case ROOF_OVERHANG_RIDGE:
-//					switch (p) {
-//						case Ridge:
-//							return EAST;
-//					}
-//					break;
-//				case ROOF_VALLEY:
-//				case ROOF_OVERHANG_VALLEY:
-//					switch (p) {
-//						case Valley:
-//							return EAST;
-//					}
-//					break;
-//			}
-//			return null;
-//		}
-
     }
 
     //------------------------------------------------------------------------------
@@ -419,9 +370,9 @@ public abstract class ShapeKind {
         @Override
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary) {
+                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
             IRenderableModel model = getModel();
-            model.render(t, target, textures);
+            model.render(t, target, baseColourMult, secondaryColourMult, textures);
         }
 
         protected IRenderableModel getModel() {
@@ -523,7 +474,7 @@ public abstract class ShapeKind {
         @Override
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary) {
+                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
             new RenderWindow(te, textures, t, target, renderBase, renderSecondary).render();
         }
 
@@ -630,7 +581,7 @@ public abstract class ShapeKind {
         @Override
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary) {
+                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
         }
 
         @Override

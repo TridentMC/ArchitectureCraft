@@ -31,8 +31,11 @@ import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
+import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -40,17 +43,17 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BaseModelRenderer implements ICustomRenderer {
+public class ArchitectureModelRenderer implements ICustomRenderer {
 
     protected IRenderableModel model;
     protected ITexture[] textures;
     protected Vector3 origin;
 
-    public BaseModelRenderer(IRenderableModel model, ITexture... textures) {
+    public ArchitectureModelRenderer(IRenderableModel model, ITexture... textures) {
         this(model, Vector3.zero, textures);
     }
 
-    public BaseModelRenderer(IRenderableModel model, Vector3 origin, ITexture... textures) {
+    public ArchitectureModelRenderer(IRenderableModel model, Vector3 origin, ITexture... textures) {
         this.model = model;
         this.textures = textures;
         this.origin = origin;
@@ -61,7 +64,8 @@ public class BaseModelRenderer implements ICustomRenderer {
                             BlockRenderLayer layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
         Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(origin);
-        model.render(t2, target, textures);
+        int colour = 16777215;
+        model.render(t2, target, colour, colour, textures);
     }
 
     @Override
@@ -77,7 +81,13 @@ public class BaseModelRenderer implements ICustomRenderer {
             if (block instanceof BlockArchitecture)
                 t = t.t(((BlockArchitecture) block).itemTransformation());
         }
-        model.render(t.translate(origin), target, textures);
+        model.render(t.translate(origin), target, 16777215, 16777215, textures);
+    }
+
+    private int getColourFromState(IBlockState state) {
+        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+        int color = blockColors.getColor(state, null, null);
+        return color;
     }
 
 }

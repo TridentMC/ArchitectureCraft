@@ -32,11 +32,17 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+
+import javax.annotation.Nullable;
 
 public class ShapeRenderDispatch implements ICustomRenderer {
 
@@ -51,16 +57,11 @@ public class ShapeRenderDispatch implements ICustomRenderer {
             Trans3 t2 = t.t(te.localToGlobalRotation());
             boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
             boolean renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
-            renderShapeTE(te, target, t2, renderBase, renderSecondary);
-        }
-    }
 
-    public void renderShape(IBlockAccess world, BlockPos pos, RenderTargetBase target,
-                            boolean renderBase, boolean renderSecondary, Trans3 t) {
-        TileShape te = TileShape.get(world, pos);
-        if (te != null) {
-            Trans3 t2 = t.t(te.localToGlobalRotation());
-            renderShapeTE(te, target, t2, renderBase, renderSecondary);
+            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : 16777215;
+            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+
+            renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
         }
     }
 
@@ -74,53 +75,88 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
         TileShape te = new TileShape();
         te.readFromItemStack(stack);
+        ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+        ItemStack baseStack = getStackFromState(te.baseBlockState);
+        ItemStack secondaryStack = getStackFromState(te.secondaryBlockState);
+        int baseColour = baseStack != null ?
+                itemColors.colorMultiplier(baseStack, 0) : 16777215;
+        int secondaryColour = secondaryStack != null ?
+                itemColors.colorMultiplier(secondaryStack, 0) : baseColour;
+
         renderShapeTE(te, target, t,
-                te.baseBlockState != null, te.secondaryBlockState != null);
+                te.baseBlockState != null,
+                te.secondaryBlockState != null,
+                baseColour, secondaryColour);
+    }
+
+    @Nullable
+    private ItemStack getStackFromState(IBlockState state) {
+        if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
+            Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
+            ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
+            defaultInstance.setItemDamage(state.getBlock().damageDropped(state));
+            return defaultInstance;
+        }
+
+        return null;
     }
 
     protected void renderShapeTE(TileShape te, RenderTargetBase target, Trans3 t,
-                                 boolean renderBase, boolean renderSecondary) {
+                                 boolean renderBase, boolean renderSecondary,
+                                 int baseColourMult, int secondaryColourMult) {
         if (te.shape != null && (renderBase || renderSecondary)) {
             IBlockState base = te.baseBlockState;
             if (base != null) {
-                TextureAtlasSprite icon = Utils.getSpriteForBlockState(base);
-                TextureAtlasSprite icon2 = Utils.getSpriteForBlockState(te.secondaryBlockState);
-                if (icon != null) {
+                TextureAtlasSprite baseSprite = Utils.getSpriteForBlockState(base);
+                TextureAtlasSprite secondarySprite = Utils.getSpriteForBlockState(te.secondaryBlockState);
+                if (baseSprite != null) {
                     ITexture[] textures = new ITexture[4];
                     if (renderBase) {
-                        textures[0] = TextureBase.fromSprite(icon);
+                        textures[0] = TextureBase.fromSprite(baseSprite);
                         textures[1] = textures[0].projected();
                     }
                     if (renderSecondary) {
-                        if (icon2 != null) {
-                            textures[2] = TextureBase.fromSprite(icon2);
+                        if (secondarySprite != null) {
+                            textures[2] = TextureBase.fromSprite(secondarySprite);
                             textures[3] = textures[2].projected();
                         } else
                             renderSecondary = false;
                     }
                     if (renderBase && te.shape.kind.secondaryDefaultsToBase()) {
-                        if (icon2 == null || (te.secondaryBlockState != null &&
+                        if (secondarySprite == null || (te.secondaryBlockState != null &&
                                 te.secondaryBlockState.getBlock().getBlockLayer() != BlockRenderLayer.SOLID)) {
                             textures[2] = textures[0];
                             textures[3] = textures[1];
                             renderSecondary = renderBase;
                         }
                     }
-                    te.shape.kind.renderShape(te, textures, target, t, renderBase, renderSecondary);
+                    te.shape.kind.renderShape(te, textures, target, t,
+                            renderBase, renderSecondary,
+                            baseColourMult, secondaryColourMult);
                 }
             }
         }
     }
 
+    private int getColourFromState(IBlockState state) {
+        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+        int color = blockColors.getColor(state, null, null);
+
+        return color;
+    }
+
     @Override
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
-                            BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+                            BlockRenderLayer layer, Trans3 t, boolean renderBase, boolean renderSecondary) {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);
             Trans3 t2 = t.t(te.localToGlobalRotation());
-            renderPrimary = canRenderInLayer(te.baseBlockState, layer);
-            renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
-            renderShapeTE(TileShape.get(world, pos), target, t2, renderPrimary, renderSecondary);
+            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : 16777215;
+            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+
+            renderShapeTE(TileShape.get(world, pos), target, t2,
+                    renderBase, renderSecondary,
+                    baseColour, secondaryColour);
         }
     }
 

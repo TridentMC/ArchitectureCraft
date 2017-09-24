@@ -55,10 +55,12 @@ public class RenderRoof extends RenderShape {
     protected boolean renderBase, renderSecondary;
 
     public RenderRoof(TileShape te, ITexture[] textures, Trans3 t, RenderTargetBase target,
-                      boolean renderBase, boolean renderSecondary) {
+                      boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
         super(te, textures, t, target);
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;
+        this.baseColourMult = baseColourMult;
+        this.secondaryColourMult = secondaryColourMult;
     }
 
     @Override
@@ -794,12 +796,20 @@ public class RenderRoof extends RenderShape {
         outerFace = false;
         normal(n);
         target.setTexture(textures[2]);
+        float r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
+        float g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
+        float b = (float) (secondaryColourMult & 255) / 255.0F;
+        target.setColor(r, g, b, 1F);
     }
 
     protected void beginOuterFaces(Vector3 n) {
         outerFace = true;
         normal(n);
         target.setTexture(textures[1]);
+        float r = (float) (baseColourMult >> 16 & 255) / 255.0F;
+        float g = (float) (baseColourMult >> 8 & 255) / 255.0F;
+        float b = (float) (baseColourMult & 255) / 255.0F;
+        target.setColor(r, g, b, 1F);
     }
 
     protected void beginTriangle() {

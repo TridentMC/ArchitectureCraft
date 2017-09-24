@@ -34,12 +34,16 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+
+import javax.annotation.Nullable;
 
 public class RenderCladding implements ICustomRenderer {
 
@@ -66,13 +70,28 @@ public class RenderCladding implements ICustomRenderer {
                 if (state != null) {
                     TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
                     if (sprite != null) {
+                        ItemStack stackFromState = getStackFromState(state);
+                        int colourMult = Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 0);
+                        colourMult = colourMult < 0 ? 16777215 : colourMult;
                         ITexture texture = TextureBase.fromSprite(sprite);
                         IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
-                        model.render(t, target, texture);
+                        model.render(t, target, colourMult, colourMult, texture);
                     }
                 }
             }
         }
+    }
+
+    @Nullable
+    private ItemStack getStackFromState(IBlockState state) {
+        if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
+            Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
+            ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
+            defaultInstance.setItemDamage(state.getBlock().damageDropped(state));
+            return defaultInstance;
+        }
+
+        return null;
     }
 
 }

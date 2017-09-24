@@ -81,7 +81,7 @@ public class RenderableModel implements IRenderableModel {
     }
 
     @Override
-    public void render(Trans3 t, RenderTargetBase renderer, ITexture... textures) {
+    public void render(Trans3 t, RenderTargetBase renderer, int baseColourMult, int secondaryColourMult, ITexture... textures) {
         Vector3 p = null, n = null;
         for (Face face : faces) {
             ITexture tex = textures[face.texture];
@@ -96,6 +96,18 @@ public class RenderableModel implements IRenderableModel {
                         n = t.v(c[3], c[4], c[5]);
                         renderer.setNormal(n);
                         renderer.addVertex(p, c[6], c[7]);
+                        float r, g, b;
+                        if (face.texture > 1) {
+                            r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
+                            g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
+                            b = (float) (secondaryColourMult & 255) / 255.0F;
+                        } else {
+                            r = (float) (baseColourMult >> 16 & 255) / 255.0F;
+                            g = (float) (baseColourMult >> 8 & 255) / 255.0F;
+                            b = (float) (baseColourMult & 255) / 255.0F;
+                        }
+
+                        renderer.setColor(r, g, b, 1F);
                     }
                     renderer.endFace();
                 }

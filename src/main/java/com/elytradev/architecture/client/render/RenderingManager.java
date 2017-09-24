@@ -35,7 +35,7 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
-import com.elytradev.architecture.legacy.base.BaseModelRenderer;
+import com.elytradev.architecture.legacy.base.ArchitectureModelRenderer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -77,9 +77,13 @@ public class RenderingManager {
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
     protected boolean customRenderingRequired;
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
-    protected List<CustomBakedModel> bakedModels = new ArrayList<>();
+    protected List<IBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
     private Map<ResourceLocation, IRenderableModel> modelCache = Maps.newHashMap();
+
+    public List<IBakedModel> getBakedModels() {
+        return bakedModels;
+    }
 
     public CustomBlockStateMapper getBlockStateMapper() {
         return blockStateMapper;
@@ -162,7 +166,7 @@ public class RenderingManager {
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = getTexture(textureType, spec.textureNames[i]);
-        return new BaseModelRenderer(model, spec.origin, textures);
+        return new ArchitectureModelRenderer(model, spec.origin, textures);
     }
 
     public ICustomRenderer getCustomRendererForState(IBlockState state) {
@@ -320,7 +324,11 @@ public class RenderingManager {
             }
             return null;
 
+        }
     }
+
+    public IBakedModel getCustomBakedModel(IBlockState state, ModelResourceLocation resourceLocation) {
+        return new BlockParticleModel(state, resourceLocation);
     }
 
     public class CustomItemRenderOverrideList extends ItemOverrideList {
