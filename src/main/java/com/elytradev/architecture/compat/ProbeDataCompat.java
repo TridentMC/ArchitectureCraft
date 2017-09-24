@@ -82,7 +82,7 @@ public class ProbeDataCompat {
                                         state.getBlock().getLocalizedName()));
                                 Item item = Item.getItemFromBlock(state.getBlock());
                                 if (item != null) {
-                                    ItemStack stack = item.getDefaultInstance();
+                                    ItemStack stack = new ItemStack(item);
                                     stack.setItemDamage(state.getBlock().damageDropped(state));
                                     probeData = probeData.withInventory(ImmutableList.of(stack));
                                 }

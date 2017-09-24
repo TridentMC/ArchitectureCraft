@@ -24,8 +24,8 @@
 
 package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.client.render.model.IRenderableModel;
-import com.elytradev.architecture.client.render.model.RenderableModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
+import com.elytradev.architecture.client.render.model.ArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
@@ -79,7 +79,7 @@ public class RenderingManager {
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
     protected List<IBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
-    private Map<ResourceLocation, IRenderableModel> modelCache = Maps.newHashMap();
+    private Map<ResourceLocation, IArchitectureModel> modelCache = Maps.newHashMap();
 
     public List<IBakedModel> getBakedModels() {
         return bakedModels;
@@ -141,11 +141,11 @@ public class RenderingManager {
         return new ResourceLocation(ArchitectureMod.MOD_ID, "models/" + path);
     }
 
-    public IRenderableModel getModel(String name) {
+    public IArchitectureModel getModel(String name) {
         ResourceLocation loc = modelLocation(name);
-        IRenderableModel model = modelCache.get(loc);
+        IArchitectureModel model = modelCache.get(loc);
         if (model == null) {
-            model = RenderableModel.fromResource(loc);
+            model = ArchitectureModel.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;
@@ -162,7 +162,7 @@ public class RenderingManager {
     }
 
     protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-        IRenderableModel model = getModel(spec.modelName);
+        IArchitectureModel model = getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = getTexture(textureType, spec.textureNames[i]);

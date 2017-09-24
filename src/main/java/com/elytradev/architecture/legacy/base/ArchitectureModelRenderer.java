@@ -25,13 +25,12 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
-import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -45,15 +44,15 @@ import net.minecraft.world.IBlockAccess;
 
 public class ArchitectureModelRenderer implements ICustomRenderer {
 
-    protected IRenderableModel model;
+    protected IArchitectureModel model;
     protected ITexture[] textures;
     protected Vector3 origin;
 
-    public ArchitectureModelRenderer(IRenderableModel model, ITexture... textures) {
+    public ArchitectureModelRenderer(IArchitectureModel model, ITexture... textures) {
         this(model, Vector3.zero, textures);
     }
 
-    public ArchitectureModelRenderer(IRenderableModel model, Vector3 origin, ITexture... textures) {
+    public ArchitectureModelRenderer(IArchitectureModel model, Vector3 origin, ITexture... textures) {
         this.model = model;
         this.textures = textures;
         this.origin = origin;

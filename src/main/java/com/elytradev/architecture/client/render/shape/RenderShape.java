@@ -25,7 +25,7 @@
 package com.elytradev.architecture.client.render.shape;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
-import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -54,7 +54,7 @@ public abstract class RenderShape {
 
     protected abstract void render();
 
-    protected IRenderableModel getModel(String name) {
+    protected IArchitectureModel getModel(String name) {
         return ClientProxy.RENDERING_MANAGER.getModel(name);
     }
 

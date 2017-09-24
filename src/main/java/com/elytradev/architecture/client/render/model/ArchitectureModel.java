@@ -36,18 +36,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class RenderableModel implements IRenderableModel {
+public class ArchitectureModel implements IArchitectureModel {
 
     private static final Gson GSON = new Gson();
     public double[] bounds;
     public Face[] faces;
     public double[][] boxes;
 
-    public static RenderableModel fromResource(ResourceLocation location) {
+    public static ArchitectureModel fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
         String path = String.format("/assets/%s/%s", location.getResourceDomain(), location.getResourcePath());
-        InputStream in = RenderableModel.class.getResourceAsStream(path);
-        RenderableModel model = GSON.fromJson(new InputStreamReader(in), RenderableModel.class);
+        InputStream in = ArchitectureModel.class.getResourceAsStream(path);
+        ArchitectureModel model = GSON.fromJson(new InputStreamReader(in), ArchitectureModel.class);
         if (in == null)
             throw new RuntimeException("Model file not found: " + path);
         model.prepare();

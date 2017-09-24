@@ -25,8 +25,8 @@
 package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
-import com.elytradev.architecture.client.render.model.IRenderableModel;
-import com.elytradev.architecture.client.render.model.RenderableModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
+import com.elytradev.architecture.client.render.model.ArchitectureModel;
 import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
@@ -349,7 +349,7 @@ public abstract class ShapeKind {
     public static class Model extends ShapeKind {
 
         protected String modelName;
-        private IRenderableModel model;
+        private IArchitectureModel model;
 
         public Model(String name, Object[] profiles) {
             this.modelName = "shape/" + name + ".objson";
@@ -371,11 +371,11 @@ public abstract class ShapeKind {
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
                                 boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            IRenderableModel model = getModel();
+            IArchitectureModel model = getModel();
             model.render(t, target, baseColourMult, secondaryColourMult, textures);
         }
 
-        protected IRenderableModel getModel() {
+        protected IArchitectureModel getModel() {
             if (model == null)
                 model = ClientProxy.RENDERING_MANAGER.getModel(modelName);
             return model;
@@ -383,8 +383,8 @@ public abstract class ShapeKind {
 
         @Override
         public boolean acceptsCladding() {
-            RenderableModel model = (RenderableModel) getModel();
-            for (RenderableModel.Face face : model.faces)
+            ArchitectureModel model = (ArchitectureModel) getModel();
+            for (ArchitectureModel.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;

@@ -26,7 +26,7 @@ package com.elytradev.architecture.client.render.shape;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.ICustomRenderer;
-import com.elytradev.architecture.client.render.model.IRenderableModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
@@ -74,7 +74,7 @@ public class RenderCladding implements ICustomRenderer {
                         int colourMult = Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 0);
                         colourMult = colourMult < 0 ? 16777215 : colourMult;
                         ITexture texture = TextureBase.fromSprite(sprite);
-                        IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
+                        IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
                         model.render(t, target, colourMult, colourMult, texture);
                     }
                 }

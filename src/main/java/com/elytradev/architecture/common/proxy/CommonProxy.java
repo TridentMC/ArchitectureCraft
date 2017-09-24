@@ -24,9 +24,13 @@
 
 package com.elytradev.architecture.common.proxy;
 
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
+import com.elytradev.architecture.client.render.model.ArchitectureModel;
 import com.elytradev.architecture.common.ArchitectureGuiHandler;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.network.ArchitectureNetworking;
+import com.google.common.collect.Maps;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -34,7 +38,11 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import java.util.Map;
+
 public class CommonProxy {
+
+    private Map<ResourceLocation, IArchitectureModel> modelCache = Maps.newHashMap();
 
     public void preInit(FMLPreInitializationEvent e) {
         ArchitectureNetworking.setupNetwork();
@@ -55,5 +63,19 @@ public class CommonProxy {
     }
 
     public void registerCustomRenderers() {
+    }
+
+    public IArchitectureModel getModel(String name) {
+        ResourceLocation loc = modelLocation(name);
+        IArchitectureModel model = modelCache.get(loc);
+        if (model == null) {
+            model = ArchitectureModel.fromResource(loc);
+            modelCache.put(loc, model);
+        }
+        return model;
+    }
+
+    public ResourceLocation modelLocation(String path) {
+        return new ResourceLocation(ArchitectureMod.MOD_ID, "models/" + path);
     }
 }
