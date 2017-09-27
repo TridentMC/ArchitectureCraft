@@ -26,6 +26,7 @@ package com.elytradev.architecture.client.proxy;
 
 import com.elytradev.architecture.client.render.CustomBlockDispatcher;
 import com.elytradev.architecture.client.render.RenderingManager;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.shape.RenderCladding;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.shape.ShapeRenderDispatch;
@@ -55,6 +56,11 @@ public class ClientProxy extends CommonProxy {
 
     public static final ShapeRenderDispatch SHAPE_RENDER_DISPATCHER = new ShapeRenderDispatch();
     public static final RenderingManager RENDERING_MANAGER = new RenderingManager();
+
+    @Override
+    public IArchitectureModel getModel(String name) {
+        return RENDERING_MANAGER.getModel(name);
+    }
 
     @Override
     public void preInit(FMLPreInitializationEvent e) {

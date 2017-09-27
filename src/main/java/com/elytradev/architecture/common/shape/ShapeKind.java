@@ -24,9 +24,8 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.client.proxy.ClientProxy;
-import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.model.ArchitectureModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
@@ -377,7 +376,7 @@ public abstract class ShapeKind {
 
         protected IArchitectureModel getModel() {
             if (model == null)
-                model = ClientProxy.RENDERING_MANAGER.getModel(modelName);
+                model = ArchitectureMod.PROXY.getModel(modelName);
             return model;
         }
 
