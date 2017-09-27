@@ -24,8 +24,8 @@
 
 package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.model.ArchitectureModel;
+import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
@@ -389,7 +389,11 @@ public class RenderingManager {
                     rend = getCustomRendererForState(block.getDefaultState());
             }
             if (rend != null) {
-                GlStateManager.shadeModel(GL_SMOOTH);
+                try {
+                    GlStateManager.shadeModel(GL_SMOOTH);
+                } catch (RuntimeException e) {
+                    ArchitectureMod.LOG.warn("Failed to enable smooth shading for item models, {}", e.getMessage());
+                }
                 RenderTargetBaked target = new RenderTargetBaked();
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
