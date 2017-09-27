@@ -46,9 +46,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,51 @@ public class BlockShape extends BlockArchitecture<TileShape> {
 
     public BlockShape() {
         super(Material.ROCK, TileShape.class);
+    }
+
+    @Nullable
+    @Override
+    public String getHarvestTool(IBlockState state) {
+        if (state instanceof IExtendedBlockState) {
+            IBlockAccess world = ((IExtendedBlockState) state).getValue(BLOCKACCESS_PROP);
+            BlockPos pos = ((IExtendedBlockState) state).getValue(POS_PROP);
+
+            if (world != null && pos != null) {
+                TileShape shape = TileShape.get(world, pos);
+                if (shape != null) {
+                    return shape.baseBlockState.getBlock().getHarvestTool(shape.baseBlockState);
+                }
+            }
+        }
+
+        return super.getHarvestTool(state);
+    }
+
+    @Override
+    public int getHarvestLevel(IBlockState state) {
+        if (state instanceof IExtendedBlockState) {
+            IBlockAccess world = ((IExtendedBlockState) state).getValue(BLOCKACCESS_PROP);
+            BlockPos pos = ((IExtendedBlockState) state).getValue(POS_PROP);
+
+            if (world != null && pos != null) {
+                TileShape shape = TileShape.get(world, pos);
+                if (shape != null) {
+                    return shape.baseBlockState.getBlock().getHarvestLevel(shape.baseBlockState);
+                }
+            }
+        }
+
+        return super.getHarvestLevel(state);
+    }
+
+    @Override
+    public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
+        TileShape shape = TileShape.get(worldIn, pos);
+        if (shape != null && shape.baseBlockState != null) {
+            return shape.baseBlockState.getBlockHardness(worldIn, pos);
+        }
+
+        return super.getBlockHardness(blockState, worldIn, pos);
     }
 
     public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
@@ -151,10 +198,6 @@ public class BlockShape extends BlockArchitecture<TileShape> {
             if (te != null && te.shape.kind.highlightZones())
                 return boxHit;
         }
-//		IBlockState state = world.getBlockState(pos);
-//		List<AxisAlignedBB> list = getLocalCollisionBoxes(world, pos, state, null);
-//		if (list != null)
-//			setBlockBounds(Utils.unionOfBoxes(list));
         AxisAlignedBB box = getLocalBounds(world, pos, state, null);
         if (box != null)
             return box;
@@ -210,12 +253,6 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
         te.shape.kind.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return list;
-    }
-
-    @Override
-    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
-        //System.out.printf("ShapeBlock.canHarvestBlock: by %s\n", player);
-        return true;
     }
 
     @Override
