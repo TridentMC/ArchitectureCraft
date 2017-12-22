@@ -28,6 +28,7 @@ import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.math.BlockPos;
@@ -41,7 +42,8 @@ public abstract class RenderShape {
     protected ITexture[] textures;
     protected Trans3 t;
     protected RenderTargetBase target;
-    protected int baseColourMult, secondaryColourMult;
+    private int baseColourMult;
+    private int secondaryColourMult;
 
     public RenderShape(TileShape te, ITexture[] textures, Trans3 t, RenderTargetBase target) {
         this.te = te;
@@ -58,4 +60,20 @@ public abstract class RenderShape {
         return ClientProxy.RENDERING_MANAGER.getModel(name);
     }
 
+
+    public int getBaseColourMult() {
+        return baseColourMult;
+    }
+
+    public void setBaseColourMult(int baseColourMult) {
+        this.baseColourMult = baseColourMult;
+    }
+
+    public int getSecondaryColourMult() {
+        return secondaryColourMult;
+    }
+
+    public void setSecondaryColourMult(int secondaryColourMult) {
+        this.secondaryColourMult = secondaryColourMult;
+    }
 }

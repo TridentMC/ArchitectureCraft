@@ -58,7 +58,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
             boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
             boolean renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
 
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : 16777215;
+            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
             int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
 
             renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
@@ -79,7 +79,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         ItemStack baseStack = getStackFromState(te.baseBlockState);
         ItemStack secondaryStack = getStackFromState(te.secondaryBlockState);
         int baseColour = baseStack != null ?
-                itemColors.colorMultiplier(baseStack, 0) : 16777215;
+                itemColors.colorMultiplier(baseStack, 0) : -1;
         int secondaryColour = secondaryStack != null ?
                 itemColors.colorMultiplier(secondaryStack, 0) : baseColour;
 
@@ -140,7 +140,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
 
     private int getColourFromState(IBlockState state) {
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        int color = blockColors.getColor(state, null, null);
+        int color = blockColors.colorMultiplier(state, null, null, 0);
 
         return color;
     }
@@ -151,7 +151,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);
             Trans3 t2 = t.t(te.localToGlobalRotation());
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : 16777215;
+            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
             int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
 
             renderShapeTE(TileShape.get(world, pos), target, t2,

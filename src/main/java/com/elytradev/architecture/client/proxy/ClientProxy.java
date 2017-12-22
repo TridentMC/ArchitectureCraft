@@ -42,12 +42,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -67,22 +71,6 @@ public class ClientProxy extends CommonProxy {
         super.preInit(e);
 
         RenderWindow.init();
-    }
-
-    private int getNumBlockSubtypes(Block block) {
-        if (block instanceof BlockArchitecture)
-            return ((BlockArchitecture) block).getNumSubtypes();
-        else
-            return 1;
-    }
-
-    private int getNumItemSubtypes(Item item) {
-        if (item instanceof ItemArchitecture)
-            return ((ItemArchitecture) item).getNumSubtypes();
-        else if (item instanceof ItemBlock)
-            return getNumBlockSubtypes(Block.getBlockFromItem(item));
-        else
-            return 1;
     }
 
     @Override

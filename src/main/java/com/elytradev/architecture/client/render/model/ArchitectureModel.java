@@ -97,17 +97,22 @@ public class ArchitectureModel implements IArchitectureModel {
                         renderer.setNormal(n);
                         renderer.addVertex(p, c[6], c[7]);
                         float r, g, b;
+                        boolean skipColour = false;
                         if (face.texture > 1) {
-                            r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
-                            g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
-                            b = (float) (secondaryColourMult & 255) / 255.0F;
+                            if (secondaryColourMult > -1) {
+                                r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
+                                g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
+                                b = (float) (secondaryColourMult & 255) / 255.0F;
+                                renderer.setColor(r, g, b, 1F);
+                            }
                         } else {
-                            r = (float) (baseColourMult >> 16 & 255) / 255.0F;
-                            g = (float) (baseColourMult >> 8 & 255) / 255.0F;
-                            b = (float) (baseColourMult & 255) / 255.0F;
+                            if (baseColourMult > -1) {
+                                r = (float) (baseColourMult >> 16 & 255) / 255.0F;
+                                g = (float) (baseColourMult >> 8 & 255) / 255.0F;
+                                b = (float) (baseColourMult & 255) / 255.0F;
+                                renderer.setColor(r, g, b, 1F);
+                            }
                         }
-
-                        renderer.setColor(r, g, b, 1F);
                     }
                     renderer.endFace();
                 }

@@ -117,16 +117,12 @@ public abstract class RenderTargetBase {
         iv = texture.interpolateV(v);
         rawAddVertex(p, iu, iv);
         if (++vertexCount == 3 && expandTrianglesToQuads && verticesPerFace == 3) {
-            //System.out.printf("BaseRenderTarget.addVertex: Doubling vertex\n");
             rawAddVertex(p, iu, iv);
         }
-        //System.out.printf("BaseRenderTarget.addVertex: Now %s of %s\n", vertexCount, verticesPerFace);
     }
 
     public void endFace() {
-        //System.out.printf("BaseRenderTarget.endFace: %s of %s\n", vertexCount, verticesPerFace);
         if (vertexCount < verticesPerFace) {
-            //System.out.printf("BaseRenderTarget.endFace: Too few vertices in face\n");
             throw new IllegalStateException("Too few vertices in face");
         }
         vertexCount = 0;

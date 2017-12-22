@@ -109,7 +109,7 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     protected VertexFormat format = theFormat;
-    protected int bytesPerVertex = format.getNextOffset();
+    protected int bytesPerVertex = format.getSize();
     protected int intsPerVertex = bytesPerVertex / 4;
     protected ByteBuffer buf = ByteBuffer.allocate(bytesPerVertex * 4);
     protected List<BakedQuad> quads;

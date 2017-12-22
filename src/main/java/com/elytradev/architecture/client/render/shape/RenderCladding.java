@@ -70,9 +70,7 @@ public class RenderCladding implements ICustomRenderer {
                 if (state != null) {
                     TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
                     if (sprite != null) {
-                        ItemStack stackFromState = getStackFromState(state);
                         int colourMult = Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 0);
-                        colourMult = colourMult < 0 ? 16777215 : colourMult;
                         ITexture texture = TextureBase.fromSprite(sprite);
                         IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
                         model.render(t, target, colourMult, colourMult, texture);

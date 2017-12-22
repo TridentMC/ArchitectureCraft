@@ -63,7 +63,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
                             BlockRenderLayer layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
         Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(origin);
-        int colour = 16777215;
+        int colour = -1;
         model.render(t2, target, colour, colour, textures);
     }
 
@@ -80,7 +80,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
             if (block instanceof BlockArchitecture)
                 t = t.t(((BlockArchitecture) block).itemTransformation());
         }
-        model.render(t.translate(origin), target, 16777215, 16777215, textures);
+        model.render(t.translate(origin), target, -1, -1, textures);
     }
 
     private int getColourFromState(IBlockState state) {

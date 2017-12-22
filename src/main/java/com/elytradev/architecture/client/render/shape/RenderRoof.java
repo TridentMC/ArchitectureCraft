@@ -59,8 +59,8 @@ public class RenderRoof extends RenderShape {
         super(te, textures, t, target);
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;
-        this.baseColourMult = baseColourMult;
-        this.secondaryColourMult = secondaryColourMult;
+        this.setBaseColourMult(baseColourMult);
+        this.setSecondaryColourMult(secondaryColourMult);
     }
 
     @Override
@@ -796,9 +796,9 @@ public class RenderRoof extends RenderShape {
         outerFace = false;
         normal(n);
         target.setTexture(textures[2]);
-        float r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
-        float g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
-        float b = (float) (secondaryColourMult & 255) / 255.0F;
+        float r = (float) (getSecondaryColourMult() >> 16 & 255) / 255.0F;
+        float g = (float) (getSecondaryColourMult() >> 8 & 255) / 255.0F;
+        float b = (float) (getSecondaryColourMult() & 255) / 255.0F;
         target.setColor(r, g, b, 1F);
     }
 
@@ -806,9 +806,9 @@ public class RenderRoof extends RenderShape {
         outerFace = true;
         normal(n);
         target.setTexture(textures[1]);
-        float r = (float) (baseColourMult >> 16 & 255) / 255.0F;
-        float g = (float) (baseColourMult >> 8 & 255) / 255.0F;
-        float b = (float) (baseColourMult & 255) / 255.0F;
+        float r = (float) (getBaseColourMult() >> 16 & 255) / 255.0F;
+        float g = (float) (getBaseColourMult() >> 8 & 255) / 255.0F;
+        float b = (float) (getBaseColourMult() & 255) / 255.0F;
         target.setColor(r, g, b, 1F);
     }
 
