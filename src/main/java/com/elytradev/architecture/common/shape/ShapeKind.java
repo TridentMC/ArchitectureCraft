@@ -474,7 +474,7 @@ public abstract class ShapeKind {
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
                                 boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            new RenderWindow(te, textures, t, target, renderBase, renderSecondary).render();
+            new RenderWindow(te, textures, t, target, renderBase, renderSecondary, baseColourMult, secondaryColourMult).render();
         }
 
         @Override

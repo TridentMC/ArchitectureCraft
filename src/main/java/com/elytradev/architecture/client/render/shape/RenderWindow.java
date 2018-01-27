@@ -43,12 +43,14 @@ public class RenderWindow extends RenderShape {
     protected boolean renderBase, renderSecondary;
     protected ShapeKind.Window kind;
 
-    public RenderWindow(TileShape te, ITexture[] textures, Trans3 t,
-                        RenderTargetBase target, boolean renderBase, boolean renderSecondary) {
+    public RenderWindow(TileShape te, ITexture[] textures, Trans3 t, RenderTargetBase target,
+                        boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
         super(te, textures, t, target);
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;
         this.kind = (ShapeKind.Window) te.shape.kind;
+        this.setBaseColourMult(baseColourMult);
+        this.setSecondaryColourMult(secondaryColourMult);
     }
 
     protected static IArchitectureModel model(String name) {
