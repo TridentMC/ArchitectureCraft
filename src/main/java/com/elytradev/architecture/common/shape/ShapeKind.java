@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.client.render.model.ArchitectureModel;
+import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
@@ -382,8 +382,8 @@ public abstract class ShapeKind {
 
         @Override
         public boolean acceptsCladding() {
-            ArchitectureModel model = (ArchitectureModel) getModel();
-            for (ArchitectureModel.Face face : model.faces)
+            OBJSONModel model = (OBJSONModel) getModel();
+            for (OBJSONModel.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;

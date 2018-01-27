@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.client.render.model.ArchitectureModel;
+import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
@@ -145,7 +145,7 @@ public class RenderingManager {
         ResourceLocation loc = modelLocation(name);
         IArchitectureModel model = modelCache.get(loc);
         if (model == null) {
-            model = ArchitectureModel.fromResource(loc);
+            model = OBJSONModel.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;

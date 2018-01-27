@@ -25,7 +25,7 @@
 package com.elytradev.architecture.common.proxy;
 
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
-import com.elytradev.architecture.client.render.model.ArchitectureModel;
+import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.common.ArchitectureGuiHandler;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.network.ArchitectureNetworking;
@@ -69,7 +69,7 @@ public class CommonProxy {
         ResourceLocation loc = modelLocation(name);
         IArchitectureModel model = modelCache.get(loc);
         if (model == null) {
-            model = ArchitectureModel.fromResource(loc);
+            model = OBJSONModel.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;
