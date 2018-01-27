@@ -31,6 +31,8 @@ import com.elytradev.architecture.common.item.ItemChisel;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.item.ItemHammer;
 import com.elytradev.architecture.common.shape.ShapeItem;
+import com.elytradev.architecture.common.tile.TileSawbench;
+import com.elytradev.architecture.common.tile.TileShape;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
@@ -40,12 +42,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IFixableData;
+import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -83,12 +91,38 @@ public class ArchitectureContent {
     public ItemCladding itemCladding;
     private int recipeID = 0;
 
-    public void preInit(FMLPreInitializationEvent e) {
+    private ModFixs dataFixer;
 
+    public void preInit(FMLPreInitializationEvent e) {
+        this.dataFixer = FMLCommonHandler.instance().getDataFixer().init(ArchitectureMod.MOD_ID, 1);
+        this.dataFixer.registerFix(FixTypes.BLOCK_ENTITY, new IFixableData() {
+            @Override
+            public int getFixVersion() {
+                return 0;
+            }
+
+            @Override
+            public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
+                NBTTagCompound tag = compound.copy();
+                String id = compound.getString("id");
+
+                if (id.equals("gcewing.shape")
+                        || id.equals(new ResourceLocation(TileShape.class.getName()).toString())) {
+                    id = new ResourceLocation(ArchitectureMod.MOD_ID, "shape").toString();
+                } else if (id.equals("gcewing.sawbench")
+                        || id.equals(new ResourceLocation(TileSawbench.class.getName()).toString())) {
+                    id = new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench").toString();
+                }
+
+                tag.setString("id", id);
+                return tag;
+            }
+        });
     }
 
     public void init(FMLInitializationEvent e) {
-
+        GameRegistry.registerTileEntity(TileShape.class, ArchitectureMod.MOD_ID + ":shape");
+        GameRegistry.registerTileEntity(TileSawbench.class, ArchitectureMod.MOD_ID + ":sawbench");
     }
 
     public void postInit(FMLPostInitializationEvent e) {

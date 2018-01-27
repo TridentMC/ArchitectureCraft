@@ -62,7 +62,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -161,16 +160,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
-        tileEntityClass = teClass;
-        if (teClass != null) {
-            if (teID == null)
-                teID = teClass.getName();
-            try {
-                GameRegistry.registerTileEntity(teClass, teID);
-            } catch (IllegalArgumentException e) {
-                // Ignore redundant registration
-            }
-        }
+        this.tileEntityClass = teClass;
     }
 
     public IOrientationHandler getOrientationHandler() {
