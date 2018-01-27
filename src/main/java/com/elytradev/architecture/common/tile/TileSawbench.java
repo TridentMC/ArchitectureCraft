@@ -113,7 +113,7 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     public ItemStack usePendingMaterial() {
-        ItemStack origMaterialStack = getStackInSlot(materialSlot);
+        ItemStack origMaterialStack = getStackInSlot(materialSlot).copy();
         if (pendingMaterialUsage) {
             pendingMaterialUsage = false;
             inventory.decrStackSize(materialSlot, materialMultiple());
@@ -191,7 +191,7 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     void updateResultSlot() {
-        ItemStack oldResult = getStackInSlot(resultSlot);
+        ItemStack oldResult = getStackInSlot(resultSlot).copy();
         if (oldResult.isEmpty() || pendingMaterialUsage) {
             ItemStack resultStack = makeResultStack();
             if (!ItemStack.areItemStacksEqual(resultStack, oldResult))

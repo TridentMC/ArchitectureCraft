@@ -81,40 +81,36 @@ public class ArchitectureModel implements IArchitectureModel {
     }
 
     @Override
-    public void render(Trans3 t, RenderTargetBase renderer, int baseColourMult, int secondaryColourMult, ITexture... textures) {
+    public void render(Trans3 t, RenderTargetBase target, int baseColourMult, int secondaryColourMult, ITexture... textures) {
         Vector3 p = null, n = null;
         for (Face face : faces) {
             ITexture tex = textures[face.texture];
             if (tex != null) {
-                renderer.setTexture(tex);
+                target.setTexture(tex);
+                float r, g, b;
+                if (face.texture > 1) {
+                    r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
+                    g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
+                    b = (float) (secondaryColourMult & 255) / 255.0F;
+                } else {
+                    r = (float) (baseColourMult >> 16 & 255) / 255.0F;
+                    g = (float) (baseColourMult >> 8 & 255) / 255.0F;
+                    b = (float) (baseColourMult & 255) / 255.0F;
+                }
+                target.setColor(r, g, b, 1F);
                 for (int[] tri : face.triangles) {
-                    renderer.beginTriangle();
+                    target.beginTriangle();
                     for (int i = 0; i < 3; i++) {
                         int j = tri[i];
                         double[] c = face.vertices[j];
                         p = t.p(c[0], c[1], c[2]);
                         n = t.v(c[3], c[4], c[5]);
-                        renderer.setNormal(n);
-                        renderer.addVertex(p, c[6], c[7]);
-                        float r, g, b;
-                        boolean skipColour = false;
-                        if (face.texture > 1) {
-                            if (secondaryColourMult > -1) {
-                                r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
-                                g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
-                                b = (float) (secondaryColourMult & 255) / 255.0F;
-                                renderer.setColor(r, g, b, 1F);
-                            }
-                        } else {
-                            if (baseColourMult > -1) {
-                                r = (float) (baseColourMult >> 16 & 255) / 255.0F;
-                                g = (float) (baseColourMult >> 8 & 255) / 255.0F;
-                                b = (float) (baseColourMult & 255) / 255.0F;
-                                renderer.setColor(r, g, b, 1F);
-                            }
-                        }
+                        target.setNormal(n);
+                        target.addVertex(p, c[6], c[7]);
+
+
                     }
-                    renderer.endFace();
+                    target.endFace();
                 }
             }
         }

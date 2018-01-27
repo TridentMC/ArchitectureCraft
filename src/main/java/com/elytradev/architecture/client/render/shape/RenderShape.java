@@ -60,7 +60,6 @@ public abstract class RenderShape {
         return ClientProxy.RENDERING_MANAGER.getModel(name);
     }
 
-
     public int getBaseColourMult() {
         return baseColourMult;
     }
