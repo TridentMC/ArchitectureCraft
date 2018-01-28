@@ -34,8 +34,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Reads and renders objson (previously smeg) files.
+ */
 public class OBJSONModel implements IArchitectureModel {
 
     private static final Gson GSON = new Gson();
@@ -50,7 +54,7 @@ public class OBJSONModel implements IArchitectureModel {
         OBJSONModel model = GSON.fromJson(new InputStreamReader(in), OBJSONModel.class);
         if (in == null)
             throw new RuntimeException("Model file not found: " + path);
-        model.prepare();
+        model.setNormals();
         return model;
     }
 
@@ -59,7 +63,10 @@ public class OBJSONModel implements IArchitectureModel {
         return new AxisAlignedBB(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
     }
 
-    void prepare() {
+    /**
+     * Add normals to all the faces.
+     */
+    private void setNormals() {
         for (Face face : faces) {
             double[][] p = face.vertices;
             int[] t = face.triangles[0];
@@ -70,10 +77,10 @@ public class OBJSONModel implements IArchitectureModel {
     @Override
     public void addBoxesToList(Trans3 t, List list) {
         if (boxes != null && boxes.length > 0) {
-            for (int i = 0; i < boxes.length; i++)
-                addBoxToList(boxes[i], t, list);
-        } else
+            Arrays.stream(boxes).forEach(b -> addBoxToList(b, t, list));
+        } else {
             addBoxToList(bounds, t, list);
+        }
     }
 
     protected void addBoxToList(double[] b, Trans3 t, List list) {
@@ -87,17 +94,7 @@ public class OBJSONModel implements IArchitectureModel {
             ITexture tex = textures[face.texture];
             if (tex != null) {
                 target.setTexture(tex);
-                float r, g, b;
-                if (face.texture > 1) {
-                    r = (float) (secondaryColourMult >> 16 & 255) / 255.0F;
-                    g = (float) (secondaryColourMult >> 8 & 255) / 255.0F;
-                    b = (float) (secondaryColourMult & 255) / 255.0F;
-                } else {
-                    r = (float) (baseColourMult >> 16 & 255) / 255.0F;
-                    g = (float) (baseColourMult >> 8 & 255) / 255.0F;
-                    b = (float) (baseColourMult & 255) / 255.0F;
-                }
-                target.setColor(r, g, b, 1F);
+                target.setColor(face.texture > 1 ? secondaryColourMult : baseColourMult);
                 for (int[] tri : face.triangles) {
                     target.beginTriangle();
                     for (int i = 0; i < 3; i++) {
@@ -107,8 +104,6 @@ public class OBJSONModel implements IArchitectureModel {
                         n = t.v(c[3], c[4], c[5]);
                         target.setNormal(n);
                         target.addVertex(p, c[6], c[7]);
-
-
                     }
                     target.endFace();
                 }
@@ -116,11 +111,13 @@ public class OBJSONModel implements IArchitectureModel {
         }
     }
 
+    /**
+     * Stores info about a given face.
+     */
     public static class Face {
         public int texture;
         double[][] vertices;
         int[][] triangles;
-        //Vector3 centroid;
         Vector3 normal;
     }
 

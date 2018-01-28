@@ -82,12 +82,20 @@ public abstract class RenderTargetBase {
             this.texture = texture;
         }
     }
+    
+    public void setColor(int color) {
+        setColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F);
+    }
 
-    public void setColor(double r, double g, double b, double a) {
-        red = (float) r;
-        green = (float) g;
-        blue = (float) b;
-        alpha = (float) a;
+    public void setColor(float r, float g, float b) {
+        setColor(r, g, b, 1F);
+    }
+
+    public void setColor(float r, float g, float b, float a) {
+        red = r;
+        green = g;
+        blue = b;
+        alpha = a;
     }
 
     public void setNormal(Vector3 n) {
