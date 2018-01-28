@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.helpers;
 
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 
 public class Matrix3 {
@@ -124,7 +125,7 @@ public class Matrix3 {
 
     public void dump() {
         for (int i = 0; i < 3; i++)
-            ArchitectureMod.LOG.info("[%6.3f %6.3f %6.3f]\n", m[i][0], m[i][1], m[i][2]);
+            ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", m[i][0], m[i][1], m[i][2]);
     }
 
 }

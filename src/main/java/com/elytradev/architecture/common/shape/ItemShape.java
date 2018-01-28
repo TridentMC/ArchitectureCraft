@@ -48,11 +48,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class ShapeItem extends ItemBlock {
+public class ItemShape extends ItemBlock {
 
     static Random rand = new Random();
 
-    public ShapeItem(Block block) {
+    public ItemShape(Block block) {
         super(block);
         this.setCreativeTab(ArchitectureContent.SHAPE_TAB);
     }
@@ -74,8 +74,6 @@ public class ShapeItem extends ItemBlock {
     @Override
     public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
                                 EnumFacing face, float hitX, float hitY, float hitZ, IBlockState newState) {
-        //if (!world.isRemote)
-        //	System.out.printf("ShapeItem.placeBlockAt: hit = (%.3f, %.3f, %.3f)\n", hitX, hitY, hitZ);
         if (!world.setBlockState(pos, newState, 3))
             return false;
         Vec3i d = Vector3.getDirectionVec(face);
@@ -84,7 +82,6 @@ public class ShapeItem extends ItemBlock {
         if (te != null) {
             te.readFromItemStack(stack);
             if (te.shape != null) {
-                //ShapeTE nte = ShapeTE.get(world, te.getPos().offset(face.getOpposite()));
                 BlockPos npos = te.getPos().offset(face.getOpposite());
                 IBlockState nstate = world.getBlockState(npos);
                 TileEntity nte = world.getTileEntity(npos);

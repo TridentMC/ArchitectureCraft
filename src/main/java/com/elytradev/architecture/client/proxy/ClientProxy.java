@@ -62,11 +62,6 @@ public class ClientProxy extends CommonProxy {
     public static final RenderingManager RENDERING_MANAGER = new RenderingManager();
 
     @Override
-    public IArchitectureModel getModel(String name) {
-        return RENDERING_MANAGER.getModel(name);
-    }
-
-    @Override
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
 

@@ -25,6 +25,7 @@
 package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
@@ -177,10 +178,10 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     protected void dumpVertexData(int[] data, int n) {
-        ArchitectureMod.LOG.info("BaseBakedRenderTarget.endFace: Vertex data:\n");
+        ArchitectureLog.info("BaseBakedRenderTarget.endFace: Vertex data:\n");
         for (int i = 0; i < 4; i++) {
             int k = i * intsPerVertex;
-            ArchitectureMod.LOG.info("[%s] coords (%.3f,%.3f,%.3f) color %08x\n",
+            ArchitectureLog.info("[%s] coords (%.3f,%.3f,%.3f) color %08x\n",
                     i,
                     Float.intBitsToFloat(data[k]),
                     Float.intBitsToFloat(data[k + 1]),

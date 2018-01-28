@@ -27,6 +27,7 @@ package com.elytradev.architecture.common.proxy;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.common.ArchitectureGuiHandler;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.network.ArchitectureNetworking;
 import com.google.common.collect.Maps;
@@ -69,6 +70,7 @@ public class CommonProxy {
         ResourceLocation loc = modelLocation(name);
         IArchitectureModel model = modelCache.get(loc);
         if (model == null) {
+            ArchitectureLog.info("Loading and caching OBJSON model {}", name);
             model = OBJSONModel.fromResource(loc);
             modelCache.put(loc, model);
         }

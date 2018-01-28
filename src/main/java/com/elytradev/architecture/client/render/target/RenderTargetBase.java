@@ -82,7 +82,7 @@ public abstract class RenderTargetBase {
             this.texture = texture;
         }
     }
-    
+
     public void setColor(int color) {
         setColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F);
     }

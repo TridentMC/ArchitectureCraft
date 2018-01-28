@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.shape;
 
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Profile;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -57,27 +58,27 @@ public enum Shape {
     ROOF_OVERHANG_OUTER_CORNER(8, "Roof Overhang Outer Corner", ShapeKind.Model("roof_overhang_outer_corner"), UNILATERAL, 1, 3, 0x4f),
     ROOF_OVERHANG_INNER_CORNER(9, "Roof Overhang Inner Corner", ShapeKind.Model("roof_overhang_inner_corner"), UNILATERAL, 2, 3, 0xdf),
 
-    CYLINDER(10, "CYLINDER", ShapeKind.Model("cylinder_full_r8h16"), QUADRILATERAL, 1, 1, 0xff),
-    CYLINDER_HALF(11, "Half CYLINDER", ShapeKind.Model("cylinder_half_r8h16"), BILATERAL, 1, 1, 0xcc),
-    CYLINDER_QUARTER(12, "Quarter CYLINDER", ShapeKind.Model("cylinder_quarter_r8h16"), UNILATERAL, 1, 1, 0x44),
+    CYLINDER(10, "Cylinder", ShapeKind.Model("cylinder_full_r8h16"), QUADRILATERAL, 1, 1, 0xff),
+    CYLINDER_HALF(11, "Half Cylinder", ShapeKind.Model("cylinder_half_r8h16"), BILATERAL, 1, 1, 0xcc),
+    CYLINDER_QUARTER(12, "Quarter Cylinder", ShapeKind.Model("cylinder_quarter_r8h16"), UNILATERAL, 1, 1, 0x44),
     CYLINDER_LARGE_QUARTER(13, "Round Outer Corner", ShapeKind.Model("cylinder_quarter_r16h16"), UNILATERAL, 1, 1, 0xff),
     ANTICYLINDER_LARGE_QUARTER(14, "Round Inner Corner", ShapeKind.Model("round_inner_corner"), UNILATERAL, 1, 2, 0xdd),
-    PILLAR(15, "Round PILLAR", ShapeKind.Model("cylinder_r6h16"), QUADRILATERAL, 1, 1, 0x106),
-    POST(16, "Round POST", ShapeKind.Model("cylinder_r4h16"), QUADRILATERAL, 1, 4, 0x104),
-    POLE(17, "Round POLE", ShapeKind.Model("cylinder_r2h16"), QUADRILATERAL, 1, 16, 0x102),
+    PILLAR(15, "Round Pillar", ShapeKind.Model("cylinder_r6h16"), QUADRILATERAL, 1, 1, 0x106),
+    POST(16, "Round Post", ShapeKind.Model("cylinder_r4h16"), QUADRILATERAL, 1, 4, 0x104),
+    POLE(17, "Round Pole", ShapeKind.Model("cylinder_r2h16"), QUADRILATERAL, 1, 16, 0x102),
 
     BEVELLED_OUTER_CORNER(18, "Bevelled Outer Corner", ShapeKind.Model("bevelled_outer_corner"), UNILATERAL, 1, 3, 0x4f),
     BEVELLED_INNER_CORNER(19, "Bevelled Inner Corner", ShapeKind.Model("bevelled_inner_corner"), UNILATERAL, 1, 1, 0xdf),
 
-    PILLAR_BASE(20, "Round PILLAR Base", ShapeKind.Model("pillar_base"), QUADRILATERAL, 1, 1, 0xff),
+    PILLAR_BASE(20, "Round Pillar Base", ShapeKind.Model("pillar_base"), QUADRILATERAL, 1, 1, 0xff),
     DORIC_CAPITAL(21, "Doric Capital", ShapeKind.Model("doric_capital"), QUADRILATERAL, 1, 1, 0xff),
     IONIC_CAPITAL(22, "Ionic capital", ShapeKind.Model("ionic_capital"), BILATERAL, 1, 1, 0xff),
     CORINTHIAN_CAPITAL(23, "Corinthian capital", ShapeKind.Model("corinthian_capital"), QUADRILATERAL, 1, 1, 0xff),
     DORIC_TRIGLYPH(24, "Triglyph", ShapeKind.Model("doric_triglyph", Profile.Generic.lrStraight), BILATERAL, 1, 1, 0xff),
     DORIC_TRIGLYPH_CORNER(25, "Triglyph Corner", ShapeKind.Model("doric_triglyph_corner", Profile.Generic.lrCorner), BILATERAL, 1, 1, 0xff),
     DORIC_METOPE(26, "Metope", ShapeKind.Model("doric_metope", Profile.Generic.lrStraight), BILATERAL, 1, 1, 0xff),
-    ARCHITRAVE(27, "ARCHITRAVE", ShapeKind.Model("architrave", Profile.Generic.lrStraight), BILATERAL, 1, 1, 0xff),
-    ARCHITRAVE_CORNER(28, "ARCHITRAVE Corner", ShapeKind.Model("architrave_corner", Profile.Generic.lrCorner), UNILATERAL, 1, 1, 0xff),
+    ARCHITRAVE(27, "Architrave", ShapeKind.Model("architrave", Profile.Generic.lrStraight), BILATERAL, 1, 1, 0xff),
+    ARCHITRAVE_CORNER(28, "Architrave Corner", ShapeKind.Model("architrave_corner", Profile.Generic.lrCorner), UNILATERAL, 1, 1, 0xff),
 
     WINDOW_FRAME(30, "Window Frame", WindowShapeKinds.PlainWindow, BILATERAL, 1, 4, 0x202),
     WINDOW_CORNER(31, "Window Corner", WindowShapeKinds.CornerWindow, UNILATERAL, 1, 2, 0x202),
@@ -143,10 +144,10 @@ public enum Shape {
 
     BANISTER_PLAIN_INNER_CORNER(88, "Plain Banister Inner Corner", ShapeKind.Model("balustrade_stair_plain_inner_corner"), UNILATERAL, 1, 6, 0x0),
 
-    SLAB(90, "SLAB", ShapeKind.Model("slab"), QUADRILATERAL, 1, 2, 0x0),
-    STAIRS(91, "STAIRS", ShapeKind.Model("stairs", Profile.Generic.lrStraight), BILATERAL, 3, 4, 0x0),
-    STAIRS_OUTER_CORNER(92, "STAIRS Outer Corner", ShapeKind.Model("stairs_outer_corner", Profile.Generic.lrCorner), UNILATERAL, 2, 3, 0x0),
-    STAIRS_INNER_CORNER(93, "STAIRS Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),;
+    SLAB(90, "Slab", ShapeKind.Model("slab"), QUADRILATERAL, 1, 2, 0x0),
+    STAIRS(91, "Stairs", ShapeKind.Model("stairs", Profile.Generic.lrStraight), BILATERAL, 3, 4, 0x0),
+    STAIRS_OUTER_CORNER(92, "Stairs Outer Corner", ShapeKind.Model("stairs_outer_corner", Profile.Generic.lrCorner), UNILATERAL, 2, 3, 0x0),
+    STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),;
 
     public static Shape[] values = values();
     public static boolean debugPlacement = false;
@@ -255,15 +256,15 @@ public enum Shape {
         }
         turn = turnForPlacementHit(side, hit, symmetry);
         if (debugPlacement && !te.getWorld().isRemote) {
-            ArchitectureMod.LOG.info("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
-            ArchitectureMod.LOG.info("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
+            ArchitectureLog.info("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
+            ArchitectureLog.info("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
         }
         te.setSide(side);
         te.setTurn(turn);
         if ((flags & PLACE_OFFSET) != 0) {
             te.setOffsetX(offsetXForPlacementHit(side, turn, hit));
             if (debugPlacement && !te.getWorld().isRemote)
-                ArchitectureMod.LOG.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
+                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
         }
     }
 

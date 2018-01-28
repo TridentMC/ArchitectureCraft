@@ -29,6 +29,7 @@ import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -75,11 +76,9 @@ public class RenderingManager {
     protected Map<Item, ICustomRenderer> itemRenderers = new HashMap<Item, ICustomRenderer>();
     protected Map<IBlockState, ICustomRenderer> stateRendererCache = new HashMap<IBlockState, ICustomRenderer>();
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
-    protected boolean customRenderingRequired;
     protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
     protected List<IBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
-    private Map<ResourceLocation, IArchitectureModel> modelCache = Maps.newHashMap();
 
     public List<IBakedModel> getBakedModels() {
         return bakedModels;
@@ -137,18 +136,8 @@ public class RenderingManager {
         return obj instanceof ITextureConsumer && ((ITextureConsumer) obj).getTextureNames() != null;
     }
 
-    public ResourceLocation modelLocation(String path) {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, "models/" + path);
-    }
-
     public IArchitectureModel getModel(String name) {
-        ResourceLocation loc = modelLocation(name);
-        IArchitectureModel model = modelCache.get(loc);
-        if (model == null) {
-            model = OBJSONModel.fromResource(loc);
-            modelCache.put(loc, model);
-        }
-        return model;
+        return ArchitectureMod.PROXY.getModel(name);
     }
 
     public ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
@@ -203,7 +192,6 @@ public class RenderingManager {
         if (obj instanceof ITextureConsumer) {
             String names[] = ((ITextureConsumer) obj).getTextureNames();
             if (names != null) {
-                customRenderingRequired = true;
                 for (String name : names) {
                     ResourceLocation loc = textureResourceLocation(textureType, name);
                     if (textureCache.get(loc) == null) {
@@ -392,7 +380,7 @@ public class RenderingManager {
                 try {
                     GlStateManager.shadeModel(GL_SMOOTH);
                 } catch (RuntimeException e) {
-                    ArchitectureMod.LOG.warn("Failed to enable smooth shading for item models, {}", e.getMessage());
+                    ArchitectureLog.warn("Failed to enable smooth shading for item models, {}", e.getMessage());
                 }
                 RenderTargetBaked target = new RenderTargetBaked();
                 rend.renderItemStack(stack, target, itemTrans);

@@ -3,6 +3,7 @@ package com.elytradev.architecture.client.render;
 import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.concrete.reflect.accessor.Accessor;
@@ -41,7 +42,7 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
                 field.setAccessible(true);
                 FieldUtils.writeField(field, customBlockDispatcher, FieldUtils.readField(field, baseDispatcher));
             } catch (Exception e) {
-                ArchitectureMod.LOG.error("Failed to transfer field from original render dispatcher to normal. {}", field);
+                ArchitectureLog.error("Failed to transfer field from original render dispatcher to normal. {}", field);
             }
         }
 

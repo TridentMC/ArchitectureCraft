@@ -30,6 +30,7 @@ import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.block.BlockShape;
@@ -122,7 +123,7 @@ public abstract class ShapeKind {
                     Object thisProfile = Profile.getProfileGlobal(te.shape, nte.getSide(), turn, thisFace);
                     if (Profile.matches(thisProfile, otherProfile)) {
                         //if (debug)
-                        //	ArchitectureMod.LOG.info("ShapeKind.orientOnPlacement: side %s turn %s\n", nte.side, turn);
+                        //	ArchitectureLog.info("ShapeKind.orientOnPlacement: side %s turn %s\n", nte.side, turn);
                         te.setSide(nte.getSide());
                         te.setTurn(turn);
                         te.setOffsetX(nte.getOffsetX());
@@ -148,7 +149,7 @@ public abstract class ShapeKind {
 
     public void onChiselUse(TileShape te, EntityPlayer player, EnumFacing face, Vector3 hit) {
         EnumFacing side = zoneHit(face, hit);
-        //ArchitectureMod.LOG.info("ShapeKind.onChiselUse: face = %s, hit = %s, side = %s\n", face, hit, side);
+        //ArchitectureLog.info("ShapeKind.onChiselUse: face = %s, hit = %s, side = %s\n", face, hit, side);
         if (side != null)
             chiselUsedOnSide(te, player, side);
         else
@@ -405,8 +406,8 @@ public abstract class ShapeKind {
             AxisAlignedBB bounds = Utils.unionOfBoxes(list);
             if (Shape.debugPlacement) {
                 for (AxisAlignedBB box : list)
-                    ArchitectureMod.LOG.info("ShapeKind.Model.placementOffsetX: %s\n", box);
-                ArchitectureMod.LOG.info("ShapeKind.Model.placementOffsetX: bounds = %s\n", bounds);
+                    ArchitectureLog.info("ShapeKind.Model.placementOffsetX: %s\n", box);
+                ArchitectureLog.info("ShapeKind.Model.placementOffsetX: bounds = %s\n", bounds);
             }
             return 0.5 * (1 - (bounds.maxX - bounds.minX));
         }
@@ -610,7 +611,7 @@ public abstract class ShapeKind {
         @Override
         public boolean orientOnPlacement(EntityPlayer player, TileShape te,
                                          BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
-            //ArchitectureMod.LOG.info("Banister.orientOnPlacement: nstate = %s\n", nstate);
+            //ArchitectureLog.info("Banister.orientOnPlacement: nstate = %s\n", nstate);
             if (!player.isSneaking()) {
                 Block nblock = nstate.getBlock();
                 boolean placedOnStair = false;

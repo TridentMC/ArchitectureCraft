@@ -28,6 +28,7 @@ import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.shape.ShapeKind;
@@ -211,9 +212,9 @@ public class RenderWindow extends RenderShape {
 
     protected void dumpFrameFlags(boolean[][] frame) {
         if (te != null && te.secondaryBlockState != null) {
-            ArchitectureMod.LOG.info("RenderWindow.getFrameFlags:\n");
+            ArchitectureLog.info("RenderWindow.getFrameFlags:\n");
             for (int i = 0; i <= 3; i++)
-                ArchitectureMod.LOG.info("Side %s: %s %s %s\n", i, frame[i][0], frame[i][1], frame[i][2]);
+                ArchitectureLog.info("Side %s: %s %s %s\n", i, frame[i][0], frame[i][1], frame[i][2]);
         }
     }
 
@@ -223,7 +224,7 @@ public class RenderWindow extends RenderShape {
 
     protected void debug(String fmt, Object... args) {
         if (blockWorld != null && te.secondaryBlockState != null)
-            ArchitectureMod.LOG.info(fmt, args);
+            ArchitectureLog.info(fmt, args);
     }
 
     protected static class WindowModels {

@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -253,7 +254,7 @@ public class BaseGui {
                 gstate = gstate.previous;
                 mc.getTextureManager().bindTexture(gstate.texture);
             } else
-                ArchitectureMod.LOG.info("BaseGui: Warning: Graphics state stack underflow\n");
+                ArchitectureLog.info("BaseGui: Warning: Graphics state stack underflow\n");
         }
 
         public void drawRect(double x, double y, double w, double h) {
@@ -565,7 +566,7 @@ public class BaseGui {
 
         @Override
         public IWidget dispatchMousePress(int x, int y, int button) {
-            //ArchitectureMod.LOG.info("BaseGui.Widget.dispatchMousePress: (%s, %s) in %s\n",
+            //ArchitectureLog.info("BaseGui.Widget.dispatchMousePress: (%s, %s) in %s\n",
             //  x, y, getClass().getSimpleName());
             return this;
         }
@@ -611,7 +612,7 @@ public class BaseGui {
 
         @Override
         public void setFocus(IWidget widget) {
-            //ArchitectureMod.LOG.info("BaseGui.Group.setFocus: of %s to %s\n",
+            //ArchitectureLog.info("BaseGui.Group.setFocus: of %s to %s\n",
             //  getClass().getSimpleName(), widget.getClass().getSimpleName());
             focus = widget;
         }
@@ -646,7 +647,7 @@ public class BaseGui {
 
         @Override
         public IWidget dispatchMousePress(int x, int y, int button) {
-            //ArchitectureMod.LOG.info("BaseGui.Group.dispatchMousePress: (%s, %s) in %s\n",
+            //ArchitectureLog.info("BaseGui.Group.dispatchMousePress: (%s, %s) in %s\n",
             //  x, y, getClass().getSimpleName());
             IWidget target = findWidget(x, y);
             if (target != null)

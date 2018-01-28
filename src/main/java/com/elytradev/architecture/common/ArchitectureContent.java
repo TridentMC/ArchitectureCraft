@@ -30,7 +30,8 @@ import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.item.ItemChisel;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.item.ItemHammer;
-import com.elytradev.architecture.common.shape.ShapeItem;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.ItemShape;
 import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.google.common.collect.Lists;
@@ -72,9 +73,10 @@ public class ArchitectureContent {
         }
     };
     public static final CreativeTabs SHAPE_TAB = new CreativeTabs("architecture.shape") {
+
         @Override
         public ItemStack getTabIconItem() {
-            return Item.getItemFromBlock(ArchitectureMod.CONTENT.blockShape).getDefaultInstance();
+            return Shape.ROOF_TILE.kind.newStack(Shape.ROOF_TILE, Blocks.PLANKS.getDefaultState(), 1);
         }
     };
 
@@ -133,7 +135,7 @@ public class ArchitectureContent {
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
         this.blockSawbench = registerBlock(registry, "sawbench", new BlockSawbench());
-        this.blockShape = registerBlock(registry, "shape", new BlockShape(), ShapeItem.class);
+        this.blockShape = registerBlock(registry, "shape", new BlockShape(), ItemShape.class);
     }
 
     @SubscribeEvent
@@ -234,7 +236,7 @@ public class ArchitectureContent {
             itemBlocksToRegister.add(itemBlock);
             registeredBlocks.put(id, block);
         } catch (Exception e) {
-            ArchitectureMod.LOG.error("Caught exception while registering " + block, e);
+            ArchitectureLog.error("Caught exception while registering " + block, e);
         }
 
         return (T) registeredBlocks.get(id);

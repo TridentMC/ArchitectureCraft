@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.logging.log4j.Logger;
 
 import static com.elytradev.architecture.common.ArchitectureMod.*;
 
@@ -48,8 +47,6 @@ public class ArchitectureMod {
     @Mod.Instance()
     public static ArchitectureMod INSTANCE;
 
-    public static Logger LOG;
-
     @SidedProxy(serverSide = "com.elytradev.architecture.common.proxy.CommonProxy", clientSide = "com.elytradev.architecture.client.proxy.ClientProxy")
     public static CommonProxy PROXY;
 
@@ -57,7 +54,6 @@ public class ArchitectureMod {
     public void onPreInit(FMLPreInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(CONTENT);
 
-        LOG = e.getModLog();
         PROXY.preInit(e);
         PROXY.registerHandlers();
         CONTENT.preInit(e);

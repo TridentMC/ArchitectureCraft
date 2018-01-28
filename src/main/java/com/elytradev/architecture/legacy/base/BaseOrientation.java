@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.legacy.base;
 
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockArchitecture.IOrientationHandler;
@@ -83,7 +84,7 @@ public class BaseOrientation {
                                          float hitX, float hitY, float hitZ, IBlockState baseState, EntityLivingBase placer) {
             EnumFacing dir = placer.getHorizontalFacing();
             if (debugPlacement)
-                ArchitectureMod.LOG.info("BaseOrientation.Orient4WaysByState: Placing block with FACING = %s\n", dir);
+                ArchitectureLog.info("BaseOrientation.Orient4WaysByState: Placing block with FACING = %s\n", dir);
             return baseState.withProperty(FACING, dir);
         }
 

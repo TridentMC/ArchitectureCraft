@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.client.render.target;
 
+import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
@@ -54,7 +55,7 @@ public class RenderTargetWorld extends RenderTargetBase {
 
     public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
-        //ArchitectureMod.LOG.info("BaseWorldRenderTarget(%s)\n", pos);
+        //ArchitectureLog.info("BaseWorldRenderTarget(%s)\n", pos);
         this.world = world;
         this.blockPos = pos;
         this.blockState = world.getBlockState(pos);
@@ -69,7 +70,7 @@ public class RenderTargetWorld extends RenderTargetBase {
 
     @Override
     public void setNormal(Vector3 n) {
-//      ArchitectureMod.LOG.info("BaseWorldRenderer.setNormal: %s (%.3f, %.3f, %.3f)\n",
+//      ArchitectureLog.info("BaseWorldRenderer.setNormal: %s (%.3f, %.3f, %.3f)\n",
 //          vertexCount, n.x, n.y, n.z);
         super.setNormal(n);
         axisAlignedNormal = n.dot(face) >= 0.99;
@@ -78,7 +79,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
         lightVertex(p);
-        //ArchitectureMod.LOG.info("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
+        //ArchitectureLog.info("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
         //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // tess.getCurrentOffset());
         getWorldRenderer().pos(p.x, p.y, p.z);
         getWorldRenderer().color(vr, vg, vb, va);
@@ -126,7 +127,7 @@ public class RenderTargetWorld extends RenderTargetBase {
                         try {
                             br = block.getPackedLightmapCoords(blockState, world, pos);
                         } catch (RuntimeException e) {
-                            ArchitectureMod.LOG.info("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
+                            ArchitectureLog.info("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
                                     pos, w, blockPos, e);
                             throw e;
                         }
