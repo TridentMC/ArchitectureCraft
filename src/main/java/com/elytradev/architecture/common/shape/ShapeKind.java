@@ -24,8 +24,8 @@
 
 package com.elytradev.architecture.common.shape;
 
-import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
+import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.shape.RenderRoof;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
@@ -513,6 +513,11 @@ public abstract class ShapeKind {
             }
             if (te.secondaryBlockState != null)
                 addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
+
+            if (list.isEmpty()) {
+                // Fallback box in the unlikely case that no box was added.
+                addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
+            }
         }
 
         protected void addCentreBoxesToList(double r, double s, Trans3 t, List list) {
