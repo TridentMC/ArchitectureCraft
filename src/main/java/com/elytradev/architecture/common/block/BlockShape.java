@@ -109,7 +109,12 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     }
 
     public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
-        float hardness = state.getBlock().getBlockHardness(state, world, pos);
+        float hardness = 2F;
+        try {
+            hardness = state.getBlockHardness(world, pos);
+        } catch (IllegalArgumentException e) {
+            // Catch exceptions from mods that check their hardness based on the blocks in the world.
+        }
         if (hardness < 0.0F)
             return 0.0F;
         float strength = player.getDigSpeed(state, pos) / hardness;
