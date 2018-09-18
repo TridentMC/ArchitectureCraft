@@ -277,7 +277,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         if (te != null)
             return te.newItemStack(1);
         else
-            return null;
+            return ItemStack.EMPTY;
     }
 
     public IBlockState getBaseBlockState(IBlockAccess world, BlockPos pos) {
