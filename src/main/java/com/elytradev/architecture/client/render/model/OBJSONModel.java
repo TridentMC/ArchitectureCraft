@@ -49,7 +49,7 @@ public class OBJSONModel implements IArchitectureModel {
 
     public static OBJSONModel fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
-        String path = String.format("/assets/%s/%s", location.getResourceDomain(), location.getResourcePath());
+        String path = String.format("/assets/%s/%s", location.getNamespace(), location.getPath());
         InputStream in = OBJSONModel.class.getResourceAsStream(path);
         OBJSONModel model = GSON.fromJson(new InputStreamReader(in), OBJSONModel.class);
         if (in == null)

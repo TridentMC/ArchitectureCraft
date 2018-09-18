@@ -89,7 +89,7 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     }
 
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.SOLID;
     }
 }

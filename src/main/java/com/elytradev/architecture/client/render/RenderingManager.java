@@ -221,7 +221,7 @@ public class RenderingManager {
         if (resourcePath.contains("item")) {
             return false;
         }
-        return blockRenderers.keySet().stream().anyMatch(block -> resourcePath.contains(block.getRegistryName().getResourcePath()));
+        return blockRenderers.keySet().stream().anyMatch(block -> resourcePath.contains(block.getRegistryName().getPath()));
     }
 
     public void addBlockRenderer(Block block, ICustomRenderer renderer) {

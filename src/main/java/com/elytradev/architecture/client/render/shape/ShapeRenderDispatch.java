@@ -124,7 +124,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
                     }
                     if (renderBase && te.shape.kind.secondaryDefaultsToBase()) {
                         if (secondarySprite == null || (te.secondaryBlockState != null &&
-                                te.secondaryBlockState.getBlock().getBlockLayer() != BlockRenderLayer.SOLID)) {
+                                te.secondaryBlockState.getBlock().getRenderLayer() != BlockRenderLayer.SOLID)) {
                             textures[2] = textures[0];
                             textures[3] = textures[1];
                             renderSecondary = renderBase;

@@ -68,14 +68,14 @@ public class ArchitectureContent {
 
     public static final CreativeTabs TOOL_TAB = new CreativeTabs("architecture.tool") {
         @Override
-        public ItemStack getTabIconItem() {
+        public ItemStack createIcon() {
             return new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(MOD_ID, "hammer")));
         }
     };
     public static final CreativeTabs SHAPE_TAB = new CreativeTabs("architecture.shape") {
 
         @Override
-        public ItemStack getTabIconItem() {
+        public ItemStack createIcon() {
             return Shape.ROOF_TILE.kind.newStack(Shape.ROOF_TILE, Blocks.PLANKS.getDefaultState(), 1);
         }
     };
@@ -200,12 +200,12 @@ public class ArchitectureContent {
     }
 
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getUnlocalizedName() + recipeID++);
+        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
         registry.register(new ShapedOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
     }
 
     private void registerShapelessRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getUnlocalizedName() + recipeID++);
+        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
         registry.register(new ShapelessOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
     }
 
@@ -214,7 +214,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {
-        block.setUnlocalizedName(MOD_ID + "." + id);
+        block.setTranslationKey(MOD_ID + "." + id);
         block.setRegistryName(REGISTRY_PREFIX, id);
         block.setCreativeTab(TOOL_TAB);
         registry.register(block);
@@ -226,7 +226,7 @@ public class ArchitectureContent {
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, Class<? extends ItemBlock> itemBlockClass) {
         try {
-            block.setUnlocalizedName(MOD_ID + "." + id);
+            block.setTranslationKey(MOD_ID + "." + id);
             block.setRegistryName(REGISTRY_PREFIX, id);
             registry.register(block);
 
@@ -244,7 +244,7 @@ public class ArchitectureContent {
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id) {
         ItemArchitecture item = new ItemArchitecture();
-        item.setUnlocalizedName(MOD_ID + "." + id);
+        item.setTranslationKey(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
         item.setCreativeTab(TOOL_TAB);
         registry.register(item);
@@ -254,7 +254,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, T item) {
-        item.setUnlocalizedName(MOD_ID + "." + id);
+        item.setTranslationKey(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
         item.setCreativeTab(TOOL_TAB);
         registry.register(item);
