@@ -167,6 +167,12 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     }
 
     @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+    {
+        return BlockFaceShape.UNDEFINED;
+    }
+
+    @Override
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         RayTraceResult result = null;
         double nearestDistance = 0;
