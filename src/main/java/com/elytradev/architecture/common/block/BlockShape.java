@@ -60,7 +60,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     protected AxisAlignedBB boxHit;
 
     public BlockShape() {
-        super(Material.ROCK, TileShape.class);
+        super(Material.GROUND, TileShape.class);
     }
 
     @Nullable
