@@ -109,6 +109,10 @@ repositories {
     maven {
         url 'https://repo.elytradev.com/'
     }
+    maven {
+        // for Architect API
+        url = "http://maven.cil.li/"
+    }
     if (project.ext.language == 'kotlin') {
         maven {
             url 'http://maven.shadowfacts.net/'
@@ -244,4 +248,8 @@ def parseConfig(File config) {
         prop.load(it)
         return (new ConfigSlurper().parse(prop))
     }
+}
+
+dependencies {
+    compile "li.cil.architect:Architect:MC1.12-1.2.0.6"
 }
