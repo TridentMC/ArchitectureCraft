@@ -139,4 +139,17 @@ public class ItemShape extends ItemBlock {
 
         return defaultStack;
     }
+
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null)
+            return super.getItemStackDisplayName(stack);
+
+        int id = tag.getInteger("Shape");
+        Shape shape = Shape.forId(id);
+        Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
+        int baseMetadata = tag.getInteger("BaseData");
+        return shape.title + ": " + Utils.displayNameOnlyOfBlock(baseBlock, baseMetadata);
+    }
 }

@@ -1,6 +1,8 @@
 package com.elytradev.architecture.compat;
 
 import com.elytradev.architecture.common.ArchitectureMod;
+import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.ShapeKind;
 import com.elytradev.architecture.common.tile.TileShape;
 import li.cil.architect.api.ConverterAPI;
 import li.cil.architect.api.converter.Converter;
@@ -13,14 +15,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
+import scala.actors.threadpool.Arrays;
 
 import java.util.Collections;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * Architect integration. Ensures that the right item is pulled from the player's inventory and that
@@ -29,153 +35,242 @@ import java.util.UUID;
  * @author Stan Hebben
  */
 public class ArchitectConverter implements Converter {
-	private static final ArchitectConverter INSTANCE = new ArchitectConverter();
+    private static final ArchitectConverter INSTANCE = new ArchitectConverter();
 
-	// never change this (if you do, it will break existing Architect blueprints)
-	private static final UUID CONVERTER_UUID = UUID.fromString("182148b6-fba8-4acb-95a5-66409d34eb59");
+    // never change this (if you do, it will break existing Architect blueprints)
+    private static final UUID CONVERTER_UUID = UUID.fromString("182148b6-fba8-4acb-95a5-66409d34eb59");
 
-	private Item shapeItem;
-	private Block shapeBlock;
+    // precalculated array for quick & easy lookup of rotations. Contains 4 rotations x 64 possible values for Disconnected
+    private static final int[] ROTATE_DISCONNECTED;
 
-	public static void init() {
-		ConverterAPI.addConverter(INSTANCE);
-		INSTANCE.initInstance();
-	}
+    static {
+        ROTATE_DISCONNECTED = new int[64 * 4];
 
-	private ArchitectConverter() {}
+        for (int i = 0; i < 64; i++) {
+            for (int rotation = 0; rotation < 4; rotation++) {
+                int result = i & 3; // keep up + down bits
+                for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+                    // permutate bits according to the given rotation
+                    int bit = 1 << facing.ordinal();
+                    if ((i & bit) > 0) {
+                        EnumFacing rotated = EnumFacing.byHorizontalIndex((facing.getHorizontalIndex() + rotation) & 3);
+                        result |= (1 << rotated.ordinal());
+                    }
+                }
+                ROTATE_DISCONNECTED[i + 64 * rotation] = result;
+            }
+        }
+    }
 
-	private void initInstance() {
-		shapeBlock = ArchitectureMod.CONTENT.blockShape;
-		shapeItem = Item.getItemFromBlock(shapeBlock);
-	}
+    private Item shapeItem;
+    private Item claddingItem;
+    private Block shapeBlock;
 
-	@Override
-	public UUID getUUID() {
-		return CONVERTER_UUID;
-	}
+    public static void init() {
+        ConverterAPI.addConverter(INSTANCE);
+        INSTANCE.initInstance();
+    }
 
-	@Override
-	public Iterable<ItemStack> getItemCosts(NBTBase nbtBase) {
-		NBTTagCompound data = (NBTTagCompound)nbtBase;
-		return Collections.singletonList(getItemStackForBlock(data));
-	}
+    private ArchitectConverter() {
+    }
 
-	@Override
-	public Iterable<FluidStack> getFluidCosts(NBTBase nbtBase) {
-		return Collections.emptyList();
-	}
+    private void initInstance() {
+        shapeBlock = ArchitectureMod.CONTENT.blockShape;
+        shapeItem = Item.getItemFromBlock(shapeBlock);
+        claddingItem = ArchitectureMod.CONTENT.itemCladding;
+    }
 
-	@Override
-	public int getSortIndex(NBTBase nbtBase) {
-		return SortIndex.SOLID_BLOCK;
-	}
+    @Override
+    public UUID getUUID() {
+        return CONVERTER_UUID;
+    }
 
-	@Override
-	public boolean canSerialize(World world, BlockPos blockPos) {
-		return world.getBlockState(blockPos).getBlock() == shapeBlock;
-	}
+    @Override
+    public Iterable<ItemStack> getItemCosts(NBTBase nbtBase) {
+        NBTTagCompound data = (NBTTagCompound) nbtBase;
+        if (data.hasKey("Name2")) {
+            return Arrays.asList(new ItemStack[]{
+                    getItemStackForBlock(data),
+                    getCladdingForBlock(data)
+            });
+        } else {
+            return Collections.singletonList(getItemStackForBlock(data));
+        }
+    }
 
-	@Override
-	public NBTBase serialize(World world, BlockPos blockPos) {
-		IBlockState state = world.getBlockState(blockPos);
-		if (state.getBlock() != shapeBlock)
-			return null;
+    @Override
+    public Iterable<FluidStack> getFluidCosts(NBTBase nbtBase) {
+        return Collections.emptyList();
+    }
 
-		TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (tileEntity == null)
-			return null;
+    @Override
+    public int getSortIndex(NBTBase nbtBase) {
+        return SortIndex.SOLID_BLOCK;
+    }
 
-		NBTTagCompound original = tileEntity.serializeNBT();
-		NBTTagCompound data = new NBTTagCompound();
-		if (original.getByte("turn") != 0)
-			data.setByte("turn", original.getByte("turn"));
-		if (original.getByte("side") != 0)
-			data.setByte("side", original.getByte("side"));
+    @Override
+    public boolean canSerialize(World world, BlockPos blockPos) {
+        return world.getBlockState(blockPos).getBlock() == shapeBlock;
+    }
 
-		data.setInteger("Shape", original.getInteger("Shape"));
-		data.setString("BaseName", original.getString("BaseName"));
-		data.setInteger("BaseData", original.getInteger("BaseData"));
+    @Override
+    public NBTBase serialize(World world, BlockPos blockPos) {
+        IBlockState state = world.getBlockState(blockPos);
+        if (state.getBlock() != shapeBlock)
+            return null;
 
-		// accents: maybe later...
-		/*if (original.hasKey("Name2")) {
-			data.setString("Name2", original.getString("Name2"));
-			data.setInteger("Data2", original.getInteger("Data2"));
-		}*/
+        TileEntity tileEntity = world.getTileEntity(blockPos);
+        if (tileEntity == null)
+            return null;
 
-		return data;
-	}
+        NBTTagCompound original = tileEntity.serializeNBT();
+        NBTTagCompound data = new NBTTagCompound();
+        byte turn = original.getByte("turn");
+        byte side = original.getByte("side");
+        int disconnected = original.getInteger("Disconnected");
+        if (turn != 0)
+            data.setByte("turn", turn);
+        if (side != 0)
+            data.setByte("side", side);
+        if (disconnected != 0)
+            data.setInteger("Disconnected", disconnected);
 
-	@Override
-	public boolean preDeserialize(MaterialSource materialSource, World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
-		if (materialSource.isCreative())
-			return true;
+        data.setInteger("Shape", original.getInteger("Shape"));
+        data.setString("BaseName", original.getString("BaseName"));
+        data.setInteger("BaseData", original.getInteger("BaseData"));
 
-		IItemHandler itemHandler = materialSource.getItemHandler();
-		NBTTagCompound data = (NBTTagCompound)nbtBase;
-		return consume(itemHandler, data);
-	}
+        if (original.hasKey("Name2")) {
+            data.setString("Name2", original.getString("Name2"));
+            data.setInteger("Data2", original.getInteger("Data2"));
+        }
 
-	private boolean consume(IItemHandler itemHandler, NBTTagCompound data) {
-		int shape = data.getInteger("Shape");
-		String name = data.getString("BaseName");
-		int meta = data.getInteger("BaseData");
+        return data;
+    }
 
-		for (int i = 0; i < itemHandler.getSlots(); i++) {
-			ItemStack stack = itemHandler.getStackInSlot(i);
-			if (stack.getCount() == 0)
-				continue;
-			if (stack.getItem() != shapeItem)
-				continue;
+    @Override
+    public boolean preDeserialize(MaterialSource materialSource, World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
+        if (materialSource.isCreative())
+            return true;
 
-			NBTTagCompound stackData = stack.getTagCompound();
-			if (stackData == null)
-				continue;
-			if (stackData.getInteger("Shape") != shape)
-				continue;
-			if (!stackData.getString("BaseName").equals(name))
-				continue;
-			if (stackData.getInteger("BaseData") != meta)
-				continue;
+        IItemHandler itemHandler = materialSource.getItemHandler();
+        NBTTagCompound data = (NBTTagCompound) nbtBase;
+        return consume(itemHandler, data) && consumeCladding(materialSource, data);
+    }
 
-			itemHandler.extractItem(i, 1, false);
-			return true;
-		}
+    private boolean consume(IItemHandler itemHandler, NBTTagCompound data) {
+        int shape = data.getInteger("Shape");
+        String name = data.getString("BaseName");
+        int meta = data.getInteger("BaseData");
+        return consume(
+                itemHandler,
+                shapeItem,
+                1,
+                0,
+                stackData -> stackData.getInteger("Shape") == shape
+                        && stackData.getString("BaseName").equals(name)
+                        && stackData.getInteger("BaseData") == meta);
+    }
 
-		return false;
-	}
+    private static boolean consume(IItemHandler itemHandler, Item item, int amount, int meta, Predicate<NBTTagCompound> test) {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (stack.getCount() == 0)
+                continue;
+            if (stack.getItem() != item || stack.getMetadata() != meta)
+                continue;
+            if (test != null) {
+                NBTTagCompound stackData = stack.getTagCompound();
+                if (stackData == null)
+                    continue;
+                if (!test.test(stackData))
+                    continue;
+            }
 
-	@Override
-	public void deserialize(World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
-		NBTTagCompound data = (NBTTagCompound)nbtBase;
-		rotate(data, rotation);
+            amount -= itemHandler.extractItem(i, amount, false).getCount();
+            if (amount == 0)
+                return true;
+        }
 
-		world.setBlockState(blockPos, shapeBlock.getStateFromMeta(data.getInteger("BaseData")));
-		TileShape shape = new TileShape();
-		shape.readFromNBT(data);
-		world.setTileEntity(blockPos, shape);
-	}
+        return false;
+    }
 
-	@Override
-	public void cancelDeserialization(World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
-		world.setBlockToAir(blockPos);
-	}
+    private boolean consumeCladding(MaterialSource source, NBTTagCompound data) {
+        if (!data.hasKey("Name2"))
+            return true;
 
-	private void rotate(NBTTagCompound data, Rotation rotation) {
-		byte turn = data.getByte("turn");
-		byte side = data.getByte("side");
-		if (side == 0)
-			turn = (byte)((turn - rotation.ordinal() + 4) % 4);
-		else
-			turn = (byte)((turn + rotation.ordinal() + 4) % 4);
+        Shape shape = Shape.forId(data.getInteger("Shape"));
+        String name = data.getString("Name2");
+        int meta = data.getInteger("Data2");
 
-		data.setByte("turn", turn);
-	}
+        if (shape.kind instanceof ShapeKind.Window) {
+            Item item = Item.REGISTRY.getObject(new ResourceLocation(name));
+            return consume(source.getItemHandler(), item, 1, meta, null);
+        } else {
+            IItemHandler itemHandler = source.getItemHandler();
+            return consume(itemHandler, claddingItem, 1, meta, stackData -> stackData.getString("block").equals(name));
+        }
+    }
 
-	private ItemStack getItemStackForBlock(NBTTagCompound data) {
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger("Shape", data.getInteger("Shape"));
-		nbt.setString("BaseName", data.getString("BaseName"));
-		nbt.setInteger("BaseData", data.getInteger("BaseData"));
-		return new ItemStack(shapeItem, 1, 0, nbt);
-	}
+    @Override
+    public void deserialize(World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
+        NBTTagCompound data = (NBTTagCompound) nbtBase.copy();
+        rotate(data, rotation);
+
+        world.setBlockState(blockPos, shapeBlock.getStateFromMeta(data.getInteger("BaseData")));
+        TileShape shape = new TileShape();
+        shape.readFromNBT(data);
+        world.setTileEntity(blockPos, shape);
+    }
+
+    @Override
+    public void cancelDeserialization(World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
+        world.setBlockToAir(blockPos);
+    }
+
+    private void rotate(NBTTagCompound data, Rotation rotation) {
+        byte turn = data.getByte("turn");
+        byte side = data.getByte("side");
+        if (side == 0) {
+            turn = (byte) ((turn - rotation.ordinal() + 4) & 3);
+        } else if (side == 1) {
+            turn = (byte) ((turn + rotation.ordinal()) & 3);
+        } else {
+            EnumFacing sideValue = EnumFacing.byIndex(side);
+            side = (byte) EnumFacing.byHorizontalIndex((sideValue.getHorizontalIndex() + rotation.ordinal()) & 3).ordinal();
+        }
+
+        int disconnected = data.getInteger("Disconnected");
+        if (disconnected != 0 && rotation != Rotation.NONE) {
+            disconnected = ROTATE_DISCONNECTED[disconnected + 64 * rotation.ordinal()];
+            data.setInteger("Disconnected", disconnected);
+        }
+
+        data.setByte("turn", turn);
+        data.setByte("side", side);
+    }
+
+    private ItemStack getItemStackForBlock(NBTTagCompound data) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setInteger("Shape", data.getInteger("Shape"));
+        nbt.setString("BaseName", data.getString("BaseName"));
+        nbt.setInteger("BaseData", data.getInteger("BaseData"));
+
+        ItemStack stack = new ItemStack(shapeItem, 1, 0);
+        stack.setTagCompound(nbt);
+        return stack;
+    }
+
+    private ItemStack getCladdingForBlock(NBTTagCompound data) {
+        Shape shape = Shape.forId(data.getInteger("Shape"));
+        if (shape.kind instanceof ShapeKind.Window) {
+            Item item = Item.REGISTRY.getObject(new ResourceLocation(data.getString("Name2")));
+            return new ItemStack(item, 1, data.getInteger("Data2"));
+        } else {
+            NBTTagCompound nbt = new NBTTagCompound();
+            nbt.setString("block", data.getString("Name2"));
+            ItemStack stack = new ItemStack(claddingItem, 1, data.getInteger("Data2"));
+            stack.setTagCompound(nbt);
+            return stack;
+        }
+    }
 }

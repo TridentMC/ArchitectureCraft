@@ -104,6 +104,18 @@ public class Utils {
         return "Cut from " + name;
     }
 
+    public static String displayNameOnlyOfBlock(Block block, int meta) {
+        String name = null;
+        Item item = Item.getItemFromBlock(block);
+        if (item != null) {
+            ItemStack stack = new ItemStack(item, 1, meta);
+            name = stack.getDisplayName();
+        }
+        if (name == null)
+            name = block.getLocalizedName();
+        return name;
+    }
+
     public static AxisAlignedBB unionOfBoxes(List<AxisAlignedBB> list) {
         AxisAlignedBB box = list.get(0);
         int n = list.size();
