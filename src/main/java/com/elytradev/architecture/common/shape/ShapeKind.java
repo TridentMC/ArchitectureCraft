@@ -494,7 +494,6 @@ public abstract class ShapeKind {
         @Override
         public boolean isValidSecondaryMaterial(IBlockState state) {
             Block block = state.getBlock();
-                
             return block == Blocks.GLASS_PANE || block == Blocks.STAINED_GLASS_PANE;
         }
 
