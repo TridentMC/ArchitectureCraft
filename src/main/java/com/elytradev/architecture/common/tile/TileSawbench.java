@@ -231,7 +231,7 @@ public class TileSawbench extends TileArchitectureInventory {
                 return false;
             
             // Get all full blocks and glass
-            if (block.getDefaultState().isFullCube() || (name.contains("glass") && !name.contains("pane")))
+            if (block.getDefaultState().isFullCube() || name.contains("glass"))
                 return true;
         }
         
