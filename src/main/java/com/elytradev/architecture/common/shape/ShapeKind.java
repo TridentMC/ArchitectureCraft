@@ -496,7 +496,7 @@ public abstract class ShapeKind {
             Block block = state.getBlock();
             String name = Block.REGISTRY.getNameForObject(block).toString();
             if name.startswith("botania:")
-                return name == "botania:managlasspane" || name == "botania:alfglasspane" || name == "botania:bifrostpane";
+                return name == "botania:managlasspane" || name == "botania:elfglasspane" || name == "botania:bifrostpermpane";
             
             return block == Blocks.GLASS_PANE || block == Blocks.STAINED_GLASS_PANE;
         }
