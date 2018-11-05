@@ -494,11 +494,6 @@ public abstract class ShapeKind {
         @Override
         public boolean isValidSecondaryMaterial(IBlockState state) {
             Block block = state.getBlock();
-            String name = Block.REGISTRY.getNameForObject(block).toString();
-            
-            // Tinker Compat
-            if (name.startsWith("tconstruct:")
-                return name.contains("glass") && name.contains("pane");
                 
             return block == Blocks.GLASS_PANE || block == Blocks.STAINED_GLASS_PANE;
         }
