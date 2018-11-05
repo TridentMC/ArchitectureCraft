@@ -494,6 +494,10 @@ public abstract class ShapeKind {
         @Override
         public boolean isValidSecondaryMaterial(IBlockState state) {
             Block block = state.getBlock();
+            String name = Block.REGISTRY.getNameForObject(block).toString();
+            if name.startswith("botania:")
+                return name == "botania:managlasspane" || name == "botania:alfglasspane" || name == "botania:bifrostpane";
+            
             return block == Blocks.GLASS_PANE || block == Blocks.STAINED_GLASS_PANE;
         }
 
