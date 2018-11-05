@@ -223,6 +223,8 @@ public class TileSawbench extends TileArchitectureInventory {
         if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS || block instanceof BlockSlab ||
                 name.startsWith("chisel:glass"))
             return true;
+        if (name.startsWith("tconstruct:") && block.getDefaultState().isFullCube())
+            return true;
         return block.getDefaultState().isFullCube() && !block.hasTileEntity();
     }
 
