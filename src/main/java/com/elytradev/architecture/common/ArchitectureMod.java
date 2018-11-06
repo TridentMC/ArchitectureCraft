@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common;
 
+import com.elytradev.architecture.common.drop.ModDrops;
 import com.elytradev.architecture.common.proxy.CommonProxy;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
@@ -50,6 +51,8 @@ public class ArchitectureMod {
     @SidedProxy(serverSide = "com.elytradev.architecture.common.proxy.CommonProxy", clientSide = "com.elytradev.architecture.client.proxy.ClientProxy")
     public static CommonProxy PROXY;
 
+    public static ModDrops DROPS = new ModDrops();
+
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(CONTENT);
@@ -58,6 +61,8 @@ public class ArchitectureMod {
         PROXY.registerHandlers();
         CONTENT.preInit(e);
         PROXY.registerRenderers(e.getModState());
+
+        DROPS.preInit(e);
     }
 
     @Mod.EventHandler
@@ -65,6 +70,8 @@ public class ArchitectureMod {
         CONTENT.init(e);
         PROXY.init(e);
         PROXY.registerRenderers(e.getModState());
+
+        DROPS.init(e);
     }
 
     @Mod.EventHandler
@@ -72,6 +79,8 @@ public class ArchitectureMod {
         CONTENT.postInit(e);
         PROXY.postInit(e);
         PROXY.registerRenderers(e.getModState());
+
+        DROPS.postInit(e);
     }
 }
 
