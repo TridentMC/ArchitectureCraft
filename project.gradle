@@ -15,7 +15,7 @@ ext {
 
     language = 'java'
 
-    forge = '1.12.2-14.23.5.2768'
+    forge = '1.12.2-14.23.4.2747'
     mappings = 'snapshot_20180814'
 
     enforceLicenseHeaders = false
@@ -47,8 +47,8 @@ if (!ext.early) {
     dependencies {
         deobfCompile "com.elytradev:probedataproviderapi:MC1.12_ver1.1.1"
 
-        deobfProvided "mezz.jei:jei_1.12.2:4.13.1.220:api"
-        runtime "mezz.jei:jei_1.12.2:4.13.1.220"
+        deobfProvided "mezz.jei:jei_1.12.2:4.7.10.98:api"
+        runtime "mezz.jei:jei_1.12.2:4.7.10.98"
         compile "li.cil.architect:Architect:MC1.12-1.2.0.6"
     }
 }

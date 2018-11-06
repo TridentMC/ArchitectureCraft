@@ -31,8 +31,6 @@ import java.util.function.Predicate;
 /**
  * Architect integration. Ensures that the right item is pulled from the player's inventory and that
  * rotations are applied correctly.
- *
- * @author Stan Hebben
  */
 public class ArchitectConverter implements Converter {
     private static final ArchitectConverter INSTANCE = new ArchitectConverter();
