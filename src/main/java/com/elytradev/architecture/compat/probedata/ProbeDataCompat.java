@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.elytradev.architecture.compat;
+package com.elytradev.architecture.compat.probedata;
 
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.tile.TileShape;
