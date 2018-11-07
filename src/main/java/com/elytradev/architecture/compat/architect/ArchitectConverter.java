@@ -1,10 +1,9 @@
-package com.elytradev.architecture.compat;
+package com.elytradev.architecture.compat.architect;
 
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapeKind;
 import com.elytradev.architecture.common.tile.TileShape;
-import li.cil.architect.api.ConverterAPI;
 import li.cil.architect.api.converter.Converter;
 import li.cil.architect.api.converter.MaterialSource;
 import li.cil.architect.api.converter.SortIndex;
@@ -33,8 +32,6 @@ import java.util.function.Predicate;
  * rotations are applied correctly.
  */
 public class ArchitectConverter implements Converter {
-    private static final ArchitectConverter INSTANCE = new ArchitectConverter();
-
     // never change this (if you do, it will break existing Architect blueprints)
     private static final UUID CONVERTER_UUID = UUID.fromString("182148b6-fba8-4acb-95a5-66409d34eb59");
 
@@ -60,19 +57,11 @@ public class ArchitectConverter implements Converter {
         }
     }
 
-    private Item shapeItem;
-    private Item claddingItem;
-    private Block shapeBlock;
+    private final Item shapeItem;
+    private final Item claddingItem;
+    private final Block shapeBlock;
 
-    public static void init() {
-        ConverterAPI.addConverter(INSTANCE);
-        INSTANCE.initInstance();
-    }
-
-    private ArchitectConverter() {
-    }
-
-    private void initInstance() {
+    ArchitectConverter() {
         shapeBlock = ArchitectureMod.CONTENT.blockShape;
         shapeItem = Item.getItemFromBlock(shapeBlock);
         claddingItem = ArchitectureMod.CONTENT.itemCladding;
