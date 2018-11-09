@@ -37,6 +37,11 @@ if (!ext.early) {
             name = "ModMaven"
             url = "modmaven.k-4u.nl"
         }
+        maven {
+            // for Architect API
+            name = "Architect maven"
+            url = "http://maven.cil.li/"
+        }
     }
 
     dependencies {
@@ -44,5 +49,6 @@ if (!ext.early) {
 
         deobfProvided "mezz.jei:jei_1.12.2:4.7.10.98:api"
         runtime "mezz.jei:jei_1.12.2:4.7.10.98"
+        compile "li.cil.architect:Architect:MC1.12-1.2.0.6"
     }
 }

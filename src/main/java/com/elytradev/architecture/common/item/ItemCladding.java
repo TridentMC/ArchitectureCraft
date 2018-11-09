@@ -26,12 +26,14 @@ package com.elytradev.architecture.common.item;
 
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -65,6 +67,8 @@ public class ItemCladding extends ItemArchitecture {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn) {
+        lines.set(0, super.getItemStackDisplayName(stack));
+
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null) {
             Block block = Block.getBlockFromName(tag.getString("block"));
@@ -84,4 +88,13 @@ public class ItemCladding extends ItemArchitecture {
         return 16;
     }
 
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null)
+            return super.getItemStackDisplayName(stack);
+
+        Block baseBlock = Block.getBlockFromName(tag.getString("block"));
+        return I18n.translateToLocal("item.architecturecraft.cladding.name") + ": " + Utils.displayNameOnlyOfBlock(baseBlock, stack.getMetadata());
+    }
 }
