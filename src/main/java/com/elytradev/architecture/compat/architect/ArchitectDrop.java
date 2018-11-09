@@ -6,7 +6,7 @@ import li.cil.architect.api.ConverterAPI;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 
 /**
- * Created by Hoofdgebruiker on 7/11/2018.
+ * Mod drop to add compat for Architect.
  */
 @RegisterDrop(requiredMod = "architect")
 public class ArchitectDrop implements IModDrop {
