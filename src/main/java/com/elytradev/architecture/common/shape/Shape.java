@@ -25,7 +25,6 @@
 package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Profile;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
@@ -298,4 +297,7 @@ public enum Shape {
         return (flags & PLACE_UNDERNEATH) != 0;
     }
 
+    public boolean isCladding() {
+        return this == CLADDING_SHEET;
+    }
 }

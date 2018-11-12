@@ -117,6 +117,9 @@ public class ItemShape extends ItemBlock {
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (tab.equals(ArchitectureContent.SHAPE_TAB)) {
             for (Shape shape : Shape.values()) {
+                if (shape.isCladding())
+                    continue;
+
                 ItemStack defaultStack = new ItemStack(this, 1);
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.setInteger("Shape", shape.id);
