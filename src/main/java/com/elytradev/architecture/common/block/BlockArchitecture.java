@@ -58,6 +58,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -383,7 +384,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
     // -------------------------- Tile Entity -----------------------------
 
     @Override
-    public TileEntity createNewTileEntity(World world, int meta) {
+    public TileEntity createNewTileEntity(IBlockReader reader) {
         if (tileEntityClass != null) {
             try {
                 return tileEntityClass.newInstance();

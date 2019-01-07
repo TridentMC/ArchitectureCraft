@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[24,)"
+issueTrackerURL="https://github.com/elytra/ArchitectureCraft/issues"
+authors="gcewing (Original Developer), darkevilmac (Maintainer)"
+
+modId="architecturecraft"
+version="1.0"
+displayName="Architecture Craft
+description="Distinguished architectural features for your Minecraft buildings."

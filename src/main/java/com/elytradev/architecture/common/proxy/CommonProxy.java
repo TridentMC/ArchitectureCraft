@@ -33,11 +33,11 @@ import com.elytradev.architecture.common.network.ArchitectureNetworking;
 import com.google.common.collect.Maps;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.event.ModLifecycleEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
 
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class CommonProxy {
         NetworkRegistry.INSTANCE.registerGuiHandler(ArchitectureMod.INSTANCE, new ArchitectureGuiHandler());
     }
 
-    public void registerRenderers(LoaderState.ModState modState) {
+    public void registerRenderers(ModLifecycleEvent lifecycleEvent) {
     }
 
     public void registerCustomRenderers() {

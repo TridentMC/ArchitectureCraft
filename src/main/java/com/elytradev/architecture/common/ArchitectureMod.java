@@ -24,19 +24,20 @@
 
 package com.elytradev.architecture.common;
 
+import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.common.drop.ModDrops;
 import com.elytradev.architecture.common.proxy.CommonProxy;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
 
-import static com.elytradev.architecture.common.ArchitectureMod.*;
+import static com.elytradev.architecture.common.ArchitectureMod.MOD_ID;
 
-@Mod(modid = MOD_ID, name = MOD_NAME, version = MOD_VER)
+@Mod(MOD_ID)
 public class ArchitectureMod {
     public static final String MOD_NAME = "ArchitectureCraft";
     public static final String MOD_ID = "architecturecraft";
@@ -44,41 +45,46 @@ public class ArchitectureMod {
     public static final String RESOURCE_DOMAIN = "architecturecraft:";
 
     public static final ArchitectureContent CONTENT = new ArchitectureContent();
-    public static boolean INDEV = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-    @Mod.Instance()
+    public static boolean INDEV = true; // TODO: not always true. Blackboard is gone.
     public static ArchitectureMod INSTANCE;
 
-    @SidedProxy(serverSide = "com.elytradev.architecture.common.proxy.CommonProxy", clientSide = "com.elytradev.architecture.client.proxy.ClientProxy")
     public static CommonProxy PROXY;
 
     public static ModDrops DROPS = new ModDrops();
 
-    @Mod.EventHandler
+    public ArchitectureMod() {
+        ArchitectureMod.INSTANCE = this;
+        PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+
+        FMLModLoadingContext loadingContext = FMLModLoadingContext.get();
+        loadingContext.getModEventBus().addListener(this::onPreInit);
+        loadingContext.getModEventBus().addListener(this::onInit);
+        loadingContext.getModEventBus().addListener(this::onPostInit);
+    }
+
     public void onPreInit(FMLPreInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(CONTENT);
 
         PROXY.preInit(e);
         PROXY.registerHandlers();
         CONTENT.preInit(e);
-        PROXY.registerRenderers(e.getModState());
+        PROXY.registerRenderers(e);
 
         DROPS.preInit(e);
     }
 
-    @Mod.EventHandler
     public void onInit(FMLInitializationEvent e) {
         CONTENT.init(e);
         PROXY.init(e);
-        PROXY.registerRenderers(e.getModState());
+        PROXY.registerRenderers(e);
 
         DROPS.init(e);
     }
 
-    @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent e) {
         CONTENT.postInit(e);
         PROXY.postInit(e);
-        PROXY.registerRenderers(e.getModState());
+        PROXY.registerRenderers(e);
 
         DROPS.postInit(e);
     }

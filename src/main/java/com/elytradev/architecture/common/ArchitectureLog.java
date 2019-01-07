@@ -1,13 +1,12 @@
 package com.elytradev.architecture.common;
 
-import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ArchitectureLog {
 
     public static final Logger LOG = LogManager.getLogger("ArchitectureCraft");
-    public static final boolean INDEV = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+    public static final boolean INDEV = true;
 
     public static void debug(Object message) {
         if (INDEV) {

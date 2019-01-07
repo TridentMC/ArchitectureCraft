@@ -2,15 +2,12 @@ package com.elytradev.architecture.common.drop;
 
 import com.elytradev.architecture.common.ArchitectureLog;
 import com.google.common.collect.Lists;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Registers mod drops and notifies drops of forge events.

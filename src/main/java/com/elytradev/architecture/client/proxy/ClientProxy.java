@@ -26,14 +26,11 @@ package com.elytradev.architecture.client.proxy;
 
 import com.elytradev.architecture.client.render.CustomBlockDispatcher;
 import com.elytradev.architecture.client.render.RenderingManager;
-import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.shape.RenderCladding;
 import com.elytradev.architecture.client.render.shape.RenderWindow;
 import com.elytradev.architecture.client.render.shape.ShapeRenderDispatch;
 import com.elytradev.architecture.common.ArchitectureContent;
 import com.elytradev.architecture.common.ArchitectureMod;
-import com.elytradev.architecture.common.block.BlockArchitecture;
-import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.proxy.CommonProxy;
 import com.elytradev.concrete.resgen.ConcreteResourcePack;
 import com.elytradev.concrete.resgen.IResourceHolder;
@@ -42,18 +39,15 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.LoaderState;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.ModLifecycleEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
@@ -69,16 +63,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void registerRenderers(LoaderState.ModState state) {
-        if (state == LoaderState.ModState.PREINITIALIZED) {
+    public void registerRenderers(ModLifecycleEvent lifecycleEvent) {
+        if (lifecycleEvent instanceof FMLPreInitializationEvent) {
             new ConcreteResourcePack(ArchitectureMod.MOD_ID);
         }
 
-        if (state == LoaderState.ModState.INITIALIZED) {
+        if (lifecycleEvent instanceof FMLInitializationEvent) {
             registerTileEntitySpecialRenderers();
         }
 
-        if (state == LoaderState.ModState.POSTINITIALIZED) {
+        if (lifecycleEvent instanceof FMLPostInitializationEvent) {
             CustomBlockDispatcher.inject();
         }
     }
