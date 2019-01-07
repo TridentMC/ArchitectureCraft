@@ -44,7 +44,7 @@ if (!ext.early) {
     }
 
     dependencies {
-        //deobfCompile "com.elytradev:probedataproviderapi:MC1.12_ver1.1.1"
+        compile "com.elytradev:probedataproviderapi:MC1.12_ver1.1.1"
 //
         //deobfProvided "mezz.jei:jei_1.12.2:4.7.10.98:api"
         //runtime "mezz.jei:jei_1.12.2:4.7.10.98"

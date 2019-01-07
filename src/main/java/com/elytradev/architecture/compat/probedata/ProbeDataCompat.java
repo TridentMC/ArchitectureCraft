@@ -42,8 +42,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -79,29 +80,23 @@ public class ProbeDataCompat {
                                 ProbeData probeData = new ProbeData();
                                 probeData = probeData.withLabel(new TextComponentTranslation(
                                         key,
-                                        state.getBlock().getLocalizedName()));
+                                        state.getBlock().getNameTextComponent()));
                                 Item item = Item.getItemFromBlock(state.getBlock());
                                 if (item != null) {
                                     ItemStack stack = new ItemStack(item);
-                                    stack.setItemDamage(state.getBlock().damageDropped(state));
+                                    //stack.setDamage(state.getBlock().getItemDropped(state)); TODO: Not sure what to do here now that item damage is gone. It's gonna take me a bit of time to adjust my thinking...
                                     probeData = probeData.withInventory(ImmutableList.of(stack));
                                 }
                                 data.add(probeData);
                             }
                         }
 
-                        @Override
-                        public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-                            return capability == PROBE_CAPABILITY;
-                        }
-
-                        @Nullable
-                        @Override
-                        public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-                            if (capability == PROBE_CAPABILITY) {
-                                return (T) probeDataProvider;
+                        @Nonnull
+                        public <T> OptionalCapabilityInstance<T> getCapability(@Nonnull final Capability<T> cap, final @Nullable EnumFacing side) {
+                            if (cap == PROBE_CAPABILITY) {
+                                return OptionalCapabilityInstance.of(() -> (T) probeDataProvider);
                             }
-                            return null;
+                            return OptionalCapabilityInstance.empty();
                         }
                     });
         }
