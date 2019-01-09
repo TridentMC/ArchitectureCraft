@@ -66,7 +66,7 @@ public class ArchitectureContent {
         @Override
         public ItemStack createIcon() {
             return new ItemStack(Item.REGISTRY.get(new ResourceLocation(MOD_ID, "hammer")));
-        }
+        }block.getStateFromMeta(stack.getMetadata()
     };
     public static final ItemGroup SHAPE_TAB = new ItemGroup("architecture.shape") {
 
@@ -80,8 +80,11 @@ public class ArchitectureContent {
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
     private static List<Item> itemBlocksToRegister = Lists.newArrayList();
+
     public BlockSawbench blockSawbench;
     public Block blockShape;
+    public TileEntityType<TileShape> tileTypeShape;
+    public TileEntityType<TileSawbench> tileTypeSawbench;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;

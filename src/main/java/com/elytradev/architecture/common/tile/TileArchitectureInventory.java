@@ -30,12 +30,18 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public abstract class TileArchitectureInventory extends TileArchitecture implements IInventory, ISidedInventory {
 
     protected int[] allSlots;
+
+    public TileArchitectureInventory(TileEntityType<?> type) {
+        super(type);
+    }
 
     protected IInventory getInventory() {
         return null;
@@ -44,26 +50,26 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
     public void readInventoryFromNBT(NBTTagCompound nbt) {
         IInventory inventory = getInventory();
         if (inventory != null) {
-            NBTTagList list = nbt.getTagList("inventory", 10);
-            int n = list.tagCount();
+            NBTTagList list = nbt.getList("inventory", 10);
+            int n = list.size();
             for (int i = 0; i < n; i++) {
-                NBTTagCompound item = list.getCompoundTagAt(i);
-                int slot = item.getInteger("slot");
-                ItemStack stack = new ItemStack(item);
+                NBTTagCompound item = list.getCompound(i);
+                int slot = item.getInt("slot");
+                ItemStack stack = ItemStack.read(item);
                 inventory.setInventorySlotContents(slot, stack);
             }
         }
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void read(NBTTagCompound nbt) {
+        super.read(nbt);
         readInventoryFromNBT(nbt);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound write(NBTTagCompound nbt) {
+        super.write(nbt);
         writeInventoryToNBT(nbt);
         return nbt;
     }
@@ -77,9 +83,9 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
                 ItemStack stack = inventory.getStackInSlot(i);
                 if (stack != null) {
                     NBTTagCompound item = new NBTTagCompound();
-                    item.setInteger("slot", i);
-                    stack.writeToNBT(item);
-                    list.appendTag(item);
+                    item.setInt("slot", i);
+                    stack.write(item);
+                    list.add(item);
                 }
             }
             nbt.setTag("inventory", list);
@@ -93,9 +99,9 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
 //------------------------------------- IInventory -----------------------------------------
 
     @Override
-    public String getName() {
+    public ITextComponent getName() {
         IInventory inventory = getInventory();
-        return (inventory != null) ? inventory.getName() : "";
+        return (inventory != null) ? inventory.getName() : new TextComponentString("");
     }
 
     @Override

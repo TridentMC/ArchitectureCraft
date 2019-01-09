@@ -25,7 +25,6 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -42,13 +41,13 @@ import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.lang.reflect.Field;
 
@@ -64,16 +63,20 @@ public abstract class TileArchitecture extends TileEntity {
     private byte side;
     private byte turn;
 
+    public TileArchitecture(TileEntityType<?> type) {
+        super(type);
+    }
+
     public static ItemStack blockStackWithTileEntity(Block block, int size, TileArchitecture te) {
         return blockStackWithTileEntity(block, size, 0, te);
     }
 
     public static ItemStack blockStackWithTileEntity(Block block, int size, int meta, TileArchitecture te) {
-        ItemStack stack = new ItemStack(block, size, meta);
+        ItemStack stack = new ItemStack(block, size);
         if (te != null) {
             NBTTagCompound tag = new NBTTagCompound();
             te.writeToItemStackNBT(tag);
-            stack.setTagCompound(tag);
+            stack.setTag(tag);
         }
         return stack;
     }
@@ -138,7 +141,7 @@ public abstract class TileArchitecture extends TileEntity {
     public NBTTagCompound getUpdateTag() {
         NBTTagCompound nbt = new NBTTagCompound();
         if (syncWithClient())
-            writeToNBT(nbt);
+            write(nbt);
         return nbt;
     }
 
@@ -147,7 +150,7 @@ public abstract class TileArchitecture extends TileEntity {
         //ArchitectureLog.info("BaseTileEntity.getDescriptionPacket for %s\n", this);
         if (syncWithClient()) {
             NBTTagCompound nbt = new NBTTagCompound();
-            writeToNBT(nbt);
+            write(nbt);
             if (updateChunk) {
                 nbt.setBoolean("updateChunk", true);
                 updateChunk = false;
@@ -160,7 +163,7 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         NBTTagCompound nbt = pkt.getNbtCompound();
-        readFromNBT(nbt);
+        read(nbt);
         if (nbt.getBoolean("updateChunk"))
             world.markBlockRangeForRenderUpdate(pos, pos);
     }
@@ -196,15 +199,15 @@ public abstract class TileArchitecture extends TileEntity {
     public abstract void onAddedToWorld();
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void read(NBTTagCompound nbt) {
+        super.read(nbt);
         setSide(nbt.getByte("side"));
         setTurn(nbt.getByte("turn"));
         readContentsFromNBT(nbt);
     }
 
     public void readFromItemStack(ItemStack stack) {
-        NBTTagCompound nbt = stack.getTagCompound();
+        NBTTagCompound nbt = stack.getTag();
         if (nbt != null)
             readFromItemStackNBT(nbt);
     }
@@ -217,8 +220,8 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound write(NBTTagCompound nbt) {
+        super.write(nbt);
         if (getSide() != 0)
             nbt.setByte("side", getSide());
         if (getTurn() != 0)
@@ -245,9 +248,9 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     @Override
-    public void invalidate() {
+    public void remove() {
         releaseChunkTicket();
-        super.invalidate();
+        super.remove();
     }
 
     public void releaseChunkTicket() {
@@ -258,7 +261,7 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public ItemStack newItemStack(int size) {
-        return blockStackWithTileEntity(getBlockType(), size, this);
+        return blockStackWithTileEntity(getBlockState().getBlock(), size, this);
     }
 
     public byte getSide() {

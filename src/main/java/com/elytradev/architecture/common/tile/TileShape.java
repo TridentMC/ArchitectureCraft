@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.tile;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
@@ -40,9 +41,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-
-import static com.elytradev.architecture.common.block.BlockHelper.getNameForBlock;
+import net.minecraft.world.IBlockReader;
 
 
 public class TileShape extends TileArchitecture {
@@ -54,24 +53,18 @@ public class TileShape extends TileArchitecture {
     private byte offsetX;
 
     public TileShape() {
-        super();
+        super(ArchitectureMod.CONTENT.tileTypeShape);
         shape = Shape.ROOF_TILE;
-        baseBlockState = Blocks.PLANKS.getDefaultState();
+        baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
     }
 
     public TileShape(Shape s, IBlockState b) {
-        super();
+        super(ArchitectureMod.CONTENT.tileTypeShape);
         shape = s;
         baseBlockState = b;
     }
 
-    public TileShape(Shape s, Block b, int d) {
-        super();
-        shape = s;
-        baseBlockState = b.getStateFromMeta(d);
-    }
-
-    public static TileShape get(IBlockAccess world, BlockPos pos) {
+    public static TileShape get(IBlockReader world, BlockPos pos) {
         if (world != null) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileShape)
@@ -120,11 +113,10 @@ public class TileShape extends TileArchitecture {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        //System.out.printf("ShapeTE.readFromNBT: %s\n", pos);
-        super.readFromNBT(nbt);
+    public void read(NBTTagCompound nbt) {
+        //System.out.printf("ShapeTE.read: %s\n", pos);
+        super.read(nbt);
         readShapeFromNBT(nbt);
-        readSecondaryMaterialFromNBT(nbt);
         offsetX = nbt.getByte("offsetX");
     }
 
@@ -134,33 +126,19 @@ public class TileShape extends TileArchitecture {
     }
 
     protected void readShapeFromNBT(NBTTagCompound nbt) {
-        shape = Shape.forId(nbt.getInteger("Shape"));
-        baseBlockState = nbtGetBlockState(nbt, "BaseName", "BaseData");
+        shape = Shape.forId(nbt.getInt("Shape"));
+        baseBlockState = Block.getStateById(nbt.getInt("BaseStateId"));
+        secondaryBlockState = Block.getStateById(nbt.getInt("SecondaryStateId"));
         if (baseBlockState == null)
-            baseBlockState = Blocks.PLANKS.getDefaultState();
-        disabledConnections = nbt.getInteger("Disconnected");
-    }
-
-    protected void readSecondaryMaterialFromNBT(NBTTagCompound nbt) {
-        secondaryBlockState = nbtGetBlockState(nbt, "Name2", "Data2");
-    }
-
-    protected IBlockState nbtGetBlockState(NBTTagCompound nbt, String nameField, String dataField) {
-        String blockName = nbt.getString(nameField);
-        if (blockName != null && blockName.length() > 0) {
-            Block block = Block.getBlockFromName(blockName);
-            int data = nbt.getInteger(dataField);
-            IBlockState state = block.getStateFromMeta(data);
-            return state;
-        }
-        return null;
+            baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
+        disabledConnections = nbt.getInt("Disconnected");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound write(NBTTagCompound nbt) {
+        super.write(nbt);
         writeShapeToNBT(nbt);
-        writeSecondaryMaterialToNBT(nbt);
+
         if (offsetX != 0)
             nbt.setByte("offsetX", offsetX);
         return nbt;
@@ -173,23 +151,12 @@ public class TileShape extends TileArchitecture {
 
     protected void writeShapeToNBT(NBTTagCompound nbt) {
         if (shape != null) {
-            nbt.setInteger("Shape", shape.id);
-            nbtSetBlockState(nbt, "BaseName", "BaseData", baseBlockState);
+            nbt.setInt("Shape", shape.id);
+            nbt.setInt("BaseStateId", Block.getStateId(baseBlockState));
+            nbt.setInt("SecondaryStateId", Block.getStateId(secondaryBlockState));
         }
         if (disabledConnections != 0)
-            nbt.setInteger("Disconnected", disabledConnections);
-    }
-
-    protected void writeSecondaryMaterialToNBT(NBTTagCompound nbt) {
-        nbtSetBlockState(nbt, "Name2", "Data2", secondaryBlockState);
-    }
-
-    protected void nbtSetBlockState(NBTTagCompound nbt, String nameField, String dataField, IBlockState state) {
-        if (state != null) {
-            Block block = state.getBlock();
-            nbt.setString(nameField, getNameForBlock(block));
-            nbt.setInteger(dataField, block.getMetaFromState(state));
-        }
+            nbt.setInt("Disconnected", disabledConnections);
     }
 
     public void onChiselUse(EntityPlayer player, EnumFacing face, float hitX, float hitY, float hitZ) {
@@ -215,12 +182,12 @@ public class TileShape extends TileArchitecture {
     public boolean applySecondaryMaterial(ItemStack stack, EntityPlayer player) {
         IBlockState materialState = null;
         Item item = stack.getItem();
-        if (item instanceof ItemCladding && shape.kind.acceptsCladding())
+        if (item instanceof ItemCladding && shape.kind.acceptsCladding()) {
             materialState = ((ItemCladding) item).blockStateFromStack(stack);
-        else {
+        } else {
             Block block = Block.getBlockFromItem(item);
             if (block != null) {
-                IBlockState state = block.getStateFromMeta(stack.getMetadata());
+                IBlockState state = block.getDefaultState();
                 if (shape.kind.isValidSecondaryMaterial(state)) {
                     materialState = state;
                 }
