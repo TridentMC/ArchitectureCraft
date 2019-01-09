@@ -66,7 +66,7 @@ public class ArchitectureContent {
         @Override
         public ItemStack createIcon() {
             return new ItemStack(Item.REGISTRY.get(new ResourceLocation(MOD_ID, "hammer")));
-        }block.getStateFromMeta(stack.getMetadata()
+        }
     };
     public static final ItemGroup SHAPE_TAB = new ItemGroup("architecture.shape") {
 
