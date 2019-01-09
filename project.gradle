@@ -13,9 +13,10 @@ ext {
     coremod = null
     miniVersion = null
 
-    language = 'java'
+    language = 
+            
 
-    forge = '1.13-24.0.59-1.13-pre'
+    forge = '1.13-24.0.61-1.13-pre'
 
     enforceLicenseHeaders = false
 

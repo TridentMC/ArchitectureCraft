@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        mavenLocal()
         maven { url = 'https://files.minecraftforge.net/maven' }
         maven {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -10,13 +9,6 @@ buildscript {
         }
         jcenter()
         mavenCentral()
-    }
-    // This is only here while i'm activly developing FG, Remind me to remove when we publically release
-    configurations {
-        classpath.resolutionStrategy {
-            cacheDynamicVersionsFor 10, 'seconds'
-            cacheChangingModulesFor 0, 'seconds'
-        }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
@@ -81,10 +73,7 @@ project.ext.priv = parseConfig(file('private.properties'))
 group = project.ext.group
 archivesBaseName = project.ext.projectName
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
     mappings channel: 'snapshot', version: '20180921-1.13'
@@ -94,27 +83,19 @@ minecraft {
     
     // default run configurations.
     // these can be tweaked, removed, or duplicated as needed.
-    runConfig {
-        name= "Minecraft Client"
-        main= "net.minecraftforge.userdev.UserdevLauncher"
-        ideaModuleName = "${project.name}_main"
-        workingDirectory = project.file("run").canonicalPath
-        environment "target", "fmldevclient"
-        environment "assetDirectory", downloadAssets.output.absolutePath
-    }
-
-    runConfig {
-        name= "Minecraft Server"
-        main= "net.minecraftforge.userdev.UserdevLauncher"
-        ideaModuleName = "${project.name}_main"
-        workingDirectory = project.file("run").canonicalPath
-        environment "target", "fmldevserver"
-        environment "assetDirectory", downloadAssets.output.absolutePath
+    runs {
+        client = {
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            workingDirectory project.file('run').canonicalPath
+        }
     }
 }
 
 dependencies {
-    minecraft "net.minecraftforge.test:userdev:${project.ext.forge}"
+    minecraft "net.minecraftforge.test:forge:${project.ext.forge}"
 }
 
 processResources {
