@@ -25,21 +25,20 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockArchitecture.IOrientationHandler;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileArchitecture;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -54,7 +53,7 @@ public class BaseOrientation {
 
     //------------------------------------------------------------------------------------------------
 
-    public static class PropertyTurn extends PropertyEnum<EnumFacing> {
+    public static class PropertyTurn extends EnumProperty<EnumFacing> {
 
         protected static EnumFacing[] values = {
                 EnumFacing.WEST, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.NORTH
@@ -85,12 +84,12 @@ public class BaseOrientation {
             EnumFacing dir = placer.getHorizontalFacing();
             if (debugPlacement)
                 ArchitectureLog.info("BaseOrientation.Orient4WaysByState: Placing block with FACING = %s\n", dir);
-            return baseState.withProperty(FACING, dir);
+            return baseState.with(FACING, dir);
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
-            EnumFacing f = (EnumFacing) state.getValue(FACING);
+        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+            EnumFacing f = (EnumFacing) state.get(FACING);
             int i;
             switch (f) {
                 case NORTH:
@@ -118,7 +117,7 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileArchitecture) {
                 TileArchitecture bte = (TileArchitecture) te;

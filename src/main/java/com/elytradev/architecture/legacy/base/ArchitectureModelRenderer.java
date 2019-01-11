@@ -40,7 +40,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 
 public class ArchitectureModelRenderer implements ICustomRenderer {
 
@@ -59,7 +59,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     }
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
+    public void renderBlock(IWorldReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
         Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(origin);
@@ -68,7 +68,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     }
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+    public void renderBlock(IWorldReader world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
         if (renderPrimary) renderBlock(world, pos, state, target, layer, t);
     }
 
@@ -84,7 +84,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     }
 
     private int getColourFromState(IBlockState state) {
-        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
         int color = blockColors.getColor(state, null, null);
         return color;
     }

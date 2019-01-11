@@ -30,12 +30,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -170,7 +169,7 @@ public class BaseGui {
         }
 
         public static String playerInventoryName() {
-            return I18n.translateToLocal("container.inventory");
+            return I18n.format("container.inventory");
         }
 
         public int getWidth() {
@@ -182,9 +181,9 @@ public class BaseGui {
         }
 
         @Override
-        public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        public void render(int mouseX, int mouseY, float partialTicks) {
             this.drawDefaultBackground();
-            super.drawScreen(mouseX, mouseY, partialTicks);
+            super.render(mouseX, mouseY, partialTicks);
             this.renderHoveredToolTip(mouseX, mouseY);
         }
 
@@ -351,15 +350,19 @@ public class BaseGui {
         }
 
         public void drawString(String s, int x, int y) {
-            fontRenderer.drawString(s, x, y, gstate.textColor, gstate.textShadow);
+            if (gstate.textShadow) {
+                fontRenderer.drawStringWithShadow(s, x, y, gstate.textColor);
+            } else {
+                fontRenderer.drawString(s, x, y, gstate.textColor);
+            }
         }
 
         public void drawCenteredString(String s, int x, int y) {
-            fontRenderer.drawString(s, x - fontRenderer.getStringWidth(s) / 2, y, gstate.textColor, gstate.textShadow);
+            this.drawString(s, x - fontRenderer.getStringWidth(s) / 2, y);
         }
 
         public void drawRightAlignedString(String s, int x, int y) {
-            fontRenderer.drawString(s, x - fontRenderer.getStringWidth(s), y, gstate.textColor, gstate.textShadow);
+            this.drawString(s, x - fontRenderer.getStringWidth(s), y);
         }
 
         public void drawTitle(String s) {
@@ -371,9 +374,10 @@ public class BaseGui {
         }
 
         @Override
-        protected void mouseClicked(int x, int y, int button) throws IOException {
-            super.mouseClicked(x, y, button);
-            mousePressed(x - guiLeft, y - guiTop, button);
+        public boolean mouseClicked(double x, double y, int button) {
+            boolean b = super.mouseClicked(x, y, button);
+            mousePressed(((int) x) - guiLeft, ((int) y) - guiTop, button);
+            return b;
         }
 
         protected void mousePressed(int x, int y, int button) {
@@ -386,21 +390,23 @@ public class BaseGui {
         }
 
         @Override
-        protected void mouseClickMove(int x, int y, int button, long timeSinceLastClick) {
-            super.mouseClickMove(x, y, button, timeSinceLastClick);
+        public boolean mouseDragged(double x, double y, int button, double p_mouseDragged_6_, double p_mouseDragged_8_) {
+            boolean b = super.mouseDragged(x, y, button, p_mouseDragged_6_, p_mouseDragged_8_);
             if (mouseWidget != null) {
-                MouseCoords m = new MouseCoords(mouseWidget, x, y);
+                MouseCoords m = new MouseCoords(mouseWidget, (int) x, (int) y);
                 mouseWidget.mouseDragged(m, button);
             }
+            return b;
         }
 
         @Override
-        protected void mouseReleased(int x, int y, int button) {
-            super.mouseReleased(x, y, button);
+        public boolean mouseReleased(double x, double y, int button) {
+            boolean b = super.mouseReleased(x, y, button);
             if (mouseWidget != null) {
-                MouseCoords m = new MouseCoords(mouseWidget, x, y);
+                MouseCoords m = new MouseCoords(mouseWidget, (int) x, (int) y);
                 mouseWidget.mouseReleased(m, button);
             }
+            return b;
         }
 
         void closeOldFocus(IWidget clickedWidget) {
@@ -427,13 +433,17 @@ public class BaseGui {
         }
 
         @Override
-        protected void keyTyped(char c, int key) throws IOException {
+        public boolean charTyped(char c, int key) {
+            boolean result = false;
             if (!root.dispatchKeyPress(c, key)) {
-                if (key == 1 || key == mc.gameSettings.keyBindInventory.getKeyCode())
+                if (key == 1 || key == mc.gameSettings.keyBindInventory.getKey().getKeyCode()) {
                     close();
-                else
-                    super.keyTyped(c, key);
+                    result = true;
+                } else {
+                    result = super.charTyped(c, key);
+                }
             }
+            return result;
         }
 
         public void focusOn(IWidget newFocus) {
@@ -488,7 +498,7 @@ public class BaseGui {
         }
 
         public static int stringWidth(String s) {
-            return Minecraft.getMinecraft().fontRenderer.getStringWidth(s);
+            return Minecraft.getInstance().fontRenderer.getStringWidth(s);
         }
 
         @Override
