@@ -32,7 +32,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.io.DataInput;
@@ -42,7 +42,7 @@ import java.io.IOException;
 public class BlockHelper {
 
     public static String getNameForBlock(Block block) {
-        return Block.REGISTRY.getNameForObject(block).toString();
+        return Block.REGISTRY.getKey(block).toString();
     }
 
     /*
@@ -90,11 +90,11 @@ public class BlockHelper {
         return state.getBlock().getMetaFromState(state);
     }
 
-    public static Block getWorldBlock(IBlockAccess world, BlockPos pos) {
+    public static Block getWorldBlock(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos).getBlock();
     }
 
-    public static IBlockState getWorldBlockState(IBlockAccess world, BlockPos pos) {
+    public static IBlockState getWorldBlockState(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos);
     }
 
@@ -106,7 +106,7 @@ public class BlockHelper {
         world.notifyNeighborsOfStateChange(pos, block, true);
     }
 
-    public static TileEntity getWorldTileEntity(IBlockAccess world, BlockPos pos) {
+    public static TileEntity getWorldTileEntity(IBlockReader world, BlockPos pos) {
         return world.getTileEntity(pos);
     }
 

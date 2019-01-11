@@ -19,6 +19,7 @@ apply plugin: 'net.minecraftforge.gradle'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 ext.early = true
 apply from: 'project.gradle'
@@ -72,8 +73,6 @@ project.ext.priv = parseConfig(file('private.properties'))
 
 group = project.ext.group
 archivesBaseName = project.ext.projectName
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
     mappings channel: 'snapshot', version: '20180921-1.13'
@@ -135,29 +134,11 @@ def needsShadow = !project.ext.concreteModules.isEmpty() || project.ext.miniVers
 if (needsShadow) {
     apply plugin: 'com.github.johnrengelman.shadow'
 
-    jar {
-        classifier = 'slim'
-    }
-
     shadowJar {
         classifier = ''
         relocate 'com.elytradev.concrete', project.ext.package + '.repackage.com.elytradev.concrete'
         relocate 'com.elytradev.mini', project.ext.package + '.asm.repackage.com.elytradev.mini'
         configurations = [project.configurations.shadow]
-    }
-
-    //reobf {
-    //    shadowJar { mappingType = 'SEARGE' }
-    //}
-
-    //tasks.reobfJar.doLast {
-    //    file('build/libs/' + archivesBaseName + '-' + version + '-slim.jar').delete()
-    //}
-
-    //tasks.build.dependsOn reobfShadowJar
-
-    artifacts {
-        archives shadowJar
     }
 
     dependencies {

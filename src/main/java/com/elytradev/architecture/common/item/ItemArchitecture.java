@@ -31,6 +31,10 @@ import net.minecraft.item.ItemStack;
 
 public class ItemArchitecture extends Item implements ITextureConsumer {
 
+    public ItemArchitecture(Builder builder) {
+        super(builder);
+    }
+
     @Override
     public String[] getTextureNames() {
         return null;

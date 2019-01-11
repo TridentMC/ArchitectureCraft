@@ -24,7 +24,6 @@
 
 package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
@@ -37,15 +36,12 @@ import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.render.ITextureConsumer;
 import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.legacy.base.ArchitectureModelRenderer;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.*;
-import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
@@ -55,16 +51,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.lwjgl.opengl.GL11.GL_SMOOTH;
 
@@ -108,9 +101,9 @@ public class RenderingManager {
     }
 
     private void registerMesh(Item item, int meta, ModelResourceLocation resourceLocation) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.getRenderItem() != null && mc.getRenderItem().getItemModelMesher() != null) {
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, resourceLocation);
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getItemRenderer() != null && mc.getItemRenderer().getItemModelMesher() != null) {
+            mc.getItemRenderer().getItemModelMesher().register(item, meta, resourceLocation);
         } else {
             ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
         }
@@ -140,11 +133,11 @@ public class RenderingManager {
         return ArchitectureMod.PROXY.getModel(name);
     }
 
-    public ICustomRenderer getCustomRenderer(IBlockAccess world, BlockPos pos, IBlockState state) {
+    public ICustomRenderer getCustomRenderer(IBlockReader world, BlockPos pos, IBlockState state) {
         Block block = state.getBlock();
         ICustomRenderer rend = blockRenderers.get(block);
         if (rend == null && block instanceof BlockArchitecture) {
-            IBlockState astate = block.getActualState(state, world, pos);
+            IBlockState astate = block.getExtendedState(state, world, pos);
             rend = getCustomRendererForState(astate);
         }
         return rend;
@@ -209,12 +202,12 @@ public class RenderingManager {
         return ((TextureBase.Sprite) getTexture(type, name)).icon;
     }
 
-    public IBlockState getBlockParticleState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public IBlockState getBlockParticleState(IBlockState state, IBlockReader world, BlockPos pos) {
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)
             return ((BlockArchitecture) block).getParticleState(world, pos);
         else
-            return block.getActualState(state, world, pos);
+            return block.getExtendedState(state, world, pos);
     }
 
     public boolean pathUsesVertexModel(String resourcePath) {
@@ -242,6 +235,7 @@ public class RenderingManager {
         textureCache.clear();
     }
 
+    //TODO: No custom state mappers that I can find in the current source code. probably needs to be implemented by forge again...?
     public static class CustomBlockStateMapper extends DefaultStateMapper {
         @Override
         public ModelResourceLocation getModelResourceLocation(IBlockState state) {
@@ -253,7 +247,7 @@ public class RenderingManager {
         public ModelResourceLocation location;
 
         public void install(ModelBakeEvent event) {
-            event.getModelRegistry().putObject(location, this);
+            event.getModelRegistry().put(location, this);
         }
 
         @Override
@@ -303,6 +297,11 @@ public class RenderingManager {
         }
 
         @Override
+        public List<BakedQuad> getQuads(@Nullable IBlockState iBlockState, @Nullable EnumFacing enumFacing, Random random) {
+            return Collections.emptyList();
+        }
+
+        @Override
         public TextureAtlasSprite getParticleTexture() {
             Block block = state.getBlock();
             if (block instanceof BlockArchitecture) {
@@ -323,7 +322,7 @@ public class RenderingManager {
 
         private IBakedModel emptyModel = new IBakedModel() {
             @Override
-            public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+            public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
                 return Lists.newArrayList();
             }
 
@@ -354,16 +353,16 @@ public class RenderingManager {
 
             @Override
             public ItemOverrideList getOverrides() {
-                return ItemOverrideList.NONE;
+                return ItemOverrideList.EMPTY;
             }
         };
 
         public CustomItemRenderOverrideList() {
-            super(ImmutableList.of());
+            super();
         }
 
         @Override
-        public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+        public IBakedModel getModelWithOverrides(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
             Item item = stack.getItem();
             ICustomRenderer rend = itemRenderers.get(item);
             if (rend == null && item instanceof ItemArchitecture) {
@@ -397,6 +396,11 @@ public class RenderingManager {
 
         public CustomItemBakedModel() {
             this.location = new ModelResourceLocation(new ResourceLocation(ArchitectureMod.MOD_ID, "__custitem__"), "");
+        }
+
+        @Override
+        public List<BakedQuad> getQuads(@Nullable IBlockState iBlockState, @Nullable EnumFacing enumFacing, Random random) {
+            return Collections.emptyList();
         }
 
         @Override

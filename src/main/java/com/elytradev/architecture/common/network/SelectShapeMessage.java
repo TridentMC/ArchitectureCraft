@@ -33,10 +33,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.relauncher.Side;
 
-@ReceivedOn(Side.SERVER)
+@ReceivedOn(Dist.SERVER)
 public class SelectShapeMessage extends Message {
 
     public BlockPos sawPos;
@@ -46,7 +46,7 @@ public class SelectShapeMessage extends Message {
     public SelectShapeMessage(TileSawbench sawbench, int page, int slot) {
         super(ArchitectureNetworking.NETWORK);
         this.sawPos = sawbench.getPos();
-        this.dim = sawbench.getWorld().provider.getDimension();
+        this.dim = sawbench.getWorld().getDimension().getId();
         this.page = page;
         this.slot = slot;
     }

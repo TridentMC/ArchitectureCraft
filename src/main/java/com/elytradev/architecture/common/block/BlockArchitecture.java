@@ -487,9 +487,9 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return true;
     }
 
-    public IBlockState getParticleState(IBlockAccess world, BlockPos pos) {
+    public IBlockState getParticleState(IBlockReader world, BlockPos pos) {
         IBlockState state = world.getBlockState(pos);
-        return getActualState(state, world, pos);
+        return getExtendedState(state, world, pos);
     }
 
     @Override
