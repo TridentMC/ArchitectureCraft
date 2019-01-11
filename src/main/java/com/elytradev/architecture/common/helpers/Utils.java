@@ -38,7 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 
 import java.util.List;
 import java.util.Random;
@@ -65,13 +65,13 @@ public class Utils {
 
     public static TextureAtlasSprite getSpriteForBlockState(IBlockState state) {
         if (state != null)
-            return Minecraft.getMinecraft().getBlockRendererDispatcher()
+            return Minecraft.getInstance().getBlockRendererDispatcher()
                     .getBlockModelShapes().getTexture(state);
         else
             return null;
     }
 
-    public static TextureAtlasSprite getSpriteForPos(IBlockAccess world, BlockPos pos, boolean renderPrimary) {
+    public static TextureAtlasSprite getSpriteForPos(IWorldReader world, BlockPos pos, boolean renderPrimary) {
         IBlockState blockState = world.getBlockState(pos);
 
         if (blockState == null)
@@ -92,27 +92,19 @@ public class Utils {
         return getSpriteForBlockState(blockState);
     }
 
-    public static String displayNameOfBlock(Block block, int meta) {
-        String name = null;
-        Item item = Item.getItemFromBlock(block);
-        if (item != null) {
-            ItemStack stack = new ItemStack(item, 1, meta);
-            name = stack.getDisplayName();
-        }
-        if (name == null)
-            name = block.getLocalizedName();
-        return "Cut from " + name;
+    public static String displayNameOfBlock(Block block) {
+        return "Cut from " + displayNameOnlyOfBlock(block);
     }
 
-    public static String displayNameOnlyOfBlock(Block block, int meta) {
+    public static String displayNameOnlyOfBlock(Block block) {
         String name = null;
         Item item = Item.getItemFromBlock(block);
         if (item != null) {
-            ItemStack stack = new ItemStack(item, 1, meta);
-            name = stack.getDisplayName();
+            ItemStack stack = new ItemStack(item, 1);
+            name = stack.getDisplayName().getFormattedText();
         }
         if (name == null)
-            name = block.getLocalizedName();
+            name = block.getNameTextComponent().getFormattedText();
         return name;
     }
 

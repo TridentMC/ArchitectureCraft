@@ -46,17 +46,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.BlockStateContainer;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
@@ -248,7 +252,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
             int n = values.length;
             int k = m % n;
             m /= n;
-            state = state.withProperty(properties[i], (Comparable) values[k]);
+            state = state.with(properties[i], (Comparable) values[k]);
         }
         if (debugState)
             ArchitectureLog.info("BaseBlock.getStateFromMeta: %s --> %s\n", meta, state);
@@ -276,15 +280,17 @@ public class BlockArchitecture<TE extends TileArchitecture>
     // -------------------------- Harvesting ----------------------------
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {
         TileEntity te = world.getTileEntity(pos);
         if (te == null)
             te = harvestingTileEntity.get();
-        return getDropsFromTileEntity(world, pos, state, te, fortune);
+        drops.addAll(getDropsFromTileEntity(world, pos, state, te, fortune));
     }
 
-    protected List<ItemStack> getDropsFromTileEntity(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te, int fortune) {
-        return super.getDrops(world, pos, state, fortune);
+    protected NonNullList<ItemStack> getDropsFromTileEntity(World world, BlockPos pos, IBlockState state, TileEntity te, int fortune) {
+        NonNullList<ItemStack> drops = NonNullList.create();
+        super.getDrops(state, drops, world, pos, fortune);
+        return drops;
     }
 
     @Override
@@ -323,23 +329,23 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return modelSpec;
     }
 
-    public Trans3 localToGlobalRotation(IBlockAccess world, BlockPos pos) {
+    public Trans3 localToGlobalRotation(IWorldReader world, BlockPos pos) {
         return localToGlobalRotation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalRotation(IBlockAccess world, BlockPos pos, IBlockState state) {
+    public Trans3 localToGlobalRotation(IWorldReader world, BlockPos pos, IBlockState state) {
         return localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
-    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos) {
+    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos) {
         return localToGlobalTransformation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state) {
+    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state) {
         return localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
         IOrientationHandler oh = getOrientationHandler();
         return oh.localToGlobalTransformation(world, pos, state, origin);
     }
@@ -597,7 +603,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                   float hitX, float hitY, float hitZ, IBlockState baseState, EntityLivingBase placer);
 
         //Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state);
-        Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin);
+        Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin);
     }
 
     public static class Orient1Way implements IOrientationHandler {
@@ -610,7 +616,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
             return new Trans3(origin);
         }
 

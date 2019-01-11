@@ -97,7 +97,7 @@ public class MiscUtils {
     }
 
     public static MinecraftServer getMinecraftServer() {
-        return DimensionManager.getWorld(0).getMinecraftServer();
+        return DimensionManager.getWorld(0).getServer();
     }
 
     public static WorldServer getWorldForDimension(int id) {

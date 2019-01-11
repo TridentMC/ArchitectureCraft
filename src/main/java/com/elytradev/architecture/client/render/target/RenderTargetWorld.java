@@ -25,7 +25,6 @@
 package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,7 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 
 import static com.elytradev.architecture.common.utils.MiscUtils.ifloor;
 import static com.elytradev.architecture.common.utils.MiscUtils.iround;
@@ -41,7 +40,7 @@ import static java.lang.Math.floor;
 
 public class RenderTargetWorld extends RenderTargetBase {
 
-    protected IBlockAccess world;
+    protected IWorldReader world;
     protected BlockPos blockPos;
     protected IBlockState blockState;
     protected Block block;
@@ -53,7 +52,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     protected int vlm1, vlm2; // Light map values to be applied to next vertex
     private BufferBuilder tess;
 
-    public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
+    public RenderTargetWorld(IWorldReader world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
         //ArchitectureLog.info("BaseWorldRenderTarget(%s)\n", pos);
         this.world = world;

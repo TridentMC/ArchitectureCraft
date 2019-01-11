@@ -53,8 +53,8 @@ public class ContainerSawbench extends BaseContainer {
         super(guWidth, guiHeight);
         this.te = te;
         sawbenchSlotRange = new SlotRange();
-        materialSlot = addSlotToContainer(new Slot(te, 0, inputSlotLeft, inputSlotTop));
-        resultSlot = addSlotToContainer(new SlotSawbenchResult(te, 1, outputSlotLeft, outputSlotTop));
+        materialSlot = addSlot(new Slot(te, 0, inputSlotLeft, inputSlotTop));
+        resultSlot = addSlot(new SlotSawbenchResult(te, 1, outputSlotLeft, outputSlotTop));
         sawbenchSlotRange.end();
         addPlayerSlots(player, 8, guiHeight - 81);
     }

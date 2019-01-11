@@ -26,9 +26,9 @@ package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -36,7 +36,6 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.util.vector.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -105,7 +104,7 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     static {
-        for (EnumFacing face : EnumFacing.VALUES)
+        for (EnumFacing face : EnumFacing.values())
             faceQuads.put(face, emptyQuads);
     }
 
@@ -163,7 +162,7 @@ public class RenderTargetBaked extends RenderTargetBase {
 
     private TextureAtlasSprite getActiveTexture() {
         // Use missingno as a fallback
-        TextureAtlasSprite activeTexture = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
+        TextureAtlasSprite activeTexture = Minecraft.getInstance().getTextureMap().getAtlasSprite("missingno");
         if (texture instanceof TextureBase.Sprite) {
             TextureBase.Sprite sprite = (TextureBase.Sprite) texture;
             activeTexture = sprite.icon;
@@ -206,7 +205,7 @@ public class RenderTargetBaked extends RenderTargetBase {
         if (verticesPerFace != 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
         return new SimpleBakedModel(quads, faceQuads, false, true,
-                particleTexture, transforms, ItemOverrideList.NONE);
+                particleTexture, transforms, ItemOverrideList.EMPTY);
     }
 
     @Override

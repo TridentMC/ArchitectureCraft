@@ -26,7 +26,6 @@ package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -67,7 +66,7 @@ public class RenderTargetGL extends RenderTargetBase {
             if (loc != null) {
                 setGLMode(0);
                 if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: bindTexture(%s)\n", loc);
-                Minecraft.getMinecraft().renderEngine.bindTexture(loc);
+                Minecraft.getInstance().getTextureManager().bindTexture(loc);
             }
             setTexturedMode(!tex.isSolid());
             setEmissiveMode(tex.isEmissive());

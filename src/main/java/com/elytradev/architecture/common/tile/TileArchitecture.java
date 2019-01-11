@@ -88,7 +88,7 @@ public abstract class TileArchitecture extends TileEntity {
             int x = pos.getX() >> 4;
             int z = pos.getZ() >> 4;
             WorldServer world = (WorldServer) getWorld();
-            PlayerList cm = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
+            PlayerList cm = world.getServer().getPlayerList();
             PlayerChunkMap pm = world.getPlayerChunkMap();
             for (EntityPlayerMP player : cm.getPlayers()) {
                 if (pm.isPlayerWatchingChunk(player, x, z)) {
