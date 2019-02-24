@@ -37,6 +37,7 @@ import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
@@ -87,7 +88,7 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
             EnumFacing f = (EnumFacing) state.get(FACING);
             int i;
             switch (f) {
@@ -116,7 +117,7 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileArchitecture) {
                 TileArchitecture bte = (TileArchitecture) te;
