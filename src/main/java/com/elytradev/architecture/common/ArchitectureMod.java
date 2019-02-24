@@ -25,15 +25,14 @@
 package com.elytradev.architecture.common;
 
 import com.elytradev.architecture.client.proxy.ClientProxy;
-import com.elytradev.architecture.common.drop.ModDrops;
 import com.elytradev.architecture.common.proxy.CommonProxy;
+import com.tridevmc.compound.network.core.CompoundNetwork;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static com.elytradev.architecture.common.ArchitectureMod.MOD_ID;
 
@@ -50,43 +49,22 @@ public class ArchitectureMod {
 
     public static CommonProxy PROXY;
 
-    public static ModDrops DROPS = new ModDrops();
-
     public ArchitectureMod() {
         ArchitectureMod.INSTANCE = this;
         PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 
-        FMLModLoadingContext loadingContext = FMLModLoadingContext.get();
-        loadingContext.getModEventBus().addListener(this::onPreInit);
-        loadingContext.getModEventBus().addListener(this::onInit);
-        loadingContext.getModEventBus().addListener(this::onPostInit);
+        FMLJavaModLoadingContext loadingContext = FMLJavaModLoadingContext.get();
+        loadingContext.getModEventBus().addListener(this::onSetup);
+
     }
 
-    public void onPreInit(FMLPreInitializationEvent e) {
+    public void onSetup(FMLCommonSetupEvent e) {
         MinecraftForge.EVENT_BUS.register(CONTENT);
+        CONTENT.setup(e);
+        PROXY.setup(e);
 
-        PROXY.preInit(e);
-        PROXY.registerHandlers();
-        CONTENT.preInit(e);
-        PROXY.registerRenderers(e);
-
-        DROPS.preInit(e);
+        CompoundNetwork.createNetwork(new ResourceLocation(ArchitectureMod.MOD_ID, "network"), "");
     }
 
-    public void onInit(FMLInitializationEvent e) {
-        CONTENT.init(e);
-        PROXY.init(e);
-        PROXY.registerRenderers(e);
-
-        DROPS.init(e);
-    }
-
-    public void onPostInit(FMLPostInitializationEvent e) {
-        CONTENT.postInit(e);
-        PROXY.postInit(e);
-        PROXY.registerRenderers(e);
-
-        DROPS.postInit(e);
-    }
 }
 

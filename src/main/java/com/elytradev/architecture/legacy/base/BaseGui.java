@@ -410,9 +410,9 @@ public class BaseGui {
         }
 
         void closeOldFocus(IWidget clickedWidget) {
-            if (!isFocused()) {
+            if (!isFocused(clickedWidget)) {
                 IWidgetContainer parent = clickedWidget.parent();
-                while (!isFocused())
+                while (!isFocused(clickedWidget))
                     parent = parent.parent();
                 dispatchClosure(parent.getFocus());
             }
@@ -450,7 +450,7 @@ public class BaseGui {
             IWidgetContainer parent = newFocus.parent();
             if (parent != null) {
                 IWidget oldFocus = parent.getFocus();
-                if (isFocused()) {
+                if (isFocused(oldFocus)) {
                     if (oldFocus != newFocus) {
                         tellFocusChanged(oldFocus, false);
                         parent.setFocus(newFocus);

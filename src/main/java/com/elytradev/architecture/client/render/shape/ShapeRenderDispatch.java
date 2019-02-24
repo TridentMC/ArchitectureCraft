@@ -40,7 +40,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
@@ -50,7 +50,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     // called from more than one thread.
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
+    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         TileShape te = TileShape.get(world, pos);
         if (te != null) {
@@ -75,13 +75,13 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
         TileShape te = new TileShape();
         te.readFromItemStack(stack);
-        ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+        ItemColors itemColors = Minecraft.getInstance().getItemColors();
         ItemStack baseStack = getStackFromState(te.baseBlockState);
         ItemStack secondaryStack = getStackFromState(te.secondaryBlockState);
         int baseColour = baseStack != null ?
-                itemColors.colorMultiplier(baseStack, 0) : -1;
+                itemColors.getColor(baseStack, 0) : -1;
         int secondaryColour = secondaryStack != null ?
-                itemColors.colorMultiplier(secondaryStack, 0) : baseColour;
+                itemColors.getColor(secondaryStack, 0) : baseColour;
 
         renderShapeTE(te, target, t,
                 te.baseBlockState != null,
@@ -94,7 +94,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
             Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
-            defaultInstance.setItemDamage(state.getBlock().damageDropped(state));
+            defaultInstance.setDamage(state.getBlock().damageDropped(state));
             return defaultInstance;
         }
 
@@ -139,14 +139,14 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     }
 
     private int getColourFromState(IBlockState state) {
-        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        int color = blockColors.colorMultiplier(state, null, null, 0);
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+        int color = blockColors.getColor(state, null, null, 0);
 
         return color;
     }
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
+    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t, boolean renderBase, boolean renderSecondary) {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);

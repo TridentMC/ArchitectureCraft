@@ -46,8 +46,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 import java.lang.reflect.Field;
 
@@ -58,7 +56,6 @@ public abstract class TileArchitecture extends TileEntity {
     protected static Field changedSectionFilter = getFieldDef(
             classForName("net.minecraft.server.management.PlayerChunkMapEntry"),
             "changedSectionFilter", "field_187288_h");
-    public Ticket chunkTicket;
     protected boolean updateChunk;
     private byte side;
     private byte turn;
@@ -152,7 +149,7 @@ public abstract class TileArchitecture extends TileEntity {
             NBTTagCompound nbt = new NBTTagCompound();
             write(nbt);
             if (updateChunk) {
-                nbt.setBoolean("updateChunk", true);
+                nbt.putBoolean("updateChunk", true);
                 updateChunk = false;
             }
             return new SPacketUpdateTileEntity(pos, 0, nbt);
@@ -223,9 +220,9 @@ public abstract class TileArchitecture extends TileEntity {
     public NBTTagCompound write(NBTTagCompound nbt) {
         super.write(nbt);
         if (getSide() != 0)
-            nbt.setByte("side", getSide());
+            nbt.putByte("side", getSide());
         if (getTurn() != 0)
-            nbt.setByte("turn", getTurn());
+            nbt.putByte("turn", getTurn());
         writeContentsToNBT(nbt);
         return nbt;
     }
@@ -249,15 +246,7 @@ public abstract class TileArchitecture extends TileEntity {
 
     @Override
     public void remove() {
-        releaseChunkTicket();
         super.remove();
-    }
-
-    public void releaseChunkTicket() {
-        if (chunkTicket != null) {
-            ForgeChunkManager.releaseTicket(chunkTicket);
-            chunkTicket = null;
-        }
     }
 
     public ItemStack newItemStack(int size) {

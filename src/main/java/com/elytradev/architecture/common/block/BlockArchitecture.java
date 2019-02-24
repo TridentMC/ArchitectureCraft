@@ -35,32 +35,39 @@ import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleDigging;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Particles;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.BlockParticleData;
 import net.minecraft.state.IProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.BlockStateContainer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.property.ExtendedStateContainer;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
@@ -73,24 +80,24 @@ import java.util.List;
 public class BlockArchitecture<TE extends TileArchitecture>
         extends BlockContainer implements ITextureConsumer {
 
-    public static final IUnlistedProperty<IBlockAccess> BLOCKACCESS_PROP = new IUnlistedProperty<IBlockAccess>() {
+    public static final IUnlistedProperty<IBlockReader> BLOCKACCESS_PROP = new IUnlistedProperty<IBlockReader>() {
         @Override
         public String getName() {
             return "blockaccessprop";
         }
 
         @Override
-        public boolean isValid(IBlockAccess value) {
+        public boolean isValid(IBlockReader value) {
             return true;
         }
 
         @Override
-        public Class<IBlockAccess> getType() {
-            return IBlockAccess.class;
+        public Class<IBlockReader> getType() {
+            return IBlockReader.class;
         }
 
         @Override
-        public String valueToString(IBlockAccess value) {
+        public String valueToString(IBlockReader value) {
             return value.toString();
         }
     };
@@ -119,7 +126,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
-    protected MapColor mapColor;
+    protected MaterialColor materialColor;
     protected IProperty[] properties;
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
@@ -155,7 +162,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     public BlockArchitecture(Material material, IOrientationHandler orient, Class<TE> teClass, String teID) {
-        super(material);
+        super(Block.Properties.create(material, material.getColor()));
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
@@ -188,6 +195,15 @@ public class BlockArchitecture<TE extends TileArchitecture>
         if (debugState)
             ArchitectureLog.info("BaseBlock.addProperty: %s now has %s properties\n",
                     getClass().getName(), numProperties);
+    }
+
+
+    @Override
+    public StateContainer<Block, IBlockState> getStateContainer() {
+        StateContainer.Builder builder = new ExtendedStateContainer.Builder(this);
+
+
+        return super.getStateContainer();
     }
 
     @Override
@@ -224,49 +240,15 @@ public class BlockArchitecture<TE extends TileArchitecture>
                     getClass().getName(), n));
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        int meta = 0;
-        for (int i = numProperties - 1; i >= 0; i--) {
-            Object value = state.getValue(properties[i]);
-            Object[] values = propertyValues[i];
-            int k = values.length - 1;
-            while (k > 0 && !values[k].equals(value))
-                --k;
-            if (debugState)
-                ArchitectureLog.info("BaseBlock.getMetaFromState: property %s value %s --> %s of %s\n",
-                        i, value, k, values.length);
-            meta = meta * values.length + k;
-        }
-        if (debugState)
-            ArchitectureLog.info("BaseBlock.getMetaFromState: %s --> %s\n", state, meta);
-        return meta & 15; // To be on the safe side
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        IBlockState state = getDefaultState();
-        int m = meta;
-        for (int i = numProperties - 1; i >= 0; i--) {
-            Object[] values = propertyValues[i];
-            int n = values.length;
-            int k = m % n;
-            m /= n;
-            state = state.with(properties[i], (Comparable) values[k]);
-        }
-        if (debugState)
-            ArchitectureLog.info("BaseBlock.getStateFromMeta: %s --> %s\n", meta, state);
-        return state;
-    }
 
     public int getNumSubtypes() {
         return 1;
     }
 
-//  @Override
-//  public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
-//      return new BaseBlockState(state, world, pos);
-//  }
+    //@Override
+    //public IBlockState getExtendedState(IBlockState state, IBlockReader world, BlockPos pos) {
+    //    return new BaseBlockState(state, world, pos);
+    //}
 
     // -------------------------- Subtypes ------------------------------
 
@@ -329,23 +311,23 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return modelSpec;
     }
 
-    public Trans3 localToGlobalRotation(IWorldReader world, BlockPos pos) {
+    public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos) {
         return localToGlobalRotation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalRotation(IWorldReader world, BlockPos pos, IBlockState state) {
+    public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos, IBlockState state) {
         return localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
-    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos) {
+    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos) {
         return localToGlobalTransformation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state) {
+    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state) {
         return localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
         IOrientationHandler oh = getOrientationHandler();
         return oh.localToGlobalTransformation(world, pos, state, origin);
     }
@@ -355,11 +337,11 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     @Override
-    public IBlockState getExtendedState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public IBlockState getExtendedState(IBlockState state, IBlockReader world, BlockPos pos) {
         state = super.getExtendedState(state, world, pos);
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState eState = (IExtendedBlockState) state;
-            eState = eState.withProperty(POS_PROP, pos).withProperty(BLOCKACCESS_PROP, world);
+            eState = eState.withProperty(POS_PROP, pos).with(BLOCKACCESS_PROP, world);
             return eState;
         } else {
             return super.getExtendedState(state, world, pos);
@@ -371,7 +353,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return tileEntityClass != null;
     }
 
-    public TE getTileEntity(IBlockAccess world, BlockPos pos) {
+    public TE getTileEntity(IBlockReader world, BlockPos pos) {
         if (hasTileEntity()) {
             TileEntity te = world.getTileEntity(pos);
             if (tileEntityClass.isInstance(te))
@@ -395,15 +377,15 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        IBlockState state = getOrientationHandler().onBlockPlaced(this, world, pos, side,
-                hitX, hitY, hitZ, getStateFromMeta(meta), placer);
+    public IBlockState getStateForPlacement(BlockItemUseContext context) {
+        IBlockState state = getOrientationHandler().onBlockPlaced(this, context.getWorld(), context.getPos(), context.getFace(),
+                context.getHitX(), context.getHitY(), context.getHitZ(), getDefaultState(), context.getPlayer());
         return state;
     }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-        super.onBlockAdded(world, pos, state);
+    public void onBlockAdded(IBlockState state, World world, BlockPos pos, IBlockState oldState) {
+        super.onBlockAdded(state, world, pos, oldState);
 
         if (hasTileEntity(state)) {
             TileEntity te = getTileEntity(world, pos);
@@ -414,25 +396,27 @@ public class BlockArchitecture<TE extends TileArchitecture>
 
     // -------------------------------------------------------------------
 
+
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void onReplaced(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean isMoving) {
         if (hasTileEntity(state)) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof IInventory)
                 InventoryHelper.dropInventoryItems(world, pos, (IInventory) te);
         }
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     @Override
     public boolean addLandingEffects(IBlockState state, WorldServer world, BlockPos pos,
                                      IBlockState iblockstate, EntityLivingBase entity, int numParticles) {
         IBlockState particleState = getParticleState(world, pos);
-        world.spawnParticle(EnumParticleTypes.BLOCK_DUST, entity.posX, entity.posY, entity.posZ,
-                numParticles, 0, 0, 0, 0.15, new int[]{Block.getStateId(particleState)});
+        world.spawnParticle(new BlockParticleData(Particles.BLOCK, particleState), entity.posX, entity.posY, entity.posZ,
+                numParticles, 0, 0, 0, 0.15);
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
     public boolean addHitEffects(IBlockState blockState, World world, RayTraceResult target, ParticleManager pm) {
         BlockPos pos = target.getBlockPos();
@@ -441,7 +425,8 @@ public class BlockArchitecture<TE extends TileArchitecture>
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        AxisAlignedBB boundingBox = blockState.getBoundingBox(world, pos);
+        VoxelShape voxelShape = blockState.getShape(world, pos);
+        AxisAlignedBB boundingBox = voxelShape.getBoundingBox();
         float f = 0.1F;
         double d0 = i + RANDOM.nextDouble() * (boundingBox.maxX - boundingBox.minX - (f * 2.0F)) + f + boundingBox.minX;
         double d1 = j + RANDOM.nextDouble() * (boundingBox.maxY - boundingBox.minY - (f * 2.0F)) + f + boundingBox.minY;
@@ -471,10 +456,9 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager pm) {
-        IBlockState state = getParticleState(world, pos);
+    public boolean addDestroyEffects(IBlockState state, World world, BlockPos pos, ParticleManager pm) {
         ParticleDigging fx;
         byte b0 = 4;
         for (int i = 0; i < b0; ++i) {
@@ -493,13 +477,15 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return true;
     }
 
+
     public IBlockState getParticleState(IBlockReader world, BlockPos pos) {
         IBlockState state = world.getBlockState(pos);
         return getExtendedState(state, world, pos);
     }
 
+    @Nullable
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult getRayTraceResult(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
         boxHit = null;
         RayTraceResult result = null;
         double nearestDistance = 0;
@@ -529,27 +515,24 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return result;
     }
 
+
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public VoxelShape getShape(IBlockState state, IBlockReader world, BlockPos pos) {
         AxisAlignedBB box = boxHit;
         if (box == null)
             box = getLocalBounds(world, pos, state, null);
+
         if (box != null)
-            return box;
+            return VoxelShapes.create(box);
         else
-            return super.getBoundingBox(state, world, pos);
+            return super.getShape(state, world, pos);
     }
 
     // Workaround for ParticleDigging having protected constructor
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return getBoundingBox(state, world, pos);
-    }
-
     //----------------------------- Bounds and collision boxes -----------------------------------
 
-    protected AxisAlignedBB getLocalBounds(IBlockAccess world, BlockPos pos, IBlockState state,
+    protected AxisAlignedBB getLocalBounds(IBlockReader world, BlockPos pos, IBlockState state,
                                            Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
@@ -560,29 +543,19 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return null;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB clip, List<AxisAlignedBB> result, @Nullable Entity entity, boolean b) {
-        List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, entity);
-        if (list != null)
-            for (AxisAlignedBB box : list)
-                if (clip.intersects(box))
-                    result.add(box);
-                else
-                    super.addCollisionBoxToList(state, world, pos, clip, result, entity, b);
-    }
-
-    protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockAccess world, BlockPos pos,
+    protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                           IBlockState state, Entity entity) {
         Trans3 t = localToGlobalTransformation(world, pos, state);
         return getCollisionBoxes(world, pos, state, t, entity);
     }
 
-    protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockAccess world, BlockPos pos,
+    protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                          IBlockState state, Entity entity) {
         Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.zero);
         return getCollisionBoxes(world, pos, state, t, entity);
     }
 
-    protected List<AxisAlignedBB> getCollisionBoxes(IBlockAccess world, BlockPos pos, IBlockState state,
+    protected List<AxisAlignedBB> getCollisionBoxes(IBlockReader world, BlockPos pos, IBlockState state,
                                                     Trans3 t, Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
@@ -602,8 +575,8 @@ public class BlockArchitecture<TE extends TileArchitecture>
         IBlockState onBlockPlaced(Block block, World world, BlockPos pos, EnumFacing side,
                                   float hitX, float hitY, float hitZ, IBlockState baseState, EntityLivingBase placer);
 
-        //Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state);
-        Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin);
+        //Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state);
+        Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin);
     }
 
     public static class Orient1Way implements IOrientationHandler {
@@ -616,13 +589,13 @@ public class BlockArchitecture<TE extends TileArchitecture>
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(IWorldReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
             return new Trans3(origin);
         }
 
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class DiggingFX extends ParticleDigging {
 
         public DiggingFX(World world, double x1, double y1, double z1, double x2, double y2, double z2, IBlockState state) {

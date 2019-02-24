@@ -36,7 +36,9 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockSawbench extends BlockArchitecture<TileSawbench> {
 
@@ -46,7 +48,11 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
 
     public BlockSawbench() {
         super(Material.WOOD, TileSawbench.class);
-        this.setHardness(2.0F);
+    }
+
+    @Override
+    public float getBlockHardness(IBlockState blockState, IBlockReader worldIn, BlockPos pos) {
+        return 2.0F;
     }
 
     @Override
@@ -69,13 +75,13 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
         return false;
     }
 
-    @Override
+    /*@Override TODO: not sure if this is gone, or just replaced.
     public boolean isOpaqueCube(IBlockState state) {
         return false;
-    }
+    }*/
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!player.isSneaking()) {
             player.openGui(ArchitectureMod.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
             return true;
@@ -83,8 +89,9 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
             return false;
     }
 
+
     @Override
-    public TileEntity createNewTileEntity(World world, int meta) {
+    public TileEntity createNewTileEntity(IBlockReader reader) {
         return new TileSawbench();
     }
 

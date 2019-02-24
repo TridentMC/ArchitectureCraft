@@ -30,13 +30,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 
 public interface ICustomRenderer {
-    void renderBlock(IWorldReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
+    void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
                      BlockRenderLayer layer, Trans3 t);
 
-    void renderBlock(IWorldReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
+    void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
                      BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary);
 
     void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t);

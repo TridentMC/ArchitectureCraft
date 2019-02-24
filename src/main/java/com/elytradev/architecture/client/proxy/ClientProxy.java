@@ -32,23 +32,18 @@ import com.elytradev.architecture.client.render.shape.ShapeRenderDispatch;
 import com.elytradev.architecture.common.ArchitectureContent;
 import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.proxy.CommonProxy;
-import com.elytradev.concrete.resgen.ConcreteResourcePack;
-import com.elytradev.concrete.resgen.IResourceHolder;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.ModLifecycleEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class ClientProxy extends CommonProxy {
 
@@ -56,28 +51,11 @@ public class ClientProxy extends CommonProxy {
     public static final RenderingManager RENDERING_MANAGER = new RenderingManager();
 
     @Override
-    public void preInit(FMLPreInitializationEvent e) {
-        super.preInit(e);
+    public void setup(FMLCommonSetupEvent e) {
+        super.setup(e);
 
         RenderWindow.init();
-    }
-
-    @Override
-    public void registerRenderers(ModLifecycleEvent lifecycleEvent) {
-        if (lifecycleEvent instanceof FMLPreInitializationEvent) {
-            new ConcreteResourcePack(ArchitectureMod.MOD_ID);
-        }
-
-        if (lifecycleEvent instanceof FMLInitializationEvent) {
-            registerTileEntitySpecialRenderers();
-        }
-
-        if (lifecycleEvent instanceof FMLPostInitializationEvent) {
-            CustomBlockDispatcher.inject();
-        }
-    }
-
-    public void registerTileEntitySpecialRenderers() {
+        CustomBlockDispatcher.inject();
     }
 
     public void registerDefaultModelLocations() {
@@ -93,7 +71,7 @@ public class ClientProxy extends CommonProxy {
 
             if (RENDERING_MANAGER.blockNeedsCustomRendering(block)) {
                 ModelLoader.setCustomStateMapper(block, RENDERING_MANAGER.getBlockStateMapper());
-                for (IBlockState state : block.getBlockState().getValidStates()) {
+                for (IBlockState state : block.getStateContainer().getValidStates()) {
                     ModelResourceLocation location = RENDERING_MANAGER.getBlockStateMapper().getModelResourceLocation(state);
                     IBakedModel model = RENDERING_MANAGER.getCustomBakedModel(state, location);
                     RENDERING_MANAGER.getBakedModels().add(model);
@@ -103,15 +81,13 @@ public class ClientProxy extends CommonProxy {
                     RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
                 }
             } else {
-                registerMesh(itemFromBlock, 0, modelResourceLocation);
+                registerMesh(itemFromBlock, modelResourceLocation);
             }
         }
 
         for (int i = 0; i < ArchitectureContent.registeredItems.size(); i++) {
             modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN + ArchitectureContent.registeredItems.keySet().toArray()[i], "inventory");
             itemToRegister = (Item) ArchitectureContent.registeredItems.values().toArray()[i];
-            if (itemToRegister instanceof IResourceHolder)
-                continue;
             if (RENDERING_MANAGER.itemNeedsCustomRendering(itemToRegister)) {
                 RENDERING_MANAGER.registerModelLocationForItem(itemToRegister, RENDERING_MANAGER.getItemBakedModel());
             } else {
@@ -120,10 +96,10 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    private void registerMesh(Item item, int meta, ModelResourceLocation resourceLocation) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.getRenderItem() != null && mc.getRenderItem().getItemModelMesher() != null) {
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meta, resourceLocation);
+    private void registerMesh(Item item, ModelResourceLocation resourceLocation) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getItemRenderer() != null && mc.getItemRenderer().getItemModelMesher() != null) {
+            mc.getItemRenderer().getItemModelMesher().register(item, resourceLocation);
         } else {
             ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
         }

@@ -28,14 +28,10 @@ import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.ArchitectureMod;
-import com.elytradev.architecture.common.network.ArchitectureNetworking;
 import com.google.common.collect.Maps;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.ModLifecycleEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.Map;
 
@@ -43,22 +39,12 @@ public class CommonProxy {
 
     private Map<ResourceLocation, IArchitectureModel> modelCache = Maps.newHashMap();
 
-    public void preInit(FMLPreInitializationEvent e) {
-        ArchitectureNetworking.setupNetwork();
-    }
-
-    public void init(FMLInitializationEvent e) {
-    }
-
-    public void postInit(FMLPostInitializationEvent e) {
+    public void setup(FMLCommonSetupEvent e) {
     }
 
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(this);
         //NetworkRegistry.INSTANCE.registerGuiHandler(ArchitectureMod.INSTANCE, new ArchitectureGuiHandler()); TODO: Register gui handler somewhere. Who knows where? I sure dont.
-    }
-
-    public void registerRenderers(ModLifecycleEvent lifecycleEvent) {
     }
 
     public void registerCustomRenderers() {

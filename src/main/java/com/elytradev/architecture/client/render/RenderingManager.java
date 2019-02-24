@@ -41,7 +41,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
@@ -69,7 +69,6 @@ public class RenderingManager {
     protected Map<Item, ICustomRenderer> itemRenderers = new HashMap<Item, ICustomRenderer>();
     protected Map<IBlockState, ICustomRenderer> stateRendererCache = new HashMap<IBlockState, ICustomRenderer>();
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
-    protected CustomBlockStateMapper blockStateMapper = new CustomBlockStateMapper();
     protected List<IBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
 
@@ -77,9 +76,6 @@ public class RenderingManager {
         return bakedModels;
     }
 
-    public CustomBlockStateMapper getBlockStateMapper() {
-        return blockStateMapper;
-    }
 
     public boolean blockNeedsCustomRendering(Block block) {
         return blockRenderers.containsKey(block) || specifiesTextures(block);
@@ -96,16 +92,14 @@ public class RenderingManager {
     protected void registerModelLocationForSubtypes(Item item, ModelResourceLocation location) {
         int numVariants = getNumItemSubtypes(item);
         for (int i = 0; i < numVariants; i++) {
-            registerMesh(item, i, location);
+            registerMesh(item, location);
         }
     }
 
-    private void registerMesh(Item item, int meta, ModelResourceLocation resourceLocation) {
+    private void registerMesh(Item item, ModelResourceLocation resourceLocation) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.getItemRenderer() != null && mc.getItemRenderer().getItemModelMesher() != null) {
-            mc.getItemRenderer().getItemModelMesher().register(item, meta, resourceLocation);
-        } else {
-            ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
+            mc.getItemRenderer().getItemModelMesher().register(item, resourceLocation);
         }
     }
 
@@ -233,14 +227,6 @@ public class RenderingManager {
 
     public void clearTextureCache() {
         textureCache.clear();
-    }
-
-    //TODO: No custom state mappers that I can find in the current source code. probably needs to be implemented by forge again...?
-    public static class CustomBlockStateMapper extends DefaultStateMapper {
-        @Override
-        public ModelResourceLocation getModelResourceLocation(IBlockState state) {
-            return super.getModelResourceLocation(state);
-        }
     }
 
     public abstract class CustomBakedModel implements IBakedModel {

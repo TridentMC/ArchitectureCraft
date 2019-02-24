@@ -28,7 +28,6 @@ import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -96,9 +95,10 @@ public class RenderTargetGL extends RenderTargetBase {
     }
 
     protected void setLightmapEnabled(boolean state) {
-        OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        //TODO: idk what these are replaced with.
+        //OpenGlHelper.glActiveTexture(OpenGlHelper.lightmapTexUnit);
         glSetEnabled(GL_TEXTURE_2D, state);
-        OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        //OpenGlHelper.glActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
     protected void glSetEnabled(int mode, boolean state) {

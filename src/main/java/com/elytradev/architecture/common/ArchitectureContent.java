@@ -45,14 +45,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
@@ -65,7 +61,7 @@ public class ArchitectureContent {
     public static final ItemGroup TOOL_TAB = new ItemGroup("architecture.tool") {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(Item.REGISTRY.get(new ResourceLocation(MOD_ID, "hammer")));
+            return new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(MOD_ID, "hammer")));
         }
     };
     public static final ItemGroup SHAPE_TAB = new ItemGroup("architecture.shape") {
@@ -92,56 +88,30 @@ public class ArchitectureContent {
     public ItemCladding itemCladding;
     private int recipeID = 0;
 
-    private ModFixs dataFixer;
 
-    public void preInit(FMLPreInitializationEvent e) {
-        //this.dataFixer = FMLCommonHandler.instance().getDataFixer().init(ArchitectureMod.MOD_ID, 1);
-        //this.dataFixer.registerFix(FixTypes.BLOCK_ENTITY, new IFixableData() {
-        //    @Override
-        //    public int getFixVersion() {
-        //        return 0;
-        //    }
-
-        //    @Override
-        //    public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
-        //        NBTTagCompound tag = compound.copy();
-        //        String id = compound.getString("id");
-
-        //        if (id.equals("gcewing.shape")
-        //                || id.equals(new ResourceLocation(TileShape.class.getName()).toString())) {
-        //            id = new ResourceLocation(ArchitectureMod.MOD_ID, "shape").toString();
-        //        } else if (id.equals("gcewing.sawbench")
-        //                || id.equals(new ResourceLocation(TileSawbench.class.getName()).toString())) {
-        //            id = new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench").toString();
-        //        }
-
-        //        tag.setString("id", id);
-        //        return tag;
-        //    }
-        //});
-    }
-
-    public void init(FMLInitializationEvent e) {
+    public void setup(FMLCommonSetupEvent e) {
         TileEntityType.register(ArchitectureMod.MOD_ID + ":shape",
                 TileEntityType.Builder.create(TileShape::new));
         TileEntityType.register(ArchitectureMod.MOD_ID + ":sawbench",
                 TileEntityType.Builder.create(TileSawbench::new));
     }
 
-    public void postInit(FMLPostInitializationEvent e) {
+    @SubscribeEvent
+    public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e){
+        IForgeRegistry<TileEntityType<?>> registry = e.getRegistry();
 
     }
-
+    
     @SubscribeEvent
-    public void onBlockRegister(RegistryEvent.Register<Block> event) {
-        IForgeRegistry<Block> registry = event.getRegistry();
+    public void onBlockRegister(RegistryEvent.Register<Block> e) {
+        IForgeRegistry<Block> registry = e.getRegistry();
         this.blockSawbench = registerBlock(registry, "sawbench", new BlockSawbench());
         this.blockShape = registerBlock(registry, "shape", new BlockShape(), ItemShape.class);
     }
 
     @SubscribeEvent
-    public void onItemRegister(RegistryEvent.Register<Item> event) {
-        IForgeRegistry<Item> registry = event.getRegistry();
+    public void onItemRegister(RegistryEvent.Register<Item> e) {
+        IForgeRegistry<Item> registry = e.getRegistry();
         this.itemSawblade = registerItem(registry, "sawblade");
         this.itemLargePulley = registerItem(registry, "largePulley");
         this.itemChisel = registerItem(registry, "chisel", new ItemChisel());
@@ -154,8 +124,8 @@ public class ArchitectureContent {
     }
 
     @SubscribeEvent
-    public void onRecipeRegister(RegistryEvent.Register<IRecipe> event) {
-        IForgeRegistry<IRecipe> registry = event.getRegistry();
+    public void onRecipeRegister(RegistryEvent.Register<IRecipe> e) {
+        IForgeRegistry<IRecipe> registry = e.getRegistry();
         registerShapedRecipe(registry, blockSawbench,
                 "I*I",
                 "/0/",
@@ -215,25 +185,21 @@ public class ArchitectureContent {
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {
-        block.setTranslationKey(MOD_ID + "." + id);
         block.setRegistryName(REGISTRY_PREFIX, id);
-        block.setCreativeTab(TOOL_TAB);
         registry.register(block);
         if (withItemBlock)
-            itemBlocksToRegister.add(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+            itemBlocksToRegister.add(new ItemBlock(block, new Item.Properties()).setRegistryName(block.getRegistryName()));
         registeredBlocks.put(id, block);
         return (T) registeredBlocks.get(id);
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, Class<? extends ItemBlock> itemBlockClass) {
         try {
-            block.setTranslationKey(MOD_ID + "." + id);
             block.setRegistryName(REGISTRY_PREFIX, id);
             registry.register(block);
 
             ItemBlock itemBlock = itemBlockClass.getDeclaredConstructor(Block.class).newInstance(block);
             itemBlock.setRegistryName(REGISTRY_PREFIX, id);
-            itemBlock.setCreativeTab(TOOL_TAB);
             itemBlocksToRegister.add(itemBlock);
             registeredBlocks.put(id, block);
         } catch (Exception e) {
@@ -244,10 +210,8 @@ public class ArchitectureContent {
     }
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id) {
-        ItemArchitecture item = new ItemArchitecture();
-        item.setTranslationKey(MOD_ID + "." + id);
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties());
         item.setRegistryName(REGISTRY_PREFIX, id);
-        item.setCreativeTab(TOOL_TAB);
         registry.register(item);
         registeredItems.put(id, item);
 
@@ -255,9 +219,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, T item) {
-        item.setTranslationKey(MOD_ID + "." + id);
         item.setRegistryName(REGISTRY_PREFIX, id);
-        item.setCreativeTab(TOOL_TAB);
         registry.register(item);
         registeredItems.put(id, item);
 

@@ -24,10 +24,12 @@
 
 package com.elytradev.architecture.common.tile;
 
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
@@ -36,6 +38,11 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nullable;
 
 public class TileSawbench extends TileArchitectureInventory {
 
@@ -77,10 +84,14 @@ public class TileSawbench extends TileArchitectureInventory {
                     Shape.CLADDING_SHEET, Shape.SLAB, Shape.STAIRS, Shape.STAIRS_OUTER_CORNER, Shape.STAIRS_INNER_CORNER),
     };
 
-    public IInventory inventory = new InventoryBasic("Items", false, 2);
+    public IInventory inventory = new InventoryBasic(new TextComponentString("Items"), 2);
     public int selectedPage = 0;
     public int[] selectedSlots = new int[pages.length];
     public boolean pendingMaterialUsage = false; // Material for the stack in the result slot
+
+    public TileSawbench() {
+        super(ArchitectureMod.CONTENT.tileTypeSawbench);
+    }
     // has not yet been removed from the material slot
 
     public Shape getSelectedShape() {
@@ -157,25 +168,25 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tc) {
-        super.readFromNBT(tc);
-        selectedPage = tc.getInteger("Page");
-        int[] ss = tc.getIntArray("Slots");
+    public void read(NBTTagCompound tag) {
+        super.read(tag);
+        selectedPage = tag.getInt("Page");
+        int[] ss = tag.getIntArray("Slots");
         if (ss != null)
             for (int page = 0; page < pages.length; page++) {
                 int slot = page < ss.length ? ss[page] : 0;
                 selectedSlots[page] = slot >= 0 && slot < pages[page].size() ? slot : 0;
             }
-        pendingMaterialUsage = tc.getBoolean("PMU");
+        pendingMaterialUsage = tag.getBoolean("PMU");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tc) {
-        super.writeToNBT(tc);
-        tc.setInteger("Page", selectedPage);
-        tc.setIntArray("Slots", selectedSlots);
-        tc.setBoolean("PMU", pendingMaterialUsage);
-        return tc;
+    public NBTTagCompound write(NBTTagCompound tag) {
+        super.write(tag);
+        tag.putInt("Page", selectedPage);
+        tag.putIntArray("Slots", selectedSlots);
+        tag.putBoolean("PMU", pendingMaterialUsage);
+        return tag;
     }
 
     public void setSelectedShape(int page, int slot) {
@@ -209,8 +220,7 @@ public class TileSawbench extends TileArchitectureInventory {
                 if (materialItem instanceof ItemBlock) {
                     Block materialBlock = Block.getBlockFromItem(materialItem);
                     if (isAcceptableMaterial(materialBlock)) {
-                        return resultShape.kind.newStack(resultShape, materialBlock,
-                                materialStack.getItemDamage(), resultShape.itemsProduced);
+                        return resultShape.kind.newStack(resultShape, materialBlock, resultShape.itemsProduced);
                     }
                 }
             }
@@ -219,8 +229,8 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     protected boolean isAcceptableMaterial(Block block) {
-        String name = Block.REGISTRY.getNameForObject(block).toString();
-        if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS || block instanceof BlockSlab ||
+        String name = ForgeRegistries.BLOCKS.getKey(block).toString();
+        if (block == Blocks.GLASS || block instanceof BlockStainedGlass || block instanceof BlockSlab ||
                 name.startsWith("chisel:glass"))
             return true;
         return block.getDefaultState().isFullCube() && !block.hasTileEntity();
@@ -268,4 +278,9 @@ public class TileSawbench extends TileArchitectureInventory {
             return slot == materialSlot;
     }
 
+    @Nullable
+    @Override
+    public ITextComponent getCustomName() {
+        return new TextComponentString("");
+    }
 }

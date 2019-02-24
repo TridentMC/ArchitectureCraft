@@ -24,33 +24,7 @@
 
 package com.elytradev.architecture.compat.probedata;
 
-import com.elytradev.architecture.common.ArchitectureMod;
-import com.elytradev.architecture.common.tile.TileShape;
-import com.elytradev.probe.api.IProbeData;
-import com.elytradev.probe.api.IProbeDataProvider;
-import com.elytradev.probe.api.impl.ProbeData;
-import com.google.common.collect.ImmutableList;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.OptionalCapabilityInstance;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
-public class ProbeDataCompat {
+/*public class ProbeDataCompat {
     public static Capability<?> PROBE_CAPABILITY;
 
     @CapabilityInject(IProbeDataProvider.class)
@@ -101,4 +75,4 @@ public class ProbeDataCompat {
                     });
         }
     }
-}
+}*/

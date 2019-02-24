@@ -29,7 +29,7 @@ import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;

@@ -140,7 +140,7 @@ public class TileShape extends TileArchitecture {
         writeShapeToNBT(nbt);
 
         if (offsetX != 0)
-            nbt.setByte("offsetX", offsetX);
+            nbt.putByte("offsetX", offsetX);
         return nbt;
     }
 
@@ -151,12 +151,12 @@ public class TileShape extends TileArchitecture {
 
     protected void writeShapeToNBT(NBTTagCompound nbt) {
         if (shape != null) {
-            nbt.setInt("Shape", shape.id);
-            nbt.setInt("BaseStateId", Block.getStateId(baseBlockState));
-            nbt.setInt("SecondaryStateId", Block.getStateId(secondaryBlockState));
+            nbt.putInt("Shape", shape.id);
+            nbt.putInt("BaseStateId", Block.getStateId(baseBlockState));
+            nbt.putInt("SecondaryStateId", Block.getStateId(secondaryBlockState));
         }
         if (disabledConnections != 0)
-            nbt.setInt("Disconnected", disabledConnections);
+            nbt.putInt("Disconnected", disabledConnections);
     }
 
     public void onChiselUse(EntityPlayer player, EnumFacing face, float hitX, float hitY, float hitZ) {

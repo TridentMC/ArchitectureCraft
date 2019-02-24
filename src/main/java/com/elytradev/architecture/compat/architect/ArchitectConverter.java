@@ -1,3 +1,4 @@
+/*
 package com.elytradev.architecture.compat.architect;
 
 import com.elytradev.architecture.common.ArchitectureMod;
@@ -27,10 +28,12 @@ import java.util.Collections;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+*/
 /**
  * Architect integration. Ensures that the right item is pulled from the player's inventory and that
  * rotations are applied correctly.
- */
+ *//*
+
 public class ArchitectConverter implements Converter {
     // never change this (if you do, it will break existing Architect blueprints)
     private static final UUID CONVERTER_UUID = UUID.fromString("182148b6-fba8-4acb-95a5-66409d34eb59");
@@ -261,3 +264,4 @@ public class ArchitectConverter implements Converter {
         }
     }
 }
+*/

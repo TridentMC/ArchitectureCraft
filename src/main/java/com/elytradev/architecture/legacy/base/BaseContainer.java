@@ -55,9 +55,9 @@ public class BaseContainer extends Container {
         InventoryPlayer inventory = player.inventory;
         for (int var3 = 0; var3 < 3; ++var3)
             for (int var4 = 0; var4 < 9; ++var4)
-                this.addSlotToContainer(new Slot(inventory, var4 + var3 * 9 + 9, x + var4 * 18, y + var3 * 18));
+                this.addSlot(new Slot(inventory, var4 + var3 * 9 + 9, x + var4 * 18, y + var3 * 18));
         for (int var3 = 0; var3 < 9; ++var3)
-            this.addSlotToContainer(new Slot(inventory, var3, x + var3 * 18, y + 57));
+            this.addSlot(new Slot(inventory, var3, x + var3 * 18, y + 57));
         playerSlotRange.end();
     }
 
@@ -82,7 +82,7 @@ public class BaseContainer extends Container {
             for (int i = 0; i < numSlots; i++) {
                 int row = i / numCols;
                 int col = i % numCols;
-                addSlotToContainer((Slot) slotCon.newInstance(inventory, firstSlot + i, x + col * 18, y + row * 18));
+                addSlot((Slot) slotCon.newInstance(inventory, firstSlot + i, x + col * 18, y + row * 18));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

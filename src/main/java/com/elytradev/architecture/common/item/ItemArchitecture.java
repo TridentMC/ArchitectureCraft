@@ -31,8 +31,8 @@ import net.minecraft.item.ItemStack;
 
 public class ItemArchitecture extends Item implements ITextureConsumer {
 
-    public ItemArchitecture(Builder builder) {
-        super(builder);
+    public ItemArchitecture(Item.Properties properties) {
+        super(properties);
     }
 
     @Override
@@ -46,11 +46,6 @@ public class ItemArchitecture extends Item implements ITextureConsumer {
 
     public int getNumSubtypes() {
         return 1;
-    }
-
-    @Override
-    public boolean getHasSubtypes() {
-        return getNumSubtypes() > 1;
     }
 
 }

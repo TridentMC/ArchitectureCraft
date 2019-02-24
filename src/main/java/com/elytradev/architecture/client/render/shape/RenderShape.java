@@ -32,11 +32,11 @@ import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 
 public abstract class RenderShape {
 
-    protected IBlockAccess blockWorld;
+    protected IBlockReader blockWorld;
     protected BlockPos blockPos;
     protected TileShape te;
     protected ITexture[] textures;

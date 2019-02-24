@@ -25,39 +25,38 @@
 package com.elytradev.architecture.common.network;
 
 import com.elytradev.architecture.common.tile.TileSawbench;
-import com.elytradev.concrete.network.Message;
-import com.elytradev.concrete.network.NetworkContext;
-import com.elytradev.concrete.network.annotation.field.MarshalledAs;
-import com.elytradev.concrete.network.annotation.type.ReceivedOn;
+import com.tridevmc.compound.network.marshallers.SetMarshaller;
+import com.tridevmc.compound.network.message.Message;
+import com.tridevmc.compound.network.message.RegisteredMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-@ReceivedOn(Dist.SERVER)
+@RegisteredMessage(networkChannel = "architecturecraft:network", destination = Dist.DEDICATED_SERVER)
 public class SelectShapeMessage extends Message {
 
     public BlockPos sawPos;
-    @MarshalledAs("int")
+    @SetMarshaller(marshallerId = "int")
     public int page, slot, dim;
 
     public SelectShapeMessage(TileSawbench sawbench, int page, int slot) {
-        super(ArchitectureNetworking.NETWORK);
+        super();
         this.sawPos = sawbench.getPos();
-        this.dim = sawbench.getWorld().getDimension().getId();
+        this.dim = sawbench.getWorld().getDimension().getType().getId();
         this.page = page;
         this.slot = slot;
     }
 
-    public SelectShapeMessage(NetworkContext ctx) {
-        super(ctx);
-    }
-
     @Override
-    protected void handle(EntityPlayer player) {
-        World world = DimensionManager.getWorld(dim);
+    public void handle(EntityPlayer player) {
+        World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.getById(dim), false, false);
+        if (world == null)
+            return;
         if (world.isBlockLoaded(sawPos)) {
             TileEntity tile = world.getTileEntity(sawPos);
             if (tile instanceof TileSawbench) {

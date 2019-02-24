@@ -1,0 +1,14 @@
+{
+  "block.architecturecraft.sawbench": "Architect's Sawbench",
+  "block.architecturecraft.shape": "Architectural Block",
+  "item.architecturecraft.largePulley": "Large Pulley",
+  "item.architecturecraft.sawblade": "Circular Saw Blade",
+  "item.architecturecraft.chisel": "Architect's Chisel",
+  "item.architecturecraft.hammer": "Architect's Hammer",
+  "item.architecturecraft.cladding": "Cladding",
+  "itemGroup.architecture.tool": "Architecture Craft Tools",
+  "itemGroup.architecture.shape": "Architecture Craft Shapes",
+
+  "tooltip.architecturecraft.basematerial": "Base: %s",
+  "tooltip.architecturecraft.secondarymaterial": "Secondary: %s"
+}

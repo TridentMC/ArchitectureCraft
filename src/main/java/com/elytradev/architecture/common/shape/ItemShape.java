@@ -31,10 +31,11 @@ import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -42,6 +43,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -52,9 +55,8 @@ public class ItemShape extends ItemBlock {
 
     static Random rand = new Random();
 
-    public ItemShape(Block block) {
-        super(block);
-        this.setCreativeTab(ArchitectureContent.SHAPE_TAB);
+    public ItemShape(Block block, Item.Properties builder) {
+        super(block, builder);
     }
 
     @Override
@@ -96,63 +98,65 @@ public class ItemShape extends ItemBlock {
         return true;
     }
 
+
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> lines, ITooltipFlag flagIn) {
-        NBTTagCompound tag = stack.getTagCompound();
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
+        NBTTagCompound tag = stack.getTag();
         if (tag != null) {
-            int id = tag.getInteger("Shape");
+            int id = tag.getInt("Shape");
             Shape shape = Shape.forId(id);
             if (shape != null)
-                lines.set(0, shape.title);
+                lines.set(0, new TextComponentString(shape.title));
             else
-                lines.set(0, lines.get(0) + " (" + id + ")");
+                lines.set(0, new TextComponentString(lines.get(0).getFormattedText() + " (" + id + ")"));
             Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
-            int baseMetadata = tag.getInteger("BaseData");
+            int baseMetadata = tag.getInt("BaseData");
             if (baseBlock != null)
-                lines.add(Utils.displayNameOfBlock(baseBlock, baseMetadata));
+                lines.add(new TextComponentString(Utils.displayNameOfBlock(baseBlock)));
         }
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (tab.equals(ArchitectureContent.SHAPE_TAB)) {
+    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+        if(group == ArchitectureContent.SHAPE_TAB){
             for (Shape shape : Shape.values()) {
                 if (shape.isCladding())
                     continue;
 
                 ItemStack defaultStack = new ItemStack(this, 1);
                 NBTTagCompound tag = new NBTTagCompound();
-                tag.setInteger("Shape", shape.id);
-                tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
-                tag.setInteger("BaseData", 0);
-                defaultStack.setTagCompound(tag);
+                tag.putInt("Shape", shape.id);
+                tag.putString("BaseName", Blocks.OAK_PLANKS.getRegistryName().toString());
+                tag.putInt("BaseData", 0);
+                defaultStack.setTag(tag);
                 items.add(defaultStack);
             }
         }
+
+        super.fillItemGroup(group, items);
     }
 
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack defaultStack = new ItemStack(this, 1);
         NBTTagCompound tag = new NBTTagCompound();
-        tag.setInteger("Shape", Shape.ROOF_TILE.id);
-        tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
-        tag.setInteger("BaseData", 0);
-        defaultStack.setTagCompound(tag);
+        tag.putInt("Shape", Shape.ROOF_TILE.id);
+        tag.putString("BaseName", Blocks.OAK_PLANKS.getRegistryName().toString());
+        tag.putInt("BaseData", 0);
+        defaultStack.setTag(tag);
 
         return defaultStack;
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
-        NBTTagCompound tag = stack.getTagCompound();
+    public ITextComponent getDisplayName(ItemStack stack) {
+        NBTTagCompound tag = stack.getTag();
         if (tag == null)
-            return super.getItemStackDisplayName(stack);
+            return super.getDisplayName(stack);
 
-        int id = tag.getInteger("Shape");
+        int id = tag.getInt("Shape");
         Shape shape = Shape.forId(id);
         Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
-        int baseMetadata = tag.getInteger("BaseData");
-        return shape.title + ": " + Utils.displayNameOnlyOfBlock(baseBlock, baseMetadata);
+        return shape.title + ": " + Utils.displayNameOnlyOfBlock(baseBlock);
     }
 }

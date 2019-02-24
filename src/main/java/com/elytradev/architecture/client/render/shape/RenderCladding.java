@@ -40,37 +40,39 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
 public class RenderCladding implements ICustomRenderer {
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state,
+    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state,
                             RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
         //NOOP
     }
 
     @Override
-    public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
         //NOOP
     }
 
     @Override
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
-        NBTTagCompound nbt = stack.getTagCompound();
+        NBTTagCompound nbt = stack.getTag();
         if (nbt != null) {
             String blockName = nbt.getString("block");
-            int meta = stack.getMetadata();
-            Block block = Block.getBlockFromName(blockName);
+            int meta = stack.getDamage();
+            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
             if (block != null) {
                 IBlockState state = block.getStateFromMeta(meta);
                 if (state != null) {
                     TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
                     if (sprite != null) {
-                        int colourMult = Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 0);
+                        int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
                         ITexture texture = TextureBase.fromSprite(sprite);
                         IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
                         model.render(t, target, colourMult, colourMult, texture);
@@ -85,7 +87,6 @@ public class RenderCladding implements ICustomRenderer {
         if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
             Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
-            defaultInstance.setItemDamage(state.getBlock().damageDropped(state));
             return defaultInstance;
         }
 

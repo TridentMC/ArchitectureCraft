@@ -83,12 +83,12 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
                 ItemStack stack = inventory.getStackInSlot(i);
                 if (stack != null) {
                     NBTTagCompound item = new NBTTagCompound();
-                    item.setInt("slot", i);
+                    item.putInt("slot", i);
                     stack.write(item);
                     list.add(item);
                 }
             }
-            nbt.setTag("inventory", list);
+            nbt.put("inventory", list);
         }
     }
 

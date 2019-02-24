@@ -26,14 +26,11 @@ package com.elytradev.architecture.common.item;
 
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Utils;
-import com.elytradev.architecture.common.shape.Shape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -41,17 +38,21 @@ import java.util.List;
 
 public class ItemCladding extends ItemArchitecture {
 
+    public ItemCladding(Properties properties) {
+        super(properties);
+    }
+
     public ItemStack newStack(IBlockState state, int stackSize) {
         Block block = state.getBlock();
         int meta = block.getMetaFromState(state);
         return newStack(block, meta, stackSize);
     }
 
-    public ItemStack newStack(Block block, int meta, int stackSize) {
-        ItemStack result = new ItemStack(this, stackSize, meta);
+    public ItemStack newStack(Block block, int stackSize) {
+        ItemStack result = new ItemStack(this, stackSize);
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("block", BlockHelper.getNameForBlock(block));
-        result.setTagCompound(nbt);
+        nbt.putString("block", BlockHelper.getNameForBlock(block));
+        result.setTag(nbt);
         return result;
     }
 

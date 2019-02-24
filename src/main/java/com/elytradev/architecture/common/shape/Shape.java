@@ -33,6 +33,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import static com.elytradev.architecture.common.shape.ShapeFlags.PLACE_UNDERNEAT
 import static com.elytradev.architecture.common.shape.ShapeSymmetry.*;
 import static java.lang.Math.abs;
 
-public enum Shape {
+public enum Shape implements IStringSerializable {
 
     ROOF_TILE(0, "Roof Tile", ShapeKind.Roof, BILATERAL, 1, 2, 0xcf),
     ROOF_OUTER_CORNER(1, "Roof Outer Corner", ShapeKind.Roof, UNILATERAL, 1, 3, 0x4f),
@@ -146,7 +147,8 @@ public enum Shape {
     SLAB(90, "Slab", ShapeKind.Model("slab"), QUADRILATERAL, 1, 2, 0x0),
     STAIRS(91, "Stairs", ShapeKind.Model("stairs", Profile.Generic.lrStraight), BILATERAL, 3, 4, 0x0),
     STAIRS_OUTER_CORNER(92, "Stairs Outer Corner", ShapeKind.Model("stairs_outer_corner", Profile.Generic.lrCorner), UNILATERAL, 2, 3, 0x0),
-    STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),;
+    STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),
+    ;
 
     public static Shape[] values = values();
     public static boolean debugPlacement = false;
@@ -299,5 +301,10 @@ public enum Shape {
 
     public boolean isCladding() {
         return this == CLADDING_SHEET;
+    }
+
+    @Override
+    public String getName() {
+        return title;
     }
 }

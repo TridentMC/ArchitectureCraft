@@ -42,17 +42,18 @@ import com.elytradev.architecture.common.tile.TileArchitecture;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockGlassPane;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.properties.Half;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,8 +100,8 @@ public abstract class ShapeKind {
         return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
     }
 
-    public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
-        return newStack(shape, materialBlock.getStateFromMeta(materialMeta), stackSize);
+    public ItemStack newStack(Shape shape, Block materialBlock, int stackSize) {
+        return newStack(shape, materialBlock.getDefaultState(), stackSize);
     }
 
     public boolean orientOnPlacement(EntityPlayer player, TileShape te,
@@ -220,14 +221,14 @@ public abstract class ShapeKind {
 
     //------------------------------------------------------------------------------
 
-    public AxisAlignedBB getBounds(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
+    public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
                                    Entity entity, Trans3 t) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
         addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return Utils.unionOfBoxes(list);
     }
 
-    public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
+    public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
                                         Entity entity, Trans3 t, List list) {
         int mask = te.shape.occlusionMask;
         int param = mask & 0xff;
@@ -362,7 +363,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public AxisAlignedBB getBounds(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
+        public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
                                        Entity entity, Trans3 t) {
             return t.t(getModel().getBounds());
         }
@@ -391,7 +392,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
+        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
                                             Entity entity, Trans3 t, List list) {
             if (te.shape.occlusionMask == 0)
                 getModel().addBoxesToList(t, list);
@@ -494,11 +495,11 @@ public abstract class ShapeKind {
         @Override
         public boolean isValidSecondaryMaterial(IBlockState state) {
             Block block = state.getBlock();
-            return block == Blocks.GLASS_PANE || block == Blocks.STAINED_GLASS_PANE;
+            return block instanceof BlockGlassPane;
         }
 
         @Override
-        public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
+        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
                                             Entity entity, Trans3 t, List list) {
             final double r = 1 / 8d, s = 3 / 32d;
             double[] e = new double[4];
@@ -590,8 +591,8 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
-            return ArchitectureMod.CONTENT.itemCladding.newStack(materialBlock, materialMeta, stackSize);
+        public ItemStack newStack(Shape shape, Block materialBlock, int stackSize) {
+            return ArchitectureMod.CONTENT.itemCladding.newStack(materialBlock, stackSize);
         }
 
     }
@@ -603,11 +604,11 @@ public abstract class ShapeKind {
         }
 
         private static EnumFacing stairsFacing(IBlockState state) {
-            return state.getValue(BlockStairs.FACING);
+            return state.get(BlockStairs.FACING);
         }
 
         private static int stairsSide(IBlockState state) {
-            if (state.getValue(BlockStairs.HALF) == BlockStairs.EnumHalf.TOP)
+            if (state.get(BlockStairs.HALF) == Half.TOP)
                 return 1;
             else
                 return 0;
