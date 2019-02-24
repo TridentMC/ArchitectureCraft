@@ -1,6 +1,6 @@
-Thanks for reporting an issue to an Elytra project!
+Thanks for reporting an issue to an Trident project!
 
-When reporting an issue to an Elytra project, please make sure to include:
+When reporting an issue to an Trident project, please make sure to include:
 
 - The version of the mod you are using (e.g. 2.0.0a4)
 - Your Minecraft version (e.g. 1.11.2)
