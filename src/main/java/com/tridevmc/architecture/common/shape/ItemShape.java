@@ -33,10 +33,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -60,22 +57,15 @@ public class ItemShape extends ItemBlock {
     }
 
     @Override
-    public boolean getHasSubtypes() {
-        return true;
-    }
-
-    /**
-     * Converts the given ItemStack damage value into a metadata value to be placed in the world when this Item is
-     * placed as a Block (mostly used with ItemBlocks).
-     */
-    @Override
-    public int getMetadata(int damage) {
-        return damage;
-    }
-
-    @Override
-    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos,
-                                EnumFacing face, float hitX, float hitY, float hitZ, IBlockState newState) {
+    protected boolean placeBlock(BlockItemUseContext context, IBlockState newState) {
+        EntityPlayer player = context.getPlayer();
+        World world = context.getWorld();
+        BlockPos pos = context.getPos();
+        EnumFacing face = context.getFace();
+        ItemStack stack = context.getItem();
+        float hitX = context.getHitX();
+        float hitY = context.getHitY();
+        float hitZ = context.getHitZ();
         if (!world.setBlockState(pos, newState, 3))
             return false;
         Vec3i d = Vector3.getDirectionVec(face);
@@ -93,11 +83,11 @@ public class ItemShape extends ItemBlock {
         return true;
     }
 
+    @Nullable
     @Override
-    public boolean getShareTag() {
-        return true;
+    public NBTTagCompound getShareTag(ItemStack stack) {
+        return stack.getTag();
     }
-
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
@@ -109,16 +99,14 @@ public class ItemShape extends ItemBlock {
                 lines.set(0, new TextComponentString(shape.title));
             else
                 lines.set(0, new TextComponentString(lines.get(0).getFormattedText() + " (" + id + ")"));
-            Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
-            int baseMetadata = tag.getInt("BaseData");
-            if (baseBlock != null)
-                lines.add(new TextComponentString(Utils.displayNameOfBlock(baseBlock)));
+            Block baseBlock = Block.getStateById(tag.getInt("Block")).getBlock();
+            lines.add(new TextComponentString(Utils.displayNameOfBlock(baseBlock)));
         }
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if(group == ArchitectureContent.SHAPE_TAB){
+        if (group == ArchitectureContent.SHAPE_TAB) {
             for (Shape shape : Shape.values()) {
                 if (shape.isCladding())
                     continue;
@@ -126,8 +114,7 @@ public class ItemShape extends ItemBlock {
                 ItemStack defaultStack = new ItemStack(this, 1);
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.putInt("Shape", shape.id);
-                tag.putString("BaseName", Blocks.OAK_PLANKS.getRegistryName().toString());
-                tag.putInt("BaseData", 0);
+                tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
                 defaultStack.setTag(tag);
                 items.add(defaultStack);
             }
@@ -141,8 +128,7 @@ public class ItemShape extends ItemBlock {
         ItemStack defaultStack = new ItemStack(this, 1);
         NBTTagCompound tag = new NBTTagCompound();
         tag.putInt("Shape", Shape.ROOF_TILE.id);
-        tag.putString("BaseName", Blocks.OAK_PLANKS.getRegistryName().toString());
-        tag.putInt("BaseData", 0);
+        tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
         defaultStack.setTag(tag);
 
         return defaultStack;
@@ -156,7 +142,7 @@ public class ItemShape extends ItemBlock {
 
         int id = tag.getInt("Shape");
         Shape shape = Shape.forId(id);
-        Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
-        return shape.title + ": " + Utils.displayNameOnlyOfBlock(baseBlock);
+        IBlockState state = Block.getStateById(tag.getInt("Block"));
+        return new TextComponentString(shape.title + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

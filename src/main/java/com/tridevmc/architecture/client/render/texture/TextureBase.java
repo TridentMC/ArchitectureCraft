@@ -290,7 +290,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateU(double u) {
             double iu = super.interpolateU(u);
-            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", icon.getIconName(), icon.getMinU(), icon.getMaxU());
+            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", icon.getName(), icon.getMinU(), icon.getMaxU());
             ArchitectureLog.info("BaseTexture: u %s --> %s\n", u, iu);
             return iu;
         }
@@ -298,7 +298,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateV(double v) {
             double iv = super.interpolateV(v);
-            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", icon.getIconName(), icon.getMinV(), icon.getMaxV());
+            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", icon.getName(), icon.getMinV(), icon.getMaxV());
             ArchitectureLog.info("BaseTexture: v %s --> %s\n", v, iv);
             return iv;
         }

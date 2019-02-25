@@ -34,6 +34,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -42,7 +43,7 @@ import java.io.IOException;
 public class BlockHelper {
 
     public static String getNameForBlock(Block block) {
-        return Block.REGISTRY.getKey(block).toString();
+        return ForgeRegistries.BLOCKS.getKey(block).toString();
     }
 
     /*
@@ -74,21 +75,10 @@ public class BlockHelper {
 
     public static IBlockState getBlockStateFromItemStack(ItemStack stack) {
         Block block = Block.getBlockFromItem(stack.getItem());
-        int meta = 0;
-        if (stack.getItem().getHasSubtypes())
-            meta = stack.getItemDamage() & 0xf;
-        return block.getStateFromMeta(meta);
+        return block.getDefaultState();
     }
 
     // -------------------- 1.7/1.8 Compatibility --------------------
-
-    public static IBlockState getBlockStateFromMeta(Block block, int meta) {
-        return block.getStateFromMeta(meta);
-    }
-
-    public static int getMetaFromBlockState(IBlockState state) {
-        return state.getBlock().getMetaFromState(state);
-    }
 
     public static Block getWorldBlock(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos).getBlock();
@@ -103,7 +93,7 @@ public class BlockHelper {
     }
 
     public static void notifyWorldNeighborsOfStateChange(World world, BlockPos pos, Block block) {
-        world.notifyNeighborsOfStateChange(pos, block, true);
+        world.notifyNeighborsOfStateChange(pos, block);
     }
 
     public static TileEntity getWorldTileEntity(IBlockReader world, BlockPos pos) {
@@ -124,8 +114,7 @@ public class BlockHelper {
 
     public static ItemStack blockStackWithState(IBlockState state, int size) {
         Block block = state.getBlock();
-        int meta = block.getMetaFromState(state);
-        return new ItemStack(block, size, meta);
+        return new ItemStack(block, size);
     }
 
     public static BlockPos readBlockPos(DataInput data) {

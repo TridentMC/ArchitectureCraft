@@ -35,8 +35,8 @@ import net.minecraft.world.World;
 
 public class ItemHammer extends Item {
 
-    public ItemHammer(Properties properties) {
-        super(properties.maxStackSize(1));
+    public ItemHammer() {
+        super(new Item.Properties().maxStackSize(1));
     }
 
     @Override

@@ -94,11 +94,10 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
             Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
-            defaultInstance.setDamage(state.getBlock().damageDropped(state));
             return defaultInstance;
         }
 
-        return null;
+        return ItemStack.EMPTY;
     }
 
     protected void renderShapeTE(TileShape te, RenderTargetBase target, Trans3 t,

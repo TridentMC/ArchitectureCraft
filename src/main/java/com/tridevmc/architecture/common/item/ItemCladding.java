@@ -28,6 +28,7 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -41,8 +42,8 @@ import java.util.List;
 
 public class ItemCladding extends ItemArchitecture {
 
-    public ItemCladding(Properties properties) {
-        super(properties);
+    public ItemCladding() {
+        super(new Item.Properties());
     }
 
     public ItemStack newStack(IBlockState state, int stackSize) {

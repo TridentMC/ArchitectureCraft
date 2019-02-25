@@ -24,6 +24,8 @@
 
 package com.tridevmc.architecture.common;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.item.ItemArchitecture;
@@ -34,15 +36,12 @@ import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.shape.Shape;
 import com.tridevmc.architecture.common.tile.TileSawbench;
 import com.tridevmc.architecture.common.tile.TileShape;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -86,8 +85,6 @@ public class ArchitectureContent {
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
-    private int recipeID = 0;
-
 
     public void setup(FMLCommonSetupEvent e) {
         TileEntityType.register(ArchitectureMod.MOD_ID + ":shape",
@@ -97,11 +94,11 @@ public class ArchitectureContent {
     }
 
     @SubscribeEvent
-    public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e){
+    public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e) {
         IForgeRegistry<TileEntityType<?>> registry = e.getRegistry();
 
     }
-    
+
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> e) {
         IForgeRegistry<Block> registry = e.getRegistry();
@@ -121,63 +118,6 @@ public class ArchitectureContent {
         this.itemBlocksToRegister.forEach(registry::register);
 
         ArchitectureMod.PROXY.registerCustomRenderers();
-    }
-
-    @SubscribeEvent
-    public void onRecipeRegister(RegistryEvent.Register<IRecipe> e) {
-        IForgeRegistry<IRecipe> registry = e.getRegistry();
-        registerShapedRecipe(registry, blockSawbench,
-                "I*I",
-                "/0/",
-                "/_/",
-                'I', "ingotIron",
-                '*', itemSawblade,
-                '/', "stickWood",
-                '_', Blocks.OAK_PRESSURE_PLATE,
-                '0', itemLargePulley);
-        registerShapedRecipe(registry, itemSawblade,
-                " I ",
-                "I/I",
-                " I ",
-                'I', "ingotIron",
-                '/', "stickWood");
-        registerShapedRecipe(registry, itemLargePulley,
-                " W ",
-                "W/W",
-                " W ",
-                'W', "plankWood",
-                '/', "stickWood");
-        registerShapedRecipe(registry, itemChisel,
-                "I ",
-                "ds",
-                'I', "ingotIron",
-                's', "stickWood",
-                'd', "dyeOrange");
-        registerShapedRecipe(registry, itemHammer,
-                "II ",
-                "dsI",
-                "ds ",
-                'I', "ingotIron",
-                's', "stickWood",
-                'd', "dyeOrange");
-    }
-
-    private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, Block out, Object... input) {
-        registerShapedRecipe(registry, new ItemStack(out, 1), input);
-    }
-
-    private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, Item out, Object... input) {
-        registerShapedRecipe(registry, new ItemStack(out, 1), input);
-    }
-
-    private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
-        registry.register(new ShapedOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
-    }
-
-    private void registerShapelessRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
-        registry.register(new ShapelessOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block) {

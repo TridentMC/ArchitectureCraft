@@ -10,7 +10,8 @@ ext {
     compoundVersion = '1.0.0-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.13.2-25.0.36'
+    forge = '1.13.2-25.0.53'
+    mappings = '20190224-1.13.1'
 }
 
 if (!ext.early) {

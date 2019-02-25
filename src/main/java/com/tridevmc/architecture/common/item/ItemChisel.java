@@ -32,21 +32,28 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ItemChisel extends Item {
 
     public ItemChisel() {
-        setMaxStackSize(1);
+        super(new Item.Properties().maxStackSize(1));
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(ItemUseContext context) {
+        World world = context.getWorld();
+        BlockPos pos = context.getPos();
+        EntityPlayer player = context.getPlayer();
+        EnumFacing side = context.getFace();
+        float hitX = context.getHitX();
+        float hitY = context.getHitY();
+        float hitZ = context.getHitZ();
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileShape) {
             if (!world.isRemote) {
@@ -69,7 +76,7 @@ public class ItemChisel extends Item {
         return EnumActionResult.FAIL;
     }
 
-    void dropBlockAsItem(World world, BlockPos pos, IBlockState state) {
+    private void dropBlockAsItem(World world, BlockPos pos, IBlockState state) {
         ItemStack stack = BlockHelper.blockStackWithState(state, 1);
         Block.spawnAsEntity(world, pos, stack);
     }

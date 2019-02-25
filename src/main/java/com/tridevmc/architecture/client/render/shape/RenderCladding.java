@@ -40,10 +40,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -62,22 +60,15 @@ public class RenderCladding implements ICustomRenderer {
 
     @Override
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
-        NBTTagCompound nbt = stack.getTag();
-        if (nbt != null) {
-            String blockName = nbt.getString("block");
-            int meta = stack.getDamage();
-            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
-            if (block != null) {
-                IBlockState state = block.getStateFromMeta(meta);
-                if (state != null) {
-                    TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
-                    if (sprite != null) {
-                        int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
-                        ITexture texture = TextureBase.fromSprite(sprite);
-                        IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
-                        model.render(t, target, colourMult, colourMult, texture);
-                    }
-                }
+        NBTTagCompound tag = stack.getTag();
+        if (tag != null) {
+            IBlockState state = Block.getStateById(tag.getInt("block"));
+            TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
+            if (sprite != null) {
+                int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
+                ITexture texture = TextureBase.fromSprite(sprite);
+                IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
+                model.render(t, target, colourMult, colourMult, texture);
             }
         }
     }
@@ -90,7 +81,7 @@ public class RenderCladding implements ICustomRenderer {
             return defaultInstance;
         }
 
-        return null;
+        return ItemStack.EMPTY;
     }
 
 }
