@@ -61,7 +61,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     protected AxisAlignedBB boxHit;
 
     public BlockShape() {
-        super(Material.GROUND, TileShape.class);
+        super(Material.STONE, TileShape.class);
     }
 
     @Nullable
@@ -107,6 +107,12 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         }
 
         return super.getBlockHardness(blockState, worldIn, pos);
+    }
+    
+    @Override
+    public Material getMaterial()
+    {
+        return shape.baseBlockState.getBlock().getMaterial();
     }
 
     public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
