@@ -24,7 +24,6 @@
 
 package com.elytradev.architecture.client.render;
 
-import com.elytradev.architecture.client.render.model.OBJSONModel;
 import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.texture.ITexture;
@@ -39,7 +38,6 @@ import com.elytradev.architecture.common.render.ModelSpec;
 import com.elytradev.architecture.legacy.base.ArchitectureModelRenderer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -242,6 +240,10 @@ public class RenderingManager {
         textureCache.clear();
     }
 
+    public IBakedModel getCustomBakedModel(IBlockState state, ModelResourceLocation resourceLocation) {
+        return new BlockParticleModel(state, resourceLocation);
+    }
+
     public static class CustomBlockStateMapper extends DefaultStateMapper {
         @Override
         public ModelResourceLocation getModelResourceLocation(IBlockState state) {
@@ -313,10 +315,6 @@ public class RenderingManager {
             return null;
 
         }
-    }
-
-    public IBakedModel getCustomBakedModel(IBlockState state, ModelResourceLocation resourceLocation) {
-        return new BlockParticleModel(state, resourceLocation);
     }
 
     public class CustomItemRenderOverrideList extends ItemOverrideList {

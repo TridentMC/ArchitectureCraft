@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.helpers;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -144,10 +145,6 @@ public class Vector3 {
         return new Vec3i(x, y, z);
     }
 
-    public String toString() {
-        return String.format("(%.3f,%.3f,%.3f)", x, y, z);
-    }
-
     public Vector3 add(double x, double y, double z) {
         return new Vector3(this.x + x, this.y + y, this.z + z);
     }
@@ -250,4 +247,12 @@ public class Vector3 {
         return new BlockPos(floorX(), floorY(), floorZ());
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("x", x)
+                .add("y", y)
+                .add("z", z)
+                .toString();
+    }
 }

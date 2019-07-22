@@ -25,7 +25,6 @@
 package com.elytradev.architecture.legacy.base;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockArchitecture.IOrientationHandler;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -36,7 +35,6 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -89,7 +87,7 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin) {
             EnumFacing f = (EnumFacing) state.getValue(FACING);
             int i;
             switch (f) {
@@ -118,13 +116,12 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileArchitecture) {
-                TileArchitecture bte = (TileArchitecture) te;
-                return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
-            } else
-                return super.localToGlobalTransformation(world, pos, state, origin);
+        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin) {
+            if (tile != null) {
+                return Trans3.sideTurn(origin, tile.getSide(), tile.getTurn());
+            } else {
+                return super.localToGlobalTransformation(world, pos, null, state, origin);
+            }
         }
 
     }

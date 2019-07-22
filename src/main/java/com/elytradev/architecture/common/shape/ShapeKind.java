@@ -113,7 +113,6 @@ public abstract class ShapeKind {
 
     public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
                                      Vector3 hit) {
-        //boolean debug = !te.getWorld().isRemote;
         if (nte != null && !player.isSneaking()) {
             Object otherProfile = Profile.getProfileGlobal(nte.shape, nte.getSide(), nte.getTurn(), otherFace);
             if (otherProfile != null) {
@@ -122,8 +121,6 @@ public abstract class ShapeKind {
                     int turn = (nte.getTurn() + i) & 3;
                     Object thisProfile = Profile.getProfileGlobal(te.shape, nte.getSide(), turn, thisFace);
                     if (Profile.matches(thisProfile, otherProfile)) {
-                        //if (debug)
-                        //	ArchitectureLog.info("ShapeKind.orientOnPlacement: side %s turn %s\n", nte.side, turn);
                         te.setSide(nte.getSide());
                         te.setTurn(turn);
                         te.setOffsetX(nte.getOffsetX());

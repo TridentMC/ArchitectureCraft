@@ -25,7 +25,6 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -107,14 +106,6 @@ public abstract class TileArchitecture extends TileEntity {
         return pos.getZ();
     }
 
-    public void setSide(int side) {
-        this.setSide((byte) side);
-    }
-
-    public void setTurn(int turn) {
-        this.setTurn((byte) turn);
-    }
-
     public Trans3 localToGlobalRotation() {
         return localToGlobalTransformation(Vector3.zero);
     }
@@ -126,9 +117,10 @@ public abstract class TileArchitecture extends TileEntity {
     public Trans3 localToGlobalTransformation(Vector3 origin) {
         IBlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if (block instanceof BlockArchitecture)
-            return ((BlockArchitecture) block).localToGlobalTransformation(world, pos, state, origin);
-        else {
+        if (block instanceof BlockArchitecture) {
+            TileEntity tile = world.getTileEntity(pos);
+            return ((BlockArchitecture) block).localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, origin);
+        } else {
             ArchitectureLog.info("BaseTileEntity.localToGlobalTransformation: Wrong block type at %s\n", pos);
             return new Trans3(origin);
         }
@@ -265,12 +257,20 @@ public abstract class TileArchitecture extends TileEntity {
         return side;
     }
 
+    public void setSide(int side) {
+        this.setSide((byte) side);
+    }
+
     public void setSide(byte side) {
         this.side = side;
     }
 
     public byte getTurn() {
         return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.setTurn((byte) turn);
     }
 
     public void setTurn(byte turn) {

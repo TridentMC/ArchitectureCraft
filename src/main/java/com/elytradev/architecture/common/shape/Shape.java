@@ -146,7 +146,8 @@ public enum Shape {
     SLAB(90, "Slab", ShapeKind.Model("slab"), QUADRILATERAL, 1, 2, 0x0),
     STAIRS(91, "Stairs", ShapeKind.Model("stairs", Profile.Generic.lrStraight), BILATERAL, 3, 4, 0x0),
     STAIRS_OUTER_CORNER(92, "Stairs Outer Corner", ShapeKind.Model("stairs_outer_corner", Profile.Generic.lrCorner), UNILATERAL, 2, 3, 0x0),
-    STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),;
+    STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),
+    ;
 
     public static Shape[] values = values();
     public static boolean debugPlacement = false;
@@ -225,8 +226,8 @@ public enum Shape {
         }
     }
 
-    protected void orientOnPlacement(EntityPlayer player, TileShape te,
-                                     BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing face, Vector3 hit) {
+    public void orientOnPlacement(EntityPlayer player, TileShape te,
+                                  BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing face, Vector3 hit) {
         if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
         else
@@ -255,8 +256,8 @@ public enum Shape {
         }
         turn = turnForPlacementHit(side, hit, symmetry);
         if (debugPlacement && !te.getWorld().isRemote) {
-            ArchitectureLog.info("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
-            ArchitectureLog.info("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
+            ArchitectureLog.info("Shape.orientFromHitPosition: face {} global hit {}", face, hit);
+            ArchitectureLog.info("Shape.orientFromHitPosition: side {} turn {} symmetry {}", side, turn, te.shape.symmetry);
         }
         te.setSide(side);
         te.setTurn(turn);

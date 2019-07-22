@@ -25,7 +25,6 @@
 package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -51,16 +50,16 @@ public class RenderTargetWorld extends RenderTargetBase {
     protected boolean renderingOccurred;
     protected float vr, vg, vb, va; // Colour to be applied to next vertex
     protected int vlm1, vlm2; // Light map values to be applied to next vertex
-    private BufferBuilder tess;
+    private BufferBuilder buff;
 
-    public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
+    public RenderTargetWorld(IBlockAccess world, BlockPos pos, BufferBuilder buff, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
         //ArchitectureLog.info("BaseWorldRenderTarget(%s)\n", pos);
         this.world = world;
         this.blockPos = pos;
         this.blockState = world.getBlockState(pos);
         this.block = blockState.getBlock();
-        this.setTess(tess);
+        this.setBuff(buff);
         ao = Minecraft.isAmbientOcclusionEnabled() && block.getLightValue(blockState) == 0;
         expandTrianglesToQuads = true;
     }
@@ -80,7 +79,7 @@ public class RenderTargetWorld extends RenderTargetBase {
     protected void rawAddVertex(Vector3 p, double u, double v) {
         lightVertex(p);
         //ArchitectureLog.info("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
-        //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // tess.getCurrentOffset());
+        //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // buff.getCurrentOffset());
         getWorldRenderer().pos(p.x, p.y, p.z);
         getWorldRenderer().color(vr, vg, vb, va);
         getWorldRenderer().tex(u, v);
@@ -88,7 +87,7 @@ public class RenderTargetWorld extends RenderTargetBase {
         getWorldRenderer().endVertex();
         renderingOccurred = true;
 //      if (textureOverride)
-//          tess.dumpLastVertex();
+//          buff.dumpLastVertex();
     }
 
     //-----------------------------------------------------------------------------------------
@@ -185,10 +184,10 @@ public class RenderTargetWorld extends RenderTargetBase {
     }
 
     public BufferBuilder getWorldRenderer() {
-        return tess;
+        return buff;
     }
 
-    public void setTess(BufferBuilder tess) {
-        this.tess = tess;
+    public void setBuff(BufferBuilder buff) {
+        this.buff = buff;
     }
 }

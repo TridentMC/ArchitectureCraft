@@ -24,6 +24,7 @@
 
 package com.elytradev.architecture.common.helpers;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -240,4 +241,12 @@ public class Trans3 {
         list.add(box);
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("offset", offset)
+                .add("rotation", rotation)
+                .add("scaling", scaling)
+                .toString();
+    }
 }

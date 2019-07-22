@@ -4,7 +4,6 @@ import com.elytradev.architecture.client.proxy.ClientProxy;
 import com.elytradev.architecture.client.render.target.RenderTargetBaked;
 import com.elytradev.architecture.client.render.target.RenderTargetWorld;
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.concrete.reflect.accessor.Accessor;
 import com.elytradev.concrete.reflect.accessor.Accessors;

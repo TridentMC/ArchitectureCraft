@@ -28,8 +28,10 @@ import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
+import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
+import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -53,8 +55,14 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         TileShape te = TileShape.get(world, pos);
+        if (state.getBlock() instanceof BlockShape) {
+            this.renderBlock(world, pos, (BlockShape) state.getBlock(), state, te, target, layer, t);
+        }
+    }
+
+    public void renderBlock(IBlockAccess world, BlockPos pos, BlockShape block, IBlockState state, TileShape te, RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
         if (te != null) {
-            Trans3 t2 = t.t(te.localToGlobalRotation());
+            Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, te, state, Vector3.zero));
             boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
             boolean renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
 
@@ -90,7 +98,7 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     }
 
     @Nullable
-    private ItemStack getStackFromState(IBlockState state) {
+    public ItemStack getStackFromState(IBlockState state) {
         if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
             Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
@@ -101,9 +109,9 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         return null;
     }
 
-    protected void renderShapeTE(TileShape te, RenderTargetBase target, Trans3 t,
-                                 boolean renderBase, boolean renderSecondary,
-                                 int baseColourMult, int secondaryColourMult) {
+    public void renderShapeTE(TileShape te, RenderTargetBase target, Trans3 t,
+                              boolean renderBase, boolean renderSecondary,
+                              int baseColourMult, int secondaryColourMult) {
         if (te.shape != null && (renderBase || renderSecondary)) {
             IBlockState base = te.baseBlockState;
             if (base != null) {
@@ -139,10 +147,11 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     }
 
     private int getColourFromState(IBlockState state) {
-        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        int color = blockColors.colorMultiplier(state, null, null, 0);
+        if (state == null)
+            return -1;
 
-        return color;
+        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+        return blockColors.colorMultiplier(state, null, null, 0);
     }
 
     @Override

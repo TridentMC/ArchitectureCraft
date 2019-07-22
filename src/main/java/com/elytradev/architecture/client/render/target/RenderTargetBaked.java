@@ -26,7 +26,6 @@ package com.elytradev.architecture.client.render.target;
 
 import com.elytradev.architecture.client.render.texture.TextureBase;
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;

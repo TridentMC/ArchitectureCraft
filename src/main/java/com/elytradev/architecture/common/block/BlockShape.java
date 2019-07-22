@@ -64,6 +64,38 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         super(Material.GROUND, TileShape.class);
     }
 
+    public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
+        float hardness = 2F;
+        try {
+            hardness = state.getBlockHardness(world, pos);
+        } catch (IllegalArgumentException e) {
+            // Catch exceptions from mods that check their hardness based on the blocks in the world.
+        }
+        if (hardness < 0.0F)
+            return 0.0F;
+        float strength = player.getDigSpeed(state, pos) / hardness;
+        if (!acCanHarvestBlock(state, player))
+            return strength / 100F;
+        else
+            return strength / 30F;
+    }
+
+    public static boolean acCanHarvestBlock(IBlockState state, EntityPlayer player) {
+        Block block = state.getBlock();
+        if (block.getMaterial(state).isToolNotRequired())
+            return true;
+        ItemStack stack = player.inventory.getCurrentItem();
+        //state = state.getBlock().getActualState(state, world, pos);
+        String tool = block.getHarvestTool(state);
+        if (stack == null || tool == null)
+            return player.canHarvestBlock(state);
+        int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
+        if (toolLevel < 0)
+            return player.canHarvestBlock(state);
+        else
+            return toolLevel >= block.getHarvestLevel(state);
+    }
+
     @Nullable
     @Override
     public String getHarvestTool(IBlockState state) {
@@ -107,38 +139,6 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         }
 
         return super.getBlockHardness(blockState, worldIn, pos);
-    }
-
-    public static float acBlockStrength(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
-        float hardness = 2F;
-        try {
-            hardness = state.getBlockHardness(world, pos);
-        } catch (IllegalArgumentException e) {
-            // Catch exceptions from mods that check their hardness based on the blocks in the world.
-        }
-        if (hardness < 0.0F)
-            return 0.0F;
-        float strength = player.getDigSpeed(state, pos) / hardness;
-        if (!acCanHarvestBlock(state, player))
-            return strength / 100F;
-        else
-            return strength / 30F;
-    }
-
-    public static boolean acCanHarvestBlock(IBlockState state, EntityPlayer player) {
-        Block block = state.getBlock();
-        if (block.getMaterial(state).isToolNotRequired())
-            return true;
-        ItemStack stack = player.inventory.getCurrentItem();
-        //state = state.getBlock().getActualState(state, world, pos);
-        String tool = block.getHarvestTool(state);
-        if (stack == null || tool == null)
-            return player.canHarvestBlock(state);
-        int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
-        if (toolLevel < 0)
-            return player.canHarvestBlock(state);
-        else
-            return toolLevel >= block.getHarvestLevel(state);
     }
 
     @Override

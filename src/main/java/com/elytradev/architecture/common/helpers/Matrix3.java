@@ -25,7 +25,7 @@
 package com.elytradev.architecture.common.helpers;
 
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
+import com.google.common.base.MoreObjects;
 
 public class Matrix3 {
 
@@ -36,12 +36,12 @@ public class Matrix3 {
     };
 
     public static Matrix3[] sideRotations = {
-        /*0, -Y, DOWN */ ident,
-        /*1, +Y, UP   */ rotX(180),
-        /*2, -Z, NORTH*/ rotX(90),
-        /*3, +Z, SOUTH*/ rotX(-90).mul(rotY(180)),
-        /*4, -X, WEST */ rotZ(-90).mul(rotY(90)),
-        /*5, +X, EAST */ rotZ(90).mul(rotY(-90))
+            /*0, -Y, DOWN */ ident,
+            /*1, +Y, UP   */ rotX(180),
+            /*2, -Z, NORTH*/ rotX(90),
+            /*3, +Z, SOUTH*/ rotX(-90).mul(rotY(180)),
+            /*4, -X, WEST */ rotZ(-90).mul(rotY(90)),
+            /*5, +X, EAST */ rotZ(90).mul(rotY(-90))
     };
 
     public static Matrix3[][] sideTurnRotations = new Matrix3[6][4];
@@ -128,4 +128,10 @@ public class Matrix3 {
             ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", m[i][0], m[i][1], m[i][2]);
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("m", m)
+                .toString();
+    }
 }

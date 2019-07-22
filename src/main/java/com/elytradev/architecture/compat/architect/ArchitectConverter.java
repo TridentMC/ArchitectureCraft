@@ -67,6 +67,29 @@ public class ArchitectConverter implements Converter {
         claddingItem = ArchitectureMod.CONTENT.itemCladding;
     }
 
+    private static boolean consume(IItemHandler itemHandler, Item item, int amount, int meta, Predicate<NBTTagCompound> test) {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (stack.getCount() == 0)
+                continue;
+            if (stack.getItem() != item || stack.getMetadata() != meta)
+                continue;
+            if (test != null) {
+                NBTTagCompound stackData = stack.getTagCompound();
+                if (stackData == null)
+                    continue;
+                if (!test.test(stackData))
+                    continue;
+            }
+
+            amount -= itemHandler.extractItem(i, amount, false).getCount();
+            if (amount == 0)
+                return true;
+        }
+
+        return false;
+    }
+
     @Override
     public UUID getUUID() {
         return CONVERTER_UUID;
@@ -156,29 +179,6 @@ public class ArchitectConverter implements Converter {
                 stackData -> stackData.getInteger("Shape") == shape
                         && stackData.getString("BaseName").equals(name)
                         && stackData.getInteger("BaseData") == meta);
-    }
-
-    private static boolean consume(IItemHandler itemHandler, Item item, int amount, int meta, Predicate<NBTTagCompound> test) {
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
-            if (stack.getCount() == 0)
-                continue;
-            if (stack.getItem() != item || stack.getMetadata() != meta)
-                continue;
-            if (test != null) {
-                NBTTagCompound stackData = stack.getTagCompound();
-                if (stackData == null)
-                    continue;
-                if (!test.test(stackData))
-                    continue;
-            }
-
-            amount -= itemHandler.extractItem(i, amount, false).getCount();
-            if (amount == 0)
-                return true;
-        }
-
-        return false;
     }
 
     private boolean consumeCladding(MaterialSource source, NBTTagCompound data) {

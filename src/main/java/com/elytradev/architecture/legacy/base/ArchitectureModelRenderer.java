@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -62,7 +63,8 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
-        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(origin);
+        TileEntity tile = world.getTileEntity(pos);
+        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, tile, state, Vector3.zero)).translate(origin);
         int colour = -1;
         model.render(t2, target, colour, colour, textures);
     }

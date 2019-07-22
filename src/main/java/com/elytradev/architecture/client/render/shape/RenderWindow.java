@@ -29,7 +29,6 @@ import com.elytradev.architecture.client.render.model.IArchitectureModel;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.ArchitectureLog;
-import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.shape.ShapeKind;
 import com.elytradev.architecture.common.tile.TileShape;

@@ -30,8 +30,8 @@ import com.elytradev.architecture.common.item.ItemArchitecture;
 import com.elytradev.architecture.common.item.ItemChisel;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.item.ItemHammer;
-import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.shape.ItemShape;
+import com.elytradev.architecture.common.shape.Shape;
 import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.google.common.collect.Lists;
@@ -85,7 +85,7 @@ public class ArchitectureContent {
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
     private static List<Item> itemBlocksToRegister = Lists.newArrayList();
     public BlockSawbench blockSawbench;
-    public Block blockShape;
+    public BlockShape blockShape;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
