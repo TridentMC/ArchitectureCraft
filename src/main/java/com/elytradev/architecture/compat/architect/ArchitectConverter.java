@@ -222,7 +222,7 @@ public class ArchitectConverter implements Converter {
         } else if (side == 1) {
             turn = (byte) ((turn + rotation.ordinal()) & 3);
         } else {
-            EnumFacing sideValue = EnumFacing.byIndex(side);
+            EnumFacing sideValue = EnumFacing.byHorizontalIndex(side);
             side = (byte) EnumFacing.byHorizontalIndex((sideValue.getHorizontalIndex() + rotation.ordinal()) & 3).ordinal();
         }
 

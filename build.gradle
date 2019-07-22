@@ -107,7 +107,7 @@ repositories {
     jcenter()
     mavenCentral()
     maven {
-        url 'https://repo.elytradev.com/'
+        url 'https://repo.tridevmc.com/'
     }
     if (project.ext.language == 'kotlin') {
         maven {
@@ -152,8 +152,8 @@ if (needsShadow) {
 
     dependencies {
         for (String module : project.ext.concreteModules) {
-            shadow 'com.elytradev:concrete:' + project.ext.concreteVersion + ':' + module
-            compile 'com.elytradev:concrete:' + project.ext.concreteVersion + ':' + module
+            shadow "com.elytradev.concrete:concrete-${module}:" + project.ext.concreteVersion
+            compile "com.elytradev.concrete:concrete-${module}:" + project.ext.concreteVersion
         }
         if (project.ext.miniVersion) {
             shadow 'com.elytradev:mini:' + project.ext.miniVersion
