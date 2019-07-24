@@ -115,6 +115,23 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     }
 
     @Override
+    public Material getMaterial(IBlockState state) {
+        if (state instanceof IExtendedBlockState) {
+            IBlockAccess world = ((IExtendedBlockState) state).getValue(BLOCKACCESS_PROP);
+            BlockPos pos = ((IExtendedBlockState) state).getValue(POS_PROP);
+
+            if (world != null && pos != null) {
+                TileShape shape = TileShape.get(world, pos);
+                if (shape != null) {
+                    return shape.baseBlockState.getMaterial();
+                }
+            }
+        }
+
+        return super.getMaterial(state);
+    }
+
+    @Override
     public int getHarvestLevel(IBlockState state) {
         if (state instanceof IExtendedBlockState) {
             IBlockAccess world = ((IExtendedBlockState) state).getValue(BLOCKACCESS_PROP);
