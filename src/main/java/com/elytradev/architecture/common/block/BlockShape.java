@@ -29,6 +29,7 @@ import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.elytradev.architecture.legacy.base.BaseOrientation;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -129,6 +130,16 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         }
 
         return super.getMaterial(state);
+    }
+
+    @Override
+    public MapColor getMapColor(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileShape shape = TileShape.get(world, pos);
+        if (shape != null) {
+            return shape.baseBlockState.getMapColor(world, pos);
+        }
+
+        return super.getMapColor(state, world, pos);
     }
 
     @Override
