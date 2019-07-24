@@ -39,11 +39,11 @@ public class ModDrops {
 
         for (ASMDataTable.ASMData asmData : asmDataSet) {
             try {
-                Class<?> dropClass = Class.forName(asmData.getClassName());
-                if (IModDrop.class.isAssignableFrom(dropClass)) {
-                    Map<String, Object> annotationInfo = asmData.getAnnotationInfo();
-                    String requiredMod = (String) annotationInfo.get("requiredMod");
-                    if (Loader.isModLoaded(requiredMod)) {
+                Map<String, Object> annotationInfo = asmData.getAnnotationInfo();
+                String requiredMod = (String) annotationInfo.get("requiredMod");
+                if (Loader.isModLoaded(requiredMod)) {
+                    Class<?> dropClass = Class.forName(asmData.getClassName());
+                    if (IModDrop.class.isAssignableFrom(dropClass)) {
                         IModDrop drop = (IModDrop) dropClass.newInstance();
                         registeredDrops.add(drop);
                     }
