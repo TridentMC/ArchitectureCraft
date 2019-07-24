@@ -32,7 +32,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -59,8 +58,7 @@ public class Utils {
     }
 
     public static boolean playerIsInCreativeMode(EntityPlayer player) {
-        return (player instanceof EntityPlayerMP)
-                && ((EntityPlayerMP) player).interactionManager.isCreative();
+        return player != null && player.capabilities != null && player.capabilities.isCreativeMode;
     }
 
     public static TextureAtlasSprite getSpriteForBlockState(IBlockState state) {
