@@ -80,7 +80,6 @@ public class ItemShape extends ItemBlock {
         Vec3i d = Vector3.getDirectionVec(face);
         Vector3 hit = new Vector3(hitX - d.getX() - 0.5, hitY - d.getY() - 0.5, hitZ - d.getZ() - 0.5);
         TileShape te = TileShape.get(world, pos);
-        ArchitectureLog.info(hit);
         if (te != null) {
             te.readFromItemStack(stack);
             if (te.shape != null) {
