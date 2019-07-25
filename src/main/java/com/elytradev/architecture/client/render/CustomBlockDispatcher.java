@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 public class CustomBlockDispatcher extends BlockRendererDispatcher {
 
     protected BlockRendererDispatcher base;
+    private static boolean hasFailedRender = false;
 
     public CustomBlockDispatcher(BlockRendererDispatcher base) {
         super(base.getBlockModelShapes(), Minecraft.getMinecraft().getBlockColors());
@@ -97,12 +98,24 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
             return base.renderBlock(state, pos, world, tess);
     }
 
-    protected boolean customRenderBlockToWorld(IBlockAccess world, BlockPos pos, IBlockState state, BufferBuilder tess,
-                                               TextureAtlasSprite icon, ICustomRenderer rend) {
-        RenderTargetWorld target = new RenderTargetWorld(world, pos, tess, icon);
-        BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-        rend.renderBlock(world, pos, state, target, layer, Trans3.blockCenter(pos));
-        return target.end();
+    private boolean customRenderBlockToWorld(IBlockAccess world, BlockPos pos, IBlockState state, BufferBuilder tess,
+                                             TextureAtlasSprite icon, ICustomRenderer rend) {
+        try {
+            RenderTargetWorld target = new RenderTargetWorld(world, pos, tess, icon);
+            BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+            rend.renderBlock(world, pos, state, target, layer, Trans3.blockCenter(pos));
+            return target.end();
+        } catch (Exception e) {
+            if (!hasFailedRender) {
+                ArchitectureLog.error("ArchitectureCraft failed to render a custom block into the world, you will only see this message once.");
+                ArchitectureLog.error("Please report the following information to the ArchitectureCraft github issues page.");
+                ArchitectureLog.error("World={}\nPos={}\nState={}\nException={}", world, pos, state, e.getMessage());
+                e.printStackTrace();
+
+                hasFailedRender = true;
+            }
+            return false;
+        }
     }
 
 }
