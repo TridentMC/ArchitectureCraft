@@ -124,7 +124,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
             if (world != null && pos != null) {
                 TileShape shape = TileShape.get(world, pos);
                 if (shape != null) {
-                    return shape.baseBlockState.getMaterial();
+                    return shape.baseBlockState.getBlock().getMaterial(shape.baseBlockState);
                 }
             }
         }
@@ -136,7 +136,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     public MapColor getMapColor(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
-            return shape.baseBlockState.getMapColor(world, pos);
+            return shape.baseBlockState.getBlock().getMapColor(shape.baseBlockState, world, pos);
         }
 
         return super.getMapColor(state, world, pos);
@@ -163,7 +163,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
         TileShape shape = TileShape.get(worldIn, pos);
         if (shape != null && shape.baseBlockState != null) {
-            return shape.baseBlockState.getBlockHardness(worldIn, pos);
+            return shape.baseBlockState.getBlock().getBlockHardness(shape.baseBlockState, worldIn, pos);
         }
 
         return super.getBlockHardness(blockState, worldIn, pos);
