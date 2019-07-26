@@ -121,7 +121,6 @@ public abstract class TileArchitecture extends TileEntity {
             TileEntity tile = world.getTileEntity(pos);
             return ((BlockArchitecture) block).localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, origin);
         } else {
-            ArchitectureLog.info("BaseTileEntity.localToGlobalTransformation: Wrong block type at %s\n", pos);
             return new Trans3(origin);
         }
     }
