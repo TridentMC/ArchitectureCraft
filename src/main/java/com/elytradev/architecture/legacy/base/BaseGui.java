@@ -157,12 +157,12 @@ public class BaseGui {
 
         public Screen(Container container, int width, int height) {
             super(container);
-            xSize = width;
-            ySize = height;
-            root = new Root(this);
-            tess = Tessellator.getInstance();
-            vb = tess.getBuffer();
-            gstate = new GState();
+            this.xSize = width;
+            this.ySize = height;
+            this.root = new Root(this);
+            this.tess = Tessellator.getInstance();
+            this.vb = this.tess.getBuffer();
+            this.gstate = new GState();
         }
 
         public Screen(BaseContainer container) {
@@ -174,11 +174,11 @@ public class BaseGui {
         }
 
         public int getWidth() {
-            return xSize;
+            return this.xSize;
         }
 
         public int getHeight() {
-            return ySize;
+            return this.ySize;
         }
 
         @Override
@@ -191,80 +191,80 @@ public class BaseGui {
         @Override
         public void initGui() {
             super.initGui();
-            root.layout();
+            this.root.layout();
         }
 
         @Override
         protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
             GL11.glPushMatrix();
-            GL11.glTranslatef(guiLeft, guiTop, 0.0F);
-            drawBackgroundLayer();
-            if (title != null)
-                drawTitle(title);
-            root.draw(this, mouseX - guiLeft, mouseY - guiTop);
+            GL11.glTranslatef(this.guiLeft, this.guiTop, 0.0F);
+            this.drawBackgroundLayer();
+            if (this.title != null)
+                this.drawTitle(this.title);
+            this.root.draw(this, mouseX - this.guiLeft, mouseY - this.guiTop);
             GL11.glPopMatrix();
         }
 
         protected void drawBackgroundLayer() {
-            drawGuiBackground(0, 0, xSize, ySize);
+            this.drawGuiBackground(0, 0, this.xSize, this.ySize);
         }
 
         @Override
         protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-            drawForegroundLayer();
+            this.drawForegroundLayer();
         }
 
         protected void drawForegroundLayer() {
         }
 
         public void close() {
-            dispatchClosure(root);
-            onClose();
-            mc.player.closeScreen();
+            this.dispatchClosure(this.root);
+            this.onClose();
+            this.mc.player.closeScreen();
         }
 
         protected void onClose() {
         }
 
         public void bindTexture(String path) {
-            bindTexture(path, 1, 1);
+            this.bindTexture(path, 1, 1);
         }
 
         public void bindTexture(String path, int usize, int vsize) {
-            bindTexture(new ResourceLocation(ArchitectureMod.MOD_ID, "textures/" + path), usize, vsize);
+            this.bindTexture(new ResourceLocation(ArchitectureMod.MOD_ID, "textures/" + path), usize, vsize);
         }
 
         public void bindTexture(ResourceLocation rsrc) {
-            bindTexture(rsrc, 1, 1);
+            this.bindTexture(rsrc, 1, 1);
         }
 
         public void bindTexture(ResourceLocation rsrc, int usize, int vsize) {
-            gstate.texture = rsrc;
-            mc.getTextureManager().bindTexture(rsrc);
-            gstate.uscale = 1.0 / usize;
-            gstate.vscale = 1.0 / vsize;
+            this.gstate.texture = rsrc;
+            this.mc.getTextureManager().bindTexture(rsrc);
+            this.gstate.uscale = 1.0 / usize;
+            this.gstate.vscale = 1.0 / vsize;
         }
 
         public void gSave() {
-            gstate = new GState(gstate);
+            this.gstate = new GState(this.gstate);
         }
 
         public void gRestore() {
-            if (gstate.previous != null) {
-                gstate = gstate.previous;
-                mc.getTextureManager().bindTexture(gstate.texture);
+            if (this.gstate.previous != null) {
+                this.gstate = this.gstate.previous;
+                this.mc.getTextureManager().bindTexture(this.gstate.texture);
             } else
                 ArchitectureLog.info("BaseGui: Warning: Graphics state stack underflow\n");
         }
 
         public void drawRect(double x, double y, double w, double h) {
             glDisable(GL_TEXTURE_2D);
-            glColor3d(gstate.red, gstate.green, gstate.blue);
+            glColor3d(this.gstate.red, this.gstate.green, this.gstate.blue);
             glBegin(GL_QUADS);
-            glVertex3d(x, y + h, zLevel);
-            glVertex3d(x + w, y + h, zLevel);
-            glVertex3d(x + w, y, zLevel);
-            glVertex3d(x, y, zLevel);
+            glVertex3d(x, y + h, this.zLevel);
+            glVertex3d(x + w, y + h, this.zLevel);
+            glVertex3d(x + w, y, this.zLevel);
+            glVertex3d(x, y, this.zLevel);
             glEnd();
             glEnable(GL_TEXTURE_2D);
         }
@@ -280,142 +280,142 @@ public class BaseGui {
             double y1 = y + ch, y2 = h - ch;
             double u1 = u + cw, u2 = uSize - cw;
             double v1 = v + ch, v2 = vSize - cw;
-            drawTexturedRect(x, y, cw, ch, u, v);               // top left corner
-            drawTexturedRect(x2, y, cw, ch, u2, v);             // top right corner
-            drawTexturedRect(x, y2, cw, ch, u, v2);             // bottom left corner
-            drawTexturedRect(x2, y2, cw, ch, u2, v2);           // bottom right corner
-            drawTexturedRect(x1, y, sw, ch, u1, v, usw, ch);    // top side
-            drawTexturedRect(x1, y2, sw, ch, u1, v2, usw, ch);  // bottom side
-            drawTexturedRect(x, y1, cw, sh, u, v1, cw, ush);    // left side
-            drawTexturedRect(x2, y1, cw, sh, u2, v1, cw, ush);  // right side
-            drawTexturedRect(x1, y1, sw, sh, u1, v1, usw, ush); // centre
+            this.drawTexturedRect(x, y, cw, ch, u, v);               // top left corner
+            this.drawTexturedRect(x2, y, cw, ch, u2, v);             // top right corner
+            this.drawTexturedRect(x, y2, cw, ch, u, v2);             // bottom left corner
+            this.drawTexturedRect(x2, y2, cw, ch, u2, v2);           // bottom right corner
+            this.drawTexturedRect(x1, y, sw, ch, u1, v, usw, ch);    // top side
+            this.drawTexturedRect(x1, y2, sw, ch, u1, v2, usw, ch);  // bottom side
+            this.drawTexturedRect(x, y1, cw, sh, u, v1, cw, ush);    // left side
+            this.drawTexturedRect(x2, y1, cw, sh, u2, v1, cw, ush);  // right side
+            this.drawTexturedRect(x1, y1, sw, sh, u1, v1, usw, ush); // centre
         }
 
         public void drawGuiBackground(double x, double y, double w, double h) {
-            bindTexture("gui/gui_background.png", 16, 16);
-            setColor(0xffffff);
-            drawBorderedRect(x, y, w, h, 0, 0, 16, 16, 4, 4);
+            this.bindTexture("gui/gui_background.png", 16, 16);
+            this.setColor(0xffffff);
+            this.drawBorderedRect(x, y, w, h, 0, 0, 16, 16, 4, 4);
         }
 
         public void drawTexturedRect(double x, double y, double w, double h) {
-            drawTexturedRectUV(x, y, w, h, 0, 0, 1, 1);
+            this.drawTexturedRectUV(x, y, w, h, 0, 0, 1, 1);
         }
 
         public void drawTexturedRect(double x, double y, double w, double h, double u, double v) {
-            drawTexturedRect(x, y, w, h, u, v, w, h);
+            this.drawTexturedRect(x, y, w, h, u, v, w, h);
         }
 
         public void drawTexturedRect(double x, double y, double w, double h, double u, double v, double us, double vs) {
-            drawTexturedRectUV(x, y, w, h, u * gstate.uscale, v * gstate.vscale, us * gstate.uscale, vs * gstate.vscale);
+            this.drawTexturedRectUV(x, y, w, h, u * this.gstate.uscale, v * this.gstate.vscale, us * this.gstate.uscale, vs * this.gstate.vscale);
         }
 
         public void drawTexturedRectUV(double x, double y, double w, double h,
                                        double u, double v, double us, double vs) {
             glBegin(GL_QUADS);
-            glColor3f(gstate.red, gstate.green, gstate.blue);
+            glColor3f(this.gstate.red, this.gstate.green, this.gstate.blue);
             glTexCoord2d(u, v + vs);
-            glVertex3d(x, y + h, zLevel);
+            glVertex3d(x, y + h, this.zLevel);
             glTexCoord2d(u + us, v + vs);
-            glVertex3d(x + w, y + h, zLevel);
+            glVertex3d(x + w, y + h, this.zLevel);
             glTexCoord2d(u + us, v);
-            glVertex3d(x + w, y, zLevel);
+            glVertex3d(x + w, y, this.zLevel);
             glTexCoord2d(u, v);
-            glVertex3d(x, y, zLevel);
+            glVertex3d(x, y, this.zLevel);
             glEnd();
         }
 
         public void setColor(int hex) {
-            setColor((hex >> 16) / 255.0, ((hex >> 8) & 0xff) / 255.0, (hex & 0xff) / 255.0);
+            this.setColor((hex >> 16) / 255.0, ((hex >> 8) & 0xff) / 255.0, (hex & 0xff) / 255.0);
         }
 
         public void setColor(double r, double g, double b) {
-            gstate.red = (float) r;
-            gstate.green = (float) g;
-            gstate.blue = (float) b;
+            this.gstate.red = (float) r;
+            this.gstate.green = (float) g;
+            this.gstate.blue = (float) b;
         }
 
         public void resetColor() {
-            setColor(1, 1, 1);
+            this.setColor(1, 1, 1);
         }
 
         public void setTextColor(int hex) {
-            gstate.textColor = hex;
+            this.gstate.textColor = hex;
         }
 
         public void setTextColor(double red, double green, double blue) {
-            setTextColor(packedColor(red, green, blue));
+            this.setTextColor(packedColor(red, green, blue));
         }
 
         public void setTextShadow(boolean state) {
-            gstate.textShadow = state;
+            this.gstate.textShadow = state;
         }
 
         public void drawString(String s, int x, int y) {
-            fontRenderer.drawString(s, x, y, gstate.textColor, gstate.textShadow);
+            this.fontRenderer.drawString(s, x, y, this.gstate.textColor, this.gstate.textShadow);
         }
 
         public void drawCenteredString(String s, int x, int y) {
-            fontRenderer.drawString(s, x - fontRenderer.getStringWidth(s) / 2, y, gstate.textColor, gstate.textShadow);
+            this.fontRenderer.drawString(s, x - this.fontRenderer.getStringWidth(s) / 2, y, this.gstate.textColor, this.gstate.textShadow);
         }
 
         public void drawRightAlignedString(String s, int x, int y) {
-            fontRenderer.drawString(s, x - fontRenderer.getStringWidth(s), y, gstate.textColor, gstate.textShadow);
+            this.fontRenderer.drawString(s, x - this.fontRenderer.getStringWidth(s), y, this.gstate.textColor, this.gstate.textShadow);
         }
 
         public void drawTitle(String s) {
-            drawCenteredString(s, xSize / 2, 4);
+            this.drawCenteredString(s, this.xSize / 2, 4);
         }
 
         public void drawPlayerInventoryName() {
-            drawString(playerInventoryName(), 8, ySize - 96 + 2);
+            this.drawString(playerInventoryName(), 8, this.ySize - 96 + 2);
         }
 
         @Override
         protected void mouseClicked(int x, int y, int button) throws IOException {
             super.mouseClicked(x, y, button);
-            mousePressed(x - guiLeft, y - guiTop, button);
+            this.mousePressed(x - this.guiLeft, y - this.guiTop, button);
         }
 
         protected void mousePressed(int x, int y, int button) {
-            mouseWidget = root.dispatchMousePress(x, y, button);
-            if (mouseWidget != null && mouseWidget.parent() != null) {
-                closeOldFocus(mouseWidget);
-                focusOn(mouseWidget);
-                mouseWidget.mousePressed(new MouseCoords(mouseWidget, x - guiLeft, y - guiTop), button);
+            this.mouseWidget = this.root.dispatchMousePress(x, y, button);
+            if (this.mouseWidget != null && this.mouseWidget.parent() != null) {
+                this.closeOldFocus(this.mouseWidget);
+                this.focusOn(this.mouseWidget);
+                this.mouseWidget.mousePressed(new MouseCoords(this.mouseWidget, x - this.guiLeft, y - this.guiTop), button);
             }
         }
 
         @Override
         protected void mouseClickMove(int x, int y, int button, long timeSinceLastClick) {
             super.mouseClickMove(x, y, button, timeSinceLastClick);
-            if (mouseWidget != null) {
-                MouseCoords m = new MouseCoords(mouseWidget, x, y);
-                mouseWidget.mouseDragged(m, button);
+            if (this.mouseWidget != null) {
+                MouseCoords m = new MouseCoords(this.mouseWidget, x, y);
+                this.mouseWidget.mouseDragged(m, button);
             }
         }
 
         @Override
         protected void mouseReleased(int x, int y, int button) {
             super.mouseReleased(x, y, button);
-            if (mouseWidget != null) {
-                MouseCoords m = new MouseCoords(mouseWidget, x, y);
-                mouseWidget.mouseReleased(m, button);
+            if (this.mouseWidget != null) {
+                MouseCoords m = new MouseCoords(this.mouseWidget, x, y);
+                this.mouseWidget.mouseReleased(m, button);
             }
         }
 
         void closeOldFocus(IWidget clickedWidget) {
-            if (!isFocused()) {
+            if (!this.isFocused()) {
                 IWidgetContainer parent = clickedWidget.parent();
-                while (!isFocused())
+                while (!this.isFocused())
                     parent = parent.parent();
-                dispatchClosure(parent.getFocus());
+                this.dispatchClosure(parent.getFocus());
             }
         }
 
         void dispatchClosure(IWidget target) {
             while (target != null) {
                 target.close();
-                target = getFocusOf(target);
+                target = this.getFocusOf(target);
             }
         }
 
@@ -428,9 +428,9 @@ public class BaseGui {
 
         @Override
         protected void keyTyped(char c, int key) throws IOException {
-            if (!root.dispatchKeyPress(c, key)) {
-                if (key == 1 || key == mc.gameSettings.keyBindInventory.getKeyCode())
-                    close();
+            if (!this.root.dispatchKeyPress(c, key)) {
+                if (key == 1 || key == this.mc.gameSettings.keyBindInventory.getKeyCode())
+                    this.close();
                 else
                     super.keyTyped(c, key);
             }
@@ -440,7 +440,7 @@ public class BaseGui {
             IWidgetContainer parent = newFocus.parent();
             if (parent != null) {
                 IWidget oldFocus = parent.getFocus();
-                if (isFocused()) {
+                if (this.isFocused()) {
                     if (oldFocus != newFocus) {
                         tellFocusChanged(oldFocus, false);
                         parent.setFocus(newFocus);
@@ -448,7 +448,7 @@ public class BaseGui {
                     }
                 } else {
                     parent.setFocus(newFocus);
-                    focusOn(parent);
+                    this.focusOn(parent);
                 }
             }
         }
@@ -493,42 +493,42 @@ public class BaseGui {
 
         @Override
         public IWidgetContainer parent() {
-            return parent;
+            return this.parent;
         }
 
         @Override
         public void setParent(IWidgetContainer widget) {
-            parent = widget;
+            this.parent = widget;
         }
 
         @Override
         public int left() {
-            return left;
+            return this.left;
         }
 
         @Override
         public int top() {
-            return top;
+            return this.top;
         }
 
         @Override
         public int width() {
-            return width;
+            return this.width;
         }
 
         @Override
         public int height() {
-            return height;
+            return this.height;
         }
 
         @Override
         public void setLeft(int x) {
-            left = x;
+            this.left = x;
         }
 
         @Override
         public void setTop(int y) {
-            top = y;
+            this.top = y;
         }
 
         @Override
@@ -587,7 +587,7 @@ public class BaseGui {
         }
 
         public void removePopup() {
-            Root root = getRoot();
+            Root root = this.getRoot();
             root.remove(this);
         }
 
@@ -607,36 +607,36 @@ public class BaseGui {
 
         @Override
         public IWidget getFocus() {
-            return focus;
+            return this.focus;
         }
 
         @Override
         public void setFocus(IWidget widget) {
             //ArchitectureLog.info("BaseGui.Group.setFocus: of %s to %s\n",
             //  getClass().getSimpleName(), widget.getClass().getSimpleName());
-            focus = widget;
+            this.focus = widget;
         }
 
         public void add(int left, int top, IWidget widget) {
             widget.setLeft(left);
             widget.setTop(top);
             widget.setParent(this);
-            widgets.add(widget);
+            this.widgets.add(widget);
         }
 
         public void remove(IWidget widget) {
-            widgets.remove(widget);
-            if (getFocus() == widget) {
+            this.widgets.remove(widget);
+            if (this.getFocus() == widget) {
                 if (isFocused(this))
                     tellFocusChanged(widget, false);
-                setFocus(null);
+                this.setFocus(null);
             }
         }
 
         @Override
         public void draw(Screen scr, int mouseX, int mouseY) {
             super.draw(scr, mouseX, mouseY);
-            for (IWidget w : widgets) {
+            for (IWidget w : this.widgets) {
                 int dx = w.left(), dy = w.top();
                 glPushMatrix();
                 glTranslated(dx, dy, 0);
@@ -649,7 +649,7 @@ public class BaseGui {
         public IWidget dispatchMousePress(int x, int y, int button) {
             //ArchitectureLog.info("BaseGui.Group.dispatchMousePress: (%s, %s) in %s\n",
             //  x, y, getClass().getSimpleName());
-            IWidget target = findWidget(x, y);
+            IWidget target = this.findWidget(x, y);
             if (target != null)
                 return target.dispatchMousePress(x - target.left(), y - target.top(), button);
             else
@@ -658,7 +658,7 @@ public class BaseGui {
 
         @Override
         public boolean dispatchKeyPress(char c, int key) {
-            IWidget focus = getFocus();
+            IWidget focus = this.getFocus();
             if (focus != null && focus.dispatchKeyPress(c, key))
                 return true;
             else
@@ -666,8 +666,8 @@ public class BaseGui {
         }
 
         public IWidget findWidget(int x, int y) {
-            for (int i = widgets.size() - 1; i >= 0; i--) {
-                IWidget w = widgets.get(i);
+            for (int i = this.widgets.size() - 1; i >= 0; i--) {
+                IWidget w = this.widgets.get(i);
                 int l = w.left(), t = w.top();
                 if (x >= l && y >= t && x < l + w.width() && y < t + w.height())
                     return w;
@@ -677,7 +677,7 @@ public class BaseGui {
 
         @Override
         public void layout() {
-            for (IWidget w : widgets)
+            for (IWidget w : this.widgets)
                 w.layout();
         }
 
@@ -690,22 +690,22 @@ public class BaseGui {
 
         public Root(Screen screen) {
             this.screen = screen;
-            popupStack = new ArrayList<IWidget>();
+            this.popupStack = new ArrayList<IWidget>();
         }
 
         @Override
         public int width() {
-            return screen.getWidth();
+            return this.screen.getWidth();
         }
 
         @Override
         public int height() {
-            return screen.getHeight();
+            return this.screen.getHeight();
         }
 
         @Override
         public IWidget dispatchMousePress(int x, int y, int button) {
-            IWidget w = topPopup();
+            IWidget w = this.topPopup();
             if (w == null)
                 w = super.dispatchMousePress(x, y, button);
             return w;
@@ -713,30 +713,30 @@ public class BaseGui {
 
         @Override
         public void addPopup(int x, int y, IWidget widget) {
-            add(x, y, widget);
-            popupStack.add(widget);
-            screen.focusOn(widget);
+            this.add(x, y, widget);
+            this.popupStack.add(widget);
+            this.screen.focusOn(widget);
         }
 
         @Override
         public void remove(IWidget widget) {
             super.remove(widget);
-            popupStack.remove(widget);
-            focusTopPopup();
+            this.popupStack.remove(widget);
+            this.focusTopPopup();
         }
 
         public IWidget topPopup() {
-            int n = popupStack.size();
+            int n = this.popupStack.size();
             if (n > 0)
-                return popupStack.get(n - 1);
+                return this.popupStack.get(n - 1);
             else
                 return null;
         }
 
         void focusTopPopup() {
-            IWidget w = topPopup();
+            IWidget w = this.topPopup();
             if (w != null)
-                screen.focusOn(w);
+                this.screen.focusOn(w);
         }
 
     }
@@ -760,7 +760,7 @@ public class BaseGui {
         @Override
         public Object get() {
             try {
-                return field.get(target);
+                return this.field.get(this.target);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -769,7 +769,7 @@ public class BaseGui {
         @Override
         public void set(Object value) {
             try {
-                field.set(target, value);
+                this.field.set(this.target, value);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -786,8 +786,8 @@ public class BaseGui {
             this.target = target;
             try {
                 Class cls = target.getClass();
-                getter = cls.getMethod(getterName);
-                setter = cls.getMethod(setterName, getter.getReturnType());
+                this.getter = cls.getMethod(getterName);
+                this.setter = cls.getMethod(setterName, this.getter.getReturnType());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -796,7 +796,7 @@ public class BaseGui {
         @Override
         public Object get() {
             try {
-                return getter.invoke(target);
+                return this.getter.invoke(this.target);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -805,7 +805,7 @@ public class BaseGui {
         @Override
         public void set(Object value) {
             try {
-                setter.invoke(target, value);
+                this.setter.invoke(this.target, value);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -821,7 +821,7 @@ public class BaseGui {
         public MethodAction(Object target, String name) {
             try {
                 this.target = target;
-                method = target.getClass().getMethod(name);
+                this.method = target.getClass().getMethod(name);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -830,7 +830,7 @@ public class BaseGui {
         @Override
         public void perform() {
             try {
-                method.invoke(target);
+                this.method.invoke(this.target);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -850,11 +850,11 @@ public class BaseGui {
         public ResourceLocation texture;
 
         public GState() {
-            uscale = 1;
-            vscale = 1;
-            red = green = blue = 1;
-            textColor = defaultTextColor;
-            textShadow = false;
+            this.uscale = 1;
+            this.vscale = 1;
+            this.red = this.green = this.blue = 1;
+            this.textColor = defaultTextColor;
+            this.textShadow = false;
         }
 
         public GState(GState previous) {

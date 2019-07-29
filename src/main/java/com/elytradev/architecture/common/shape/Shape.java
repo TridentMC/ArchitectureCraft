@@ -226,22 +226,21 @@ public enum Shape {
         }
     }
 
-    public void orientOnPlacement(EntityPlayer player, TileShape te,
-                                  BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing face, Vector3 hit) {
-        if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
-            return;
-        else
-            this.orientFromHitPosition(player, te, face, hit);
+    public void orientOnPlacement(EntityPlayer player, TileShape shape,
+                                  BlockPos neighbourPos, IBlockState neighbourState, TileEntity neighbourTile, EnumFacing face, Vector3 hit) {
+        if (!shape.getShape().kind.orientOnPlacement(player, shape, neighbourPos, neighbourState, neighbourTile, face, hit)) {
+            this.orientFromHitPosition(player, shape, face, hit);
+        }
     }
 
-    protected void orientFromHitPosition(EntityPlayer player, TileShape te, EnumFacing face, Vector3 hit) {
+    protected void orientFromHitPosition(EntityPlayer player, TileShape shape, EnumFacing face, Vector3 hit) {
         int side, turn;
         switch (face) {
             case UP:
                 side = this.rightSideUpSide();
                 break;
             case DOWN:
-                if (te.shape.kind.canPlaceUpsideDown())
+                if (shape.getShape().kind.canPlaceUpsideDown())
                     side = this.upsideDownSide();
                 else
                     side = this.rightSideUpSide();
@@ -249,22 +248,22 @@ public enum Shape {
             default:
                 if (player.isSneaking())
                     side = face.getOpposite().ordinal();
-                else if (hit.y > 0.0 && te.shape.kind.canPlaceUpsideDown())
+                else if (hit.y > 0.0 && shape.getShape().kind.canPlaceUpsideDown())
                     side = this.upsideDownSide();
                 else
                     side = this.rightSideUpSide();
         }
         turn = turnForPlacementHit(side, hit, this.symmetry);
-        if (debugPlacement && !te.getWorld().isRemote) {
+        if (debugPlacement && !shape.getWorld().isRemote) {
             ArchitectureLog.info("Shape.orientFromHitPosition: face {} global hit {}", face, hit);
-            ArchitectureLog.info("Shape.orientFromHitPosition: side {} turn {} symmetry {}", side, turn, te.shape.symmetry);
+            ArchitectureLog.info("Shape.orientFromHitPosition: side {} turn {} symmetry {}", side, turn, shape.getShape().symmetry);
         }
-        te.setSide(side);
-        te.setTurn(turn);
+        shape.setSide(side);
+        shape.setTurn(turn);
         if ((this.flags & PLACE_OFFSET) != 0) {
-            te.setOffsetX(this.offsetXForPlacementHit(side, turn, hit));
-            if (debugPlacement && !te.getWorld().isRemote)
-                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", this.kind, te.getOffsetX());
+            shape.setOffsetX(this.offsetXForPlacementHit(side, turn, hit));
+            if (debugPlacement && !shape.getWorld().isRemote)
+                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", this.kind, shape.getOffsetX());
         }
     }
 

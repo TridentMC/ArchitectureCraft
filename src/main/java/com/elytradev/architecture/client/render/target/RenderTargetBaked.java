@@ -109,9 +109,9 @@ public class RenderTargetBaked extends RenderTargetBase {
     }
 
     protected VertexFormat format = theFormat;
-    protected int bytesPerVertex = format.getSize();
-    protected int intsPerVertex = bytesPerVertex / 4;
-    protected ByteBuffer buf = ByteBuffer.allocate(bytesPerVertex * 4);
+    protected int bytesPerVertex = this.format.getSize();
+    protected int intsPerVertex = this.bytesPerVertex / 4;
+    protected ByteBuffer buf = ByteBuffer.allocate(this.bytesPerVertex * 4);
     protected List<BakedQuad> quads;
 
     public RenderTargetBaked() {
@@ -134,40 +134,40 @@ public class RenderTargetBaked extends RenderTargetBase {
 
     public RenderTargetBaked(double x, double y, double z, TextureAtlasSprite overrideIcon) {
         super(x, y, z, overrideIcon);
-        quads = new ArrayList<>();
+        this.quads = new ArrayList<>();
     }
 
     @Override
     protected void setMode(int m) {
         super.setMode(m);
-        buf.clear();
+        this.buf.clear();
     }
 
     @Override
     public void endFace() {
         super.endFace();
-        buf.flip();
-        int intsPerQuad = intsPerVertex * 4;
+        this.buf.flip();
+        int intsPerQuad = this.intsPerVertex * 4;
         int[] data = new int[intsPerQuad];
-        IntBuffer intBuf = buf.asIntBuffer();
+        IntBuffer intBuf = this.buf.asIntBuffer();
         int n = intBuf.limit();
         intBuf.get(data, 0, n);
         while (n < intsPerQuad) {
-            data[n] = data[n - intsPerVertex];
+            data[n] = data[n - this.intsPerVertex];
             ++n;
         }
-        prescrambleVertexColors(data);
-        quads.add(new BakedQuad(data, 0, face, getActiveTexture(), false, DefaultVertexFormats.ITEM));
+        this.prescrambleVertexColors(data);
+        this.quads.add(new BakedQuad(data, 0, this.face, this.getActiveTexture(), false, DefaultVertexFormats.ITEM));
     }
 
     private TextureAtlasSprite getActiveTexture() {
         // Use missingno as a fallback
         TextureAtlasSprite activeTexture = Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
-        if (texture instanceof TextureBase.Sprite) {
-            TextureBase.Sprite sprite = (TextureBase.Sprite) texture;
+        if (this.texture instanceof TextureBase.Sprite) {
+            TextureBase.Sprite sprite = (TextureBase.Sprite) this.texture;
             activeTexture = sprite.icon;
-        } else if (texture instanceof TextureBase.Proxy) {
-            TextureBase.Proxy proxySprite = (TextureBase.Proxy) texture;
+        } else if (this.texture instanceof TextureBase.Proxy) {
+            TextureBase.Proxy proxySprite = (TextureBase.Proxy) this.texture;
             if (proxySprite.base instanceof TextureBase.Sprite) {
                 activeTexture = ((TextureBase.Sprite) proxySprite.base).icon;
             }
@@ -179,7 +179,7 @@ public class RenderTargetBaked extends RenderTargetBase {
     protected void dumpVertexData(int[] data, int n) {
         ArchitectureLog.info("BaseBakedRenderTarget.endFace: Vertex data:\n");
         for (int i = 0; i < 4; i++) {
-            int k = i * intsPerVertex;
+            int k = i * this.intsPerVertex;
             ArchitectureLog.info("[%s] coords (%.3f,%.3f,%.3f) color %08x\n",
                     i,
                     Float.intBitsToFloat(data[k]),
@@ -192,40 +192,40 @@ public class RenderTargetBaked extends RenderTargetBase {
     protected void prescrambleVertexColors(int[] data) {
         int[] c = new int[4];
         for (int i = 0; i < 4; i++)
-            c[i] = data[i * intsPerVertex + 3];
+            c[i] = data[i * this.intsPerVertex + 3];
         for (int i = 0; i < 4; i++)
-            data[i * intsPerVertex + 3] = c[3 - i];
+            data[i * this.intsPerVertex + 3] = c[3 - i];
     }
 
     public IBakedModel getBakedModel() {
-        return getBakedModel(null);
+        return this.getBakedModel(null);
     }
 
     public IBakedModel getBakedModel(TextureAtlasSprite particleTexture) {
-        if (verticesPerFace != 0)
+        if (this.verticesPerFace != 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
-        return new SimpleBakedModel(quads, faceQuads, false, true,
+        return new SimpleBakedModel(this.quads, faceQuads, false, true,
                 particleTexture, transforms, ItemOverrideList.NONE);
     }
 
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
-        for (VertexFormatElement e : format.getElements()) {
+        for (VertexFormatElement e : this.format.getElements()) {
             switch (e.getUsage()) {
                 case POSITION:
-                    putElement(e, p.x, p.y, p.z);
+                    this.putElement(e, p.x, p.y, p.z);
                     break;
                 case COLOR:
-                    putElement(e, alpha, blue, green, red);
+                    this.putElement(e, this.alpha, this.blue, this.green, this.red);
                     break;
                 case NORMAL:
-                    putElement(e, normal.x, normal.y, normal.z);
+                    this.putElement(e, this.normal.x, this.normal.y, this.normal.z);
                     break;
                 case UV:
-                    putElement(e, u, v);
+                    this.putElement(e, u, v);
                     break;
                 default:
-                    putElement(e);
+                    this.putElement(e);
             }
         }
     }
@@ -239,25 +239,25 @@ public class RenderTargetBaked extends RenderTargetBase {
                 n = 0;
             switch (e.getType()) {
                 case BYTE:
-                    buf.put((byte) (n.floatValue() * 0x7f));
+                    this.buf.put((byte) (n.floatValue() * 0x7f));
                     break;
                 case UBYTE:
-                    buf.put((byte) (n.floatValue() * 0xff));
+                    this.buf.put((byte) (n.floatValue() * 0xff));
                     break;
                 case SHORT:
-                    buf.putShort((short) (n.floatValue() * 0x7fff));
+                    this.buf.putShort((short) (n.floatValue() * 0x7fff));
                     break;
                 case USHORT:
-                    buf.putShort((short) (n.floatValue() * 0xffff));
+                    this.buf.putShort((short) (n.floatValue() * 0xffff));
                     break;
                 case INT:
-                    buf.putInt((int) (n.doubleValue() * 0x7fffffff));
+                    this.buf.putInt((int) (n.doubleValue() * 0x7fffffff));
                     break;
                 case UINT:
-                    buf.putInt((int) (n.doubleValue() * 0xffffffff));
+                    this.buf.putInt((int) (n.doubleValue() * 0xffffffff));
                     break;
                 case FLOAT:
-                    buf.putFloat(n.floatValue());
+                    this.buf.putFloat(n.floatValue());
                     break;
             }
         }

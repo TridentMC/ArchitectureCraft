@@ -46,7 +46,7 @@ public class ItemArchitecture extends Item implements ITextureConsumer {
 
     @Override
     public boolean getHasSubtypes() {
-        return getNumSubtypes() > 1;
+        return this.getNumSubtypes() > 1;
     }
 
 }

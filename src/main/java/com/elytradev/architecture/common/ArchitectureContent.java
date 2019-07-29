@@ -134,20 +134,20 @@ public class ArchitectureContent {
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
-        this.blockSawbench = registerBlock(registry, "sawbench", new BlockSawbench());
-        this.blockShape = registerBlock(registry, "shape", new BlockShape(), ItemShape.class);
+        this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
+        this.blockShape = this.registerBlock(registry, "shape", new BlockShape(), ItemShape.class);
     }
 
     @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
-        this.itemSawblade = registerItem(registry, "sawblade");
-        this.itemLargePulley = registerItem(registry, "largePulley");
-        this.itemChisel = registerItem(registry, "chisel", new ItemChisel());
-        this.itemHammer = registerItem(registry, "hammer", new ItemHammer());
-        this.itemCladding = registerItem(registry, "cladding", new ItemCladding());
+        this.itemSawblade = this.registerItem(registry, "sawblade");
+        this.itemLargePulley = this.registerItem(registry, "largePulley");
+        this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel());
+        this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer());
+        this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding());
 
-        this.itemBlocksToRegister.forEach(registry::register);
+        itemBlocksToRegister.forEach(registry::register);
 
         ArchitectureMod.PROXY.registerCustomRenderers();
     }
@@ -155,34 +155,34 @@ public class ArchitectureContent {
     @SubscribeEvent
     public void onRecipeRegister(RegistryEvent.Register<IRecipe> event) {
         IForgeRegistry<IRecipe> registry = event.getRegistry();
-        registerShapedRecipe(registry, blockSawbench,
+        this.registerShapedRecipe(registry, this.blockSawbench,
                 "I*I",
                 "/0/",
                 "/_/",
                 'I', "ingotIron",
-                '*', itemSawblade,
+                '*', this.itemSawblade,
                 '/', "stickWood",
                 '_', Blocks.WOODEN_PRESSURE_PLATE,
-                '0', itemLargePulley);
-        registerShapedRecipe(registry, itemSawblade,
+                '0', this.itemLargePulley);
+        this.registerShapedRecipe(registry, this.itemSawblade,
                 " I ",
                 "I/I",
                 " I ",
                 'I', "ingotIron",
                 '/', "stickWood");
-        registerShapedRecipe(registry, itemLargePulley,
+        this.registerShapedRecipe(registry, this.itemLargePulley,
                 " W ",
                 "W/W",
                 " W ",
                 'W', "plankWood",
                 '/', "stickWood");
-        registerShapedRecipe(registry, itemChisel,
+        this.registerShapedRecipe(registry, this.itemChisel,
                 "I ",
                 "ds",
                 'I', "ingotIron",
                 's', "stickWood",
                 'd', "dyeOrange");
-        registerShapedRecipe(registry, itemHammer,
+        this.registerShapedRecipe(registry, this.itemHammer,
                 "II ",
                 "dsI",
                 "ds ",
@@ -192,25 +192,25 @@ public class ArchitectureContent {
     }
 
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, Block out, Object... input) {
-        registerShapedRecipe(registry, new ItemStack(out, 1), input);
+        this.registerShapedRecipe(registry, new ItemStack(out, 1), input);
     }
 
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, Item out, Object... input) {
-        registerShapedRecipe(registry, new ItemStack(out, 1), input);
+        this.registerShapedRecipe(registry, new ItemStack(out, 1), input);
     }
 
     private void registerShapedRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
+        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + this.recipeID++);
         registry.register(new ShapedOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
     }
 
     private void registerShapelessRecipe(IForgeRegistry<IRecipe> registry, ItemStack out, Object... input) {
-        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + recipeID++);
+        ResourceLocation resourceLocation = new ResourceLocation(MOD_ID, out.getTranslationKey() + this.recipeID++);
         registry.register(new ShapelessOreRecipe(resourceLocation, out, input).setRegistryName(resourceLocation));
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block) {
-        return registerBlock(registry, id, block, true);
+        return this.registerBlock(registry, id, block, true);
     }
 
     private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, boolean withItemBlock) {

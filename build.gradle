@@ -57,22 +57,22 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 project.ext.package = project.ext.group + '.' + project.ext.projectName.toLowerCase()
 
 if (project.ext.useElytraVersionFormat) {
-    def branch;
+    def branch
     if (System.env.BRANCH_NAME) {
         // Jenkins support
-        branch = System.env.BRANCH_NAME;
-        branch = branch.substring(branch.lastIndexOf('/') + 1);
+        branch = System.env.BRANCH_NAME
+        branch = branch.substring(branch.lastIndexOf('/') + 1)
     } else {
-        branch = 'git rev-parse --abbrev-ref HEAD'.execute().in.text.trim();
+        branch = 'git rev-parse --abbrev-ref HEAD'.execute().in.text.trim()
     }
     if (branch == "HEAD") {
-        branch = 'git rev-parse --short HEAD'.execute().in.text.trim();
+        branch = 'git rev-parse --short HEAD'.execute().in.text.trim()
     }
-    def commits = 'git rev-list --count HEAD'.execute().in.text.trim();
-    def dirty = !'git diff-index HEAD'.execute().in.text.trim().isEmpty();
-    version = branch + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '');
+    def commits = 'git rev-list --count HEAD'.execute().in.text.trim()
+    def dirty = !'git diff-index HEAD'.execute().in.text.trim().isEmpty()
+    version = branch + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '')
 } else {
-    version = project.ext.version;
+    version = project.ext.version
 }
 println()
 println("Elytra Project Skeleton v1.1.2")
@@ -87,7 +87,7 @@ if (!project.ext.concreteModules.isEmpty()) {
     println("Concrete Version: " + project.ext.concreteVersion)
 }
 if (project.ext.coremod && project.ext.miniVersion) {
-    println("Mini Version: " + project.ext.miniVersion);
+    println("Mini Version: " + project.ext.miniVersion)
 }
 println("Forge Version: " + project.ext.forge)
 println("Mappings: " + project.ext.mappings)

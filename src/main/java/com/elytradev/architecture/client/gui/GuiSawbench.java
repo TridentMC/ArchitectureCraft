@@ -81,42 +81,42 @@ public class GuiSawbench extends BaseGui.Screen {
     @Override
     protected void drawBackgroundLayer() {
         glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        bindTexture("gui/gui_sawbench.png", 256, 256);
-        drawTexturedRect(0, 0, this.xSize, this.ySize, 0, 0);
-        drawShapeMenu();
-        drawShapeSelection();
-        drawPageMenu();
-        drawSelectedShapeTitle();
-        fontRenderer.drawString("Sawbench", 7, 7, 4210752);
+        this.bindTexture("gui/gui_sawbench.png", 256, 256);
+        this.drawTexturedRect(0, 0, this.xSize, this.ySize, 0, 0);
+        this.drawShapeMenu();
+        this.drawShapeSelection();
+        this.drawPageMenu();
+        this.drawSelectedShapeTitle();
+        this.fontRenderer.drawString("Sawbench", 7, 7, 4210752);
     }
 
     void drawPageMenu() {
         glPushMatrix();
         glTranslatef(pageMenuLeft, pageMenuTop, 0);
-        gSave();
-        setColor(102 / 255d, 204 / 255d, 1);
-        drawRect(0, te.selectedPage * pageMenuRowHeight, pageMenuWidth, pageMenuRowHeight);
-        gRestore();
+        this.gSave();
+        this.setColor(102 / 255d, 204 / 255d, 1);
+        this.drawRect(0, this.te.selectedPage * pageMenuRowHeight, pageMenuWidth, pageMenuRowHeight);
+        this.gRestore();
         for (int i = 0; i < TileSawbench.pages.length; i++) {
-            drawString(TileSawbench.pages[i].title, 1, 1);
+            this.drawString(TileSawbench.pages[i].title, 1, 1);
             glTranslatef(0, pageMenuRowHeight, 0);
         }
         glPopMatrix();
     }
 
     void drawShapeMenu() {
-        gSave();
+        this.gSave();
         glPushMatrix();
         glDisable(GL_ALPHA_TEST);
         glEnable(GL_BLEND);
         glTranslatef(shapeMenuLeft, shapeMenuTop, 0);
-        bindTexture("gui/shapemenu_bg.png", 256, 256);
+        this.bindTexture("gui/shapemenu_bg.png", 256, 256);
         double w = shapeMenuWidth + 2 * shapeMenuMargin;
         double h = shapeMenuHeight + 2 * shapeMenuMargin;
-        drawTexturedRect(-shapeMenuMargin, -shapeMenuMargin, w, h,
+        this.drawTexturedRect(-shapeMenuMargin, -shapeMenuMargin, w, h,
                 0, 0, shapeMenuScale * w, shapeMenuScale * h);
-        bindTexture("gui/shapemenu_items.png", 512, 512);
-        int p = te.selectedPage;
+        this.bindTexture("gui/shapemenu_items.png", 512, 512);
+        int p = this.te.selectedPage;
         if (p >= 0 && p < TileSawbench.pages.length) {
             ShapePage page = TileSawbench.pages[p];
             if (page != null) {
@@ -126,7 +126,7 @@ public class GuiSawbench extends BaseGui.Screen {
                     int mrow = i / shapeMenuCols, mcol = i % shapeMenuCols;
                     int id = shape.id;
                     int trow = id / 10, tcol = id % 10;
-                    drawTexturedRect(
+                    this.drawTexturedRect(
                             (mcol + 0.5) * shapeMenuCellSize - 0.5 * shapeMenuItemWidth,
                             (mrow + 0.5) * shapeMenuCellSize - 0.5 * shapeMenuItemHeight,
                             shapeMenuItemWidth, shapeMenuItemHeight,
@@ -136,30 +136,30 @@ public class GuiSawbench extends BaseGui.Screen {
             }
         }
         glPopMatrix();
-        gRestore();
+        this.gRestore();
     }
 
     void drawShapeSelection() {
-        int i = te.selectedSlots[te.selectedPage];
+        int i = this.te.selectedSlots[this.te.selectedPage];
         int row = i / shapeMenuCols;
         int col = i % shapeMenuCols;
         int x = shapeMenuLeft + shapeMenuCellSize * col;
         int y = shapeMenuTop + shapeMenuCellSize * row;
-        drawTexturedRect(x, y, 24.5, 24.5, 44, 23, 49, 49);
+        this.drawTexturedRect(x, y, 24.5, 24.5, 44, 23, 49, 49);
     }
 
     void drawSelectedShapeTitle() {
-        Shape shape = te.getSelectedShape();
+        Shape shape = this.te.getSelectedShape();
         if (shape != null) {
             int x = selectedShapeTitleLeft;
-            int w = fontRenderer.getStringWidth(shape.title);
+            int w = this.fontRenderer.getStringWidth(shape.title);
             if (x + w > selectedShapeTitleRight)
                 x = selectedShapeTitleRight - w;
-            drawString(shape.title, x, selectedShapeTitleTop);
+            this.drawString(shape.title, x, selectedShapeTitleTop);
             glPushMatrix();
             glTranslatef(materialUsageLeft, materialUsageTop, 0);
             glScalef(0.5f, 0.5f, 1.0f);
-            drawString(String.format("%s makes %s", te.materialMultiple(), te.resultMultiple()), 0, 0);
+            this.drawString(String.format("%s makes %s", this.te.materialMultiple(), this.te.resultMultiple()), 0, 0);
             glPopMatrix();
         }
     }
@@ -167,10 +167,10 @@ public class GuiSawbench extends BaseGui.Screen {
     @Override
     protected void mousePressed(int x, int y, int btn) {
         if (x >= pageMenuLeft && y >= pageMenuTop && x < pageMenuLeft + pageMenuWidth)
-            clickPageMenu(x - pageMenuLeft, y - pageMenuTop);
+            this.clickPageMenu(x - pageMenuLeft, y - pageMenuTop);
         else if (x >= shapeMenuLeft && y >= shapeMenuTop &&
                 x < shapeMenuLeft + shapeMenuWidth && y < shapeMenuTop + shapeMenuHeight)
-            clickShapeMenu(x - shapeMenuLeft, y - shapeMenuTop);
+            this.clickShapeMenu(x - shapeMenuLeft, y - shapeMenuTop);
         else
             super.mousePressed(x, y, btn);
     }
@@ -178,7 +178,7 @@ public class GuiSawbench extends BaseGui.Screen {
     void clickPageMenu(int x, int y) {
         int i = y / pageMenuRowHeight;
         if (i >= 0 && i < TileSawbench.pages.length)
-            sendSelectShape(i, te.selectedSlots[i]);
+            this.sendSelectShape(i, this.te.selectedSlots[i]);
     }
 
     void clickShapeMenu(int x, int y) {
@@ -186,11 +186,11 @@ public class GuiSawbench extends BaseGui.Screen {
         int col = x / shapeMenuCellSize;
         if (row >= 0 && row < shapeMenuRows && col >= 0 && col < shapeMenuCols) {
             int i = row * shapeMenuCols + col;
-            sendSelectShape(te.selectedPage, i);
+            this.sendSelectShape(this.te.selectedPage, i);
         }
     }
 
     protected void sendSelectShape(int page, int slot) {
-        new SelectShapeMessage(te, page, slot).sendToServer();
+        new SelectShapeMessage(this.te, page, slot).sendToServer();
     }
 }

@@ -67,12 +67,12 @@ public class CommonProxy {
     }
 
     public IArchitectureModel getModel(String name) {
-        ResourceLocation loc = modelLocation(name);
-        IArchitectureModel model = modelCache.get(loc);
+        ResourceLocation loc = this.modelLocation(name);
+        IArchitectureModel model = this.modelCache.get(loc);
         if (model == null) {
             long t0 = System.nanoTime();
             model = OBJSONModel.fromResource(loc);
-            modelCache.put(loc, model);
+            this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
             ArchitectureLog.info("Loaded and cached {} in {} nanos.", name, t1 - t0);
         }

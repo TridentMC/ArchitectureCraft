@@ -58,10 +58,10 @@ public class RenderTargetWorld extends RenderTargetBase {
         this.world = world;
         this.blockPos = pos;
         this.blockState = world.getBlockState(pos);
-        this.block = blockState.getBlock();
+        this.block = this.blockState.getBlock();
         this.setBuff(buff);
-        ao = Minecraft.isAmbientOcclusionEnabled() && block.getLightValue(blockState) == 0;
-        expandTrianglesToQuads = true;
+        this.ao = Minecraft.isAmbientOcclusionEnabled() && this.block.getLightValue(this.blockState) == 0;
+        this.expandTrianglesToQuads = true;
     }
 
 
@@ -72,20 +72,20 @@ public class RenderTargetWorld extends RenderTargetBase {
 //      ArchitectureLog.info("BaseWorldRenderer.setNormal: %s (%.3f, %.3f, %.3f)\n",
 //          vertexCount, n.x, n.y, n.z);
         super.setNormal(n);
-        axisAlignedNormal = n.dot(face) >= 0.99;
+        this.axisAlignedNormal = n.dot(this.face) >= 0.99;
     }
 
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
-        lightVertex(p);
+        this.lightVertex(p);
         //ArchitectureLog.info("BaseWorldRenderer.rawAddVertex: %s (%.3f, %.3f, %.3f) rgba (%.3f, %.3f, %.3f, %.3f) uv (%.5f, %.5f) lm (%s, %s)\n",
         //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // buff.getCurrentOffset());
-        getWorldRenderer().pos(p.x, p.y, p.z);
-        getWorldRenderer().color(vr, vg, vb, va);
-        getWorldRenderer().tex(u, v);
-        getWorldRenderer().lightmap(vlm1, vlm2);
-        getWorldRenderer().endVertex();
-        renderingOccurred = true;
+        this.getWorldRenderer().pos(p.x, p.y, p.z);
+        this.getWorldRenderer().color(this.vr, this.vg, this.vb, this.va);
+        this.getWorldRenderer().tex(u, v);
+        this.getWorldRenderer().lightmap(this.vlm1, this.vlm2);
+        this.getWorldRenderer().endVertex();
+        this.renderingOccurred = true;
 //      if (textureOverride)
 //          buff.dumpLastVertex();
     }
@@ -94,14 +94,14 @@ public class RenderTargetWorld extends RenderTargetBase {
 
     protected void lightVertex(Vector3 p) {
         // TODO: Colour multiplier
-        if (ao)
-            aoLightVertex(p);
+        if (this.ao)
+            this.aoLightVertex(p);
         else
-            brLightVertex(p);
+            this.brLightVertex(p);
     }
 
     protected void aoLightVertex(Vector3 v) {
-        Vector3 n = normal;
+        Vector3 n = this.normal;
         double brSum1 = 0, brSum2 = 0, lvSum = 0, wt = 0;
         // Sample a unit cube offset half a block in the direction of the normal
         double vx = v.x + 0.5 * n.x;
@@ -124,15 +124,15 @@ public class RenderTargetWorld extends RenderTargetBase {
                     if (w > 0) {
                         int br;
                         try {
-                            br = block.getPackedLightmapCoords(blockState, world, pos);
+                            br = this.block.getPackedLightmapCoords(this.blockState, this.world, pos);
                         } catch (RuntimeException e) {
                             ArchitectureLog.info("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
-                                    pos, w, blockPos, e);
+                                    pos, w, this.blockPos, e);
                             throw e;
                         }
                         float lv;
-                        if (!pos.equals(blockPos)) {
-                            IBlockState state = world.getBlockState(pos);
+                        if (!pos.equals(this.blockPos)) {
+                            IBlockState state = this.world.getBlockState(pos);
                             lv = state.getBlock().getAmbientOcclusionLightValue(state);
                         } else
                             lv = 1.0f;
@@ -150,41 +150,41 @@ public class RenderTargetWorld extends RenderTargetBase {
         if (wt > 0)
             brv = (iround(brSum1 / wt * 0xf0) << 16) | iround(brSum2 / wt * 0xf0);
         else
-            brv = block.getPackedLightmapCoords(blockState, world, blockPos);
+            brv = this.block.getPackedLightmapCoords(this.blockState, this.world, this.blockPos);
         float lvv = (float) lvSum;
-        setLight(shade * lvv, brv);
+        this.setLight(this.shade * lvv, brv);
     }
 
     protected void brLightVertex(Vector3 p) {
-        Vector3 n = normal;
+        Vector3 n = this.normal;
         BlockPos pos;
-        if (axisAlignedNormal)
+        if (this.axisAlignedNormal)
             pos = new BlockPos(
                     (int) floor(p.x + 0.01 * n.x),
                     (int) floor(p.y + 0.01 * n.y),
                     (int) floor(p.z + 0.01 * n.z));
         else
-            pos = blockPos;
-        int br = block.getPackedLightmapCoords(blockState, world, pos);
-        setLight(shade, br);
+            pos = this.blockPos;
+        int br = this.block.getPackedLightmapCoords(this.blockState, this.world, pos);
+        this.setLight(this.shade, br);
     }
 
     protected void setLight(float shadow, int br) {
-        vr = shadow * cmr * r();
-        vg = shadow * cmg * g();
-        vb = shadow * cmb * b();
-        va = a();
-        vlm1 = br >> 16;
-        vlm2 = br & 0xffff;
+        this.vr = shadow * this.cmr * this.r();
+        this.vg = shadow * this.cmg * this.g();
+        this.vb = shadow * this.cmb * this.b();
+        this.va = this.a();
+        this.vlm1 = br >> 16;
+        this.vlm2 = br & 0xffff;
     }
 
     public boolean end() {
         super.finish();
-        return renderingOccurred;
+        return this.renderingOccurred;
     }
 
     public BufferBuilder getWorldRenderer() {
-        return buff;
+        return this.buff;
     }
 
     public void setBuff(BufferBuilder buff) {

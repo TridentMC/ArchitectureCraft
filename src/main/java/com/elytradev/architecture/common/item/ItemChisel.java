@@ -42,7 +42,7 @@ import net.minecraft.world.World;
 public class ItemChisel extends Item {
 
     public ItemChisel() {
-        setMaxStackSize(1);
+        this.setMaxStackSize(1);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ItemChisel extends Item {
                 || block == Blocks.GLOWSTONE || block == Blocks.ICE) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0x3);
             if (!world.isRemote) {
-                dropBlockAsItem(world, pos, state);
+                this.dropBlockAsItem(world, pos, state);
                 world.playEvent(2001, pos, Block.getStateId(Blocks.STONE.getDefaultState())); // block breaking sound and particles
             }
             return EnumActionResult.SUCCESS;

@@ -107,7 +107,8 @@ public class BlockShape extends BlockArchitecture<TileShape> {
             if (world != null && pos != null) {
                 TileShape shape = TileShape.get(world, pos);
                 if (shape != null) {
-                    return shape.baseBlockState.getBlock().getHarvestTool(shape.baseBlockState);
+                    IBlockState baseBlockState = shape.getBaseBlockState();
+                    return baseBlockState.getBlock().getHarvestTool(baseBlockState);
                 }
             }
         }
@@ -124,7 +125,8 @@ public class BlockShape extends BlockArchitecture<TileShape> {
             if (world != null && pos != null) {
                 TileShape shape = TileShape.get(world, pos);
                 if (shape != null) {
-                    return shape.baseBlockState.getBlock().getMaterial(shape.baseBlockState);
+                    IBlockState baseBlockState = shape.getBaseBlockState();
+                    return baseBlockState.getBlock().getMaterial(baseBlockState);
                 }
             }
         }
@@ -136,7 +138,8 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     public MapColor getMapColor(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
-            return shape.baseBlockState.getBlock().getMapColor(shape.baseBlockState, world, pos);
+            IBlockState baseBlockState = shape.getBaseBlockState();
+            return baseBlockState.getBlock().getMapColor(baseBlockState, world, pos);
         }
 
         return super.getMapColor(state, world, pos);
@@ -151,7 +154,8 @@ public class BlockShape extends BlockArchitecture<TileShape> {
             if (world != null && pos != null) {
                 TileShape shape = TileShape.get(world, pos);
                 if (shape != null) {
-                    return shape.baseBlockState.getBlock().getHarvestLevel(shape.baseBlockState);
+                    IBlockState baseBlockState = shape.getBaseBlockState();
+                    return baseBlockState.getBlock().getHarvestLevel(baseBlockState);
                 }
             }
         }
@@ -162,8 +166,9 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
         TileShape shape = TileShape.get(worldIn, pos);
-        if (shape != null && shape.baseBlockState != null) {
-            return shape.baseBlockState.getBlock().getBlockHardness(shape.baseBlockState, worldIn, pos);
+        if (shape != null && shape.hasBaseBlockState()) {
+            IBlockState baseBlockState = shape.getBaseBlockState();
+            return baseBlockState.getBlock().getBlockHardness(baseBlockState, worldIn, pos);
         }
 
         return super.getBlockHardness(blockState, worldIn, pos);
@@ -204,7 +209,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         RayTraceResult result = null;
         double nearestDistance = 0;
-        List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, null);
+        List<AxisAlignedBB> list = this.getGlobalCollisionBoxes(world, pos, state, null);
         if (list != null) {
             int n = list.size();
             for (int i = 0; i < n; i++) {
@@ -223,7 +228,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         if (result != null) {
             //setBlockBounds(list.get(result.subHit));
             int i = result.subHit;
-            boxHit = list.get(i).offset(-pos.getX(), -pos.getY(), -pos.getZ());
+            this.boxHit = list.get(i).offset(-pos.getX(), -pos.getY(), -pos.getZ());
             result = new RayTraceResult(result.hitVec, result.sideHit, pos);
             result.subHit = i;
         }
@@ -232,12 +237,12 @@ public class BlockShape extends BlockArchitecture<TileShape> {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-        if (boxHit != null) {
+        if (this.boxHit != null) {
             TileShape te = TileShape.get(world, pos);
-            if (te != null && te.shape.kind.highlightZones())
-                return boxHit;
+            if (te != null && te.getShape().kind.highlightZones())
+                return this.boxHit;
         }
-        AxisAlignedBB box = getLocalBounds(world, pos, state, null);
+        AxisAlignedBB box = this.getLocalBounds(world, pos, state, null);
         if (box != null)
             return box;
         else
@@ -247,7 +252,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos,
                                       AxisAlignedBB clip, List result, Entity entity, boolean b) {
-        List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, entity);
+        List<AxisAlignedBB> list = this.getGlobalCollisionBoxes(world, pos, state, entity);
         if (list != null)
             for (AxisAlignedBB box : list)
                 if (clip.intersects(box))
@@ -257,10 +262,10 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockAccess world, BlockPos pos,
                                                           IBlockState state, Entity entity) {
-        TileShape te = getTileEntity(world, pos);
+        TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation();
-            return getCollisionBoxes(te, world, pos, state, t, entity);
+            return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
         return new ArrayList<AxisAlignedBB>();
     }
@@ -268,10 +273,10 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockAccess world, BlockPos pos,
                                                          IBlockState state, Entity entity) {
-        TileShape te = getTileEntity(world, pos);
+        TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
-            return getCollisionBoxes(te, world, pos, state, t, entity);
+            return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
         return new ArrayList<AxisAlignedBB>();
     }
@@ -279,10 +284,10 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     protected AxisAlignedBB getLocalBounds(IBlockAccess world, BlockPos pos,
                                            IBlockState state, Entity entity) {
-        TileShape te = getTileEntity(world, pos);
+        TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.blockCenter);
-            return te.shape.kind.getBounds(te, world, pos, state, entity, t);
+            return te.getShape().kind.getBounds(te, world, pos, state, entity, t);
         }
         return null; // Causes getBoundingBox to fall back on super implementation
     }
@@ -290,7 +295,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     protected List<AxisAlignedBB> getCollisionBoxes(TileShape te,
                                                     IBlockAccess world, BlockPos pos, IBlockState state, Trans3 t, Entity entity) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        te.shape.kind.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
+        te.getShape().kind.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return list;
     }
 
@@ -300,10 +305,10 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         List<ItemStack> result = new ArrayList<ItemStack>();
         if (te instanceof TileShape) {
             TileShape ste = (TileShape) te;
-            ItemStack stack = ste.shape.kind.newStack(ste.shape, ste.baseBlockState, 1);
+            ItemStack stack = ste.getShape().kind.newStack(ste.getShape(), ste.getBaseBlockState(), 1);
             result.add(stack);
-            if (ste.secondaryBlockState != null) {
-                stack = ste.shape.kind.newSecondaryMaterialStack(ste.secondaryBlockState);
+            if (ste.hasSecondaryBlockState() ) {
+                stack = ste.getShape().kind.newSecondaryMaterialStack(ste.getSecondaryBlockState());
                 result.add(stack);
             }
         }
@@ -320,16 +325,16 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     }
 
     public IBlockState getBaseBlockState(IBlockAccess world, BlockPos pos) {
-        TileShape te = getTileEntity(world, pos);
+        TileShape te = this.getTileEntity(world, pos);
         if (te != null)
-            return te.baseBlockState;
+            return te.getBaseBlockState();
         return null;
     }
 
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
         float result = 1.0F;
-        IBlockState base = getBaseBlockState(world, pos);
+        IBlockState base = this.getBaseBlockState(world, pos);
         if (base != null) {
             //System.out.printf("ShapeBlock.getPlayerRelativeBlockHardness: base = %s\n", base);
             result = acBlockStrength(base, player, world, pos);
@@ -339,17 +344,17 @@ public class BlockShape extends BlockArchitecture<TileShape> {
 
     @Override
     public IBlockState getParticleState(IBlockAccess world, BlockPos pos) {
-        IBlockState base = getBaseBlockState(world, pos);
+        IBlockState base = this.getBaseBlockState(world, pos);
         if (base != null)
             return base;
         else
-            return getDefaultState();
+            return this.getDefaultState();
     }
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.inventory.getCurrentItem();
-        if (stack != null) {
+        if (!stack.isEmpty()) {
             TileShape te = TileShape.get(world, pos);
             if (te != null)
                 return te.applySecondaryMaterial(stack, player);

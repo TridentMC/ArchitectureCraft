@@ -52,11 +52,11 @@ public class ContainerSawbench extends BaseContainer {
     public ContainerSawbench(EntityPlayer player, TileSawbench te) {
         super(guWidth, guiHeight);
         this.te = te;
-        sawbenchSlotRange = new SlotRange();
-        materialSlot = addSlotToContainer(new Slot(te, 0, inputSlotLeft, inputSlotTop));
-        resultSlot = addSlotToContainer(new SlotSawbenchResult(te, 1, outputSlotLeft, outputSlotTop));
-        sawbenchSlotRange.end();
-        addPlayerSlots(player, 8, guiHeight - 81);
+        this.sawbenchSlotRange = new SlotRange();
+        this.materialSlot = this.addSlotToContainer(new Slot(te, 0, inputSlotLeft, inputSlotTop));
+        this.resultSlot = this.addSlotToContainer(new SlotSawbenchResult(te, 1, outputSlotLeft, outputSlotTop));
+        this.sawbenchSlotRange.end();
+        this.addPlayerSlots(player, 8, guiHeight - 81);
     }
 
     public static Container create(EntityPlayer player, World world, BlockPos pos) {
@@ -74,10 +74,10 @@ public class ContainerSawbench extends BaseContainer {
 
     @Override
     protected SlotRange transferSlotRange(int srcSlotIndex, ItemStack stack) {
-        if (playerSlotRange.contains(srcSlotIndex))
-            return sawbenchSlotRange;
+        if (this.playerSlotRange.contains(srcSlotIndex))
+            return this.sawbenchSlotRange;
         else
-            return playerSlotRange;
+            return this.playerSlotRange;
     }
 
     @Override
@@ -88,10 +88,10 @@ public class ContainerSawbench extends BaseContainer {
             if (!ItemStack.areItemStacksEqual(oldstack, newstack)) {
                 oldstack = newstack.isEmpty() ? ItemStack.EMPTY : newstack.copy();
                 this.inventoryItemStacks.set(i, oldstack);
-                for (Object listener : listeners) {
+                for (Object listener : this.listeners) {
                     if (listener instanceof EntityPlayerMP) {
                         ((EntityPlayerMP) listener).connection.sendPacket(
-                                new SPacketSetSlot(windowId, i, newstack));
+                                new SPacketSetSlot(this.windowId, i, newstack));
                     } else
                         ((IContainerListener) listener).sendSlotContents(this, i, newstack);
                 }
@@ -106,7 +106,7 @@ public class ContainerSawbench extends BaseContainer {
     @Override
     public void putStackInSlot(int i, ItemStack stack) {
         // Slot update packet has arrived from server. Do not trigger crafting behaviour.
-        Slot slot = getSlot(i);
+        Slot slot = this.getSlot(i);
         if (slot instanceof SlotSawbench) {
             ((SlotSawbench) slot).updateFromServer(stack);
         } else
@@ -117,19 +117,19 @@ public class ContainerSawbench extends BaseContainer {
     // to get pending material used.
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int index) {
-        Slot slot = getSlot(index);
-        if (slot == resultSlot)
-            return transferStackInResultSlot(player, index);
+        Slot slot = this.getSlot(index);
+        if (slot == this.resultSlot)
+            return this.transferStackInResultSlot(player, index);
         else
             return super.transferStackInSlot(player, index);
     }
 
     protected ItemStack transferStackInResultSlot(EntityPlayer player, int index) {
-        boolean materialWasPending = te.pendingMaterialUsage;
-        ItemStack origMaterialStack = te.usePendingMaterial();
+        boolean materialWasPending = this.te.pendingMaterialUsage;
+        ItemStack origMaterialStack = this.te.usePendingMaterial();
         ItemStack result = super.transferStackInSlot(player, index);
         if (materialWasPending)
-            te.returnUnusedMaterial(origMaterialStack);
+            this.te.returnUnusedMaterial(origMaterialStack);
         return result;
     }
 }
@@ -146,7 +146,7 @@ class SlotSawbench extends Slot {
     }
 
     void updateFromServer(ItemStack stack) {
-        te.inventory.setInventorySlotContents(index, stack);
+        this.te.inventory.setInventorySlotContents(this.index, stack);
     }
 
 }

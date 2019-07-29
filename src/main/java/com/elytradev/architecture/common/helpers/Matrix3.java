@@ -52,7 +52,7 @@ public class Matrix3 {
                 sideTurnRotations[side][turn] = sideRotations[side].mul(turnRotations[turn]);
     }
 
-    public double m[][] = new double[][]{
+    public double[][] m = new double[][]{
             {1, 0, 0},
             {0, 1, 0},
             {0, 0, 1}
@@ -86,7 +86,7 @@ public class Matrix3 {
         Matrix3 r = new Matrix3();
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
-                r.m[i][j] = m[i][0] * n.m[0][j] + m[i][1] * n.m[1][j] + m[i][2] * n.m[2][j];
+                r.m[i][j] = this.m[i][0] * n.m[0][j] + this.m[i][1] * n.m[1][j] + this.m[i][2] * n.m[2][j];
         return r;
     }
 
@@ -100,38 +100,38 @@ public class Matrix3 {
 
     public Vector3 mul(double x, double y, double z) {
         return new Vector3(
-                x * m[0][0] + y * m[0][1] + z * m[0][2],
-                x * m[1][0] + y * m[1][1] + z * m[1][2],
-                x * m[2][0] + y * m[2][1] + z * m[2][2]
+                x * this.m[0][0] + y * this.m[0][1] + z * this.m[0][2],
+                x * this.m[1][0] + y * this.m[1][1] + z * this.m[1][2],
+                x * this.m[2][0] + y * this.m[2][1] + z * this.m[2][2]
         );
     }
 
     public Vector3 imul(double x, double y, double z) {
         //  Multiply by inverse, assuming an orthonormal matrix
         return new Vector3(
-                x * m[0][0] + y * m[1][0] + z * m[2][0],
-                x * m[0][1] + y * m[1][1] + z * m[2][1],
-                x * m[0][2] + y * m[1][2] + z * m[2][2]
+                x * this.m[0][0] + y * this.m[1][0] + z * this.m[2][0],
+                x * this.m[0][1] + y * this.m[1][1] + z * this.m[2][1],
+                x * this.m[0][2] + y * this.m[1][2] + z * this.m[2][2]
         );
     }
 
     public Vector3 mul(Vector3 v) {
-        return mul(v.x, v.y, v.z);
+        return this.mul(v.x, v.y, v.z);
     }
 
     public Vector3 imul(Vector3 v) {
-        return imul(v.x, v.y, v.z);
+        return this.imul(v.x, v.y, v.z);
     }
 
     public void dump() {
         for (int i = 0; i < 3; i++)
-            ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", m[i][0], m[i][1], m[i][2]);
+            ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", this.m[i][0], this.m[i][1], this.m[i][2]);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("m", m)
+                .add("m", this.m)
                 .toString();
     }
 }

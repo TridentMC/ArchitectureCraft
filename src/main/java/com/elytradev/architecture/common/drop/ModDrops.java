@@ -45,7 +45,7 @@ public class ModDrops {
                     Class<?> dropClass = Class.forName(asmData.getClassName());
                     if (IModDrop.class.isAssignableFrom(dropClass)) {
                         IModDrop drop = (IModDrop) dropClass.newInstance();
-                        registeredDrops.add(drop);
+                        this.registeredDrops.add(drop);
                     }
                 }
             } catch (Exception exception) {

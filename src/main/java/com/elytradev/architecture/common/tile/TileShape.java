@@ -29,6 +29,7 @@ import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.shape.Shape;
+import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,28 +48,31 @@ import static com.elytradev.architecture.common.block.BlockHelper.getNameForBloc
 
 public class TileShape extends TileArchitecture {
 
-    public Shape shape;
-    public IBlockState baseBlockState;
-    public IBlockState secondaryBlockState;
-    public int disabledConnections;
+    private Shape shape;
+    private IBlockState baseBlockState;
+    private IBlockState secondaryBlockState;
     private byte offsetX;
+    private int disabledConnections;
 
     public TileShape() {
         super();
-        shape = Shape.ROOF_TILE;
-        baseBlockState = Blocks.PLANKS.getDefaultState();
+        this.shape = Shape.ROOF_TILE;
+        this.baseBlockState = Blocks.PLANKS.getDefaultState();
+        this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
     public TileShape(Shape s, IBlockState b) {
         super();
-        shape = s;
-        baseBlockState = b;
+        this.shape = s;
+        this.baseBlockState = b;
+        this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
     public TileShape(Shape s, Block b, int d) {
         super();
-        shape = s;
-        baseBlockState = b.getStateFromMeta(d);
+        this.shape = s;
+        this.baseBlockState = b.getStateFromMeta(d);
+        this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
     public static TileShape get(IBlockAccess world, BlockPos pos) {
@@ -81,16 +85,16 @@ public class TileShape extends TileArchitecture {
     }
 
     public double getOffsetX() {
-        return offsetX * (1 / 16.0);
+        return this.offsetX * (1 / 16.0);
     }
 
     public void setOffsetX(double value) {
-        offsetX = (byte) (16 * value);
+        this.offsetX = (byte) (16 * value);
     }
 
     @Override
-    public Trans3 localToGlobalTransformation(Vector3 origin) {
-        return super.localToGlobalTransformation(origin).translate(getOffsetX(), 0, 0);
+    public Trans3 localToGlobalTransformation(Vector3 origin, IBlockState state) {
+        return super.localToGlobalTransformation(origin, state).translate(this.getOffsetX(), 0, 0);
     }
 
     @Override
@@ -99,22 +103,22 @@ public class TileShape extends TileArchitecture {
     }
 
     public boolean connectionIsEnabledGlobal(EnumFacing dir) {
-        return (disabledConnections & (1 << dir.ordinal())) == 0;
+        return (this.disabledConnections & (1 << dir.ordinal())) == 0;
     }
 
     public void setConnectionEnabledGlobal(EnumFacing dir, boolean state) {
         int bit = 1 << dir.ordinal();
         if (state)
-            disabledConnections &= ~bit;
+            this.disabledConnections &= ~bit;
         else
-            disabledConnections |= bit;
-        markBlockChanged();
+            this.disabledConnections |= bit;
+        this.markBlockChanged();
     }
 
     public void toggleConnectionGlobal(EnumFacing dir) {
-        boolean newState = !connectionIsEnabledGlobal(dir);
-        setConnectionEnabledGlobal(dir, newState);
-        TileShape nte = getNeighbourGlobal(dir);
+        boolean newState = !this.connectionIsEnabledGlobal(dir);
+        this.setConnectionEnabledGlobal(dir, newState);
+        TileShape nte = this.getNeighbourGlobal(dir);
         if (nte != null)
             nte.setConnectionEnabledGlobal(dir.getOpposite(), newState);
     }
@@ -123,65 +127,64 @@ public class TileShape extends TileArchitecture {
     public void readFromNBT(NBTTagCompound nbt) {
         //System.out.printf("ShapeTE.readFromNBT: %s\n", pos);
         super.readFromNBT(nbt);
-        readShapeFromNBT(nbt);
-        readSecondaryMaterialFromNBT(nbt);
-        offsetX = nbt.getByte("offsetX");
+        this.readShapeFromNBT(nbt);
+        this.readSecondaryMaterialFromNBT(nbt);
+        this.offsetX = nbt.getByte("offsetX");
     }
 
     @Override
     public void readFromItemStackNBT(NBTTagCompound nbt) {
-        readShapeFromNBT(nbt);
+        this.readShapeFromNBT(nbt);
     }
 
     protected void readShapeFromNBT(NBTTagCompound nbt) {
-        shape = Shape.forId(nbt.getInteger("Shape"));
-        baseBlockState = nbtGetBlockState(nbt, "BaseName", "BaseData");
-        if (baseBlockState == null)
-            baseBlockState = Blocks.PLANKS.getDefaultState();
-        disabledConnections = nbt.getInteger("Disconnected");
+        this.shape = Shape.forId(nbt.getInteger("Shape"));
+        this.baseBlockState = this.nbtGetBlockState(nbt, "BaseName", "BaseData");
+        if (this.baseBlockState.getBlock() == Blocks.AIR.getDefaultState())
+            this.baseBlockState = Blocks.PLANKS.getDefaultState();
+        this.disabledConnections = nbt.getInteger("Disconnected");
     }
 
     protected void readSecondaryMaterialFromNBT(NBTTagCompound nbt) {
-        secondaryBlockState = nbtGetBlockState(nbt, "Name2", "Data2");
+        this.secondaryBlockState = this.nbtGetBlockState(nbt, "Name2", "Data2");
     }
 
     protected IBlockState nbtGetBlockState(NBTTagCompound nbt, String nameField, String dataField) {
         String blockName = nbt.getString(nameField);
-        if (blockName != null && blockName.length() > 0) {
+        if (!blockName.isEmpty()) {
             Block block = Block.getBlockFromName(blockName);
             int data = nbt.getInteger(dataField);
-            IBlockState state = block.getStateFromMeta(data);
-            return state;
+            return block != null ? block.getStateFromMeta(data) : Blocks.AIR.getDefaultState();
         }
-        return null;
+        return Blocks.AIR.getDefaultState();
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        writeShapeToNBT(nbt);
-        writeSecondaryMaterialToNBT(nbt);
-        if (offsetX != 0)
-            nbt.setByte("offsetX", offsetX);
+        this.writeShapeToNBT(nbt);
+        this.writeSecondaryMaterialToNBT(nbt);
+        if (this.offsetX != 0)
+            nbt.setByte("offsetX", this.offsetX);
         return nbt;
     }
 
     @Override
     public void writeToItemStackNBT(NBTTagCompound nbt) {
-        writeShapeToNBT(nbt);
+        this.writeShapeToNBT(nbt);
     }
 
     protected void writeShapeToNBT(NBTTagCompound nbt) {
-        if (shape != null) {
-            nbt.setInteger("Shape", shape.id);
-            nbtSetBlockState(nbt, "BaseName", "BaseData", baseBlockState);
+        if (this.shape != null) {
+            nbt.setInteger("Shape", this.shape.id);
+            this.nbtSetBlockState(nbt, "BaseName", "BaseData", this.baseBlockState);
         }
-        if (disabledConnections != 0)
-            nbt.setInteger("Disconnected", disabledConnections);
+        if (this.disabledConnections != 0)
+            nbt.setInteger("Disconnected", this.disabledConnections);
     }
 
     protected void writeSecondaryMaterialToNBT(NBTTagCompound nbt) {
-        nbtSetBlockState(nbt, "Name2", "Data2", secondaryBlockState);
+        this.nbtSetBlockState(nbt, "Name2", "Data2", this.secondaryBlockState);
     }
 
     protected void nbtSetBlockState(NBTTagCompound nbt, String nameField, String dataField, IBlockState state) {
@@ -193,11 +196,11 @@ public class TileShape extends TileArchitecture {
     }
 
     public void onChiselUse(EntityPlayer player, EnumFacing face, float hitX, float hitY, float hitZ) {
-        shape.kind.onChiselUse(this, player, face, hitVec(hitX, hitY, hitZ));
+        this.shape.kind.onChiselUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
     public void onHammerUse(EntityPlayer player, EnumFacing face, float hitX, float hitY, float hitZ) {
-        shape.kind.onHammerUse(this, player, face, hitVec(hitX, hitY, hitZ));
+        this.shape.kind.onHammerUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
     protected Vector3 hitVec(float hitX, float hitY, float hitZ) {
@@ -205,59 +208,60 @@ public class TileShape extends TileArchitecture {
     }
 
     public EnumFacing globalFace(EnumFacing face) {
-        return localToGlobalRotation().t(face);
+        return this.localToGlobalRotation().t(face);
     }
 
     public EnumFacing localFace(EnumFacing face) {
-        return localToGlobalRotation().it(face);
+        return this.localToGlobalRotation().it(face);
     }
 
     public boolean applySecondaryMaterial(ItemStack stack, EntityPlayer player) {
-        IBlockState materialState = null;
+        IBlockState materialState = Blocks.AIR.getDefaultState();
         Item item = stack.getItem();
-        if (item instanceof ItemCladding && shape.kind.acceptsCladding())
+        if (item instanceof ItemCladding && this.shape.kind.acceptsCladding()) {
             materialState = ((ItemCladding) item).blockStateFromStack(stack);
-        else {
+        } else {
             Block block = Block.getBlockFromItem(item);
-            if (block != null) {
+            if (block != Blocks.AIR) {
                 IBlockState state = block.getStateFromMeta(stack.getMetadata());
-                if (shape.kind.isValidSecondaryMaterial(state)) {
+                if (this.shape.kind.isValidSecondaryMaterial(state)) {
                     materialState = state;
                 }
             }
         }
-        if (materialState != null) {
-            if (secondaryBlockState == null) {
-                setSecondaryMaterial(materialState);
+        if (materialState.getBlock() != Blocks.AIR) {
+            if (this.secondaryBlockState == Blocks.AIR.getDefaultState()) {
+                this.setSecondaryMaterial(materialState);
                 if (!Utils.playerIsInCreativeMode(player))
                     stack.shrink(1);
             }
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     public void setSecondaryMaterial(IBlockState state) {
-        secondaryBlockState = state;
-        markBlockChanged();
+        this.secondaryBlockState = state;
+        this.markBlockChanged();
     }
 
     public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
-        if (baseBlockState.getBlock().canRenderInLayer(state, layer))
+        if (this.baseBlockState.getBlock().canRenderInLayer(state, layer))
             return true;
-        if (secondaryBlockState != null)
-            return secondaryBlockState.getBlock().canRenderInLayer(state, layer);
+        if (this.secondaryBlockState.getBlock() != Blocks.AIR)
+            return this.secondaryBlockState.getBlock().canRenderInLayer(state, layer);
         return false;
     }
 
     public TileShape getNeighbourGlobal(EnumFacing dir) {
-        return TileShape.get(world, pos.offset(dir));
+        return TileShape.get(this.world, this.pos.offset(dir));
     }
 
     public TileShape getConnectedNeighbourGlobal(EnumFacing dir) {
-        if (world != null) {
-            if (connectionIsEnabledGlobal(dir)) {
-                TileShape nte = getNeighbourGlobal(dir);
+        if (this.world != null) {
+            if (this.connectionIsEnabledGlobal(dir)) {
+                TileShape nte = this.getNeighbourGlobal(dir);
                 if (nte != null && nte.connectionIsEnabledGlobal(dir.getOpposite()))
                     return nte;
             }
@@ -265,4 +269,40 @@ public class TileShape extends TileArchitecture {
         return null;
     }
 
+    public boolean hasBaseBlockState() {
+        return this.baseBlockState.getBlock() != Blocks.AIR;
+    }
+
+    public boolean hasSecondaryBlockState() {
+        return this.secondaryBlockState.getBlock() != Blocks.AIR;
+    }
+
+    public boolean hasShape() {
+        return this.shape != null;
+    }
+
+    public Shape getShape() {
+        return this.shape;
+    }
+
+    public IBlockState getBaseBlockState() {
+        return this.baseBlockState;
+    }
+
+    public IBlockState getSecondaryBlockState() {
+        return this.secondaryBlockState;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("shape", this.shape)
+                .add("side", this.getSide())
+                .add("turn", this.getTurn())
+                .add("baseBlockState", this.baseBlockState)
+                .add("secondaryBlockState", this.secondaryBlockState)
+                .add("offsetX", this.offsetX)
+                .add("disabledConnections", this.disabledConnections)
+                .toString();
+    }
 }

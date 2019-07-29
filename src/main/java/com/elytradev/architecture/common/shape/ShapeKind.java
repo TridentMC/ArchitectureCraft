@@ -95,7 +95,7 @@ public abstract class ShapeKind {
 
     public ItemStack newStack(Shape shape, IBlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
-        int light = te.baseBlockState.getLightValue();
+        int light = te.getBaseBlockState().getLightValue();
         return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
     }
 
@@ -103,27 +103,27 @@ public abstract class ShapeKind {
         return this.newStack(shape, materialBlock.getStateFromMeta(materialMeta), stackSize);
     }
 
-    public boolean orientOnPlacement(EntityPlayer player, TileShape te,
-                                     BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
-        if (nte instanceof TileShape)
-            return this.orientOnPlacement(player, te, (TileShape) nte, otherFace, hit);
+    public boolean orientOnPlacement(EntityPlayer player, TileShape shape,
+                                     BlockPos neighbourPos, IBlockState neighbourState, TileEntity neighbourTile, EnumFacing otherFace, Vector3 hit) {
+        if (neighbourTile instanceof TileShape)
+            return this.orientOnPlacement(player, shape, (TileShape) neighbourTile, otherFace, hit);
         else
-            return this.orientOnPlacement(player, te, null, otherFace, hit);
+            return this.orientOnPlacement(player, shape, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
+    public boolean orientOnPlacement(EntityPlayer player, TileShape shape, TileShape neighbourShape, EnumFacing otherFace,
                                      Vector3 hit) {
-        if (nte != null && !player.isSneaking()) {
-            Object otherProfile = Profile.getProfileGlobal(nte.shape, nte.getSide(), nte.getTurn(), otherFace);
+        if (neighbourShape != null && !player.isSneaking()) {
+            Object otherProfile = Profile.getProfileGlobal(neighbourShape.getShape(), neighbourShape.getSide(), neighbourShape.getTurn(), otherFace);
             if (otherProfile != null) {
                 EnumFacing thisFace = otherFace.getOpposite();
                 for (int i = 0; i < 4; i++) {
-                    int turn = (nte.getTurn() + i) & 3;
-                    Object thisProfile = Profile.getProfileGlobal(te.shape, nte.getSide(), turn, thisFace);
+                    int turn = (neighbourShape.getTurn() + i) & 3;
+                    Object thisProfile = Profile.getProfileGlobal(shape.getShape(), neighbourShape.getSide(), turn, thisFace);
                     if (Profile.matches(thisProfile, otherProfile)) {
-                        te.setSide(nte.getSide());
-                        te.setTurn(turn);
-                        te.setOffsetX(nte.getOffsetX());
+                        shape.setSide(neighbourShape.getSide());
+                        shape.setTurn(turn);
+                        shape.setOffsetX(neighbourShape.getOffsetX());
                         return true;
                     }
                 }
@@ -158,8 +158,8 @@ public abstract class ShapeKind {
     }
 
     public void chiselUsedOnCentre(TileShape te, EntityPlayer player) {
-        if (te.secondaryBlockState != null) {
-            ItemStack stack = this.newSecondaryMaterialStack(te.secondaryBlockState);
+        if (te.hasSecondaryBlockState()) {
+            ItemStack stack = this.newSecondaryMaterialStack(te.getSecondaryBlockState());
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
                     Block.spawnAsEntity(te.getWorld(), te.getPos(), stack);
@@ -226,7 +226,7 @@ public abstract class ShapeKind {
 
     public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
                                         Entity entity, Trans3 t, List list) {
-        int mask = te.shape.occlusionMask;
+        int mask = te.getShape().occlusionMask;
         int param = mask & 0xff;
         double r, h;
         switch (mask & 0xff00) {
@@ -390,7 +390,7 @@ public abstract class ShapeKind {
         @Override
         public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
                                             Entity entity, Trans3 t, List list) {
-            if (te.shape.occlusionMask == 0)
+            if (te.getShape().occlusionMask == 0)
                 this.getModel().addBoxesToList(t, list);
             else
                 super.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
@@ -421,11 +421,11 @@ public abstract class ShapeKind {
         public Trans3[] frameTrans;
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
+        public boolean orientOnPlacement(EntityPlayer player, TileShape shape, TileShape neighbourShape, EnumFacing otherFace,
                                          Vector3 hit) {
             int turn = -1;
             // If click is on side of a non-window block, orient perpendicular to it
-            if (!player.isSneaking() && (nte == null || !(nte.shape.kind instanceof ShapeKind.Window))) {
+            if (!player.isSneaking() && (neighbourShape == null || !(neighbourShape.getShape().kind instanceof ShapeKind.Window))) {
                 switch (otherFace) {
                     case EAST:
                     case WEST:
@@ -438,8 +438,8 @@ public abstract class ShapeKind {
                 }
             }
             if (turn >= 0) {
-                te.setSide(0);
-                te.setTurn(turn);
+                shape.setSide(0);
+                shape.setTurn(turn);
                 return true;
             } else
                 return false;
@@ -508,7 +508,7 @@ public abstract class ShapeKind {
                 }
                 e[i] = frame ? 0.5 - r : 0.5;
             }
-            if (te.secondaryBlockState != null)
+            if (te.hasSecondaryBlockState())
                 this.addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
 
             if (list.isEmpty()) {
@@ -538,8 +538,8 @@ public abstract class ShapeKind {
             if (thisFrameKind != FrameKind.None) {
                 EnumFacing thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
                 TileShape nte = te.getConnectedNeighbourGlobal(globalDir);
-                if (nte != null && nte.shape.kind instanceof Window) {
-                    Window otherKind = (Window) nte.shape.kind;
+                if (nte != null && nte.getShape().kind instanceof Window) {
+                    Window otherKind = (Window) nte.getShape().kind;
                     EnumFacing otherLocalDir = nte.localFace(globalDir.getOpposite());
                     FrameKind otherFrameKind = otherKind.frameKindForLocalSide(otherLocalDir);
                     if (otherFrameKind != FrameKind.None) {
@@ -611,40 +611,40 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te,
-                                         BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
+        public boolean orientOnPlacement(EntityPlayer player, TileShape shape,
+                                         BlockPos neighbourPos, IBlockState neighbourState, TileEntity neighbourTile, EnumFacing otherFace, Vector3 hit) {
             //ArchitectureLog.info("Banister.orientOnPlacement: nstate = %s\n", nstate);
             if (!player.isSneaking()) {
-                Block nblock = nstate.getBlock();
+                Block nblock = neighbourState.getBlock();
                 boolean placedOnStair = false;
                 int nside = -1; // Side that the neighbouring block is placed on
                 int nturn = -1; // Turn of the neighbouring block
-                if (BlockStairs.isBlockStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
+                if (BlockStairs.isBlockStairs(neighbourState) && (otherFace == UP || otherFace == DOWN)) {
                     placedOnStair = true;
-                    nside = stairsSide(nstate);
-                    nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nstate));
+                    nside = stairsSide(neighbourState);
+                    nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(neighbourState));
                     if (nside == 1 && (nturn & 1) == 0)
                         nturn ^= 2;
                 } else if (nblock instanceof BlockShape) {
-                    if (nte instanceof TileShape) {
+                    if (neighbourTile instanceof TileShape) {
                         placedOnStair = true;
-                        nside = ((TileShape) nte).getSide();
-                        nturn = ((TileShape) nte).getTurn();
+                        nside = ((TileShape) neighbourTile).getSide();
+                        nturn = ((TileShape) neighbourTile).getTurn();
                     }
                 }
                 if (placedOnStair) {
                     int side = otherFace.getOpposite().ordinal();
                     if (side == nside) {
                         Vector3 h = Trans3.sideTurn(side, 0).ip(hit);
-                        double offx = te.shape.offsetXForPlacementHit(side, nturn, hit);
-                        te.setSide(side);
-                        te.setTurn(nturn & 3);
-                        te.setOffsetX(offx);
+                        double offx = shape.getShape().offsetXForPlacementHit(side, nturn, hit);
+                        shape.setSide(side);
+                        shape.setTurn(nturn & 3);
+                        shape.setOffsetX(offx);
                         return true;
                     }
                 }
             }
-            return super.orientOnPlacement(player, te, npos, nstate, nte, otherFace, hit);
+            return super.orientOnPlacement(player, shape, neighbourPos, neighbourState, neighbourTile, otherFace, hit);
         }
 
         @Override

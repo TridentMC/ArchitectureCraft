@@ -43,7 +43,7 @@ public class ItemCladding extends ItemArchitecture {
     public ItemStack newStack(IBlockState state, int stackSize) {
         Block block = state.getBlock();
         int meta = block.getMetaFromState(state);
-        return newStack(block, meta, stackSize);
+        return this.newStack(block, meta, stackSize);
     }
 
     public ItemStack newStack(Block block, int meta, int stackSize) {

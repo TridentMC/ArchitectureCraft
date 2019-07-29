@@ -60,7 +60,7 @@ public abstract class RenderShape {
     }
 
     public int getBaseColourMult() {
-        return baseColourMult;
+        return this.baseColourMult;
     }
 
     public void setBaseColourMult(int baseColourMult) {
@@ -68,7 +68,7 @@ public abstract class RenderShape {
     }
 
     public int getSecondaryColourMult() {
-        return secondaryColourMult;
+        return this.secondaryColourMult;
     }
 
     public void setSecondaryColourMult(int secondaryColourMult) {

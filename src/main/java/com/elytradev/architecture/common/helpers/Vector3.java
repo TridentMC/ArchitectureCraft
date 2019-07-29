@@ -142,7 +142,7 @@ public class Vector3 {
     }
 
     public Vec3i toVec3i() {
-        return new Vec3i(x, y, z);
+        return new Vec3i(this.x, this.y, this.z);
     }
 
     public Vector3 add(double x, double y, double z) {
@@ -150,11 +150,11 @@ public class Vector3 {
     }
 
     public Vector3 add(Vector3 v) {
-        return add(v.x, v.y, v.z);
+        return this.add(v.x, v.y, v.z);
     }
 
     public Vector3 add(BlockPos pos) {
-        return add(pos.getX(), pos.getY(), pos.getZ());
+        return this.add(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public Vector3 sub(double x, double y, double z) {
@@ -162,97 +162,97 @@ public class Vector3 {
     }
 
     public Vector3 sub(Vector3 v) {
-        return sub(v.x, v.y, v.z);
+        return this.sub(v.x, v.y, v.z);
     }
 
     public Vector3 mul(double c) {
-        return new Vector3(c * x, c * y, c * z);
+        return new Vector3(c * this.x, c * this.y, c * this.z);
     }
 
     public double dot(Vector3 v) {
-        return dot(v.x, v.y, v.z);
+        return this.dot(v.x, v.y, v.z);
     }
 
     public double dot(double[] v) {
-        return dot(v[0], v[1], v[2]);
+        return this.dot(v[0], v[1], v[2]);
     }
 
     public double dot(EnumFacing f) {
         Vec3i v = getDirectionVec(f);
-        return dot(v.getX(), v.getY(), v.getZ());
+        return this.dot(v.getX(), v.getY(), v.getZ());
     }
 
     public double dot(double vx, double vy, double vz) {
-        return x * vx + y * vy + z * vz;
+        return this.x * vx + this.y * vy + this.z * vz;
     }
 
     public Vector3 cross(Vector3 v) {
         return new Vector3(
-                y * v.z - z * v.y,
-                z * v.x - x * v.z,
-                x * v.y - y * v.x);
+                this.y * v.z - this.z * v.y,
+                this.z * v.x - this.x * v.z,
+                this.x * v.y - this.y * v.x);
     }
 
     public Vector3 min(Vector3 v) {
-        return new Vector3(Math.min(x, v.x), Math.min(y, v.y), Math.min(z, v.z));
+        return new Vector3(Math.min(this.x, v.x), Math.min(this.y, v.y), Math.min(this.z, v.z));
     }
 
     public Vector3 max(Vector3 v) {
-        return new Vector3(Math.max(x, v.x), Math.max(y, v.y), Math.max(z, v.z));
+        return new Vector3(Math.max(this.x, v.x), Math.max(this.y, v.y), Math.max(this.z, v.z));
     }
 
     public double length() {
-        return Math.sqrt(x * x + y * y + z * z);
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
     public double distance(Vector3 v) {
-        double dx = x - v.x, dy = y - v.y, dz = z - v.z;
+        double dx = this.x - v.x, dy = this.y - v.y, dz = this.z - v.z;
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     public int floorX() {
-        return (int) Math.floor(x);
+        return (int) Math.floor(this.x);
     }
 
     public int floorY() {
-        return (int) Math.floor(y);
+        return (int) Math.floor(this.y);
     }
 
     public int floorZ() {
-        return (int) Math.floor(z);
+        return (int) Math.floor(this.z);
     }
 
     // Normals at 45 degrees are biased towards UP or DOWN.
     // In 1.8 this is important for item lighting in inventory to work well.
 
     public int roundX() {
-        return (int) Math.round(x);
+        return (int) Math.round(this.x);
     }
 
     public int roundY() {
-        return (int) Math.round(y);
+        return (int) Math.round(this.y);
     }
 
     public int roundZ() {
-        return (int) Math.round(z);
+        return (int) Math.round(this.z);
     }
 
     // Workaround for EnumFacing.getDirectionVec being client-side only
 
     public EnumFacing facing() {
-        return facing(x, y, z);
+        return facing(this.x, this.y, this.z);
     }
 
     public BlockPos blockPos() {
-        return new BlockPos(floorX(), floorY(), floorZ());
+        return new BlockPos(this.floorX(), this.floorY(), this.floorZ());
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("x", x)
-                .add("y", y)
-                .add("z", z)
+                .add("x", this.x)
+                .add("y", this.y)
+                .add("z", this.z)
                 .toString();
     }
 }

@@ -69,7 +69,7 @@ public class ClientProxy extends CommonProxy {
         }
 
         if (state == LoaderState.ModState.INITIALIZED) {
-            registerTileEntitySpecialRenderers();
+            this.registerTileEntitySpecialRenderers();
         }
 
         if (state == LoaderState.ModState.POSTINITIALIZED) {
@@ -104,7 +104,7 @@ public class ClientProxy extends CommonProxy {
                     RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
                 }
             } else {
-                registerMesh(itemFromBlock, 0, modelResourceLocation);
+                this.registerMesh(itemFromBlock, 0, modelResourceLocation);
             }
         }
 
@@ -116,7 +116,7 @@ public class ClientProxy extends CommonProxy {
             if (RENDERING_MANAGER.itemNeedsCustomRendering(itemToRegister)) {
                 RENDERING_MANAGER.registerModelLocationForItem(itemToRegister, RENDERING_MANAGER.getItemBakedModel());
             } else {
-                registerMesh(itemToRegister, 0, modelResourceLocation);
+                this.registerMesh(itemToRegister, 0, modelResourceLocation);
             }
         }
     }
@@ -137,7 +137,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelRegistryEvent event) {
-        registerDefaultModelLocations();
+        this.registerDefaultModelLocations();
     }
 
     @SubscribeEvent

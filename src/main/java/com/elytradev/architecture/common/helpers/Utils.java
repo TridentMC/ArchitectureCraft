@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -43,6 +44,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static java.lang.Math.*;
@@ -65,7 +67,7 @@ public class Utils {
     }
 
     public static TextureAtlasSprite getSpriteForBlockState(IBlockState state) {
-        if (state != null)
+        if (!Objects.equals(state.getBlock(), Blocks.AIR))
             return Minecraft.getMinecraft().getBlockRendererDispatcher()
                     .getBlockModelShapes().getTexture(state);
         else
@@ -91,9 +93,9 @@ public class Utils {
             TileShape shape = TileShape.get(world, pos);
 
             if (renderPrimary) {
-                return getSpriteForBlockState(shape.baseBlockState);
+                return getSpriteForBlockState(shape.getBaseBlockState());
             } else {
-                return getSpriteForBlockState(shape.secondaryBlockState);
+                return getSpriteForBlockState(shape.getSecondaryBlockState());
             }
         } else if (!renderPrimary) {
             return null;

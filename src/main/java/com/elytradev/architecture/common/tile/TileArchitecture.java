@@ -79,12 +79,12 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public void sendTileEntityUpdate() {
-        Packet packet = getUpdatePacket();
+        Packet packet = this.getUpdatePacket();
         if (packet != null) {
-            BlockPos pos = getPos();
+            BlockPos pos = this.getPos();
             int x = pos.getX() >> 4;
             int z = pos.getZ() >> 4;
-            WorldServer world = (WorldServer) getWorld();
+            WorldServer world = (WorldServer) this.getWorld();
             PlayerList cm = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
             PlayerChunkMap pm = world.getPlayerChunkMap();
             for (EntityPlayerMP player : cm.getPlayers()) {
@@ -96,23 +96,31 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public int getX() {
-        return pos.getX();
+        return this.pos.getX();
     }
 
     public int getY() {
-        return pos.getY();
+        return this.pos.getY();
     }
 
     public int getZ() {
-        return pos.getZ();
+        return this.pos.getZ();
+    }
+
+    public void setSide(int side) {
+        this.setSide((byte) side);
+    }
+
+    public void setTurn(int turn) {
+        this.setTurn((byte) turn);
     }
 
     public Trans3 localToGlobalRotation() {
-        return localToGlobalTransformation(Vector3.zero);
+        return this.localToGlobalTransformation(Vector3.zero);
     }
 
     public Trans3 localToGlobalTransformation() {
-        return localToGlobalTransformation(Vector3.blockCenter(pos));
+        return this.localToGlobalTransformation(Vector3.blockCenter(this.pos));
     }
 
     public Trans3 localToGlobalTransformation(Vector3 origin) {
@@ -131,22 +139,22 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public NBTTagCompound getUpdateTag() {
         NBTTagCompound nbt = new NBTTagCompound();
-        if (syncWithClient())
-            writeToNBT(nbt);
+        if (this.syncWithClient())
+            this.writeToNBT(nbt);
         return nbt;
     }
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         //ArchitectureLog.info("BaseTileEntity.getDescriptionPacket for %s\n", this);
-        if (syncWithClient()) {
+        if (this.syncWithClient()) {
             NBTTagCompound nbt = new NBTTagCompound();
-            writeToNBT(nbt);
-            if (updateChunk) {
+            this.writeToNBT(nbt);
+            if (this.updateChunk) {
                 nbt.setBoolean("updateChunk", true);
-                updateChunk = false;
+                this.updateChunk = false;
             }
-            return new SPacketUpdateTileEntity(pos, 0, nbt);
+            return new SPacketUpdateTileEntity(this.pos, 0, nbt);
         } else
             return null;
     }
@@ -154,9 +162,9 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         NBTTagCompound nbt = pkt.getNbtCompound();
-        readFromNBT(nbt);
+        this.readFromNBT(nbt);
         if (nbt.getBoolean("updateChunk"))
-            world.markBlockRangeForRenderUpdate(pos, pos);
+            this.world.markBlockRangeForRenderUpdate(this.pos, this.pos);
     }
 
     boolean syncWithClient() {
@@ -164,16 +172,16 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public void markBlockForUpdate() {
-        updateChunk = true;
-        BlockHelper.markBlockForUpdate(world, pos);
+        this.updateChunk = true;
+        BlockHelper.markBlockForUpdate(this.world, this.pos);
     }
 
     public void markForUpdate() {
-        if (!world.isRemote) {
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
-            PlayerChunkMap pm = ((WorldServer) world).getPlayerChunkMap();
+        if (!this.world.isRemote) {
+            int x = this.pos.getX();
+            int y = this.pos.getY();
+            int z = this.pos.getZ();
+            PlayerChunkMap pm = ((WorldServer) this.world).getPlayerChunkMap();
             PlayerChunkMapEntry entry = pm.getEntry(x >> 4, z >> 4);
             if (entry != null) {
                 int oldFlags = getIntField(entry, changedSectionFilter);
@@ -184,7 +192,7 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public void playSoundEffect(SoundEvent name, float volume, float pitch) {
-        world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, name, SoundCategory.BLOCKS, volume, pitch);
+        this.world.playSound(null, this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5, name, SoundCategory.BLOCKS, volume, pitch);
     }
 
     public abstract void onAddedToWorld();
@@ -192,19 +200,19 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        setSide(nbt.getByte("side"));
-        setTurn(nbt.getByte("turn"));
-        readContentsFromNBT(nbt);
+        this.setSide(nbt.getByte("side"));
+        this.setTurn(nbt.getByte("turn"));
+        this.readContentsFromNBT(nbt);
     }
 
     public void readFromItemStack(ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
         if (nbt != null)
-            readFromItemStackNBT(nbt);
+            this.readFromItemStackNBT(nbt);
     }
 
     public void readFromItemStackNBT(NBTTagCompound nbt) {
-        readContentsFromNBT(nbt);
+        this.readContentsFromNBT(nbt);
     }
 
     public void readContentsFromNBT(NBTTagCompound nbt) {
@@ -213,54 +221,50 @@ public abstract class TileArchitecture extends TileEntity {
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        if (getSide() != 0)
-            nbt.setByte("side", getSide());
-        if (getTurn() != 0)
-            nbt.setByte("turn", getTurn());
-        writeContentsToNBT(nbt);
+        if (this.getSide() != 0)
+            nbt.setByte("side", this.getSide());
+        if (this.getTurn() != 0)
+            nbt.setByte("turn", this.getTurn());
+        this.writeContentsToNBT(nbt);
         return nbt;
     }
 
     public void writeToItemStackNBT(NBTTagCompound nbt) {
-        writeContentsToNBT(nbt);
+        this.writeContentsToNBT(nbt);
     }
 
     public void writeContentsToNBT(NBTTagCompound nbt) {
     }
 
     public void markChanged() {
-        markDirty();
-        markForUpdate();
+        this.markDirty();
+        this.markForUpdate();
     }
 
     public void markBlockChanged() {
-        markDirty();
-        markBlockForUpdate();
+        this.markDirty();
+        this.markBlockForUpdate();
     }
 
     @Override
     public void invalidate() {
-        releaseChunkTicket();
+        this.releaseChunkTicket();
         super.invalidate();
     }
 
     public void releaseChunkTicket() {
-        if (chunkTicket != null) {
-            ForgeChunkManager.releaseTicket(chunkTicket);
-            chunkTicket = null;
+        if (this.chunkTicket != null) {
+            ForgeChunkManager.releaseTicket(this.chunkTicket);
+            this.chunkTicket = null;
         }
     }
 
     public ItemStack newItemStack(int size) {
-        return blockStackWithTileEntity(getBlockType(), size, this);
+        return blockStackWithTileEntity(this.getBlockType(), size, this);
     }
 
     public byte getSide() {
-        return side;
-    }
-
-    public void setSide(int side) {
-        this.setSide((byte) side);
+        return this.side;
     }
 
     public void setSide(byte side) {
@@ -268,11 +272,7 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public byte getTurn() {
-        return turn;
-    }
-
-    public void setTurn(int turn) {
-        this.setTurn((byte) turn);
+        return this.turn;
     }
 
     public void setTurn(byte turn) {

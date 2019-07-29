@@ -50,11 +50,11 @@ public class WindowShapeKinds {
     public static class PlainWindow extends Window {
 
         {
-            frameSides = new EnumFacing[]{DOWN, EAST, UP, WEST};
-            frameAlways = new boolean[]{false, false, false, false};
-            frameKinds = new FrameKind[]{Plain, Plain, None, None, Plain, Plain};
-            frameOrientations = new EnumFacing[]{EAST, EAST, null, null, UP, UP};
-            frameTrans = new Trans3[]{
+            this.frameSides = new EnumFacing[]{DOWN, EAST, UP, WEST};
+            this.frameAlways = new boolean[]{false, false, false, false};
+            this.frameKinds = new FrameKind[]{Plain, Plain, None, None, Plain, Plain};
+            this.frameOrientations = new EnumFacing[]{EAST, EAST, null, null, UP, UP};
+            this.frameTrans = new Trans3[]{
                     Trans3.ident,
                     Trans3.ident.rotZ(90),
                     Trans3.ident.rotZ(180),
@@ -63,32 +63,32 @@ public class WindowShapeKinds {
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing face,
+        public boolean orientOnPlacement(EntityPlayer player, TileShape shape, TileShape neighbourShape, EnumFacing face,
                                          Vector3 hit) {
-            if (nte != null && !player.isSneaking()) {
-                if (nte.shape.kind instanceof PlainWindow) {
-                    te.setSide(nte.getSide());
-                    te.setTurn(nte.getTurn());
+            if (neighbourShape != null && !player.isSneaking()) {
+                if (neighbourShape.getShape().kind instanceof PlainWindow) {
+                    shape.setSide(neighbourShape.getSide());
+                    shape.setTurn(neighbourShape.getTurn());
                     return true;
                 }
-                if (nte.shape.kind instanceof CornerWindow) {
-                    EnumFacing nlf = nte.localFace(face);
-                    FrameKind nfk = ((Window) nte.shape.kind).frameKindForLocalSide(nlf);
+                if (neighbourShape.getShape().kind instanceof CornerWindow) {
+                    EnumFacing nlf = neighbourShape.localFace(face);
+                    FrameKind nfk = ((Window) neighbourShape.getShape().kind).frameKindForLocalSide(nlf);
                     if (nfk == FrameKind.Plain) {
                         EnumFacing lf = face.getOpposite();
-                        te.setSide(nte.getSide());
+                        shape.setSide(neighbourShape.getSide());
                         switch (nlf) {
                             case SOUTH:
-                                te.setTurn(MiscUtils.turnToFace(WEST, lf));
+                                shape.setTurn(MiscUtils.turnToFace(WEST, lf));
                                 return true;
                             case WEST:
-                                te.setTurn(MiscUtils.turnToFace(EAST, lf));
+                                shape.setTurn(MiscUtils.turnToFace(EAST, lf));
                                 return true;
                         }
                     }
                 }
             }
-            return super.orientOnPlacement(player, te, nte, face, hit);
+            return super.orientOnPlacement(player, shape, neighbourShape, face, hit);
         }
 
     }
@@ -113,11 +113,11 @@ public class WindowShapeKinds {
     public static class CornerWindow extends Window {
 
         {
-            frameSides = new EnumFacing[]{DOWN, SOUTH, UP, WEST};
-            frameAlways = new boolean[]{false, false, false, false};
-            frameKinds = new FrameKind[]{Corner, Corner, None, Plain, Plain, None};
-            frameOrientations = new EnumFacing[]{EAST, EAST, null, UP, UP, null};
-            frameTrans = new Trans3[]{
+            this.frameSides = new EnumFacing[]{DOWN, SOUTH, UP, WEST};
+            this.frameAlways = new boolean[]{false, false, false, false};
+            this.frameKinds = new FrameKind[]{Corner, Corner, None, Plain, Plain, None};
+            this.frameOrientations = new EnumFacing[]{EAST, EAST, null, UP, UP, null};
+            this.frameTrans = new Trans3[]{
                     Trans3.ident,
                     Trans3.ident.rotY(-90).rotZ(90),
                     Trans3.ident.rotY(-90).rotZ(180),
@@ -147,32 +147,32 @@ public class WindowShapeKinds {
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing face,
+        public boolean orientOnPlacement(EntityPlayer player, TileShape shape, TileShape neighbourShape, EnumFacing face,
                                          Vector3 hit) {
-            if (nte != null && !player.isSneaking()) {
-                if (nte.shape.kind instanceof Window) {
-                    Window nsk = (Window) nte.shape.kind;
-                    EnumFacing nlf = nte.localFace(face);
+            if (neighbourShape != null && !player.isSneaking()) {
+                if (neighbourShape.getShape().kind instanceof Window) {
+                    Window nsk = (Window) neighbourShape.getShape().kind;
+                    EnumFacing nlf = neighbourShape.localFace(face);
                     FrameKind nfk = nsk.frameKindForLocalSide(nlf);
                     switch (nfk) {
                         case Corner:
-                            te.setSide(nte.getSide());
-                            te.setTurn(nte.getTurn());
+                            shape.setSide(neighbourShape.getSide());
+                            shape.setTurn(neighbourShape.getTurn());
                             return true;
                         case Plain:
-                            EnumFacing nfo = nte.globalFace(nsk.frameOrientationForLocalSide(nlf));
-                            return orientFromAdjacentCorner(te, nfo, hit)
-                                    || orientFromAdjacentCorner(te, nfo.getOpposite(), hit);
+                            EnumFacing nfo = neighbourShape.globalFace(nsk.frameOrientationForLocalSide(nlf));
+                            return this.orientFromAdjacentCorner(shape, nfo, hit)
+                                    || this.orientFromAdjacentCorner(shape, nfo.getOpposite(), hit);
                     }
                 }
             }
-            return super.orientOnPlacement(player, te, nte, face, hit);
+            return super.orientOnPlacement(player, shape, neighbourShape, face, hit);
         }
 
         protected boolean orientFromAdjacentCorner(TileShape te, EnumFacing face, Vector3 hit) {
             TileShape nte = TileShape.get(te.getWorld(), te.getPos().offset(face.getOpposite()));
-            if (nte != null && nte.shape.kind instanceof Window) {
-                Window nsk = (Window) nte.shape.kind;
+            if (nte != null && nte.getShape().kind instanceof Window) {
+                Window nsk = (Window) nte.getShape().kind;
                 EnumFacing nlf = nte.localFace(face);
                 FrameKind nfk = nsk.frameKindForLocalSide(nlf);
                 if (nfk == FrameKind.Corner) {

@@ -54,22 +54,22 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
 
     @Override
     public BlockModelShapes getBlockModelShapes() {
-        return base.getBlockModelShapes();
+        return this.base.getBlockModelShapes();
     }
 
     @Override
     public BlockModelRenderer getBlockModelRenderer() {
-        return base.getBlockModelRenderer();
+        return this.base.getBlockModelRenderer();
     }
 
     @Override
     public IBakedModel getModelForState(IBlockState state) {
-        return base.getModelForState(state);
+        return this.base.getModelForState(state);
     }
 
     @Override
     public void renderBlockBrightness(IBlockState state, float brightness) {
-        base.renderBlockBrightness(state, brightness);
+        this.base.renderBlockBrightness(state, brightness);
     }
 
     @Override
@@ -84,18 +84,18 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
                     rend.renderBlock(world, pos, state, target, layer, t);
             IBakedModel model = target.getBakedModel();
             BufferBuilder tess = Tessellator.getInstance().getBuffer();
-            getBlockModelRenderer().renderModel(world, model, state, pos, tess, false); //TODO chould checkSides be false?
+            this.getBlockModelRenderer().renderModel(world, model, state, pos, tess, false); //TODO chould checkSides be false?
         } else
-            base.renderBlockDamage(state, pos, icon, world);
+            this.base.renderBlockDamage(state, pos, icon, world);
     }
 
     @Override
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess world, BufferBuilder tess) {
         ICustomRenderer rend = ClientProxy.RENDERING_MANAGER.getCustomRenderer(world, pos, state);
         if (rend != null)
-            return customRenderBlockToWorld(world, pos, state, tess, null, rend);
+            return this.customRenderBlockToWorld(world, pos, state, tess, null, rend);
         else
-            return base.renderBlock(state, pos, world, tess);
+            return this.base.renderBlock(state, pos, world, tess);
     }
 
     private boolean customRenderBlockToWorld(IBlockAccess world, BlockPos pos, IBlockState state, BufferBuilder tess,

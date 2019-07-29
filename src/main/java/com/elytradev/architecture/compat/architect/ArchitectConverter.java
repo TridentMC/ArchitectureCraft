@@ -62,9 +62,9 @@ public class ArchitectConverter implements Converter {
     private final Block shapeBlock;
 
     ArchitectConverter() {
-        shapeBlock = ArchitectureMod.CONTENT.blockShape;
-        shapeItem = Item.getItemFromBlock(shapeBlock);
-        claddingItem = ArchitectureMod.CONTENT.itemCladding;
+        this.shapeBlock = ArchitectureMod.CONTENT.blockShape;
+        this.shapeItem = Item.getItemFromBlock(this.shapeBlock);
+        this.claddingItem = ArchitectureMod.CONTENT.itemCladding;
     }
 
     private static boolean consume(IItemHandler itemHandler, Item item, int amount, int meta, Predicate<NBTTagCompound> test) {
@@ -100,11 +100,11 @@ public class ArchitectConverter implements Converter {
         NBTTagCompound data = (NBTTagCompound) nbtBase;
         if (data.hasKey("Name2")) {
             return Arrays.asList(new ItemStack[]{
-                    getItemStackForBlock(data),
-                    getCladdingForBlock(data)
+                    this.getItemStackForBlock(data),
+                    this.getCladdingForBlock(data)
             });
         } else {
-            return Collections.singletonList(getItemStackForBlock(data));
+            return Collections.singletonList(this.getItemStackForBlock(data));
         }
     }
 
@@ -120,13 +120,13 @@ public class ArchitectConverter implements Converter {
 
     @Override
     public boolean canSerialize(World world, BlockPos blockPos) {
-        return world.getBlockState(blockPos).getBlock() == shapeBlock;
+        return world.getBlockState(blockPos).getBlock() == this.shapeBlock;
     }
 
     @Override
     public NBTBase serialize(World world, BlockPos blockPos) {
         IBlockState state = world.getBlockState(blockPos);
-        if (state.getBlock() != shapeBlock)
+        if (state.getBlock() != this.shapeBlock)
             return null;
 
         TileEntity tileEntity = world.getTileEntity(blockPos);
@@ -164,7 +164,7 @@ public class ArchitectConverter implements Converter {
 
         IItemHandler itemHandler = materialSource.getItemHandler();
         NBTTagCompound data = (NBTTagCompound) nbtBase;
-        return consume(itemHandler, data) && consumeCladding(materialSource, data);
+        return this.consume(itemHandler, data) && this.consumeCladding(materialSource, data);
     }
 
     private boolean consume(IItemHandler itemHandler, NBTTagCompound data) {
@@ -173,7 +173,7 @@ public class ArchitectConverter implements Converter {
         int meta = data.getInteger("BaseData");
         return consume(
                 itemHandler,
-                shapeItem,
+                this.shapeItem,
                 1,
                 0,
                 stackData -> stackData.getInteger("Shape") == shape
@@ -194,16 +194,16 @@ public class ArchitectConverter implements Converter {
             return consume(source.getItemHandler(), item, 1, meta, null);
         } else {
             IItemHandler itemHandler = source.getItemHandler();
-            return consume(itemHandler, claddingItem, 1, meta, stackData -> stackData.getString("block").equals(name));
+            return consume(itemHandler, this.claddingItem, 1, meta, stackData -> stackData.getString("block").equals(name));
         }
     }
 
     @Override
     public void deserialize(World world, BlockPos blockPos, Rotation rotation, NBTBase nbtBase) {
         NBTTagCompound data = (NBTTagCompound) nbtBase.copy();
-        rotate(data, rotation);
+        this.rotate(data, rotation);
 
-        world.setBlockState(blockPos, shapeBlock.getStateFromMeta(data.getInteger("BaseData")));
+        world.setBlockState(blockPos, this.shapeBlock.getStateFromMeta(data.getInteger("BaseData")));
         TileShape shape = new TileShape();
         shape.readFromNBT(data);
         world.setTileEntity(blockPos, shape);
@@ -242,7 +242,7 @@ public class ArchitectConverter implements Converter {
         nbt.setString("BaseName", data.getString("BaseName"));
         nbt.setInteger("BaseData", data.getInteger("BaseData"));
 
-        ItemStack stack = new ItemStack(shapeItem, 1, 0);
+        ItemStack stack = new ItemStack(this.shapeItem, 1, 0);
         stack.setTagCompound(nbt);
         return stack;
     }
@@ -255,7 +255,7 @@ public class ArchitectConverter implements Converter {
         } else {
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setString("block", data.getString("Name2"));
-            ItemStack stack = new ItemStack(claddingItem, 1, data.getInteger("Data2"));
+            ItemStack stack = new ItemStack(this.claddingItem, 1, data.getInteger("Data2"));
             stack.setTagCompound(nbt);
             return stack;
         }

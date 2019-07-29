@@ -54,23 +54,23 @@ public class InventoryUtils {
 
         public UnsidedInventorySide(IInventory base) {
             this.base = base;
-            size = base.getSizeInventory();
+            this.size = base.getSizeInventory();
         }
 
         @Override
         public ItemStack get(int slot) {
-            return base.getStackInSlot(slot);
+            return this.base.getStackInSlot(slot);
         }
 
         @Override
         public boolean set(int slot, ItemStack stack) {
-            base.setInventorySlotContents(slot, stack);
+            this.base.setInventorySlotContents(slot, stack);
             return true;
         }
 
         @Override
         public ItemStack extract(int slot) {
-            return get(slot);
+            return this.get(slot);
         }
 
     }
@@ -84,20 +84,20 @@ public class InventoryUtils {
         public SidedInventorySide(ISidedInventory base, EnumFacing side) {
             this.base = base;
             this.side = side;
-            slots = base.getSlotsForFace(side);
-            size = slots.length;
+            this.slots = base.getSlotsForFace(side);
+            this.size = this.slots.length;
         }
 
         @Override
         public ItemStack get(int i) {
-            return base.getStackInSlot(slots[i]);
+            return this.base.getStackInSlot(this.slots[i]);
         }
 
         @Override
         public boolean set(int i, ItemStack stack) {
-            int slot = slots[i];
-            if (base.canInsertItem(slot, stack, side)) {
-                base.setInventorySlotContents(slot, stack);
+            int slot = this.slots[i];
+            if (this.base.canInsertItem(slot, stack, this.side)) {
+                this.base.setInventorySlotContents(slot, stack);
                 return true;
             } else
                 return false;
@@ -105,9 +105,9 @@ public class InventoryUtils {
 
         @Override
         public ItemStack extract(int i) {
-            int slot = slots[i];
-            ItemStack stack = base.getStackInSlot(slot);
-            if (base.canExtractItem(slot, stack, side))
+            int slot = this.slots[i];
+            ItemStack stack = this.base.getStackInSlot(slot);
+            if (this.base.canExtractItem(slot, stack, this.side))
                 return stack;
             else
                 return ItemStack.EMPTY;
