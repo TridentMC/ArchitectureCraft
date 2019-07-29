@@ -77,16 +77,16 @@ public class ItemShape extends ItemBlock {
                                 EnumFacing face, float hitX, float hitY, float hitZ, IBlockState newState) {
         if (!world.setBlockState(pos, newState, 3))
             return false;
-        Vec3i d = Vector3.getDirectionVec(face);
-        Vector3 hit = new Vector3(hitX - d.getX() - 0.5, hitY - d.getY() - 0.5, hitZ - d.getZ() - 0.5);
+        Vec3i direction = Vector3.getDirectionVec(face);
+        Vector3 hit = new Vector3(hitX - direction.getX() - 0.5, hitY - direction.getY() - 0.5, hitZ - direction.getZ() - 0.5);
         TileShape te = TileShape.get(world, pos);
         if (te != null) {
             te.readFromItemStack(stack);
             if (te.shape != null) {
-                BlockPos npos = te.getPos().offset(face.getOpposite());
-                IBlockState nstate = world.getBlockState(npos);
-                TileEntity nte = world.getTileEntity(npos);
-                te.shape.orientOnPlacement(player, te, npos, nstate, nte, face, hit);
+                BlockPos neighbourPos = te.getPos().offset(face.getOpposite());
+                IBlockState neighbourState = world.getBlockState(neighbourPos);
+                TileEntity neighbourTile = world.getTileEntity(neighbourPos);
+                te.shape.orientOnPlacement(player, te, neighbourPos, neighbourState, neighbourTile, face, hit);
             }
         }
         return true;

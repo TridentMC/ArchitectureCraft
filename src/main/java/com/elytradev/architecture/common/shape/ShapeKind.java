@@ -78,8 +78,8 @@ public abstract class ShapeKind {
     }
 
     public Object profileForLocalFace(Shape shape, EnumFacing face) {
-        if (profiles != null)
-            return profiles[face.ordinal()];
+        if (this.profiles != null)
+            return this.profiles[face.ordinal()];
         else
             return null;
     }
@@ -100,15 +100,15 @@ public abstract class ShapeKind {
     }
 
     public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
-        return newStack(shape, materialBlock.getStateFromMeta(materialMeta), stackSize);
+        return this.newStack(shape, materialBlock.getStateFromMeta(materialMeta), stackSize);
     }
 
     public boolean orientOnPlacement(EntityPlayer player, TileShape te,
                                      BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
         if (nte instanceof TileShape)
-            return orientOnPlacement(player, te, (TileShape) nte, otherFace, hit);
+            return this.orientOnPlacement(player, te, (TileShape) nte, otherFace, hit);
         else
-            return orientOnPlacement(player, te, null, otherFace, hit);
+            return this.orientOnPlacement(player, te, null, otherFace, hit);
     }
 
     public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
@@ -145,12 +145,12 @@ public abstract class ShapeKind {
     }
 
     public void onChiselUse(TileShape te, EntityPlayer player, EnumFacing face, Vector3 hit) {
-        EnumFacing side = zoneHit(face, hit);
+        EnumFacing side = this.zoneHit(face, hit);
         //ArchitectureLog.info("ShapeKind.onChiselUse: face = %s, hit = %s, side = %s\n", face, hit, side);
         if (side != null)
-            chiselUsedOnSide(te, player, side);
+            this.chiselUsedOnSide(te, player, side);
         else
-            chiselUsedOnCentre(te, player);
+            this.chiselUsedOnCentre(te, player);
     }
 
     public void chiselUsedOnSide(TileShape te, EntityPlayer player, EnumFacing side) {
@@ -159,7 +159,7 @@ public abstract class ShapeKind {
 
     public void chiselUsedOnCentre(TileShape te, EntityPlayer player) {
         if (te.secondaryBlockState != null) {
-            ItemStack stack = newSecondaryMaterialStack(te.secondaryBlockState);
+            ItemStack stack = this.newSecondaryMaterialStack(te.secondaryBlockState);
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
                     Block.spawnAsEntity(te.getWorld(), te.getPos(), stack);
@@ -169,7 +169,7 @@ public abstract class ShapeKind {
     }
 
     public ItemStack newSecondaryMaterialStack(IBlockState state) {
-        if (acceptsCladding())
+        if (this.acceptsCladding())
             return ArchitectureMod.CONTENT.itemCladding.newStack(state, 1);
         else
             return null;
@@ -191,7 +191,7 @@ public abstract class ShapeKind {
     }
 
     public EnumFacing zoneHit(EnumFacing face, Vector3 hit) {
-        double r = 0.5 - sideZoneSize();
+        double r = 0.5 - this.sideZoneSize();
         if (hit.x <= -r && face != WEST) return WEST;
         if (hit.x >= r && face != EAST) return EAST;
         if (hit.y <= -r && face != DOWN) return DOWN;
@@ -220,7 +220,7 @@ public abstract class ShapeKind {
     public AxisAlignedBB getBounds(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
                                    Entity entity, Trans3 t) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        addCollisionBoxesToList(te, world, pos, state, entity, t, list);
+        this.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return Utils.unionOfBoxes(list);
     }
 
@@ -237,32 +237,32 @@ public abstract class ShapeKind {
                                 (i & 1) != 0 ? 0.5 : -0.5,
                                 (i & 4) != 0 ? 0.5 : -0.5,
                                 (i & 2) != 0 ? 0.5 : -0.5);
-                        addBox(Vector3.zero, p, t, list);
+                        this.addBox(Vector3.zero, p, t, list);
                     }
                 break;
             case 0x100: // Square, full size in Y
                 r = param / 16.0;
-                addBox(new Vector3(-r, -0.5, -r), new Vector3(r, 0.5, r), t, list);
+                this.addBox(new Vector3(-r, -0.5, -r), new Vector3(r, 0.5, r), t, list);
                 break;
             case 0x200: // SLAB, full size in X and Y
                 r = param / 32.0;
-                addBox(new Vector3(-0.5, -0.5, -r), new Vector3(0.5, 0.5, r), t, list);
+                this.addBox(new Vector3(-0.5, -0.5, -r), new Vector3(0.5, 0.5, r), t, list);
                 break;
             case 0x300: // SLAB in back corner
                 r = ((param & 0xf) + 1) / 16.0; // width and length of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
-                addBox(new Vector3(-0.5, -0.5, 0.5 - r), new Vector3(-0.5 + r, -0.5 + h, 0.5), t, list);
+                this.addBox(new Vector3(-0.5, -0.5, 0.5 - r), new Vector3(-0.5 + r, -0.5 + h, 0.5), t, list);
                 break;
             case 0x400: // SLAB at back
             case 0x500: // Slabs at back and right
                 r = ((param & 0xf) + 1) / 16.0; // thickness of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
-                addBox(new Vector3(-0.5, -0.5, 0.5 - r), new Vector3(0.5, -0.5 + h, 0.5), t, list);
+                this.addBox(new Vector3(-0.5, -0.5, 0.5 - r), new Vector3(0.5, -0.5 + h, 0.5), t, list);
                 if ((mask & 0x100) != 0)
-                    addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(-0.5 + r, -0.5 + h, 0.5), t, list);
+                    this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(-0.5 + r, -0.5 + h, 0.5), t, list);
                 break;
             default: // Full cube
-                addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
+                this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
         }
     }
 
@@ -361,26 +361,26 @@ public abstract class ShapeKind {
         @Override
         public AxisAlignedBB getBounds(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
                                        Entity entity, Trans3 t) {
-            return t.t(getModel().getBounds());
+            return t.t(this.getModel().getBounds());
         }
 
         @Override
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
                                 boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            IArchitectureModel model = getModel();
+            IArchitectureModel model = this.getModel();
             model.render(t, target, baseColourMult, secondaryColourMult, textures);
         }
 
         protected IArchitectureModel getModel() {
-            if (model == null)
-                model = ArchitectureMod.PROXY.getModel(modelName);
-            return model;
+            if (this.model == null)
+                this.model = ArchitectureMod.PROXY.getModel(this.modelName);
+            return this.model;
         }
 
         @Override
         public boolean acceptsCladding() {
-            OBJSONModel model = (OBJSONModel) getModel();
+            OBJSONModel model = (OBJSONModel) this.getModel();
             for (OBJSONModel.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
@@ -391,7 +391,7 @@ public abstract class ShapeKind {
         public void addCollisionBoxesToList(TileShape te, IBlockAccess world, BlockPos pos, IBlockState state,
                                             Entity entity, Trans3 t, List list) {
             if (te.shape.occlusionMask == 0)
-                getModel().addBoxesToList(t, list);
+                this.getModel().addBoxesToList(t, list);
             else
                 super.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         }
@@ -399,7 +399,7 @@ public abstract class ShapeKind {
         @Override
         public double placementOffsetX() {
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-            getModel().addBoxesToList(Trans3.ident, list);
+            this.getModel().addBoxesToList(Trans3.ident, list);
             AxisAlignedBB bounds = Utils.unionOfBoxes(list);
             if (Shape.debugPlacement) {
                 for (AxisAlignedBB box : list)
@@ -446,11 +446,11 @@ public abstract class ShapeKind {
         }
 
         public FrameKind frameKindForLocalSide(EnumFacing side) {
-            return frameKinds[side.ordinal()];
+            return this.frameKinds[side.ordinal()];
         }
 
         public EnumFacing frameOrientationForLocalSide(EnumFacing side) {
-            return frameOrientations[side.ordinal()];
+            return this.frameOrientations[side.ordinal()];
         }
 
         @Override
@@ -499,21 +499,21 @@ public abstract class ShapeKind {
                                             Entity entity, Trans3 t, List list) {
             final double r = 1 / 8d, s = 3 / 32d;
             double[] e = new double[4];
-            addCentreBoxesToList(r, s, t, list);
+            this.addCentreBoxesToList(r, s, t, list);
             for (int i = 0; i <= 3; i++) {
-                boolean frame = frameAlways[i] || !isConnectedGlobal(te, t.t(frameSides[i]));
+                boolean frame = this.frameAlways[i] || !this.isConnectedGlobal(te, t.t(this.frameSides[i]));
                 if (entity == null || frame) {
-                    Trans3 ts = t.t(frameTrans[i]);
-                    addFrameBoxesToList(i, r, s, ts, list);
+                    Trans3 ts = t.t(this.frameTrans[i]);
+                    this.addFrameBoxesToList(i, r, s, ts, list);
                 }
                 e[i] = frame ? 0.5 - r : 0.5;
             }
             if (te.secondaryBlockState != null)
-                addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
+                this.addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
 
             if (list.isEmpty()) {
                 // Fallback box in the unlikely case that no box was added.
-                addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
+                this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
             }
         }
 
@@ -529,14 +529,14 @@ public abstract class ShapeKind {
         }
 
         protected boolean isConnectedGlobal(TileShape te, EnumFacing globalDir) {
-            return getConnectedWindowGlobal(te, globalDir) != null;
+            return this.getConnectedWindowGlobal(te, globalDir) != null;
         }
 
         public TileShape getConnectedWindowGlobal(TileShape te, EnumFacing globalDir) {
             EnumFacing thisLocalDir = te.localFace(globalDir);
-            FrameKind thisFrameKind = frameKindForLocalSide(thisLocalDir);
+            FrameKind thisFrameKind = this.frameKindForLocalSide(thisLocalDir);
             if (thisFrameKind != FrameKind.None) {
-                EnumFacing thisOrient = frameOrientationForLocalSide(thisLocalDir);
+                EnumFacing thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
                 TileShape nte = te.getConnectedNeighbourGlobal(globalDir);
                 if (nte != null && nte.shape.kind instanceof Window) {
                     Window otherKind = (Window) nte.shape.kind;
@@ -544,7 +544,7 @@ public abstract class ShapeKind {
                     FrameKind otherFrameKind = otherKind.frameKindForLocalSide(otherLocalDir);
                     if (otherFrameKind != FrameKind.None) {
                         EnumFacing otherOrient = otherKind.frameOrientationForLocalSide(otherLocalDir);
-                        if (framesMatch(thisFrameKind, otherFrameKind,
+                        if (this.framesMatch(thisFrameKind, otherFrameKind,
                                 te.globalFace(thisOrient), nte.globalFace(otherOrient)))
                             return nte;
                     }

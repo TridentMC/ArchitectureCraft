@@ -231,71 +231,71 @@ public enum Shape {
         if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
         else
-            orientFromHitPosition(player, te, face, hit);
+            this.orientFromHitPosition(player, te, face, hit);
     }
 
     protected void orientFromHitPosition(EntityPlayer player, TileShape te, EnumFacing face, Vector3 hit) {
         int side, turn;
         switch (face) {
             case UP:
-                side = rightSideUpSide();
+                side = this.rightSideUpSide();
                 break;
             case DOWN:
                 if (te.shape.kind.canPlaceUpsideDown())
-                    side = upsideDownSide();
+                    side = this.upsideDownSide();
                 else
-                    side = rightSideUpSide();
+                    side = this.rightSideUpSide();
                 break;
             default:
                 if (player.isSneaking())
                     side = face.getOpposite().ordinal();
                 else if (hit.y > 0.0 && te.shape.kind.canPlaceUpsideDown())
-                    side = upsideDownSide();
+                    side = this.upsideDownSide();
                 else
-                    side = rightSideUpSide();
+                    side = this.rightSideUpSide();
         }
-        turn = turnForPlacementHit(side, hit, symmetry);
+        turn = turnForPlacementHit(side, hit, this.symmetry);
         if (debugPlacement && !te.getWorld().isRemote) {
             ArchitectureLog.info("Shape.orientFromHitPosition: face {} global hit {}", face, hit);
             ArchitectureLog.info("Shape.orientFromHitPosition: side {} turn {} symmetry {}", side, turn, te.shape.symmetry);
         }
         te.setSide(side);
         te.setTurn(turn);
-        if ((flags & PLACE_OFFSET) != 0) {
-            te.setOffsetX(offsetXForPlacementHit(side, turn, hit));
+        if ((this.flags & PLACE_OFFSET) != 0) {
+            te.setOffsetX(this.offsetXForPlacementHit(side, turn, hit));
             if (debugPlacement && !te.getWorld().isRemote)
-                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
+                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", this.kind, te.getOffsetX());
         }
     }
 
     public double offsetXForPlacementHit(int side, int turn, Vector3 hit) {
         Vector3 h = Trans3.sideTurn(side, turn).ip(hit);
-        return signedPlacementOffsetX(h.x);
+        return this.signedPlacementOffsetX(h.x);
     }
 
     public double signedPlacementOffsetX(double sign) {
-        double offx = kind.placementOffsetX();
+        double offx = this.kind.placementOffsetX();
         if (sign < 0)
             offx = -offx;
         return offx;
     }
 
     protected int rightSideUpSide() {
-        if (isPlacedUnderneath())
+        if (this.isPlacedUnderneath())
             return 1;
         else
             return 0;
     }
 
     protected int upsideDownSide() {
-        if (isPlacedUnderneath())
+        if (this.isPlacedUnderneath())
             return 0;
         else
             return 1;
     }
 
     protected boolean isPlacedUnderneath() {
-        return (flags & PLACE_UNDERNEATH) != 0;
+        return (this.flags & PLACE_UNDERNEATH) != 0;
     }
 
     public boolean isCladding() {

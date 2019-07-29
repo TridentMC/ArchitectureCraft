@@ -7,6 +7,7 @@ import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.helpers.Trans3;
+import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.shape.ItemShape;
 import com.elytradev.architecture.common.tile.TileShape;
@@ -55,6 +56,7 @@ public class PreviewRenderer {
                 te.setWorld(world);
                 te.readFromItemStack(stack);
                 adjustOrientation(player, world, te, TileShape.get(world, hit.getBlockPos()), hit);
+                Trans3 t = Trans3.blockCenter(pos).t(te.localToGlobalTransformation(Vector3.zero, state));
 
                 double tX = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) e.getPartialTicks();
                 double tY = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) e.getPartialTicks();
@@ -67,7 +69,7 @@ public class PreviewRenderer {
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
                 buff.begin(7, DefaultVertexFormats.ITEM);
-                shapeDispatcher.renderBlock(world, pos, blockShape, state, te, target, null, Trans3.blockCenter(pos));
+                shapeDispatcher.renderShapeTE(te, target, t, true, false, Utils.getColourFromState(te.baseBlockState), -1);
                 tess.draw();
                 GlStateManager.depthMask(true);
                 GlStateManager.disableBlend();

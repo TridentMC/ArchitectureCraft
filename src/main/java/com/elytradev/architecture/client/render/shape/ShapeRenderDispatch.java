@@ -28,10 +28,8 @@ import com.elytradev.architecture.client.render.ICustomRenderer;
 import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.client.render.texture.TextureBase;
-import com.elytradev.architecture.common.block.BlockShape;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
-import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -55,21 +53,15 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         TileShape te = TileShape.get(world, pos);
-        if (state.getBlock() instanceof BlockShape) {
-            this.renderBlock(world, pos, (BlockShape) state.getBlock(), state, te, target, layer, t);
-        }
-    }
-
-    public void renderBlock(IBlockAccess world, BlockPos pos, BlockShape block, IBlockState state, TileShape te, RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
         if (te != null) {
-            Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, te, state, Vector3.zero));
-            boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
-            boolean renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
+            Trans3 t2 = t.t(te.localToGlobalRotation());
+            boolean renderBase = this.canRenderInLayer(te.baseBlockState, layer);
+            boolean renderSecondary = this.canRenderInLayer(te.secondaryBlockState, layer);
 
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
-            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+            int baseColour = renderBase ? Utils.getColourFromState(te.baseBlockState) : -1;
+            int secondaryColour = renderSecondary ? Utils.getColourFromState(te.secondaryBlockState) : baseColour;
 
-            renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
+            this.renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
         }
     }
 
@@ -84,14 +76,14 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         TileShape te = new TileShape();
         te.readFromItemStack(stack);
         ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-        ItemStack baseStack = getStackFromState(te.baseBlockState);
-        ItemStack secondaryStack = getStackFromState(te.secondaryBlockState);
+        ItemStack baseStack = this.getStackFromState(te.baseBlockState);
+        ItemStack secondaryStack = this.getStackFromState(te.secondaryBlockState);
         int baseColour = baseStack != null ?
                 itemColors.colorMultiplier(baseStack, 0) : -1;
         int secondaryColour = secondaryStack != null ?
                 itemColors.colorMultiplier(secondaryStack, 0) : baseColour;
 
-        renderShapeTE(te, target, t,
+        this.renderShapeTE(te, target, t,
                 te.baseBlockState != null,
                 te.secondaryBlockState != null,
                 baseColour, secondaryColour);
@@ -110,8 +102,8 @@ public class ShapeRenderDispatch implements ICustomRenderer {
     }
 
     public void renderShapeTE(TileShape te, RenderTargetBase target, Trans3 t,
-                              boolean renderBase, boolean renderSecondary,
-                              int baseColourMult, int secondaryColourMult) {
+                                 boolean renderBase, boolean renderSecondary,
+                                 int baseColourMult, int secondaryColourMult) {
         if (te.shape != null && (renderBase || renderSecondary)) {
             IBlockState base = te.baseBlockState;
             if (base != null) {
@@ -146,13 +138,6 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         }
     }
 
-    private int getColourFromState(IBlockState state) {
-        if (state == null)
-            return -1;
-
-        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        return blockColors.colorMultiplier(state, null, null, 0);
-    }
 
     @Override
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
@@ -160,10 +145,10 @@ public class ShapeRenderDispatch implements ICustomRenderer {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);
             Trans3 t2 = t.t(te.localToGlobalRotation());
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
-            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+            int baseColour = renderBase ? Utils.getColourFromState(te.baseBlockState) : -1;
+            int secondaryColour = renderSecondary ? Utils.getColourFromState(te.secondaryBlockState) : baseColour;
 
-            renderShapeTE(TileShape.get(world, pos), target, t2,
+            this.renderShapeTE(TileShape.get(world, pos), target, t2,
                     renderBase, renderSecondary,
                     baseColour, secondaryColour);
         }

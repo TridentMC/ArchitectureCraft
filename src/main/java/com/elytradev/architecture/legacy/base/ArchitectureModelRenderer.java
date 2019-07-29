@@ -38,7 +38,6 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -63,15 +62,14 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target,
                             BlockRenderLayer layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
-        TileEntity tile = world.getTileEntity(pos);
-        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, tile, state, Vector3.zero)).translate(origin);
+        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(this.origin);
         int colour = -1;
-        model.render(t2, target, colour, colour, textures);
+        this.model.render(t2, target, colour, colour, this.textures);
     }
 
     @Override
     public void renderBlock(IBlockAccess world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
-        if (renderPrimary) renderBlock(world, pos, state, target, layer, t);
+        if (renderPrimary) this.renderBlock(world, pos, state, target, layer, t);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
             if (block instanceof BlockArchitecture)
                 t = t.t(((BlockArchitecture) block).itemTransformation());
         }
-        model.render(t.translate(origin), target, -1, -1, textures);
+        this.model.render(t.translate(this.origin), target, -1, -1, this.textures);
     }
 
     private int getColourFromState(IBlockState state) {

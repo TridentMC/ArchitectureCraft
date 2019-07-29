@@ -172,7 +172,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     @Override
     protected void defineProperties() {
         super.defineProperties();
-        addProperty(LIGHT);
+        this.addProperty(LIGHT);
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +39,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Random;
@@ -67,6 +70,15 @@ public class Utils {
                     .getBlockModelShapes().getTexture(state);
         else
             return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static int getColourFromState(IBlockState state) {
+        if (state == null)
+            return -1;
+
+        BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+        return blockColors.colorMultiplier(state, null, null, 0);
     }
 
     public static TextureAtlasSprite getSpriteForPos(IBlockAccess world, BlockPos pos, boolean renderPrimary) {

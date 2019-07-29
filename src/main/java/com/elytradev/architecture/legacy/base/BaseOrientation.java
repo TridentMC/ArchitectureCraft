@@ -35,6 +35,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -87,7 +88,7 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile, Vector3 origin) {
             EnumFacing f = (EnumFacing) state.getValue(FACING);
             int i;
             switch (f) {
@@ -116,12 +117,12 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin) {
-            if (tile != null) {
-                return Trans3.sideTurn(origin, tile.getSide(), tile.getTurn());
-            } else {
-                return super.localToGlobalTransformation(world, pos, null, state, origin);
-            }
+        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile, Vector3 origin) {
+            if (tile instanceof TileArchitecture) {
+                TileArchitecture tileArchitecture = (TileArchitecture) tile;
+                return Trans3.sideTurn(origin, tileArchitecture.getSide(), tileArchitecture.getTurn());
+            } else
+                return super.localToGlobalTransformation(world, pos, state, tile, origin);
         }
 
     }

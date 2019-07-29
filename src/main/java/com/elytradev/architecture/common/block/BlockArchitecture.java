@@ -334,8 +334,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     public Trans3 localToGlobalRotation(IBlockAccess world, BlockPos pos, IBlockState state) {
-        TileEntity tile = world.getTileEntity(pos);
-        return localToGlobalTransformation(world, pos, tile, state, Vector3.zero);
+        return localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
     public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos) {
@@ -343,13 +342,16 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state) {
-        TileEntity tile = world.getTileEntity(pos);
-        return localToGlobalTransformation(world, pos, tile, state, Vector3.blockCenter(pos));
+        return localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileEntity tile, IBlockState state, Vector3 origin) {
+    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+        return this.localToGlobalTransformation(world, pos, state, world.getTileEntity(pos), origin);
+    }
+
+    public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile, Vector3 origin) {
         IOrientationHandler oh = getOrientationHandler();
-        return oh.localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, origin);
+        return oh.localToGlobalTransformation(world, pos, state, tile, origin);
     }
 
     public Trans3 itemTransformation() {
@@ -556,8 +558,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
             IArchitectureModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
-            TileEntity tile = world.getTileEntity(pos);
-            Trans3 t = localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, Vector3.blockCenter).translate(spec.origin);
+            Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
         return null;
@@ -581,8 +582,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
 
     protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockAccess world, BlockPos pos,
                                                          IBlockState state, Entity entity) {
-        TileEntity tile = world.getTileEntity(pos);
-        Trans3 t = localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, Vector3.zero);
+        Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.zero);
         return getCollisionBoxes(world, pos, state, t, entity);
     }
 
@@ -606,11 +606,15 @@ public class BlockArchitecture<TE extends TileArchitecture>
         IBlockState onBlockPlaced(Block block, World world, BlockPos pos, EnumFacing side,
                                   float hitX, float hitY, float hitZ, IBlockState baseState, EntityLivingBase placer);
 
-        Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin);
+        default Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, Vector3 origin) {
+            return this.localToGlobalTransformation(world, pos, state, world.getTileEntity(pos), origin);
+        }
+
+        Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile, Vector3 origin);
+
     }
 
     public static class Orient1Way implements IOrientationHandler {
-
         public void defineProperties(BlockArchitecture block) {
         }
 
@@ -619,19 +623,16 @@ public class BlockArchitecture<TE extends TileArchitecture>
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, TileArchitecture tile, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity tile, Vector3 origin) {
             return new Trans3(origin);
         }
-
     }
 
     @SideOnly(Side.CLIENT)
     public static class DiggingFX extends ParticleDigging {
-
         public DiggingFX(World world, double x1, double y1, double z1, double x2, double y2, double z2, IBlockState state) {
             super(world, x1, y1, z1, x2, y2, z2, state);
         }
-
     }
 
 }

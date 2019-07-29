@@ -25,6 +25,7 @@
 package com.elytradev.architecture.common.tile;
 
 import com.elytradev.architecture.common.ArchitectureLog;
+import com.elytradev.architecture.common.ArchitectureMod;
 import com.elytradev.architecture.common.block.BlockArchitecture;
 import com.elytradev.architecture.common.block.BlockHelper;
 import com.elytradev.architecture.common.helpers.Trans3;
@@ -115,11 +116,13 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public Trans3 localToGlobalTransformation(Vector3 origin) {
-        IBlockState state = world.getBlockState(pos);
+        return this.localToGlobalTransformation(origin, this.world.getBlockState(this.pos));
+    }
+
+    public Trans3 localToGlobalTransformation(Vector3 origin, IBlockState state) {
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture) {
-            TileEntity tile = world.getTileEntity(pos);
-            return ((BlockArchitecture) block).localToGlobalTransformation(world, pos, tile instanceof TileArchitecture ? (TileArchitecture) tile : null, state, origin);
+            return ((BlockArchitecture) block).localToGlobalTransformation(this.world, this.pos, state, this, origin);
         } else {
             return new Trans3(origin);
         }
