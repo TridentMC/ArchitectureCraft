@@ -31,6 +31,9 @@ import com.elytradev.architecture.legacy.base.BaseOrientation;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -91,5 +94,16 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.SOLID;
+    }
+
+    @Override
+    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te != null && te instanceof IInventory) {
+            ItemStack items = ((IInventory) te).getStackInSlot(TileSawbench.materialSlot);
+            if (items != null)
+                InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), items);
+        }
+
     }
 }
