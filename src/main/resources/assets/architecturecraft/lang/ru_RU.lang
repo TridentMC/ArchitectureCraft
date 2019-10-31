@@ -1,0 +1,12 @@
+tile.architecturecraft.sawbench.name=Верстак архитектора
+tile.architecturecraft.shape.name=Архитектурный блок
+item.architecturecraft.largePulley.name=Большой шкив
+item.architecturecraft.sawblade.name=Лезвие циркулярной пилы
+item.architecturecraft.chisel.name=Стамеска архитектора
+item.architecturecraft.hammer.name=Молоток архитектора
+item.architecturecraft.cladding.name=Кровля
+itemGroup.architecture.tool=Инструменты архитектора
+itemGroup.architecture.shape=Блоки архитектора
+
+tooltip.architecturecraft.basematerial=Основной: %s
+tooltip.architecturecraft.secondarymaterial=Дополнительный: %s
