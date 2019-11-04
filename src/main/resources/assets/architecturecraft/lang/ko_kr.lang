@@ -1,0 +1,12 @@
+tile.architecturecraft.sawbench.name=건축가의 톱대
+tile.architecturecraft.shape.name=건축적인 블럭
+item.architecturecraft.largePulley.name=큰 도르래
+item.architecturecraft.sawblade.name=원형 톱날
+item.architecturecraft.chisel.name=건축가의 끌
+item.architecturecraft.hammer.name=건축가의 망치
+item.architecturecraft.cladding.name=피복
+itemGroup.architecture.tool=Architecture Craft Tools
+itemGroup.architecture.shape=Architecture Craft Shapes
+
+tooltip.architecturecraft.basematerial=재료: %s
+tooltip.architecturecraft.secondarymaterial=부재료: %s
