@@ -24,13 +24,15 @@
 
 package com.elytradev.architecture.common.shape;
 
+import net.minecraft.client.resources.I18n;
+
 public class ShapePage {
 
-    public String title;
+    public String translationKey;
     public EnumShape[] shapes;
 
-    public ShapePage(String title, EnumShape... shapes) {
-        this.title = title;
+    public ShapePage(String translationKey, EnumShape... shapes) {
+        this.translationKey = translationKey;
         this.shapes = shapes;
     }
 
@@ -42,6 +44,10 @@ public class ShapePage {
         if (i >= 0 && i < this.shapes.length)
             return this.shapes[i];
         return null;
+    }
+
+    public String getLocalizedName() {
+        return I18n.format(this.translationKey);
     }
 
 }

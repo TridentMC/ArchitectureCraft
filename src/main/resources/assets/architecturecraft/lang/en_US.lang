@@ -92,18 +92,17 @@ architecturecraft.shape.stairs=Stairs
 architecturecraft.shape.stairs_outer_corner=Stairs Outer Corner
 architecturecraft.shape.stairs_inner_corner=Stairs Inner Corner
 
+architecturecraft.shapepage.roofing=Roofing
+architecturecraft.shapepage.rounded=Rounded
+architecturecraft.shapepage.classical=Classical
+architecturecraft.shapepage.window=Window
+architecturecraft.shapepage.arches=Arches
+architecturecraft.shapepage.railings=Railings
+architecturecraft.shapepage.other=Other
+
 tooltip.architecturecraft.basematerial=Base: %s
 tooltip.architecturecraft.secondarymaterial=Secondary: %s
 tooltip.architecturecraft.cutfrom=Cut from: %s
 
 architecturecraft.gui.sawbench.title=Sawbench
-
-architecturecraft.gui.sawbench.page.roofing=Roofing
-architecturecraft.gui.sawbench.page.rounded=Rounded
-architecturecraft.gui.sawbench.page.classical=Classical
-architecturecraft.gui.sawbench.page.window=Window
-architecturecraft.gui.sawbench.page.arches=Arches
-architecturecraft.gui.sawbench.page.railings=Railings
-architecturecraft.gui.sawbench.page.other=Other
-
 architecturecraft.gui.sawbench.ratio=%s makes %s

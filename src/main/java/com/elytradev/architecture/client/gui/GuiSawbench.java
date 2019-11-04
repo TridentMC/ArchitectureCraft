@@ -99,7 +99,7 @@ public class GuiSawbench extends BaseGui.Screen {
         this.drawRect(0, this.te.selectedPage * pageMenuRowHeight, pageMenuWidth, pageMenuRowHeight);
         this.gRestore();
         for (int i = 0; i < TileSawbench.pages.length; i++) {
-            this.drawString(I18n.format("architecturecraft.gui.sawbench.page." + TileSawbench.pages[i].title), 1, 1);
+            this.drawString(TileSawbench.pages[i].getLocalizedName(), 1, 1);
             glTranslatef(0, pageMenuRowHeight, 0);
         }
         glPopMatrix();

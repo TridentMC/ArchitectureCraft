@@ -92,18 +92,17 @@ architecturecraft.shape.stairs=Ступеньки
 architecturecraft.shape.stairs_outer_corner=Внешний угол ступенек
 architecturecraft.shape.stairs_inner_corner=Внутренний угол ступенек
 
+architecturecraft.shapepage.roofing=Крыша
+architecturecraft.shapepage.rounded=Округлые
+architecturecraft.shapepage.classical=Классика
+architecturecraft.shapepage.window=Окна
+architecturecraft.shapepage.arches=Арки
+architecturecraft.shapepage.railings=Перила
+architecturecraft.shapepage.other=Другое
+
 tooltip.architecturecraft.basematerial=Основной: %s
 tooltip.architecturecraft.secondarymaterial=Дополнительный: %s
 tooltip.architecturecraft.cutfrom=Материал: %s
 
 architecturecraft.gui.sawbench.title=Верстак архитектора
-
-architecturecraft.gui.sawbench.page.roofing=Крыша
-architecturecraft.gui.sawbench.page.rounded=Округлые
-architecturecraft.gui.sawbench.page.classical=Классика
-architecturecraft.gui.sawbench.page.window=Окна
-architecturecraft.gui.sawbench.page.arches=Арки
-architecturecraft.gui.sawbench.page.railings=Перила
-architecturecraft.gui.sawbench.page.other=Другое
-
 architecturecraft.gui.sawbench.ratio=Из %s в %s
