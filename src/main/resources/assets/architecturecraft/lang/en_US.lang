@@ -30,8 +30,8 @@ architecturecraft.shape.bevelled_outer_corner=Bevelled Outer Corner
 architecturecraft.shape.bevelled_inner_corner=Bevelled Inner Corner
 architecturecraft.shape.pillar_base=Round Pillar Base
 architecturecraft.shape.doric_capital=Doric Capital
-architecturecraft.shape.ionic_capital=Ionic capital
-architecturecraft.shape.corinthian_capital=Corinthian capital
+architecturecraft.shape.ionic_capital=Ionic Capital
+architecturecraft.shape.corinthian_capital=Corinthian Capital
 architecturecraft.shape.doric_triglyph=Triglyph
 architecturecraft.shape.doric_triglyph_corner=Triglyph Corner
 architecturecraft.shape.doric_metope=Metope
@@ -94,3 +94,16 @@ architecturecraft.shape.stairs_inner_corner=Stairs Inner Corner
 
 tooltip.architecturecraft.basematerial=Base: %s
 tooltip.architecturecraft.secondarymaterial=Secondary: %s
+tooltip.architecturecraft.cutfrom=Cut from: %s
+
+architecturecraft.gui.sawbench.title=Sawbench
+
+architecturecraft.gui.sawbench.page.roofing=Roofing
+architecturecraft.gui.sawbench.page.rounded=Rounded
+architecturecraft.gui.sawbench.page.classical=Classical
+architecturecraft.gui.sawbench.page.window=Window
+architecturecraft.gui.sawbench.page.arches=Arches
+architecturecraft.gui.sawbench.page.railings=Railings
+architecturecraft.gui.sawbench.page.other=Other
+
+architecturecraft.gui.sawbench.ratio=%s makes %s
