@@ -28,7 +28,7 @@ import com.elytradev.architecture.client.render.target.RenderTargetBase;
 import com.elytradev.architecture.client.render.texture.ITexture;
 import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.util.EnumFacing;
 
@@ -36,19 +36,19 @@ import java.util.Arrays;
 
 public class RenderRoof extends RenderShape {
 
-    protected final static Shape[] ridgeShapes = {
-            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE};
+    protected final static EnumShape[] ridgeShapes = {
+            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE};
 
-    protected final static Shape[] ridgeOrSlopeShapes = {
-            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE,
-            Shape.ROOF_TILE, Shape.ROOF_OUTER_CORNER, Shape.ROOF_INNER_CORNER};
+    protected final static EnumShape[] ridgeOrSlopeShapes = {
+            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE,
+            EnumShape.ROOF_TILE, EnumShape.ROOF_OUTER_CORNER, EnumShape.ROOF_INNER_CORNER};
 
-    protected final static Shape[] valleyShapes = {
-            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY};
+    protected final static EnumShape[] valleyShapes = {
+            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY};
 
-    protected final static Shape[] valleyOrSlopeShapes = {
-            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY,
-            Shape.ROOF_TILE, Shape.ROOF_INNER_CORNER};
+    protected final static EnumShape[] valleyOrSlopeShapes = {
+            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY,
+            EnumShape.ROOF_TILE, EnumShape.ROOF_INNER_CORNER};
 
     protected EnumFacing face;
     protected boolean outerFace;
@@ -737,7 +737,7 @@ public class RenderRoof extends RenderShape {
         return this.hasNeighbour(dx, dy, dz, valleyOrSlopeShapes);
     }
 
-    protected boolean hasNeighbour(int dx, int dy, int dz, Shape[] shapes) {
+    protected boolean hasNeighbour(int dx, int dy, int dz, EnumShape[] shapes) {
         EnumFacing dir = this.t.v(dx, dy, dz).facing();
         TileShape nte = this.te.getConnectedNeighbourGlobal(dir);
         if (nte != null) {

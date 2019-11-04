@@ -27,9 +27,9 @@ package com.elytradev.architecture.common.shape;
 public class ShapePage {
 
     public String title;
-    public Shape[] shapes;
+    public EnumShape[] shapes;
 
-    public ShapePage(String title, Shape... shapes) {
+    public ShapePage(String title, EnumShape... shapes) {
         this.title = title;
         this.shapes = shapes;
     }
@@ -38,7 +38,7 @@ public class ShapePage {
         return this.shapes.length;
     }
 
-    public Shape get(int i) {
+    public EnumShape get(int i) {
         if (i >= 0 && i < this.shapes.length)
             return this.shapes[i];
         return null;

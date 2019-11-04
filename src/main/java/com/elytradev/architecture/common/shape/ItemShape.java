@@ -25,7 +25,6 @@
 package com.elytradev.architecture.common.shape;
 
 import com.elytradev.architecture.common.ArchitectureContent;
-import com.elytradev.architecture.common.ArchitectureLog;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
@@ -102,9 +101,9 @@ public class ItemShape extends ItemBlock {
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null) {
             int id = tag.getInteger("Shape");
-            Shape shape = Shape.forId(id);
+            EnumShape shape = EnumShape.forId(id);
             if (shape != null)
-                lines.set(0, shape.title);
+                lines.set(0, shape.getLocalizedShapeName());
             else
                 lines.set(0, lines.get(0) + " (" + id + ")");
             Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
@@ -117,7 +116,7 @@ public class ItemShape extends ItemBlock {
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (tab.equals(ArchitectureContent.SHAPE_TAB)) {
-            for (Shape shape : Shape.values()) {
+            for (EnumShape shape : EnumShape.values()) {
                 if (shape.isCladding())
                     continue;
 
@@ -136,7 +135,7 @@ public class ItemShape extends ItemBlock {
     public ItemStack getDefaultInstance() {
         ItemStack defaultStack = new ItemStack(this, 1);
         NBTTagCompound tag = new NBTTagCompound();
-        tag.setInteger("Shape", Shape.ROOF_TILE.id);
+        tag.setInteger("Shape", EnumShape.ROOF_TILE.id);
         tag.setString("BaseName", Blocks.PLANKS.getRegistryName().toString());
         tag.setInteger("BaseData", 0);
         defaultStack.setTagCompound(tag);
@@ -151,9 +150,9 @@ public class ItemShape extends ItemBlock {
             return super.getItemStackDisplayName(stack);
 
         int id = tag.getInteger("Shape");
-        Shape shape = Shape.forId(id);
+        EnumShape shape = EnumShape.forId(id);
         Block baseBlock = Block.getBlockFromName(tag.getString("BaseName"));
         int baseMetadata = tag.getInteger("BaseData");
-        return shape.title + ": " + Utils.displayNameOnlyOfBlock(baseBlock, baseMetadata);
+        return shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(baseBlock, baseMetadata);
     }
 }

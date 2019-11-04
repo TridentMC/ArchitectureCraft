@@ -26,6 +26,7 @@ package com.elytradev.architecture.common;
 
 import com.elytradev.architecture.common.drop.ModDrops;
 import com.elytradev.architecture.common.proxy.CommonProxy;
+import com.elytradev.architecture.common.shape.EnumShape;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;

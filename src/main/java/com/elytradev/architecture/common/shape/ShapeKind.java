@@ -77,7 +77,7 @@ public abstract class ShapeKind {
         return new Banister(name);
     }
 
-    public Object profileForLocalFace(Shape shape, EnumFacing face) {
+    public Object profileForLocalFace(EnumShape shape, EnumFacing face) {
         if (this.profiles != null)
             return this.profiles[face.ordinal()];
         else
@@ -93,13 +93,13 @@ public abstract class ShapeKind {
                                      boolean renderBase, boolean renderSecondary,
                                      int baseColourMult, int secondaryColourMult);
 
-    public ItemStack newStack(Shape shape, IBlockState materialState, int stackSize) {
+    public ItemStack newStack(EnumShape shape, IBlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
         int light = te.getBaseBlockState().getLightValue();
         return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
     }
 
-    public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
+    public ItemStack newStack(EnumShape shape, Block materialBlock, int materialMeta, int stackSize) {
         return this.newStack(shape, materialBlock.getStateFromMeta(materialMeta), stackSize);
     }
 
@@ -297,7 +297,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public Object profileForLocalFace(Shape shape, EnumFacing face) {
+        public Object profileForLocalFace(EnumShape shape, EnumFacing face) {
             switch (shape) {
                 case ROOF_TILE:
                 case ROOF_OVERHANG:
@@ -401,7 +401,7 @@ public abstract class ShapeKind {
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
             this.getModel().addBoxesToList(Trans3.ident, list);
             AxisAlignedBB bounds = Utils.unionOfBoxes(list);
-            if (Shape.debugPlacement) {
+            if (EnumShape.debugPlacement) {
                 for (AxisAlignedBB box : list)
                     ArchitectureLog.info("ShapeKind.Model.placementOffsetX: %s\n", box);
                 ArchitectureLog.info("ShapeKind.Model.placementOffsetX: bounds = %s\n", bounds);
@@ -587,7 +587,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public ItemStack newStack(Shape shape, Block materialBlock, int materialMeta, int stackSize) {
+        public ItemStack newStack(EnumShape shape, Block materialBlock, int materialMeta, int stackSize) {
             return ArchitectureMod.CONTENT.itemCladding.newStack(materialBlock, materialMeta, stackSize);
         }
 

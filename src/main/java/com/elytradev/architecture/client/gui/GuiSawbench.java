@@ -25,7 +25,7 @@
 package com.elytradev.architecture.client.gui;
 
 import com.elytradev.architecture.common.network.SelectShapeMessage;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import com.elytradev.architecture.common.tile.ContainerSawbench;
 import com.elytradev.architecture.common.tile.TileSawbench;
@@ -120,9 +120,9 @@ public class GuiSawbench extends BaseGui.Screen {
         if (p >= 0 && p < TileSawbench.pages.length) {
             ShapePage page = TileSawbench.pages[p];
             if (page != null) {
-                Shape[] shapes = page.shapes;
+                EnumShape[] shapes = page.shapes;
                 for (int i = 0; i < shapes.length; i++) {
-                    Shape shape = shapes[i];
+                    EnumShape shape = shapes[i];
                     int mrow = i / shapeMenuCols, mcol = i % shapeMenuCols;
                     int id = shape.id;
                     int trow = id / 10, tcol = id % 10;
@@ -149,13 +149,13 @@ public class GuiSawbench extends BaseGui.Screen {
     }
 
     void drawSelectedShapeTitle() {
-        Shape shape = this.te.getSelectedShape();
+        EnumShape shape = this.te.getSelectedShape();
         if (shape != null) {
             int x = selectedShapeTitleLeft;
-            int w = this.fontRenderer.getStringWidth(shape.title);
+            int w = this.fontRenderer.getStringWidth(shape.getLocalizedShapeName());
             if (x + w > selectedShapeTitleRight)
                 x = selectedShapeTitleRight - w;
-            this.drawString(shape.title, x, selectedShapeTitleTop);
+            this.drawString(shape.getLocalizedShapeName(), x, selectedShapeTitleTop);
             glPushMatrix();
             glTranslatef(materialUsageLeft, materialUsageTop, 0);
             glScalef(0.5f, 0.5f, 1.0f);

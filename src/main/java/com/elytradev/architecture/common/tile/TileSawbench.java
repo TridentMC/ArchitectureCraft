@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.common.tile;
 
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.elytradev.architecture.common.shape.ShapePage;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
@@ -49,32 +49,32 @@ public class TileSawbench extends TileArchitectureInventory {
 
     public static ShapePage[] pages = {
             new ShapePage("Roofing",
-                    Shape.ROOF_TILE, Shape.ROOF_OUTER_CORNER, Shape.ROOF_INNER_CORNER,
-                    Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE, Shape.ROOF_VALLEY,
-                    Shape.ROOF_SMART_VALLEY, Shape.ROOF_OVERHANG, Shape.ROOF_OVERHANG_OUTER_CORNER,
-                    Shape.ROOF_OVERHANG_INNER_CORNER, Shape.ROOF_OVERHANG_GABLE_LH, Shape.ROOF_OVERHANG_GABLE_RH,
-                    Shape.ROOF_OVERHANG_GABLE_END_LH, Shape.ROOF_OVERHANG_GABLE_END_RH, Shape.ROOF_OVERHANG_RIDGE,
-                    Shape.ROOF_OVERHANG_VALLEY, Shape.BEVELLED_OUTER_CORNER, Shape.BEVELLED_INNER_CORNER),
+                    EnumShape.ROOF_TILE, EnumShape.ROOF_OUTER_CORNER, EnumShape.ROOF_INNER_CORNER,
+                    EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE, EnumShape.ROOF_VALLEY,
+                    EnumShape.ROOF_SMART_VALLEY, EnumShape.ROOF_OVERHANG, EnumShape.ROOF_OVERHANG_OUTER_CORNER,
+                    EnumShape.ROOF_OVERHANG_INNER_CORNER, EnumShape.ROOF_OVERHANG_GABLE_LH, EnumShape.ROOF_OVERHANG_GABLE_RH,
+                    EnumShape.ROOF_OVERHANG_GABLE_END_LH, EnumShape.ROOF_OVERHANG_GABLE_END_RH, EnumShape.ROOF_OVERHANG_RIDGE,
+                    EnumShape.ROOF_OVERHANG_VALLEY, EnumShape.BEVELLED_OUTER_CORNER, EnumShape.BEVELLED_INNER_CORNER),
             new ShapePage("Rounded",
-                    Shape.CYLINDER, Shape.CYLINDER_HALF, Shape.CYLINDER_QUARTER, Shape.CYLINDER_LARGE_QUARTER, Shape.ANTICYLINDER_LARGE_QUARTER,
-                    Shape.PILLAR, Shape.POST, Shape.POLE, Shape.SPHERE_FULL, Shape.SPHERE_HALF,
-                    Shape.SPHERE_QUARTER, Shape.SPHERE_EIGHTH, Shape.SPHERE_EIGHTH_LARGE, Shape.SPHERE_EIGHTH_LARGE_REV),
+                    EnumShape.CYLINDER, EnumShape.CYLINDER_HALF, EnumShape.CYLINDER_QUARTER, EnumShape.CYLINDER_LARGE_QUARTER, EnumShape.ANTICYLINDER_LARGE_QUARTER,
+                    EnumShape.PILLAR, EnumShape.POST, EnumShape.POLE, EnumShape.SPHERE_FULL, EnumShape.SPHERE_HALF,
+                    EnumShape.SPHERE_QUARTER, EnumShape.SPHERE_EIGHTH, EnumShape.SPHERE_EIGHTH_LARGE, EnumShape.SPHERE_EIGHTH_LARGE_REV),
             new ShapePage("Classical",
-                    Shape.PILLAR_BASE, Shape.PILLAR, Shape.DORIC_CAPITAL, Shape.DORIC_TRIGLYPH, Shape.DORIC_TRIGLYPH_CORNER, Shape.DORIC_METOPE,
-                    Shape.IONIC_CAPITAL, Shape.CORINTHIAN_CAPITAL, Shape.ARCHITRAVE, Shape.ARCHITRAVE_CORNER, Shape.CORNICE_LH, Shape.CORNICE_RH,
-                    Shape.CORNICE_END_LH, Shape.CORNICE_END_RH, Shape.CORNICE_RIDGE, Shape.CORNICE_VALLEY, Shape.CORNICE_BOTTOM),
+                    EnumShape.PILLAR_BASE, EnumShape.PILLAR, EnumShape.DORIC_CAPITAL, EnumShape.DORIC_TRIGLYPH, EnumShape.DORIC_TRIGLYPH_CORNER, EnumShape.DORIC_METOPE,
+                    EnumShape.IONIC_CAPITAL, EnumShape.CORINTHIAN_CAPITAL, EnumShape.ARCHITRAVE, EnumShape.ARCHITRAVE_CORNER, EnumShape.CORNICE_LH, EnumShape.CORNICE_RH,
+                    EnumShape.CORNICE_END_LH, EnumShape.CORNICE_END_RH, EnumShape.CORNICE_RIDGE, EnumShape.CORNICE_VALLEY, EnumShape.CORNICE_BOTTOM),
             new ShapePage("Window",
-                    Shape.WINDOW_FRAME, Shape.WINDOW_CORNER, Shape.WINDOW_MULLION),
+                    EnumShape.WINDOW_FRAME, EnumShape.WINDOW_CORNER, EnumShape.WINDOW_MULLION),
             new ShapePage("Arches",
-                    Shape.ARCH_D_1, Shape.ARCH_D_2, Shape.ARCH_D_3_A, Shape.ARCH_D_3_B, Shape.ARCH_D_3_C, Shape.ARCH_D_4_A, Shape.ARCH_D_4_B, Shape.ARCH_D_4_C),
+                    EnumShape.ARCH_D_1, EnumShape.ARCH_D_2, EnumShape.ARCH_D_3_A, EnumShape.ARCH_D_3_B, EnumShape.ARCH_D_3_C, EnumShape.ARCH_D_4_A, EnumShape.ARCH_D_4_B, EnumShape.ARCH_D_4_C),
             new ShapePage("Railings",
-                    Shape.BALUSTRADE_PLAIN, Shape.BALUSTRADE_PLAIN_OUTER_CORNER, Shape.BALUSTRADE_PLAIN_INNER_CORNER,
-                    Shape.BALUSTRADE_PLAIN_WITH_NEWEL, Shape.BALUSTRADE_PLAIN_END,
-                    Shape.BANISTER_PLAIN_TOP, Shape.BANISTER_PLAIN, Shape.BANISTER_PLAIN_BOTTOM, Shape.BANISTER_PLAIN_END, Shape.BANISTER_PLAIN_INNER_CORNER,
-                    Shape.BALUSTRADE_FANCY, Shape.BALUSTRADE_FANCY_CORNER, Shape.BALUSTRADE_FANCY_WITH_NEWEL, Shape.BALUSTRADE_FANCY_NEWEL,
-                    Shape.BANISTER_FANCY_TOP, Shape.BANISTER_FANCY, Shape.BANISTER_FANCY_BOTTOM, Shape.BANISTER_FANCY_END, Shape.BANISTER_FANCY_NEWEL_TALL),
+                    EnumShape.BALUSTRADE_PLAIN, EnumShape.BALUSTRADE_PLAIN_OUTER_CORNER, EnumShape.BALUSTRADE_PLAIN_INNER_CORNER,
+                    EnumShape.BALUSTRADE_PLAIN_WITH_NEWEL, EnumShape.BALUSTRADE_PLAIN_END,
+                    EnumShape.BANISTER_PLAIN_TOP, EnumShape.BANISTER_PLAIN, EnumShape.BANISTER_PLAIN_BOTTOM, EnumShape.BANISTER_PLAIN_END, EnumShape.BANISTER_PLAIN_INNER_CORNER,
+                    EnumShape.BALUSTRADE_FANCY, EnumShape.BALUSTRADE_FANCY_CORNER, EnumShape.BALUSTRADE_FANCY_WITH_NEWEL, EnumShape.BALUSTRADE_FANCY_NEWEL,
+                    EnumShape.BANISTER_FANCY_TOP, EnumShape.BANISTER_FANCY, EnumShape.BANISTER_FANCY_BOTTOM, EnumShape.BANISTER_FANCY_END, EnumShape.BANISTER_FANCY_NEWEL_TALL),
             new ShapePage("Other",
-                    Shape.CLADDING_SHEET, Shape.SLAB, Shape.STAIRS, Shape.STAIRS_OUTER_CORNER, Shape.STAIRS_INNER_CORNER),
+                    EnumShape.CLADDING_SHEET, EnumShape.SLAB, EnumShape.STAIRS, EnumShape.STAIRS_OUTER_CORNER, EnumShape.STAIRS_INNER_CORNER),
     };
 
     public IInventory inventory = new InventoryBasic("Items", false, 2);
@@ -83,7 +83,7 @@ public class TileSawbench extends TileArchitectureInventory {
     public boolean pendingMaterialUsage = false; // Material for the stack in the result slot
     // has not yet been removed from the material slot
 
-    public Shape getSelectedShape() {
+    public EnumShape getSelectedShape() {
         if (this.selectedPage >= 0 && this.selectedPage < pages.length) {
             int slot = this.selectedSlots[this.selectedPage];
             if (slot >= 0 && slot < pages[this.selectedPage].size())
@@ -201,7 +201,7 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     protected ItemStack makeResultStack() {
-        Shape resultShape = this.getSelectedShape();
+        EnumShape resultShape = this.getSelectedShape();
         if (resultShape != null) {
             ItemStack materialStack = this.getStackInSlot(materialSlot);
             if (!materialStack.isEmpty() && materialStack.getCount() >= resultShape.materialUsed) {
@@ -234,14 +234,14 @@ public class TileSawbench extends TileArchitectureInventory {
             if (materialBlock instanceof BlockSlab)
                 factor = 2;
         }
-        Shape shape = this.getSelectedShape();
+        EnumShape shape = this.getSelectedShape();
         if (shape != null)
             return factor * shape.materialUsed;
         return 0;
     }
 
     public int resultMultiple() {
-        Shape shape = this.getSelectedShape();
+        EnumShape shape = this.getSelectedShape();
         if (shape != null)
             return shape.itemsProduced;
         return 0;

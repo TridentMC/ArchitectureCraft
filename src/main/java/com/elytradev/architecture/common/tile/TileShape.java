@@ -28,7 +28,7 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Utils;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.item.ItemCladding;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.google.common.base.MoreObjects;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -48,7 +48,7 @@ import static com.elytradev.architecture.common.block.BlockHelper.getNameForBloc
 
 public class TileShape extends TileArchitecture {
 
-    private Shape shape;
+    private EnumShape shape;
     private IBlockState baseBlockState;
     private IBlockState secondaryBlockState;
     private byte offsetX;
@@ -56,19 +56,19 @@ public class TileShape extends TileArchitecture {
 
     public TileShape() {
         super();
-        this.shape = Shape.ROOF_TILE;
+        this.shape = EnumShape.ROOF_TILE;
         this.baseBlockState = Blocks.PLANKS.getDefaultState();
         this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
-    public TileShape(Shape s, IBlockState b) {
+    public TileShape(EnumShape s, IBlockState b) {
         super();
         this.shape = s;
         this.baseBlockState = b;
         this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
-    public TileShape(Shape s, Block b, int d) {
+    public TileShape(EnumShape s, Block b, int d) {
         super();
         this.shape = s;
         this.baseBlockState = b.getStateFromMeta(d);
@@ -138,7 +138,7 @@ public class TileShape extends TileArchitecture {
     }
 
     protected void readShapeFromNBT(NBTTagCompound nbt) {
-        this.shape = Shape.forId(nbt.getInteger("Shape"));
+        this.shape = EnumShape.forId(nbt.getInteger("Shape"));
         this.baseBlockState = this.nbtGetBlockState(nbt, "BaseName", "BaseData");
         if (this.baseBlockState.getBlock() == Blocks.AIR.getDefaultState())
             this.baseBlockState = Blocks.PLANKS.getDefaultState();
@@ -281,7 +281,7 @@ public class TileShape extends TileArchitecture {
         return this.shape != null;
     }
 
-    public Shape getShape() {
+    public EnumShape getShape() {
         return this.shape;
     }
 

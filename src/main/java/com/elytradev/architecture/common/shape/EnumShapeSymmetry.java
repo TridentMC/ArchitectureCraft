@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.common.shape;
 
-public enum ShapeSymmetry {
+public enum EnumShapeSymmetry {
     UNILATERAL,
     BILATERAL,
     QUADRILATERAL

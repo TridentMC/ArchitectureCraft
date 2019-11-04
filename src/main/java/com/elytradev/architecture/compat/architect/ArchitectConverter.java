@@ -1,7 +1,7 @@
 package com.elytradev.architecture.compat.architect;
 
 import com.elytradev.architecture.common.ArchitectureMod;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.elytradev.architecture.common.shape.ShapeKind;
 import com.elytradev.architecture.common.tile.TileShape;
 import li.cil.architect.api.converter.Converter;
@@ -185,7 +185,7 @@ public class ArchitectConverter implements Converter {
         if (!data.hasKey("Name2"))
             return true;
 
-        Shape shape = Shape.forId(data.getInteger("Shape"));
+        EnumShape shape = EnumShape.forId(data.getInteger("Shape"));
         String name = data.getString("Name2");
         int meta = data.getInteger("Data2");
 
@@ -248,7 +248,7 @@ public class ArchitectConverter implements Converter {
     }
 
     private ItemStack getCladdingForBlock(NBTTagCompound data) {
-        Shape shape = Shape.forId(data.getInteger("Shape"));
+        EnumShape shape = EnumShape.forId(data.getInteger("Shape"));
         if (shape.kind instanceof ShapeKind.Window) {
             Item item = Item.REGISTRY.getObject(new ResourceLocation(data.getString("Name2")));
             return new ItemStack(item, 1, data.getInteger("Data2"));

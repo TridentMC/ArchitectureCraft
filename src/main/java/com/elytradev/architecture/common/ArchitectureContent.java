@@ -31,7 +31,7 @@ import com.elytradev.architecture.common.item.ItemChisel;
 import com.elytradev.architecture.common.item.ItemCladding;
 import com.elytradev.architecture.common.item.ItemHammer;
 import com.elytradev.architecture.common.shape.ItemShape;
-import com.elytradev.architecture.common.shape.Shape;
+import com.elytradev.architecture.common.shape.EnumShape;
 import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.common.tile.TileShape;
 import com.google.common.collect.Lists;
@@ -76,7 +76,7 @@ public class ArchitectureContent {
 
         @Override
         public ItemStack createIcon() {
-            return Shape.ROOF_TILE.kind.newStack(Shape.ROOF_TILE, Blocks.PLANKS.getDefaultState(), 1);
+            return EnumShape.ROOF_TILE.kind.newStack(EnumShape.ROOF_TILE, Blocks.PLANKS.getDefaultState(), 1);
         }
     };
 
