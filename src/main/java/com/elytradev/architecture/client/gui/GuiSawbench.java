@@ -30,6 +30,7 @@ import com.elytradev.architecture.common.shape.ShapePage;
 import com.elytradev.architecture.common.tile.ContainerSawbench;
 import com.elytradev.architecture.common.tile.TileSawbench;
 import com.elytradev.architecture.legacy.base.BaseGui;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +88,7 @@ public class GuiSawbench extends BaseGui.Screen {
         this.drawShapeSelection();
         this.drawPageMenu();
         this.drawSelectedShapeTitle();
-        this.fontRenderer.drawString("Sawbench", 7, 7, 4210752);
+        this.fontRenderer.drawString(I18n.format("architecturecraft.gui.sawbench.title"), 7, 7, 4210752);
     }
 
     void drawPageMenu() {
@@ -98,7 +99,7 @@ public class GuiSawbench extends BaseGui.Screen {
         this.drawRect(0, this.te.selectedPage * pageMenuRowHeight, pageMenuWidth, pageMenuRowHeight);
         this.gRestore();
         for (int i = 0; i < TileSawbench.pages.length; i++) {
-            this.drawString(TileSawbench.pages[i].title, 1, 1);
+            this.drawString(TileSawbench.pages[i].getLocalizedName(), 1, 1);
             glTranslatef(0, pageMenuRowHeight, 0);
         }
         glPopMatrix();
@@ -159,7 +160,7 @@ public class GuiSawbench extends BaseGui.Screen {
             glPushMatrix();
             glTranslatef(materialUsageLeft, materialUsageTop, 0);
             glScalef(0.5f, 0.5f, 1.0f);
-            this.drawString(String.format("%s makes %s", this.te.materialMultiple(), this.te.resultMultiple()), 0, 0);
+            this.drawString(I18n.format("architecturecraft.gui.sawbench.ratio", this.te.materialMultiple(), this.te.resultMultiple()), 0, 0);
             glPopMatrix();
         }
     }
