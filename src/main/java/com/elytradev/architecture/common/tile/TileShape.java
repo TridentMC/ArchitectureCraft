@@ -270,11 +270,11 @@ public class TileShape extends TileArchitecture {
     }
 
     public boolean hasBaseBlockState() {
-        return this.baseBlockState.getBlock() != Blocks.AIR;
+        return this.baseBlockState == null ? false : this.baseBlockState.getBlock() != Blocks.AIR;
     }
 
     public boolean hasSecondaryBlockState() {
-        return this.secondaryBlockState.getBlock() != Blocks.AIR;
+        return this.secondaryBlockState == null ? false : this.secondaryBlockState.getBlock() != Blocks.AIR;
     }
 
     public boolean hasShape() {
