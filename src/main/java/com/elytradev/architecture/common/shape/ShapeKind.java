@@ -163,7 +163,7 @@ public abstract class ShapeKind {
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
                     Block.spawnAsEntity(te.getWorld(), te.getPos(), stack);
-                te.setSecondaryMaterial(null);
+                te.setSecondaryMaterial(Blocks.AIR.getDefaultState());
             }
         }
     }
