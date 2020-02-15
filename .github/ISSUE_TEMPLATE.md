@@ -1,6 +1,6 @@
-Thanks for reporting an issue to an Trident project!
+Thanks for reporting an issue to a Trident project!
 
-When reporting an issue to an Trident project, please make sure to include:
+When reporting an issue to a Trident project, please make sure to include:
 
 - The version of the mod you are using (e.g. 2.0.0a4)
 - Your Minecraft version (e.g. 1.11.2)
@@ -24,5 +24,5 @@ category your issue fits in.
 Pastebin is acceptable for crash reports or logs, but Gist is
 greatly preferred.
 
-Please remove this help text after reading it and before posting
-your issue. Thanks!
+*Please remove this help text after reading it and before posting
+your issue. Thanks!*
