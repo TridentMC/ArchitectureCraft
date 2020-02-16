@@ -24,24 +24,26 @@
 
 package com.tridevmc.architecture.client.render.target;
 
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.IWorldReader;
 
 import static java.lang.Math.floor;
 
 public class RenderTargetWorld extends RenderTargetBase {
 
-    protected IWorldReader world;
+    protected ILightReader world;
     protected BlockPos blockPos;
-    protected IBlockState blockState;
+    protected BlockState blockState;
     protected Block block;
     protected float cmr = 1, cmg = 1, cmb = 1;
     protected boolean ao;
@@ -49,9 +51,9 @@ public class RenderTargetWorld extends RenderTargetBase {
     protected boolean renderingOccurred;
     protected float vr, vg, vb, va; // Colour to be applied to next vertex
     protected int vlm1, vlm2; // Light map values to be applied to next vertex
-    private BufferBuilder tess;
+    private IVertexBuilder tess;
 
-    public RenderTargetWorld(IWorldReader world, BlockPos pos, BufferBuilder tess, TextureAtlasSprite overrideIcon) {
+    public RenderTargetWorld(ILightReader world, BlockPos pos, IVertexBuilder tess, TextureAtlasSprite overrideIcon) {
         super(pos.getX(), pos.getY(), pos.getZ(), overrideIcon);
         //ArchitectureLog.info("BaseWorldRenderTarget(%s)\n", pos);
         this.world = world;
@@ -81,7 +83,7 @@ public class RenderTargetWorld extends RenderTargetBase {
         //    vertexCount, p.x, p.y, p.z, vr, vg, vb, va, u, v, vlm1, vlm2); // tess.getCurrentOffset());
         getWorldRenderer().pos(p.x, p.y, p.z);
         getWorldRenderer().color(vr, vg, vb, va);
-        getWorldRenderer().tex(u, v);
+        getWorldRenderer().tex((float) u, (float) v);
         getWorldRenderer().lightmap(vlm1, vlm2);
         getWorldRenderer().endVertex();
         renderingOccurred = true;
@@ -123,7 +125,7 @@ public class RenderTargetWorld extends RenderTargetBase {
                     if (w > 0) {
                         int br;
                         try {
-                            br = block.getPackedLightmapCoords(blockState, world, pos);
+                            br = block.getLightValue(blockState, world, pos);
                         } catch (RuntimeException e) {
                             ArchitectureLog.info("BaseWorldRenderTarget.aoLightVertex: getMixedBrightnessForBlock(%s) with weight %s for block at %s: %s\n",
                                     pos, w, blockPos, e);
@@ -131,8 +133,8 @@ public class RenderTargetWorld extends RenderTargetBase {
                         }
                         float lv;
                         if (!pos.equals(blockPos)) {
-                            IBlockState state = world.getBlockState(pos);
-                            lv = state.getBlock().getAmbientOcclusionLightValue(state);
+                            BlockState state = world.getBlockState(pos);
+                            lv = state.getBlock().getAmbientOcclusionLightValue(state, world, pos);
                         } else
                             lv = 1.0f;
                         if (br != 0) {
@@ -149,7 +151,7 @@ public class RenderTargetWorld extends RenderTargetBase {
         if (wt > 0)
             brv = (MiscUtils.iround(brSum1 / wt * 0xf0) << 16) | MiscUtils.iround(brSum2 / wt * 0xf0);
         else
-            brv = block.getPackedLightmapCoords(blockState, world, blockPos);
+            brv = block.getLightValue(blockState, world, blockPos);
         float lvv = (float) lvSum;
         setLight(shade * lvv, brv);
     }
@@ -164,7 +166,7 @@ public class RenderTargetWorld extends RenderTargetBase {
                     (int) floor(p.z + 0.01 * n.z));
         else
             pos = blockPos;
-        int br = block.getPackedLightmapCoords(blockState, world, pos);
+        int br = block.getLightValue(blockState, world, pos);
         setLight(shade, br);
     }
 
@@ -182,11 +184,11 @@ public class RenderTargetWorld extends RenderTargetBase {
         return renderingOccurred;
     }
 
-    public BufferBuilder getWorldRenderer() {
+    public IVertexBuilder getWorldRenderer() {
         return tess;
     }
 
-    public void setTess(BufferBuilder tess) {
+    public void setTess(IVertexBuilder tess) {
         this.tess = tess;
     }
 }

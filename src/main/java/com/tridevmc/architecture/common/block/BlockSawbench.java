@@ -24,18 +24,21 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.render.ModelSpec;
 import com.tridevmc.architecture.common.tile.TileSawbench;
+import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -50,7 +53,7 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     }
 
     @Override
-    public float getBlockHardness(IBlockState blockState, IBlockReader worldIn, BlockPos pos) {
+    public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos) {
         return 2.0F;
     }
 
@@ -65,14 +68,14 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     }
 
     @Override
-    public ModelSpec getModelSpec(IBlockState state) {
+    public ModelSpec getModelSpec(BlockState state) {
         return modelSpec;
     }
 
-    @Override
-    public boolean isFullCube(IBlockState state) {
+    /*@Override TODO: not sure if this is gone, or just replaced.
+    public boolean isFullCube(BlockState state) {
         return false;
-    }
+    }*/
 
     /*@Override TODO: not sure if this is gone, or just replaced.
     public boolean isOpaqueCube(IBlockState state) {
@@ -80,12 +83,16 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     }*/
 
     @Override
-    public boolean onBlockActivated(IBlockState state, World world, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (!player.isSneaking()) {
-            player.openGui(ArchitectureMod.INSTANCE, 0, world, pos.getX(), pos.getY(), pos.getZ());
-            return true;
-        } else
-            return false;
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (!player.isCrouching()) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile instanceof TileSawbench) {
+                ArchitectureUIHooks.openGui(player, (TileSawbench) tile);
+            }
+            return ActionResultType.PASS;
+        } else {
+            return ActionResultType.FAIL;
+        }
     }
 
 
@@ -95,7 +102,12 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.SOLID;
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState replacedWith, boolean isMoving) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof IInventory) {
+            ItemStack items = ((IInventory) te).getStackInSlot(TileSawbench.materialSlot);
+            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), items);
+        }
+
     }
 }

@@ -28,20 +28,21 @@ import com.tridevmc.architecture.common.tile.TileSawbench;
 import com.tridevmc.compound.network.marshallers.SetMarshaller;
 import com.tridevmc.compound.network.message.Message;
 import com.tridevmc.compound.network.message.RegisteredMessage;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-@RegisteredMessage(networkChannel = "architecturecraft:network", destination = Dist.DEDICATED_SERVER)
+@RegisteredMessage(channel = "architecturecraft:network", destination = LogicalSide.SERVER)
 public class SelectShapeMessage extends Message {
 
     public BlockPos sawPos;
-    @SetMarshaller(marshallerId = "int")
+    @SetMarshaller("int")
     public int page, slot, dim;
 
     public SelectShapeMessage(TileSawbench sawbench, int page, int slot) {
@@ -53,7 +54,7 @@ public class SelectShapeMessage extends Message {
     }
 
     @Override
-    public void handle(EntityPlayer player) {
+    public void handle(PlayerEntity player) {
         World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.getById(dim), false, false);
         if (world == null)
             return;

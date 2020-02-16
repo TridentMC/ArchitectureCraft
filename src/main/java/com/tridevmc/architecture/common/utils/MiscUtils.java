@@ -25,14 +25,14 @@
 package com.tridevmc.architecture.common.utils;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.Collection;
 
 public class MiscUtils {
 
-    public static EnumFacing[] facings = EnumFacing.values();
+    public static Direction[] facings = Direction.values();
 
     public static int min(int x, int y) {
         return x < y ? x : y;
@@ -75,11 +75,11 @@ public class MiscUtils {
         return ((int) (red * 255) << 16) | ((int) (green * 255) << 8) | (int) (blue * 255);
     }
 
-    public static int turnToFace(EnumFacing local, EnumFacing global) {
+    public static int turnToFace(Direction local, Direction global) {
         return (turnToFaceEast(local) - turnToFaceEast(global)) & 3;
     }
 
-    public static int turnToFaceEast(EnumFacing f) {
+    public static int turnToFaceEast(Direction f) {
         switch (f) {
             case SOUTH:
                 return 1;

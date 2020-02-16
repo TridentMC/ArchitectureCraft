@@ -38,29 +38,29 @@ public class ModelSpec {
     }
 
     public ModelSpec(String model, Vector3 origin, String... textures) {
-        modelName = model;
-        textureNames = textures;
+        this.modelName = model;
+        this.textureNames = textures;
         this.origin = origin;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || this.getClass() != o.getClass()) return false;
 
         ModelSpec modelSpec = (ModelSpec) o;
 
-        if (modelName != null ? !modelName.equals(modelSpec.modelName) : modelSpec.modelName != null) return false;
+        if (this.modelName != null ? !this.modelName.equals(modelSpec.modelName) : modelSpec.modelName != null) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(textureNames, modelSpec.textureNames)) return false;
-        return origin != null ? origin.equals(modelSpec.origin) : modelSpec.origin == null;
+        if (!Arrays.equals(this.textureNames, modelSpec.textureNames)) return false;
+        return this.origin != null ? this.origin.equals(modelSpec.origin) : modelSpec.origin == null;
     }
 
     @Override
     public int hashCode() {
-        int result = modelName != null ? modelName.hashCode() : 0;
-        result = 31 * result + Arrays.hashCode(textureNames);
-        result = 31 * result + (origin != null ? origin.hashCode() : 0);
+        int result = this.modelName != null ? this.modelName.hashCode() : 0;
+        result = 31 * result + Arrays.hashCode(this.textureNames);
+        result = 31 * result + (this.origin != null ? this.origin.hashCode() : 0);
         return result;
     }
 }

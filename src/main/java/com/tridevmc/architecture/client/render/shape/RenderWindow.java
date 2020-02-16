@@ -32,7 +32,7 @@ import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.shape.ShapeKind;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -157,7 +157,7 @@ public class RenderWindow extends RenderShape {
             for (int i = 0; i <= 3; i++)
                 frame[i][1] = true;
         } else {
-            EnumFacing[] gdir = new EnumFacing[4];
+            Direction[] gdir = new Direction[4];
             TileShape neighbour[] = new TileShape[4];
             for (int i = 0; i <= 3; i++)
                 gdir[i] = t.t(kind.frameSides[i]);
@@ -217,7 +217,7 @@ public class RenderWindow extends RenderShape {
         }
     }
 
-    protected TileShape getConnectedNeighbourGlobal(TileShape te, EnumFacing globalDir) {
+    protected TileShape getConnectedNeighbourGlobal(TileShape te, Direction globalDir) {
         return kind.getConnectedWindowGlobal(te, globalDir);
     }
 

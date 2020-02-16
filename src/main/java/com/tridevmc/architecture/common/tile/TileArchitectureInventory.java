@@ -24,16 +24,14 @@
 
 package com.tridevmc.architecture.common.tile;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.Direction;
 
 public abstract class TileArchitectureInventory extends TileArchitecture implements IInventory, ISidedInventory {
 
@@ -47,13 +45,13 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
         return null;
     }
 
-    public void readInventoryFromNBT(NBTTagCompound nbt) {
-        IInventory inventory = getInventory();
+    public void readInventoryFromNBT(CompoundNBT nbt) {
+        IInventory inventory = this.getInventory();
         if (inventory != null) {
-            NBTTagList list = nbt.getList("inventory", 10);
+            ListNBT list = nbt.getList("inventory", 10);
             int n = list.size();
             for (int i = 0; i < n; i++) {
-                NBTTagCompound item = list.getCompound(i);
+                CompoundNBT item = list.getCompound(i);
                 int slot = item.getInt("slot");
                 ItemStack stack = ItemStack.read(item);
                 inventory.setInventorySlotContents(slot, stack);
@@ -62,27 +60,27 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
     }
 
     @Override
-    public void read(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         super.read(nbt);
-        readInventoryFromNBT(nbt);
+        this.readInventoryFromNBT(nbt);
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound nbt) {
+    public CompoundNBT write(CompoundNBT nbt) {
         super.write(nbt);
-        writeInventoryToNBT(nbt);
+        this.writeInventoryToNBT(nbt);
         return nbt;
     }
 
-    public void writeInventoryToNBT(NBTTagCompound nbt) {
-        IInventory inventory = getInventory();
+    public void writeInventoryToNBT(CompoundNBT nbt) {
+        IInventory inventory = this.getInventory();
         if (inventory != null) {
-            NBTTagList list = new NBTTagList();
+            ListNBT list = new ListNBT();
             int n = inventory.getSizeInventory();
             for (int i = 0; i < n; i++) {
                 ItemStack stack = inventory.getStackInSlot(i);
                 if (stack != null) {
-                    NBTTagCompound item = new NBTTagCompound();
+                    CompoundNBT item = new CompoundNBT();
                     item.putInt("slot", i);
                     stack.write(item);
                     list.add(item);
@@ -93,42 +91,24 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
     }
 
     protected void onInventoryChanged(int slot) {
-        markDirty();
+        this.markDirty();
     }
 
 //------------------------------------- IInventory -----------------------------------------
-
-    @Override
-    public ITextComponent getName() {
-        IInventory inventory = getInventory();
-        return (inventory != null) ? inventory.getName() : new TextComponentString("");
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        IInventory inventory = getInventory();
-        return (inventory != null) && inventory.hasCustomName();
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        IInventory inventory = getInventory();
-        return (inventory != null) ? inventory.getDisplayName() : null;
-    }
 
     /**
      * Returns the number of slots in the inventory.
      */
     @Override
     public int getSizeInventory() {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         return (inventory != null) ? inventory.getSizeInventory() : 0;
     }
 
     @Override
     public boolean isEmpty() {
-        for (int i = 0; i < getSizeInventory(); i++) {
-            if (!getStackInSlot(i).isEmpty()) return false;
+        for (int i = 0; i < this.getSizeInventory(); i++) {
+            if (!this.getStackInSlot(i).isEmpty()) return false;
         }
         return true;
     }
@@ -138,7 +118,7 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      */
     @Override
     public ItemStack getStackInSlot(int slot) {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         return (inventory != null) ? inventory.getStackInSlot(slot) : null;
     }
 
@@ -148,24 +128,24 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      */
     @Override
     public ItemStack decrStackSize(int slot, int amount) {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         if (inventory != null) {
             ItemStack result = inventory.decrStackSize(slot, amount);
-            onInventoryChanged(slot);
+            this.onInventoryChanged(slot);
             return result;
         } else
-            return null;
+            return ItemStack.EMPTY;
     }
 
     @Override
     public ItemStack removeStackFromSlot(int slot) {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         if (inventory != null) {
             ItemStack result = inventory.removeStackFromSlot(slot);
-            onInventoryChanged(slot);
+            this.onInventoryChanged(slot);
             return result;
         } else
-            return null;
+            return ItemStack.EMPTY;
     }
 
     /**
@@ -173,10 +153,10 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      */
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         if (inventory != null) {
             inventory.setInventorySlotContents(slot, stack);
-            onInventoryChanged(slot);
+            this.onInventoryChanged(slot);
         }
     }
 
@@ -186,7 +166,7 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      */
     @Override
     public int getInventoryStackLimit() {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         return (inventory != null) ? inventory.getInventoryStackLimit() : 0;
     }
 
@@ -194,28 +174,28 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
-        IInventory inventory = getInventory();
+    public boolean isUsableByPlayer(PlayerEntity player) {
+        IInventory inventory = this.getInventory();
         return (inventory == null) || inventory.isUsableByPlayer(player);
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
-        IInventory inventory = getInventory();
+    public void openInventory(PlayerEntity player) {
+        IInventory inventory = this.getInventory();
         if (inventory != null)
             inventory.openInventory(player);
     }
 
     @Override
-    public void closeInventory(EntityPlayer player) {
-        IInventory inventory = getInventory();
+    public void closeInventory(PlayerEntity player) {
+        IInventory inventory = this.getInventory();
         if (inventory != null)
             inventory.closeInventory(player);
     }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         if (inventory != null)
             return inventory.isItemValidForSlot(slot, stack);
         else
@@ -223,33 +203,8 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
     }
 
     @Override
-    public int getField(int id) {
-        IInventory inventory = getInventory();
-        if (inventory != null)
-            return inventory.getField(id);
-        else
-            return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-        IInventory inventory = getInventory();
-        if (inventory != null)
-            inventory.setField(id, value);
-    }
-
-    @Override
-    public int getFieldCount() {
-        IInventory inventory = getInventory();
-        if (inventory != null)
-            return inventory.getFieldCount();
-        else
-            return 0;
-    }
-
-    @Override
     public void clear() {
-        IInventory inventory = getInventory();
+        IInventory inventory = this.getInventory();
         if (inventory != null)
             inventory.clear();
     }
@@ -261,18 +216,18 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      * block.
      */
     @Override
-    public int[] getSlotsForFace(EnumFacing side) {
-        IInventory inventory = getInventory();
+    public int[] getSlotsForFace(Direction side) {
+        IInventory inventory = this.getInventory();
         if (inventory instanceof ISidedInventory)
             return ((ISidedInventory) inventory).getSlotsForFace(side);
         else {
-            if (allSlots == null) {
-                int n = getSizeInventory();
-                allSlots = new int[n];
+            if (this.allSlots == null) {
+                int n = this.getSizeInventory();
+                this.allSlots = new int[n];
                 for (int i = 0; i < n; i++)
-                    allSlots[i] = i;
+                    this.allSlots[i] = i;
             }
-            return allSlots;
+            return this.allSlots;
         }
     }
 
@@ -281,8 +236,8 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      * side
      */
     @Override
-    public boolean canInsertItem(int slot, ItemStack stack, EnumFacing side) {
-        IInventory inventory = getInventory();
+    public boolean canInsertItem(int slot, ItemStack stack, Direction side) {
+        IInventory inventory = this.getInventory();
         if (inventory instanceof ISidedInventory)
             return ((ISidedInventory) inventory).canInsertItem(slot, stack, side);
         else
@@ -294,8 +249,8 @@ public abstract class TileArchitectureInventory extends TileArchitecture impleme
      * side
      */
     @Override
-    public boolean canExtractItem(int slot, ItemStack stack, EnumFacing side) {
-        IInventory inventory = getInventory();
+    public boolean canExtractItem(int slot, ItemStack stack, Direction side) {
+        IInventory inventory = this.getInventory();
         if (inventory instanceof ISidedInventory)
             return ((ISidedInventory) inventory).canExtractItem(slot, stack, side);
         else

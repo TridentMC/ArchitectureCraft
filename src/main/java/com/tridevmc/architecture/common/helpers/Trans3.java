@@ -24,8 +24,9 @@
 
 package com.tridevmc.architecture.common.helpers;
 
+import com.google.common.base.MoreObjects;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -41,7 +42,7 @@ public class Trans3 {
     public static Trans3 ident = new Trans3(Vector3.zero);
     public static Trans3 blockCenter = new Trans3(Vector3.blockCenter);
 
-    public static Trans3 sideTurnRotations[][] = new Trans3[6][4];
+    public static Trans3[][] sideTurnRotations = new Trans3[6][4];
 
     static {
         for (int side = 0; side < 6; side++)
@@ -62,9 +63,9 @@ public class Trans3 {
     }
 
     public Trans3(Vector3 v, Matrix3 m, double s) {
-        offset = v;
-        rotation = m;
-        scaling = s;
+        this.offset = v;
+        this.rotation = m;
+        this.scaling = s;
     }
 
     public Trans3(double dx, double dy, double dz) {
@@ -114,130 +115,138 @@ public class Trans3 {
         if (v == Vector3.zero)
             return this;
         else
-            return translate(v.x, v.y, v.z);
+            return this.translate(v.x, v.y, v.z);
     }
 
     public Trans3 translate(double dx, double dy, double dz) {
         return new Trans3(
-                offset.add(rotation.mul(dx * scaling, dy * scaling, dz * scaling)),
-                rotation,
-                scaling);
+                this.offset.add(this.rotation.mul(dx * this.scaling, dy * this.scaling, dz * this.scaling)),
+                this.rotation,
+                this.scaling);
     }
 
     public Trans3 rotate(Matrix3 m) {
-        return new Trans3(offset, rotation.mul(m), scaling);
+        return new Trans3(this.offset, this.rotation.mul(m), this.scaling);
     }
 
     public Trans3 rotX(double deg) {
-        return rotate(Matrix3.rotX(deg));
+        return this.rotate(Matrix3.rotX(deg));
     }
 
     public Trans3 rotY(double deg) {
-        return rotate(Matrix3.rotY(deg));
+        return this.rotate(Matrix3.rotY(deg));
     }
 
     public Trans3 rotZ(double deg) {
-        return rotate(Matrix3.rotZ(deg));
+        return this.rotate(Matrix3.rotZ(deg));
     }
 
     public Trans3 scale(double s) {
-        return new Trans3(offset, rotation, scaling * s);
+        return new Trans3(this.offset, this.rotation, this.scaling * s);
     }
 
-    public Trans3 side(EnumFacing dir) {
-        return side(dir.ordinal());
+    public Trans3 side(Direction dir) {
+        return this.side(dir.ordinal());
     }
 
     public Trans3 side(int i) {
-        return rotate(Matrix3.sideRotations[i]);
+        return this.rotate(Matrix3.sideRotations[i]);
     }
 
     public Trans3 turn(int i) {
-        return rotate(Matrix3.turnRotations[i]);
+        return this.rotate(Matrix3.turnRotations[i]);
     }
 
     public Trans3 t(Trans3 t) {
         return new Trans3(
-                offset.add(rotation.mul(t.offset).mul(scaling)),
-                rotation.mul(t.rotation),
-                scaling * t.scaling);
+                this.offset.add(this.rotation.mul(t.offset).mul(this.scaling)),
+                this.rotation.mul(t.rotation),
+                this.scaling * t.scaling);
     }
 
     public Vector3 p(double x, double y, double z) {
-        return p(new Vector3(x, y, z));
+        return this.p(new Vector3(x, y, z));
     }
 
     public Vector3 p(Vector3 u) {
-        return offset.add(rotation.mul(u.mul(scaling)));
+        return this.offset.add(this.rotation.mul(u.mul(this.scaling)));
     }
 
     public Vector3 ip(double x, double y, double z) {
-        return ip(new Vector3(x, y, z));
+        return this.ip(new Vector3(x, y, z));
     }
 
     public Vector3 ip(Vector3 u) {
-        return rotation.imul(u.sub(offset)).mul(1.0 / scaling);
+        return this.rotation.imul(u.sub(this.offset)).mul(1.0 / this.scaling);
     }
 
     public Vector3 v(double x, double y, double z) {
-        return v(new Vector3(x, y, z));
+        return this.v(new Vector3(x, y, z));
     }
 
     public Vector3 iv(double x, double y, double z) {
-        return iv(new Vector3(x, y, z));
+        return this.iv(new Vector3(x, y, z));
     }
 
     public Vector3 v(Vec3i u) {
-        return v(u.getX(), u.getY(), u.getZ());
+        return this.v(u.getX(), u.getY(), u.getZ());
     }
 
     public Vector3 iv(Vec3i u) {
-        return iv(u.getX(), u.getY(), u.getZ());
+        return this.iv(u.getX(), u.getY(), u.getZ());
     }
 
     public Vector3 v(Vector3 u) {
-        return rotation.mul(u.mul(scaling));
+        return this.rotation.mul(u.mul(this.scaling));
     }
 
-    public Vector3 v(EnumFacing f) {
-        return v(getDirectionVec(f));
+    public Vector3 v(Direction f) {
+        return this.v(getDirectionVec(f));
     }
 
-    public Vector3 iv(EnumFacing f) {
-        return iv(getDirectionVec(f));
+    public Vector3 iv(Direction f) {
+        return this.iv(getDirectionVec(f));
     }
 
     public Vector3 iv(Vector3 u) {
-        return rotation.imul(u).mul(1.0 / scaling);
+        return this.rotation.imul(u).mul(1.0 / this.scaling);
     }
 
     public Vector3 iv(Vec3d u) {
-        return iv(u.x, u.y, u.z);
+        return this.iv(u.x, u.y, u.z);
     }
 
     public AxisAlignedBB t(AxisAlignedBB box) {
-        return boxEnclosing(p(box.minX, box.minY, box.minZ), p(box.maxX, box.maxY, box.maxZ));
+        return boxEnclosing(this.p(box.minX, box.minY, box.minZ), this.p(box.maxX, box.maxY, box.maxZ));
     }
 
     public AxisAlignedBB box(Vector3 p0, Vector3 p1) {
-        return boxEnclosing(p(p0), p(p1));
+        return boxEnclosing(this.p(p0), this.p(p1));
     }
 
-    public EnumFacing t(EnumFacing f) {
-        return v(f).facing();
+    public Direction t(Direction f) {
+        return this.v(f).facing();
     }
 
-    public EnumFacing it(EnumFacing f) {
-        return iv(f).facing();
+    public Direction it(Direction f) {
+        return this.iv(f).facing();
     }
 
     public void addBox(Vector3 p0, Vector3 p1, List list) {
-        addBox(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, list);
+        this.addBox(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, list);
     }
 
     public void addBox(double x0, double y0, double z0, double x1, double y1, double z1, List list) {
-        AxisAlignedBB box = boxEnclosing(p(x0, y0, z0), p(x1, y1, z1));
+        AxisAlignedBB box = boxEnclosing(this.p(x0, y0, z0), this.p(x1, y1, z1));
         list.add(box);
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("offset", this.offset)
+                .add("rotation", this.rotation)
+                .add("scaling", this.scaling)
+                .toString();
+    }
 }

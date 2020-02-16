@@ -30,15 +30,14 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileArchitecture;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -53,16 +52,16 @@ public class BaseOrientation {
 
     //------------------------------------------------------------------------------------------------
 
-    public static class PropertyTurn extends EnumProperty<EnumFacing> {
+    public static class PropertyTurn extends EnumProperty<Direction> {
 
-        protected static EnumFacing[] values = {
-                EnumFacing.WEST, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.NORTH
+        protected static Direction[] values = {
+                Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.NORTH
         };
 
         protected static Collection valueList = Arrays.asList(values);
 
         public PropertyTurn(String name) {
-            super(name, EnumFacing.class, valueList);
+            super(name, Direction.class, valueList);
         }
 
     }
@@ -79,17 +78,17 @@ public class BaseOrientation {
         }
 
         @Override
-        public IBlockState onBlockPlaced(Block block, World world, BlockPos pos, EnumFacing side,
-                                         float hitX, float hitY, float hitZ, IBlockState baseState, EntityLivingBase placer) {
-            EnumFacing dir = placer.getHorizontalFacing();
+        public BlockState onBlockPlaced(Block block, World world, BlockPos pos, Direction side,
+                                        double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer) {
+            Direction dir = placer.getHorizontalFacing();
             if (debugPlacement)
                 ArchitectureLog.info("BaseOrientation.Orient4WaysByState: Placing block with FACING = %s\n", dir);
             return baseState.with(FACING, dir);
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
-            EnumFacing f = (EnumFacing) state.get(FACING);
+        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
+            Direction f = (Direction) state.get(FACING);
             int i;
             switch (f) {
                 case NORTH:
@@ -117,7 +116,7 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileArchitecture) {
                 TileArchitecture bte = (TileArchitecture) te;

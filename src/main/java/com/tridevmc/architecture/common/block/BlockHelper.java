@@ -26,11 +26,13 @@ package com.tridevmc.architecture.common.block;
 
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -52,20 +54,20 @@ public class BlockHelper {
      *   any direction.
      */
     public static boolean blockIsGettingExternallyPowered(World world, BlockPos pos) {
-        for (EnumFacing side : MiscUtils.facings) {
+        for (Direction side : MiscUtils.facings) {
             if (isPoweringSide(world, pos.offset(side), side))
                 return true;
         }
         return false;
     }
 
-    static boolean isPoweringSide(World world, BlockPos pos, EnumFacing side) {
-        IBlockState state = world.getBlockState(pos);
+    static boolean isPoweringSide(World world, BlockPos pos, Direction side) {
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (block.getWeakPower(state, world, pos, side) > 0)
             return true;
         if (block.shouldCheckWeakPower(state, world, pos, side)) {
-            for (EnumFacing side2 : MiscUtils.facings)
+            for (Direction side2 : MiscUtils.facings)
                 if (side2 != side.getOpposite())
                     if (world.getStrongPower(pos.offset(side2), side2) > 0)
                         return true;
@@ -73,7 +75,7 @@ public class BlockHelper {
         return false;
     }
 
-    public static IBlockState getBlockStateFromItemStack(ItemStack stack) {
+    public static BlockState getBlockStateFromItemStack(ItemStack stack) {
         Block block = Block.getBlockFromItem(stack.getItem());
         return block.getDefaultState();
     }
@@ -84,11 +86,11 @@ public class BlockHelper {
         return world.getBlockState(pos).getBlock();
     }
 
-    public static IBlockState getWorldBlockState(IBlockReader world, BlockPos pos) {
+    public static BlockState getWorldBlockState(IBlockReader world, BlockPos pos) {
         return world.getBlockState(pos);
     }
 
-    public static void setWorldBlockState(World world, BlockPos pos, IBlockState state) {
+    public static void setWorldBlockState(World world, BlockPos pos, BlockState state) {
         world.setBlockState(pos, state, 3);
     }
 
@@ -108,11 +110,11 @@ public class BlockHelper {
         return te.getPos();
     }
 
-    public static boolean blockCanRenderInLayer(IBlockState state, BlockRenderLayer layer) {
-        return state.getBlock().canRenderInLayer(state, layer);
+    public static boolean blockCanRenderInLayer(BlockState state, RenderType layer) {
+        return RenderTypeLookup.canRenderInLayer(state, layer);
     }
 
-    public static ItemStack blockStackWithState(IBlockState state, int size) {
+    public static ItemStack blockStackWithState(BlockState state, int size) {
         Block block = state.getBlock();
         return new ItemStack(block, size);
     }
@@ -139,9 +141,9 @@ public class BlockHelper {
     }
 
     public static void markBlockForUpdate(World world, BlockPos pos) {
-        world.markBlockRangeForRenderUpdate(pos, pos);
+        world.markBlockRangeForRenderUpdate(pos, Blocks.AIR.getDefaultState(), world.getBlockState(pos));
         if (!world.isRemote) {
-            IBlockState state = world.getBlockState(pos);
+            BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
         }
     }

@@ -24,27 +24,33 @@
 
 package com.tridevmc.architecture.common.tile;
 
+import com.tridevmc.architecture.client.ui.UISawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.shape.Shape;
 import com.tridevmc.architecture.common.shape.ShapePage;
+import com.tridevmc.architecture.common.ui.IElementProvider;
+import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSlab;
-import net.minecraft.block.BlockStainedGlass;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
-public class TileSawbench extends TileArchitectureInventory {
+public class TileSawbench extends TileArchitectureInventory implements IElementProvider<ContainerSawbench> {
 
     final public static int materialSlot = 0;
     final public static int resultSlot = 1;
@@ -84,7 +90,7 @@ public class TileSawbench extends TileArchitectureInventory {
                     Shape.CLADDING_SHEET, Shape.SLAB, Shape.STAIRS, Shape.STAIRS_OUTER_CORNER, Shape.STAIRS_INNER_CORNER),
     };
 
-    public IInventory inventory = new InventoryBasic(new TextComponentString("Items"), 2);
+    public IInventory inventory = new Inventory(2);
     public int selectedPage = 0;
     public int[] selectedSlots = new int[pages.length];
     public boolean pendingMaterialUsage = false; // Material for the stack in the result slot
@@ -95,49 +101,49 @@ public class TileSawbench extends TileArchitectureInventory {
     // has not yet been removed from the material slot
 
     public Shape getSelectedShape() {
-        if (selectedPage >= 0 && selectedPage < pages.length) {
-            int slot = selectedSlots[selectedPage];
-            if (slot >= 0 && slot < pages[selectedPage].size())
-                return pages[selectedPage].get(slot);
+        if (this.selectedPage >= 0 && this.selectedPage < pages.length) {
+            int slot = this.selectedSlots[this.selectedPage];
+            if (slot >= 0 && slot < pages[this.selectedPage].size())
+                return pages[this.selectedPage].get(slot);
         }
         return null;
     }
 
     @Override
     protected IInventory getInventory() {
-        return inventory;
+        return this.inventory;
     }
 
     @Override
     public void setInventorySlotContents(int i, ItemStack stack) {
         super.setInventorySlotContents(i, stack);
-        updateResultSlot();
+        this.updateResultSlot();
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int amount) {
         if (slot == resultSlot)
-            usePendingMaterial();
+            this.usePendingMaterial();
         ItemStack result = super.decrStackSize(slot, amount);
-        updateResultSlot();
+        this.updateResultSlot();
         return result;
     }
 
     public ItemStack usePendingMaterial() {
-        ItemStack origMaterialStack = getStackInSlot(materialSlot).copy();
-        if (pendingMaterialUsage) {
-            pendingMaterialUsage = false;
-            inventory.decrStackSize(materialSlot, materialMultiple());
+        ItemStack origMaterialStack = this.getStackInSlot(materialSlot).copy();
+        if (this.pendingMaterialUsage) {
+            this.pendingMaterialUsage = false;
+            this.inventory.decrStackSize(materialSlot, this.materialMultiple());
         }
         return origMaterialStack;
     }
 
     public void returnUnusedMaterial(ItemStack origMaterialStack) {
-        if (!pendingMaterialUsage) {
-            ItemStack materialStack = getStackInSlot(materialSlot);
-            ItemStack resultStack = getStackInSlot(resultSlot);
-            int m = materialMultiple();
-            int n = resultMultiple();
+        if (!this.pendingMaterialUsage) {
+            ItemStack materialStack = this.getStackInSlot(materialSlot);
+            ItemStack resultStack = this.getStackInSlot(resultSlot);
+            int m = this.materialMultiple();
+            int n = this.resultMultiple();
             if (!resultStack.isEmpty() && resultStack.getCount() == n) {
                 if (!materialStack.isEmpty())
                     materialStack.grow(m);
@@ -145,8 +151,8 @@ public class TileSawbench extends TileArchitectureInventory {
                     materialStack = origMaterialStack;
                     materialStack.setCount(m);
                 }
-                inventory.setInventorySlotContents(materialSlot, materialStack);
-                pendingMaterialUsage = true;
+                this.inventory.setInventorySlotContents(materialSlot, materialStack);
+                this.pendingMaterialUsage = true;
             }
         }
     }
@@ -168,58 +174,58 @@ public class TileSawbench extends TileArchitectureInventory {
     }
 
     @Override
-    public void read(NBTTagCompound tag) {
+    public void read(CompoundNBT tag) {
         super.read(tag);
-        selectedPage = tag.getInt("Page");
+        this.selectedPage = tag.getInt("Page");
         int[] ss = tag.getIntArray("Slots");
         if (ss != null)
             for (int page = 0; page < pages.length; page++) {
                 int slot = page < ss.length ? ss[page] : 0;
-                selectedSlots[page] = slot >= 0 && slot < pages[page].size() ? slot : 0;
+                this.selectedSlots[page] = slot >= 0 && slot < pages[page].size() ? slot : 0;
             }
-        pendingMaterialUsage = tag.getBoolean("PMU");
+        this.pendingMaterialUsage = tag.getBoolean("PMU");
     }
 
     @Override
-    public NBTTagCompound write(NBTTagCompound tag) {
+    public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt("Page", selectedPage);
-        tag.putIntArray("Slots", selectedSlots);
-        tag.putBoolean("PMU", pendingMaterialUsage);
+        tag.putInt("Page", this.selectedPage);
+        tag.putIntArray("Slots", this.selectedSlots);
+        tag.putBoolean("PMU", this.pendingMaterialUsage);
         return tag;
     }
 
     public void setSelectedShape(int page, int slot) {
         if (page >= 0 && page < pages.length) {
-            selectedPage = page;
-            if (slot >= 0 && slot < pages[selectedPage].size()) {
-                selectedSlots[selectedPage] = slot;
-                markDirty();
-                updateResultSlot();
-                sendTileEntityUpdate();
+            this.selectedPage = page;
+            if (slot >= 0 && slot < pages[this.selectedPage].size()) {
+                this.selectedSlots[this.selectedPage] = slot;
+                this.markDirty();
+                this.updateResultSlot();
+                this.sendTileEntityUpdate();
             }
         }
     }
 
     void updateResultSlot() {
-        ItemStack oldResult = getStackInSlot(resultSlot).copy();
-        if (oldResult.isEmpty() || pendingMaterialUsage) {
-            ItemStack resultStack = makeResultStack();
+        ItemStack oldResult = this.getStackInSlot(resultSlot).copy();
+        if (oldResult.isEmpty() || this.pendingMaterialUsage) {
+            ItemStack resultStack = this.makeResultStack();
             if (!ItemStack.areItemStacksEqual(resultStack, oldResult))
-                inventory.setInventorySlotContents(resultSlot, resultStack);
-            pendingMaterialUsage = !resultStack.isEmpty();
+                this.inventory.setInventorySlotContents(resultSlot, resultStack);
+            this.pendingMaterialUsage = !resultStack.isEmpty();
         }
     }
 
     protected ItemStack makeResultStack() {
-        Shape resultShape = getSelectedShape();
+        Shape resultShape = this.getSelectedShape();
         if (resultShape != null) {
-            ItemStack materialStack = getStackInSlot(materialSlot);
+            ItemStack materialStack = this.getStackInSlot(materialSlot);
             if (!materialStack.isEmpty() && materialStack.getCount() >= resultShape.materialUsed) {
                 Item materialItem = materialStack.getItem();
-                if (materialItem instanceof ItemBlock) {
+                if (materialItem instanceof BlockItem) {
                     Block materialBlock = Block.getBlockFromItem(materialItem);
-                    if (isAcceptableMaterial(materialBlock)) {
+                    if (this.isAcceptableMaterial(materialBlock)) {
                         return resultShape.kind.newStack(resultShape, materialBlock, resultShape.itemsProduced);
                     }
                 }
@@ -230,28 +236,28 @@ public class TileSawbench extends TileArchitectureInventory {
 
     protected boolean isAcceptableMaterial(Block block) {
         String name = ForgeRegistries.BLOCKS.getKey(block).toString();
-        if (block == Blocks.GLASS || block instanceof BlockStainedGlass || block instanceof BlockSlab ||
+        if (block == Blocks.GLASS || block instanceof StainedGlassBlock || block instanceof SlabBlock ||
                 name.startsWith("chisel:glass"))
             return true;
-        return block.getDefaultState().isFullCube() && !block.hasTileEntity();
+        return block.getDefaultState().isNormalCube(new DumbBlockReader(block.getDefaultState()), BlockPos.ZERO) && !block.hasTileEntity();
     }
 
     public int materialMultiple() {
         int factor = 1;
-        ItemStack materialStack = getStackInSlot(materialSlot);
+        ItemStack materialStack = this.getStackInSlot(materialSlot);
         if (!materialStack.isEmpty()) {
             Block materialBlock = Block.getBlockFromItem(materialStack.getItem());
-            if (materialBlock instanceof BlockSlab)
+            if (materialBlock instanceof SlabBlock)
                 factor = 2;
         }
-        Shape shape = getSelectedShape();
+        Shape shape = this.getSelectedShape();
         if (shape != null)
             return factor * shape.materialUsed;
         return 0;
     }
 
     public int resultMultiple() {
-        Shape shape = getSelectedShape();
+        Shape shape = this.getSelectedShape();
         if (shape != null)
             return shape.itemsProduced;
         return 0;
@@ -262,7 +268,7 @@ public class TileSawbench extends TileArchitectureInventory {
      * side
      */
     @Override
-    public boolean canInsertItem(int slot, ItemStack stack, EnumFacing side) {
+    public boolean canInsertItem(int slot, ItemStack stack, Direction side) {
         return slot == materialSlot;
     }
 
@@ -271,16 +277,21 @@ public class TileSawbench extends TileArchitectureInventory {
      * side
      */
     @Override
-    public boolean canExtractItem(int slot, ItemStack stack, EnumFacing side) {
-        if (side == EnumFacing.DOWN)
+    public boolean canExtractItem(int slot, ItemStack stack, Direction side) {
+        if (side == Direction.DOWN)
             return allowAutomation && slot == resultSlot;
         else
             return slot == materialSlot;
     }
 
+    @Override
+    public Screen createScreen(ContainerSawbench container, PlayerEntity player) {
+        return new UISawbench(container);
+    }
+
     @Nullable
     @Override
-    public ITextComponent getCustomName() {
-        return new TextComponentString("");
+    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerSawbench(this, playerInventory, id);
     }
 }

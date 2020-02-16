@@ -32,13 +32,13 @@ import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -59,33 +59,33 @@ public class ArchitectureModelRenderer implements ICustomRenderer {
     }
 
     @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target,
-                            BlockRenderLayer layer, Trans3 t) {
+    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state, RenderTargetBase target,
+                            RenderType layer, Trans3 t) {
         BlockArchitecture block = (BlockArchitecture) state.getBlock();
-        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(origin);
+        Trans3 t2 = t.t(block.localToGlobalTransformation(world, pos, state, Vector3.zero)).translate(this.origin);
         int colour = -1;
-        model.render(t2, target, colour, colour, textures);
+        this.model.render(t2, target, colour, colour, this.textures);
     }
 
     @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
-        if (renderPrimary) renderBlock(world, pos, state, target, layer, t);
+    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state, RenderTargetBase target, RenderType layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+        if (renderPrimary) this.renderBlock(world, pos, state, target, layer, t);
     }
 
     @Override
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
         Item item = stack.getItem();
-        if (item instanceof ItemBlock) {
+        if (item instanceof BlockItem) {
             Block block = Block.getBlockFromItem(item);
             if (block instanceof BlockArchitecture)
                 t = t.t(((BlockArchitecture) block).itemTransformation());
         }
-        model.render(t.translate(origin), target, -1, -1, textures);
+        this.model.render(t.translate(this.origin), target, -1, -1, this.textures);
     }
 
-    private int getColourFromState(IBlockState state) {
+    private int getColourFromState(BlockState state) {
         BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-        int color = blockColors.getColor(state, null, null);
+        int color = blockColors.getColorOrMaterialColor(state, null, null);
         return color;
     }
 

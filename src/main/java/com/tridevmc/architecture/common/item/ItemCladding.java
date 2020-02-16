@@ -26,15 +26,15 @@ package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -46,9 +46,9 @@ public class ItemCladding extends ItemArchitecture {
         super(new Item.Properties());
     }
 
-    public ItemStack newStack(IBlockState state, int stackSize) {
+    public ItemStack newStack(BlockState state, int stackSize) {
         ItemStack result = new ItemStack(this, stackSize);
-        NBTTagCompound nbt = new NBTTagCompound();
+        CompoundNBT nbt = new CompoundNBT();
         nbt.putInt("block", Block.getStateId(state));
         result.setTag(nbt);
         return result;
@@ -58,10 +58,10 @@ public class ItemCladding extends ItemArchitecture {
         return newStack(block.getDefaultState(), stackSize);
     }
 
-    public IBlockState blockStateFromStack(ItemStack stack) {
-        NBTTagCompound tag = stack.getTag();
+    public BlockState blockStateFromStack(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
         if (tag != null) {
-            IBlockState state = Block.getStateById(tag.getInt("block"));
+            BlockState state = Block.getStateById(tag.getInt("block"));
             return state;
         }
         return null;
@@ -71,11 +71,11 @@ public class ItemCladding extends ItemArchitecture {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
         lines.set(0, super.getDisplayName(stack));
 
-        NBTTagCompound tag = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         if (tag != null) {
-            IBlockState state = Block.getStateById(tag.getInt("block"));
+            BlockState state = Block.getStateById(tag.getInt("block"));
             if (state != null)
-                lines.add(new TextComponentString(Utils.displayNameOfBlock(state.getBlock())));
+                lines.add(new StringTextComponent(Utils.displayNameOfBlock(state.getBlock())));
         }
     }
 
@@ -91,11 +91,11 @@ public class ItemCladding extends ItemArchitecture {
 
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
-        NBTTagCompound tag = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         if (tag == null)
             return super.getDisplayName(stack);
 
-        IBlockState state = Block.getStateById(tag.getInt("block"));
-        return new TextComponentTranslation("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(state.getBlock()));
+        BlockState state = Block.getStateById(tag.getInt("block"));
+        return new TranslationTextComponent("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

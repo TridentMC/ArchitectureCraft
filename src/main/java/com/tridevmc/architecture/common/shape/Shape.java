@@ -29,10 +29,10 @@ import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 
@@ -224,15 +224,15 @@ public enum Shape implements IStringSerializable {
         }
     }
 
-    protected void orientOnPlacement(EntityPlayer player, TileShape te,
-                                     BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing face, Vector3 hit) {
+    public void orientOnPlacement(PlayerEntity player, TileShape te,
+                                     BlockPos npos, BlockState nstate, TileEntity nte, Direction face, Vector3 hit) {
         if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
         else
             orientFromHitPosition(player, te, face, hit);
     }
 
-    protected void orientFromHitPosition(EntityPlayer player, TileShape te, EnumFacing face, Vector3 hit) {
+    protected void orientFromHitPosition(PlayerEntity player, TileShape te, Direction face, Vector3 hit) {
         int side, turn;
         switch (face) {
             case UP:
@@ -245,7 +245,7 @@ public enum Shape implements IStringSerializable {
                     side = rightSideUpSide();
                 break;
             default:
-                if (player.isSneaking())
+                if (player.isCrouching())
                     side = face.getOpposite().ordinal();
                 else if (hit.y > 0.0 && te.shape.kind.canPlaceUpsideDown())
                     side = upsideDownSide();

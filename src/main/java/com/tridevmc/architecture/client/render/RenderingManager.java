@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.tridevmc.architecture.client.render.model.IArchitectureModel;
 import com.tridevmc.architecture.client.render.target.RenderTargetBaked;
 import com.tridevmc.architecture.client.render.texture.ITexture;
@@ -38,17 +39,16 @@ import com.tridevmc.architecture.common.render.ModelSpec;
 import com.tridevmc.architecture.legacy.base.ArchitectureModelRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -66,32 +66,32 @@ public class RenderingManager {
     protected static String[] texturePrefixes = {"blocks/", "textures/"};
     protected Map<Block, ICustomRenderer> blockRenderers = new HashMap<Block, ICustomRenderer>();
     protected Map<Item, ICustomRenderer> itemRenderers = new HashMap<Item, ICustomRenderer>();
-    protected Map<IBlockState, ICustomRenderer> stateRendererCache = new HashMap<IBlockState, ICustomRenderer>();
+    protected Map<BlockState, ICustomRenderer> stateRendererCache = new HashMap<BlockState, ICustomRenderer>();
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
     protected List<IBakedModel> bakedModels = new ArrayList<>();
     protected CustomItemBakedModel itemBakedModel;
 
     public List<IBakedModel> getBakedModels() {
-        return bakedModels;
+        return this.bakedModels;
     }
 
 
     public boolean blockNeedsCustomRendering(Block block) {
-        return blockRenderers.containsKey(block) || specifiesTextures(block);
+        return this.blockRenderers.containsKey(block) || this.specifiesTextures(block);
     }
 
     public boolean itemNeedsCustomRendering(Item item) {
-        return itemRenderers.containsKey(item) || specifiesTextures(item);
+        return this.itemRenderers.containsKey(item) || this.specifiesTextures(item);
     }
 
     public void registerModelLocationForItem(Item item, CustomItemBakedModel disp) {
-        registerModelLocationForSubtypes(item, disp.location);
+        this.registerModelLocationForSubtypes(item, disp.location);
     }
 
     protected void registerModelLocationForSubtypes(Item item, ModelResourceLocation location) {
-        int numVariants = getNumItemSubtypes(item);
+        int numVariants = this.getNumItemSubtypes(item);
         for (int i = 0; i < numVariants; i++) {
-            registerMesh(item, location);
+            this.registerMesh(item, location);
         }
     }
 
@@ -112,8 +112,8 @@ public class RenderingManager {
     private int getNumItemSubtypes(Item item) {
         if (item instanceof ItemArchitecture)
             return ((ItemArchitecture) item).getNumSubtypes();
-        else if (item instanceof ItemBlock)
-            return getNumBlockSubtypes(Block.getBlockFromItem(item));
+        else if (item instanceof BlockItem)
+            return this.getNumBlockSubtypes(Block.getBlockFromItem(item));
         else
             return 1;
     }
@@ -126,36 +126,36 @@ public class RenderingManager {
         return ArchitectureMod.PROXY.getModel(name);
     }
 
-    public ICustomRenderer getCustomRenderer(IBlockReader world, BlockPos pos, IBlockState state) {
+    public ICustomRenderer getCustomRenderer(IBlockReader world, BlockPos pos, BlockState state) {
         Block block = state.getBlock();
-        ICustomRenderer rend = blockRenderers.get(block);
+        ICustomRenderer rend = this.blockRenderers.get(block);
         if (rend == null && block instanceof BlockArchitecture) {
-            IBlockState astate = block.getExtendedState(state, world, pos);
-            rend = getCustomRendererForState(astate);
+            BlockState astate = block.getExtendedState(state, world, pos);
+            rend = this.getCustomRendererForState(astate);
         }
         return rend;
     }
 
     protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-        IArchitectureModel model = getModel(spec.modelName);
+        IArchitectureModel model = this.getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
-            textures[i] = getTexture(textureType, spec.textureNames[i]);
+            textures[i] = this.getTexture(textureType, spec.textureNames[i]);
         return new ArchitectureModelRenderer(model, spec.origin, textures);
     }
 
-    public ICustomRenderer getCustomRendererForState(IBlockState state) {
-        ICustomRenderer rend = stateRendererCache.get(state);
+    public ICustomRenderer getCustomRendererForState(BlockState state) {
+        ICustomRenderer rend = this.stateRendererCache.get(state);
         if (rend == null) {
             Block block = state.getBlock();
             if (block instanceof BlockArchitecture) {
                 ModelSpec spec = ((BlockArchitecture) block).getModelSpec(state);
                 if (spec != null) {
-                    rend = getCustomRendererForSpec(0, spec);
-                    stateRendererCache.put(state, rend);
+                    rend = this.getCustomRendererForSpec(0, spec);
+                    this.stateRendererCache.put(state, rend);
                 } else {
-                    if (blockNeedsCustomRendering(block)) {
-                        return blockRenderers.get(block);
+                    if (this.blockNeedsCustomRendering(block)) {
+                        return this.blockRenderers.get(block);
                     }
                 }
             }
@@ -170,20 +170,20 @@ public class RenderingManager {
 
     public ITexture getTexture(int type, String name) {
         // Cache is keyed by resource locaton without "textures/"
-        ResourceLocation loc = textureResourceLocation(type, name);
-        return textureCache.get(loc);
+        ResourceLocation loc = this.textureResourceLocation(type, name);
+        return this.textureCache.get(loc);
     }
 
-    public void registerSprites(int textureType, TextureMap reg, Object obj) {
+    public void registerSprites(int textureType, AtlasTexture reg, Object obj) {
         if (obj instanceof ITextureConsumer) {
-            String names[] = ((ITextureConsumer) obj).getTextureNames();
+            String[] names = ((ITextureConsumer) obj).getTextureNames();
             if (names != null) {
                 for (String name : names) {
-                    ResourceLocation loc = textureResourceLocation(textureType, name);
-                    if (textureCache.get(loc) == null) {
-                        TextureAtlasSprite icon = reg.registerSprite(loc);
+                    ResourceLocation loc = this.textureResourceLocation(textureType, name);
+                    if (this.textureCache.get(loc) == null) {
+                        TextureAtlasSprite icon = reg.getSprite(loc);
                         ITexture texture = TextureBase.fromSprite(icon);
-                        textureCache.put(loc, texture);
+                        this.textureCache.put(loc, texture);
                     }
                 }
             }
@@ -192,10 +192,10 @@ public class RenderingManager {
 
 
     public TextureAtlasSprite getIcon(int type, String name) {
-        return ((TextureBase.Sprite) getTexture(type, name)).icon;
+        return ((TextureBase.Sprite) this.getTexture(type, name)).icon;
     }
 
-    public IBlockState getBlockParticleState(IBlockState state, IBlockReader world, BlockPos pos) {
+    public BlockState getBlockParticleState(BlockState state, IBlockReader world, BlockPos pos) {
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)
             return ((BlockArchitecture) block).getParticleState(world, pos);
@@ -207,37 +207,32 @@ public class RenderingManager {
         if (resourcePath.contains("item")) {
             return false;
         }
-        return blockRenderers.keySet().stream().anyMatch(block -> resourcePath.contains(block.getRegistryName().getPath()));
+        return this.blockRenderers.keySet().stream().anyMatch(block -> resourcePath.contains(block.getRegistryName().getPath()));
     }
 
     public void addBlockRenderer(Block block, ICustomRenderer renderer) {
-        blockRenderers.put(block, renderer);
+        this.blockRenderers.put(block, renderer);
     }
 
     public void addItemRenderer(Item item, ICustomRenderer renderer) {
-        itemRenderers.put(item, renderer);
+        this.itemRenderers.put(item, renderer);
     }
 
     public CustomItemBakedModel getItemBakedModel() {
-        if (itemBakedModel == null)
-            itemBakedModel = new CustomItemBakedModel();
-        return itemBakedModel;
+        if (this.itemBakedModel == null)
+            this.itemBakedModel = new CustomItemBakedModel();
+        return this.itemBakedModel;
     }
 
     public void clearTextureCache() {
-        textureCache.clear();
+        this.textureCache.clear();
     }
 
     public abstract class CustomBakedModel implements IBakedModel {
         public ModelResourceLocation location;
 
         public void install(ModelBakeEvent event) {
-            event.getModelRegistry().put(location, this);
-        }
-
-        @Override
-        public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-            return null;
+            event.getModelRegistry().put(this.location, this);
         }
 
         @Override
@@ -269,9 +264,9 @@ public class RenderingManager {
 
     public class BlockParticleModel extends CustomBakedModel {
 
-        protected IBlockState state;
+        protected BlockState state;
 
-        public BlockParticleModel(IBlockState state, ModelResourceLocation location) {
+        public BlockParticleModel(BlockState state, ModelResourceLocation location) {
             this.state = state;
             this.location = location;
         }
@@ -282,24 +277,29 @@ public class RenderingManager {
         }
 
         @Override
-        public List<BakedQuad> getQuads(@Nullable IBlockState iBlockState, @Nullable EnumFacing enumFacing, Random random) {
+        public List<BakedQuad> getQuads(@Nullable BlockState iBlockState, @Nullable Direction enumFacing, Random random) {
             return Collections.emptyList();
         }
 
         @Override
+        public boolean func_230044_c_() {
+            return false;
+        }
+
+        @Override
         public TextureAtlasSprite getParticleTexture() {
-            Block block = state.getBlock();
+            Block block = this.state.getBlock();
             if (block instanceof BlockArchitecture) {
                 String[] textures = ((BlockArchitecture) block).getTextureNames();
                 if (textures != null && textures.length > 0)
-                    return getIcon(0, textures[0]);
+                    return RenderingManager.this.getIcon(0, textures[0]);
             }
             return null;
 
         }
     }
 
-    public IBakedModel getCustomBakedModel(IBlockState state, ModelResourceLocation resourceLocation) {
+    public IBakedModel getCustomBakedModel(BlockState state, ModelResourceLocation resourceLocation) {
         return new BlockParticleModel(state, resourceLocation);
     }
 
@@ -307,7 +307,7 @@ public class RenderingManager {
 
         private IBakedModel emptyModel = new IBakedModel() {
             @Override
-            public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, Random rand) {
+            public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
                 return Lists.newArrayList();
             }
 
@@ -318,6 +318,11 @@ public class RenderingManager {
 
             @Override
             public boolean isGui3d() {
+                return false;
+            }
+
+            @Override
+            public boolean func_230044_c_() {
                 return false;
             }
 
@@ -347,18 +352,18 @@ public class RenderingManager {
         }
 
         @Override
-        public IBakedModel getModelWithOverrides(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity) {
+        public IBakedModel getModelWithOverrides(IBakedModel originalModel, ItemStack stack, World world, LivingEntity entity) {
             Item item = stack.getItem();
-            ICustomRenderer rend = itemRenderers.get(item);
+            ICustomRenderer rend = RenderingManager.this.itemRenderers.get(item);
             if (rend == null && item instanceof ItemArchitecture) {
                 ModelSpec spec = ((ItemArchitecture) item).getModelSpec(stack);
                 if (spec != null)
-                    rend = getCustomRendererForSpec(1, spec);
+                    rend = RenderingManager.this.getCustomRendererForSpec(1, spec);
             }
             if (rend == null) {
                 Block block = Block.getBlockFromItem(item);
                 if (block != null)
-                    rend = getCustomRendererForState(block.getDefaultState());
+                    rend = RenderingManager.this.getCustomRendererForState(block.getDefaultState());
             }
             if (rend != null) {
                 try {
@@ -370,7 +375,7 @@ public class RenderingManager {
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
             } else
-                return emptyModel;
+                return this.emptyModel;
         }
 
     }
@@ -384,13 +389,18 @@ public class RenderingManager {
         }
 
         @Override
-        public List<BakedQuad> getQuads(@Nullable IBlockState iBlockState, @Nullable EnumFacing enumFacing, Random random) {
+        public List<BakedQuad> getQuads(@Nullable BlockState iBlockState, @Nullable Direction enumFacing, Random random) {
             return Collections.emptyList();
         }
 
         @Override
+        public boolean func_230044_c_() {
+            return false;
+        }
+
+        @Override
         public ItemOverrideList getOverrides() {
-            return itemOverrideList;
+            return this.itemOverrideList;
         }
     }
 }

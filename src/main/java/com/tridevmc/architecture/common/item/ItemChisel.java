@@ -27,15 +27,15 @@ package com.tridevmc.architecture.common.item;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -46,23 +46,23 @@ public class ItemChisel extends Item {
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemUseContext context) {
+    public ActionResultType onItemUse(ItemUseContext context) {
         World world = context.getWorld();
         BlockPos pos = context.getPos();
-        EntityPlayer player = context.getPlayer();
-        EnumFacing side = context.getFace();
-        float hitX = context.getHitX();
-        float hitY = context.getHitY();
-        float hitZ = context.getHitZ();
+        PlayerEntity player = context.getPlayer();
+        Direction side = context.getFace();
+        float hitX = (float) context.getHitVec().getX();
+        float hitY = (float) context.getHitVec().getY();
+        float hitZ = (float) context.getHitVec().getZ();
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileShape) {
             if (!world.isRemote) {
                 TileShape ste = (TileShape) te;
                 ste.onChiselUse(player, side, hitX, hitY, hitZ);
             }
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         if (block == Blocks.GLASS || block == Blocks.GLASS_PANE
                 || block == Blocks.GLOWSTONE || block == Blocks.ICE) {
@@ -71,12 +71,12 @@ public class ItemChisel extends Item {
                 dropBlockAsItem(world, pos, state);
                 world.playEvent(2001, pos, Block.getStateId(Blocks.STONE.getDefaultState())); // block breaking sound and particles
             }
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
-        return EnumActionResult.FAIL;
+        return ActionResultType.FAIL;
     }
 
-    private void dropBlockAsItem(World world, BlockPos pos, IBlockState state) {
+    private void dropBlockAsItem(World world, BlockPos pos, BlockState state) {
         ItemStack stack = BlockHelper.blockStackWithState(state, 1);
         Block.spawnAsEntity(world, pos, stack);
     }

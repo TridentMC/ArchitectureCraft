@@ -30,6 +30,7 @@ import com.tridevmc.compound.network.core.CompoundNetwork;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -44,7 +45,6 @@ public class ArchitectureMod {
     public static final String RESOURCE_DOMAIN = "architecturecraft:";
 
     public static final ArchitectureContent CONTENT = new ArchitectureContent();
-    public static boolean INDEV = true; // TODO: not always true. Blackboard is gone.
     public static ArchitectureMod INSTANCE;
 
     public static CommonProxy PROXY;
@@ -60,10 +60,9 @@ public class ArchitectureMod {
 
     public void onSetup(FMLCommonSetupEvent e) {
         MinecraftForge.EVENT_BUS.register(CONTENT);
-        CONTENT.setup(e);
         PROXY.setup(e);
 
-        CompoundNetwork.createNetwork(new ResourceLocation(ArchitectureMod.MOD_ID, "network"), "");
+        CompoundNetwork.createNetwork(ModLoadingContext.get().getActiveContainer(), "network");
     }
 
 }

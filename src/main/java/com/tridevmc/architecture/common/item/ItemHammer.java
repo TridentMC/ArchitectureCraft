@@ -25,11 +25,11 @@
 package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -40,20 +40,20 @@ public class ItemHammer extends Item {
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemUseContext context) {
+    public ActionResultType onItemUse(ItemUseContext context) {
         World world = context.getWorld();
         BlockPos pos = context.getPos();
-        EntityPlayer player = context.getPlayer();
-        EnumFacing side = context.getFace();
-        float hitX = context.getHitX();
-        float hitY = context.getHitY();
-        float hitZ = context.getHitZ();
+        PlayerEntity player = context.getPlayer();
+        Direction side = context.getFace();
+        float hitX = (float) context.getHitVec().getX();
+        float hitY = (float) context.getHitVec().getY();
+        float hitZ = (float) context.getHitVec().getZ();
         TileShape te = TileShape.get(world, pos);
         if (te != null) {
             te.onHammerUse(player, side, hitX, hitY, hitZ);
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
-        return EnumActionResult.FAIL;
+        return ActionResultType.FAIL;
     }
 
 }

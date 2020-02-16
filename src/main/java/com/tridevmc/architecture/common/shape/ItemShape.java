@@ -29,26 +29,26 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class ItemShape extends ItemBlock {
+public class ItemShape extends BlockItem {
 
     static Random rand = new Random();
 
@@ -57,15 +57,15 @@ public class ItemShape extends ItemBlock {
     }
 
     @Override
-    protected boolean placeBlock(BlockItemUseContext context, IBlockState newState) {
-        EntityPlayer player = context.getPlayer();
+    protected boolean placeBlock(BlockItemUseContext context, BlockState newState) {
+        PlayerEntity player = context.getPlayer();
         World world = context.getWorld();
         BlockPos pos = context.getPos();
-        EnumFacing face = context.getFace();
+        Direction face = context.getFace();
         ItemStack stack = context.getItem();
-        float hitX = context.getHitX();
-        float hitY = context.getHitY();
-        float hitZ = context.getHitZ();
+        double hitX = context.getHitVec().getX();
+        double hitY = context.getHitVec().getY();
+        double hitZ = context.getHitVec().getZ();
         if (!world.setBlockState(pos, newState, 3))
             return false;
         Vec3i d = Vector3.getDirectionVec(face);
@@ -75,7 +75,7 @@ public class ItemShape extends ItemBlock {
             te.readFromItemStack(stack);
             if (te.shape != null) {
                 BlockPos npos = te.getPos().offset(face.getOpposite());
-                IBlockState nstate = world.getBlockState(npos);
+                BlockState nstate = world.getBlockState(npos);
                 TileEntity nte = world.getTileEntity(npos);
                 te.shape.orientOnPlacement(player, te, npos, nstate, nte, face, hit);
             }
@@ -85,22 +85,22 @@ public class ItemShape extends ItemBlock {
 
     @Nullable
     @Override
-    public NBTTagCompound getShareTag(ItemStack stack) {
+    public CompoundNBT getShareTag(ItemStack stack) {
         return stack.getTag();
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
-        NBTTagCompound tag = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         if (tag != null) {
             int id = tag.getInt("Shape");
             Shape shape = Shape.forId(id);
             if (shape != null)
-                lines.set(0, new TextComponentString(shape.title));
+                lines.set(0, new StringTextComponent(shape.title));
             else
-                lines.set(0, new TextComponentString(lines.get(0).getFormattedText() + " (" + id + ")"));
+                lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + id + ")"));
             Block baseBlock = Block.getStateById(tag.getInt("Block")).getBlock();
-            lines.add(new TextComponentString(Utils.displayNameOfBlock(baseBlock)));
+            lines.add(new StringTextComponent(Utils.displayNameOfBlock(baseBlock)));
         }
     }
 
@@ -112,7 +112,7 @@ public class ItemShape extends ItemBlock {
                     continue;
 
                 ItemStack defaultStack = new ItemStack(this, 1);
-                NBTTagCompound tag = new NBTTagCompound();
+                CompoundNBT tag = new CompoundNBT();
                 tag.putInt("Shape", shape.id);
                 tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
                 defaultStack.setTag(tag);
@@ -126,7 +126,7 @@ public class ItemShape extends ItemBlock {
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack defaultStack = new ItemStack(this, 1);
-        NBTTagCompound tag = new NBTTagCompound();
+        CompoundNBT tag = new CompoundNBT();
         tag.putInt("Shape", Shape.ROOF_TILE.id);
         tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
         defaultStack.setTag(tag);
@@ -136,13 +136,13 @@ public class ItemShape extends ItemBlock {
 
     @Override
     public ITextComponent getDisplayName(ItemStack stack) {
-        NBTTagCompound tag = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         if (tag == null)
             return super.getDisplayName(stack);
 
         int id = tag.getInt("Shape");
         Shape shape = Shape.forId(id);
-        IBlockState state = Block.getStateById(tag.getInt("Block"));
-        return new TextComponentString(shape.title + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        BlockState state = Block.getStateById(tag.getInt("Block"));
+        return new StringTextComponent(shape.title + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

@@ -33,13 +33,13 @@ import com.tridevmc.architecture.client.render.texture.TextureBase;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
@@ -48,21 +48,21 @@ import javax.annotation.Nullable;
 public class RenderCladding implements ICustomRenderer {
 
     @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state,
-                            RenderTargetBase target, BlockRenderLayer layer, Trans3 t) {
+    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state,
+                            RenderTargetBase target, RenderType layer, Trans3 t) {
         //NOOP
     }
 
     @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, IBlockState state, RenderTargetBase target, BlockRenderLayer layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
+    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state, RenderTargetBase target, RenderType layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
         //NOOP
     }
 
     @Override
     public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
-        NBTTagCompound tag = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         if (tag != null) {
-            IBlockState state = Block.getStateById(tag.getInt("block"));
+            BlockState state = Block.getStateById(tag.getInt("block"));
             TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
             if (sprite != null) {
                 int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
@@ -74,8 +74,8 @@ public class RenderCladding implements ICustomRenderer {
     }
 
     @Nullable
-    private ItemStack getStackFromState(IBlockState state) {
-        if (state != null && Item.getItemFromBlock(state.getBlock()) != null) {
+    private ItemStack getStackFromState(BlockState state) {
+        if (state != null) {
             Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
             return defaultInstance;

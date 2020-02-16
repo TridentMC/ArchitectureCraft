@@ -28,7 +28,7 @@ import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.client.render.texture.TextureBase;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public abstract class RenderTargetBase {
 
@@ -39,44 +39,44 @@ public abstract class RenderTargetBase {
     protected int vertexCount;
     protected ITexture texture;
     protected Vector3 normal;
-    protected EnumFacing face;
+    protected Direction face;
     protected float red = 1, green = 1, blue = 1, alpha = 1;
     protected float shade;
     protected boolean expandTrianglesToQuads;
     protected boolean textureOverride;
 
     public RenderTargetBase(double x, double y, double z, TextureAtlasSprite overrideIcon) {
-        blockX = x;
-        blockY = y;
-        blockZ = z;
+        this.blockX = x;
+        this.blockY = y;
+        this.blockZ = z;
         if (overrideIcon != null) {
-            texture = TextureBase.fromSprite(overrideIcon);
-            textureOverride = true;
+            this.texture = TextureBase.fromSprite(overrideIcon);
+            this.textureOverride = true;
         }
     }
 
     // ---------------------------- IRenderTarget ----------------------------
 
     public boolean isRenderingBreakEffects() {
-        return textureOverride;
+        return this.textureOverride;
     }
 
     public void beginTriangle() {
-        setMode(3);
+        this.setMode(3);
     }
 
     public void beginQuad() {
-        setMode(4);
+        this.setMode(4);
     }
 
     protected void setMode(int mode) {
-        if (vertexCount != 0)
+        if (this.vertexCount != 0)
             throw new IllegalStateException("Changing mode in mid-face");
-        verticesPerFace = mode;
+        this.verticesPerFace = mode;
     }
 
     public void setTexture(ITexture texture) {
-        if (!textureOverride) {
+        if (!this.textureOverride) {
             if (texture == null)
                 throw new IllegalArgumentException("Setting null texture");
             this.texture = texture;
@@ -84,61 +84,61 @@ public abstract class RenderTargetBase {
     }
 
     public void setColor(int color) {
-        setColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F);
+        this.setColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F);
     }
 
     public void setColor(float r, float g, float b) {
-        setColor(r, g, b, 1F);
+        this.setColor(r, g, b, 1F);
     }
 
     public void setColor(float r, float g, float b, float a) {
-        red = r;
-        green = g;
-        blue = b;
-        alpha = a;
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.alpha = a;
     }
 
     public void setNormal(Vector3 n) {
-        normal = n;
-        face = n.facing();
-        shade = (float) (0.6 * n.x * n.x + 0.8 * n.z * n.z + (n.y > 0 ? 1 : 0.5) * n.y * n.y);
+        this.normal = n;
+        this.face = n.facing();
+        this.shade = (float) (0.6 * n.x * n.x + 0.8 * n.z * n.z + (n.y > 0 ? 1 : 0.5) * n.y * n.y);
     }
 
     public void addVertex(Vector3 p, double u, double v) {
-        if (texture.isProjected())
-            addProjectedVertex(p, face);
+        if (this.texture.isProjected())
+            this.addProjectedVertex(p, this.face);
         else
-            addUVVertex(p, u, v);
+            this.addUVVertex(p, u, v);
     }
 
     public void addUVVertex(Vector3 p, double u, double v) {
         double iu, iv;
-        if (verticesPerFace == 0)
+        if (this.verticesPerFace == 0)
             throw new IllegalStateException("No face active");
-        if (vertexCount >= verticesPerFace)
+        if (this.vertexCount >= this.verticesPerFace)
             throw new IllegalStateException("Too many vertices in face");
-        if (normal == null)
+        if (this.normal == null)
             throw new IllegalStateException("No normal");
-        if (texture == null)
+        if (this.texture == null)
             throw new IllegalStateException("No texture");
-        iu = texture.interpolateU(u);
-        iv = texture.interpolateV(v);
-        rawAddVertex(p, iu, iv);
-        if (++vertexCount == 3 && expandTrianglesToQuads && verticesPerFace == 3) {
-            rawAddVertex(p, iu, iv);
+        iu = this.texture.interpolateU(u);
+        iv = this.texture.interpolateV(v);
+        this.rawAddVertex(p, iu, iv);
+        if (++this.vertexCount == 3 && this.expandTrianglesToQuads && this.verticesPerFace == 3) {
+            this.rawAddVertex(p, iu, iv);
         }
     }
 
     public void endFace() {
-        if (vertexCount < verticesPerFace) {
+        if (this.vertexCount < this.verticesPerFace) {
             throw new IllegalStateException("Too few vertices in face");
         }
-        vertexCount = 0;
-        verticesPerFace = 0;
+        this.vertexCount = 0;
+        this.verticesPerFace = 0;
     }
 
     public void finish() {
-        if (vertexCount > 0)
+        if (this.vertexCount > 0)
             throw new IllegalStateException("Rendering ended with incomplete face");
     }
 
@@ -147,26 +147,26 @@ public abstract class RenderTargetBase {
     protected abstract void rawAddVertex(Vector3 p, double u, double v);
 
     public float r() {
-        return (float) (red * texture.red());
+        return (float) (this.red * this.texture.red());
     }
 
     public float g() {
-        return (float) (green * texture.green());
+        return (float) (this.green * this.texture.green());
     }
 
     public float b() {
-        return (float) (blue * texture.blue());
+        return (float) (this.blue * this.texture.blue());
     }
 
     public float a() {
-        return alpha;
+        return this.alpha;
     }
 
     // Add vertex with texture coords projected from the given direction
-    public void addProjectedVertex(Vector3 p, EnumFacing face) {
-        double x = p.x - blockX;
-        double y = p.y - blockY;
-        double z = p.z - blockZ;
+    public void addProjectedVertex(Vector3 p, Direction face) {
+        double x = p.x - this.blockX;
+        double y = p.y - this.blockY;
+        double z = p.z - this.blockZ;
         //System.out.printf("BaseRenderTarget.addProjectedVertex: world (%.3f, %.3f, %.3f) block (%.3f, %.3f, %.3f) %s\n",
         //  p.x, p.y, p.z, x, y, z, face);
         double u, v;
@@ -199,7 +199,7 @@ public abstract class RenderTargetBase {
                 u = 0;
                 v = 0;
         }
-        addUVVertex(p, u, v);
+        this.addUVVertex(p, u, v);
     }
 
 }

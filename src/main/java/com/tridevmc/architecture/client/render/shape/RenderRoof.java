@@ -30,7 +30,7 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.Shape;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import java.util.Arrays;
 
@@ -50,7 +50,7 @@ public class RenderRoof extends RenderShape {
             Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY,
             Shape.ROOF_TILE, Shape.ROOF_INNER_CORNER};
 
-    protected EnumFacing face;
+    protected Direction face;
     protected boolean outerFace;
     protected boolean renderBase, renderSecondary;
 
@@ -738,7 +738,7 @@ public class RenderRoof extends RenderShape {
     }
 
     protected boolean hasNeighbour(int dx, int dy, int dz, Shape[] shapes) {
-        EnumFacing dir = t.v(dx, dy, dz).facing();
+        Direction dir = t.v(dx, dy, dz).facing();
         TileShape nte = te.getConnectedNeighbourGlobal(dir);
         if (nte != null) {
             for (int i = 0; i < shapes.length; i++)

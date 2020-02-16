@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.shape.Shape;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +34,8 @@ public class Profile {
 
     protected static Map opposites = new HashMap();
 
-    public static Object getProfileGlobal(Shape shape, int side, int turn, EnumFacing globalFace) {
-        EnumFacing localFace = Trans3.sideTurnRotations[side][turn].it(globalFace);
+    public static Object getProfileGlobal(Shape shape, int side, int turn, Direction globalFace) {
+        Direction localFace = Trans3.sideTurnRotations[side][turn].it(globalFace);
         return shape.kind.profileForLocalFace(shape, localFace);
     }
 

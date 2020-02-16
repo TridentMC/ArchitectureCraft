@@ -60,14 +60,14 @@ public class OBJSONModel implements IArchitectureModel {
 
     @Override
     public AxisAlignedBB getBounds() {
-        return new AxisAlignedBB(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
+        return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
     }
 
     /**
      * Add normals to all the faces.
      */
     private void setNormals() {
-        for (Face face : faces) {
+        for (Face face : this.faces) {
             double[][] p = face.vertices;
             int[] t = face.triangles[0];
             face.normal = Vector3.unit(Vector3.sub(p[t[1]], p[t[0]]).cross(Vector3.sub(p[t[2]], p[t[0]])));
@@ -76,10 +76,10 @@ public class OBJSONModel implements IArchitectureModel {
 
     @Override
     public void addBoxesToList(Trans3 t, List list) {
-        if (boxes != null && boxes.length > 0) {
-            Arrays.stream(boxes).forEach(b -> addBoxToList(b, t, list));
+        if (this.boxes != null && this.boxes.length > 0) {
+            Arrays.stream(this.boxes).forEach(b -> this.addBoxToList(b, t, list));
         } else {
-            addBoxToList(bounds, t, list);
+            this.addBoxToList(this.bounds, t, list);
         }
     }
 
@@ -90,7 +90,7 @@ public class OBJSONModel implements IArchitectureModel {
     @Override
     public void render(Trans3 t, RenderTargetBase target, int baseColourMult, int secondaryColourMult, ITexture... textures) {
         Vector3 p = null, n = null;
-        for (Face face : faces) {
+        for (Face face : this.faces) {
             ITexture tex = textures[face.texture];
             if (tex != null) {
                 target.setTexture(tex);

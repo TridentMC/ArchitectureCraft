@@ -26,19 +26,23 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.tile.TileShape;
+import javafx.geometry.Side;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorldReader;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Random;
@@ -49,7 +53,7 @@ public class Utils {
 
     public static Random random = new Random();
 
-    public static int playerTurn(EntityLivingBase player) {
+    public static int playerTurn(LivingEntity player) {
         return MathHelper.floor((player.rotationYaw * 4.0 / 360.0) + 0.5) & 3;
     }
 
@@ -58,12 +62,12 @@ public class Utils {
         return (int) round(a * 2 / PI) & 3;
     }
 
-    public static boolean playerIsInCreativeMode(EntityPlayer player) {
-        return (player instanceof EntityPlayerMP)
-                && ((EntityPlayerMP) player).interactionManager.isCreative();
+    public static boolean playerIsInCreativeMode(PlayerEntity player) {
+        return (player instanceof ServerPlayerEntity)
+                && ((ServerPlayerEntity) player).interactionManager.isCreative();
     }
 
-    public static TextureAtlasSprite getSpriteForBlockState(IBlockState state) {
+    public static TextureAtlasSprite getSpriteForBlockState(BlockState state) {
         if (state != null)
             return Minecraft.getInstance().getBlockRendererDispatcher()
                     .getBlockModelShapes().getTexture(state);
@@ -72,7 +76,7 @@ public class Utils {
     }
 
     public static TextureAtlasSprite getSpriteForPos(IWorldReader world, BlockPos pos, boolean renderPrimary) {
-        IBlockState blockState = world.getBlockState(pos);
+        BlockState blockState = world.getBlockState(pos);
 
         if (blockState == null)
             return null;
@@ -90,6 +94,15 @@ public class Utils {
         }
 
         return getSpriteForBlockState(blockState);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static int getColourFromState(BlockState state) {
+        if (state == null)
+            return -1;
+
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+        return blockColors.getColor(state, null, null, 0);
     }
 
     public static String displayNameOfBlock(Block block) {

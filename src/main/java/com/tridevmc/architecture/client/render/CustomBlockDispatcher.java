@@ -1,21 +1,24 @@
 package com.tridevmc.architecture.client.render;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.tridevmc.architecture.client.proxy.ClientProxy;
-import com.tridevmc.architecture.client.render.target.RenderTargetBaked;
 import com.tridevmc.architecture.client.render.target.RenderTargetWorld;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.compound.core.reflect.WrappedField;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockModelRenderer;
+import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.ILightReader;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.data.IModelData;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -30,7 +33,7 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
         super(base.getBlockModelShapes(), Minecraft.getInstance().getBlockColors());
 
         this.base = base;
-        this.random = (Random) WrappedField.create(BlockRendererDispatcher.class, new String[]{"random", "field_195476_e"}).getValue(base);
+        this.random = (Random) WrappedField.create(BlockRendererDispatcher.class, new String[]{"random", "field_195476_e"}).get(base);
     }
 
     public static void inject() {
@@ -50,59 +53,37 @@ public class CustomBlockDispatcher extends BlockRendererDispatcher {
         WrappedField<BlockRendererDispatcher> mcBlockRenderDispatcher = WrappedField.create(Minecraft.class,
                 new String[]{"blockRenderDispatcher", "field_175618_aM"});
 
-        mcBlockRenderDispatcher.setValue(Minecraft.getInstance(), customBlockDispatcher);
+        mcBlockRenderDispatcher.set(Minecraft.getInstance(), customBlockDispatcher);
     }
 
     @Override
     public BlockModelShapes getBlockModelShapes() {
-        return base.getBlockModelShapes();
+        return this.base.getBlockModelShapes();
     }
 
     @Override
     public BlockModelRenderer getBlockModelRenderer() {
-        return base.getBlockModelRenderer();
+        return this.base.getBlockModelRenderer();
     }
 
     @Override
-    public IBakedModel getModelForState(IBlockState state) {
-        return base.getModelForState(state);
+    public IBakedModel getModelForState(BlockState state) {
+        return this.base.getModelForState(state);
     }
 
     @Override
-    public void renderBlockBrightness(IBlockState state, float brightness) {
-        base.renderBlockBrightness(state, brightness);
-    }
-
-    @Override
-    public void renderBlockDamage(IBlockState state, BlockPos pos, TextureAtlasSprite icon, IWorldReader world) {
-        ICustomRenderer rend = ClientProxy.RENDERING_MANAGER.getCustomRenderer(world, pos, state);
-        if (rend != null) {
-            RenderTargetBaked target = new RenderTargetBaked(pos, icon);
-            Trans3 t = Trans3.blockCenter;
-            Block block = state.getBlock();
-            for (BlockRenderLayer layer : BlockRenderLayer.values())
-                if (block.canRenderInLayer(state, layer))
-                    rend.renderBlock(world, pos, state, target, layer, t);
-            IBakedModel model = target.getBakedModel();
-            BufferBuilder tess = Tessellator.getInstance().getBuffer();
-            getBlockModelRenderer().renderModel(world, model, state, pos, tess, false, this.random, state.getPositionRandom(pos)); //TODO should checkSides be false?
-        } else
-            base.renderBlockDamage(state, pos, icon, world);
-    }
-
-    @Override
-    public boolean renderBlock(IBlockState state, BlockPos pos, IWorldReader world, BufferBuilder buff, Random rand) {
+    public boolean renderModel(BlockState state, BlockPos pos, ILightReader world, MatrixStack matrixStack, IVertexBuilder vertexBuilder, boolean checkSides, Random rand, IModelData modelData) {
         ICustomRenderer rend = ClientProxy.RENDERING_MANAGER.getCustomRenderer(world, pos, state);
         if (rend != null)
-            return customRenderBlockToWorld(world, pos, state, buff, null, rend);
-        else
-            return base.renderBlock(state, pos, world, buff, rand);
+            return this.customRenderBlockToWorld(world, pos, state, vertexBuilder, null, rend);
+
+        return super.renderModel(state, pos, world, matrixStack, vertexBuilder, checkSides, rand, modelData);
     }
 
-    protected boolean customRenderBlockToWorld(IWorldReader world, BlockPos pos, IBlockState state, BufferBuilder tess,
+    protected boolean customRenderBlockToWorld(ILightReader world, BlockPos pos, BlockState state, IVertexBuilder tess,
                                                TextureAtlasSprite icon, ICustomRenderer rend) {
         RenderTargetWorld target = new RenderTargetWorld(world, pos, tess, icon);
-        BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderLayer();
         rend.renderBlock(world, pos, state, target, layer, Trans3.blockCenter(pos));
         return target.end();
     }

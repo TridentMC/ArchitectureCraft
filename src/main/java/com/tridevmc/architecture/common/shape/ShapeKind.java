@@ -42,15 +42,15 @@ import com.tridevmc.architecture.common.tile.TileArchitecture;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockGlassPane;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.PaneBlock;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.Half;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -58,7 +58,7 @@ import net.minecraft.world.IBlockReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.minecraft.util.EnumFacing.*;
+import static net.minecraft.util.Direction.*;
 
 public abstract class ShapeKind {
 
@@ -78,7 +78,7 @@ public abstract class ShapeKind {
         return new Banister(name);
     }
 
-    public Object profileForLocalFace(Shape shape, EnumFacing face) {
+    public Object profileForLocalFace(Shape shape, Direction face) {
         if (profiles != null)
             return profiles[face.ordinal()];
         else
@@ -94,7 +94,7 @@ public abstract class ShapeKind {
                                      boolean renderBase, boolean renderSecondary,
                                      int baseColourMult, int secondaryColourMult);
 
-    public ItemStack newStack(Shape shape, IBlockState materialState, int stackSize) {
+    public ItemStack newStack(Shape shape, BlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
         int light = te.baseBlockState.getLightValue();
         return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
@@ -104,21 +104,21 @@ public abstract class ShapeKind {
         return newStack(shape, materialBlock.getDefaultState(), stackSize);
     }
 
-    public boolean orientOnPlacement(EntityPlayer player, TileShape te,
-                                     BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(PlayerEntity player, TileShape te,
+                                     BlockPos npos, BlockState nstate, TileEntity nte, Direction otherFace, Vector3 hit) {
         if (nte instanceof TileShape)
             return orientOnPlacement(player, te, (TileShape) nte, otherFace, hit);
         else
             return orientOnPlacement(player, te, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
+    public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction otherFace,
                                      Vector3 hit) {
         //boolean debug = !te.getWorld().isRemote;
-        if (nte != null && !player.isSneaking()) {
+        if (nte != null && !player.isCrouching()) {
             Object otherProfile = Profile.getProfileGlobal(nte.shape, nte.getSide(), nte.getTurn(), otherFace);
             if (otherProfile != null) {
-                EnumFacing thisFace = otherFace.getOpposite();
+                Direction thisFace = otherFace.getOpposite();
                 for (int i = 0; i < 4; i++) {
                     int turn = (nte.getTurn() + i) & 3;
                     Object thisProfile = Profile.getProfileGlobal(te.shape, nte.getSide(), turn, thisFace);
@@ -148,8 +148,8 @@ public abstract class ShapeKind {
         return false;
     }
 
-    public void onChiselUse(TileShape te, EntityPlayer player, EnumFacing face, Vector3 hit) {
-        EnumFacing side = zoneHit(face, hit);
+    public void onChiselUse(TileShape te, PlayerEntity player, Direction face, Vector3 hit) {
+        Direction side = zoneHit(face, hit);
         //ArchitectureLog.info("ShapeKind.onChiselUse: face = %s, hit = %s, side = %s\n", face, hit, side);
         if (side != null)
             chiselUsedOnSide(te, player, side);
@@ -157,11 +157,11 @@ public abstract class ShapeKind {
             chiselUsedOnCentre(te, player);
     }
 
-    public void chiselUsedOnSide(TileShape te, EntityPlayer player, EnumFacing side) {
+    public void chiselUsedOnSide(TileShape te, PlayerEntity player, Direction side) {
         te.toggleConnectionGlobal(side);
     }
 
-    public void chiselUsedOnCentre(TileShape te, EntityPlayer player) {
+    public void chiselUsedOnCentre(TileShape te, PlayerEntity player) {
         if (te.secondaryBlockState != null) {
             ItemStack stack = newSecondaryMaterialStack(te.secondaryBlockState);
             if (stack != null) {
@@ -172,15 +172,15 @@ public abstract class ShapeKind {
         }
     }
 
-    public ItemStack newSecondaryMaterialStack(IBlockState state) {
+    public ItemStack newSecondaryMaterialStack(BlockState state) {
         if (acceptsCladding())
             return ArchitectureMod.CONTENT.itemCladding.newStack(state, 1);
         else
             return null;
     }
 
-    public void onHammerUse(TileShape te, EntityPlayer player, EnumFacing face, Vector3 hit) {
-        if (player.isSneaking())
+    public void onHammerUse(TileShape te, PlayerEntity player, Direction face, Vector3 hit) {
+        if (player.isCrouching())
             te.setSide((te.getSide() + 1) % 6);
         else {
             double dx = te.getOffsetX();
@@ -194,7 +194,7 @@ public abstract class ShapeKind {
         te.markBlockChanged();
     }
 
-    public EnumFacing zoneHit(EnumFacing face, Vector3 hit) {
+    public Direction zoneHit(Direction face, Vector3 hit) {
         double r = 0.5 - sideZoneSize();
         if (hit.x <= -r && face != WEST) return WEST;
         if (hit.x >= r && face != EAST) return EAST;
@@ -211,7 +211,7 @@ public abstract class ShapeKind {
 
     //------------------------------------------------------------------------------
 
-    public boolean isValidSecondaryMaterial(IBlockState state) {
+    public boolean isValidSecondaryMaterial(BlockState state) {
         return false;
     }
 
@@ -221,14 +221,14 @@ public abstract class ShapeKind {
 
     //------------------------------------------------------------------------------
 
-    public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
+    public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                    Entity entity, Trans3 t) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
         addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return Utils.unionOfBoxes(list);
     }
 
-    public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
+    public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                         Entity entity, Trans3 t, List list) {
         int mask = te.shape.occlusionMask;
         int param = mask & 0xff;
@@ -301,7 +301,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public Object profileForLocalFace(Shape shape, EnumFacing face) {
+        public Object profileForLocalFace(Shape shape, Direction face) {
             switch (shape) {
                 case ROOF_TILE:
                 case ROOF_OVERHANG:
@@ -363,7 +363,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
+        public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                        Entity entity, Trans3 t) {
             return t.t(getModel().getBounds());
         }
@@ -392,7 +392,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
+        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                             Entity entity, Trans3 t, List list) {
             if (te.shape.occlusionMask == 0)
                 getModel().addBoxesToList(t, list);
@@ -417,19 +417,19 @@ public abstract class ShapeKind {
 
     public static abstract class Window extends ShapeKind {
 
-        public EnumFacing[] frameSides;
+        public Direction[] frameSides;
 
         public boolean[] frameAlways;
         public FrameKind[] frameKinds;
-        public EnumFacing[] frameOrientations;
+        public Direction[] frameOrientations;
         public Trans3[] frameTrans;
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te, TileShape nte, EnumFacing otherFace,
+        public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction otherFace,
                                          Vector3 hit) {
             int turn = -1;
             // If click is on side of a non-window block, orient perpendicular to it
-            if (!player.isSneaking() && (nte == null || !(nte.shape.kind instanceof ShapeKind.Window))) {
+            if (!player.isCrouching() && (nte == null || !(nte.shape.kind instanceof ShapeKind.Window))) {
                 switch (otherFace) {
                     case EAST:
                     case WEST:
@@ -449,11 +449,11 @@ public abstract class ShapeKind {
                 return false;
         }
 
-        public FrameKind frameKindForLocalSide(EnumFacing side) {
+        public FrameKind frameKindForLocalSide(Direction side) {
             return frameKinds[side.ordinal()];
         }
 
-        public EnumFacing frameOrientationForLocalSide(EnumFacing side) {
+        public Direction frameOrientationForLocalSide(Direction side) {
             return frameOrientations[side.ordinal()];
         }
 
@@ -480,7 +480,7 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public ItemStack newSecondaryMaterialStack(IBlockState state) {
+        public ItemStack newSecondaryMaterialStack(BlockState state) {
             return BlockHelper.blockStackWithState(state, 1);
         }
 
@@ -493,13 +493,13 @@ public abstract class ShapeKind {
 //		}
 
         @Override
-        public boolean isValidSecondaryMaterial(IBlockState state) {
+        public boolean isValidSecondaryMaterial(BlockState state) {
             Block block = state.getBlock();
-            return block instanceof BlockGlassPane;
+            return block instanceof PaneBlock;
         }
 
         @Override
-        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, IBlockState state,
+        public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                             Entity entity, Trans3 t, List list) {
             final double r = 1 / 8d, s = 3 / 32d;
             double[] e = new double[4];
@@ -532,22 +532,22 @@ public abstract class ShapeKind {
             t.addBox(-e[3], -e[0], -w, e[1], e[2], w, list);
         }
 
-        protected boolean isConnectedGlobal(TileShape te, EnumFacing globalDir) {
+        protected boolean isConnectedGlobal(TileShape te, Direction globalDir) {
             return getConnectedWindowGlobal(te, globalDir) != null;
         }
 
-        public TileShape getConnectedWindowGlobal(TileShape te, EnumFacing globalDir) {
-            EnumFacing thisLocalDir = te.localFace(globalDir);
+        public TileShape getConnectedWindowGlobal(TileShape te, Direction globalDir) {
+            Direction thisLocalDir = te.localFace(globalDir);
             FrameKind thisFrameKind = frameKindForLocalSide(thisLocalDir);
             if (thisFrameKind != FrameKind.None) {
-                EnumFacing thisOrient = frameOrientationForLocalSide(thisLocalDir);
+                Direction thisOrient = frameOrientationForLocalSide(thisLocalDir);
                 TileShape nte = te.getConnectedNeighbourGlobal(globalDir);
                 if (nte != null && nte.shape.kind instanceof Window) {
                     Window otherKind = (Window) nte.shape.kind;
-                    EnumFacing otherLocalDir = nte.localFace(globalDir.getOpposite());
+                    Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
                     FrameKind otherFrameKind = otherKind.frameKindForLocalSide(otherLocalDir);
                     if (otherFrameKind != FrameKind.None) {
-                        EnumFacing otherOrient = otherKind.frameOrientationForLocalSide(otherLocalDir);
+                        Direction otherOrient = otherKind.frameOrientationForLocalSide(otherLocalDir);
                         if (framesMatch(thisFrameKind, otherFrameKind,
                                 te.globalFace(thisOrient), nte.globalFace(otherOrient)))
                             return nte;
@@ -558,7 +558,7 @@ public abstract class ShapeKind {
         }
 
         protected boolean framesMatch(FrameKind kind1, FrameKind kind2,
-                                      EnumFacing orient1, EnumFacing orient2) {
+                                      Direction orient1, Direction orient2) {
             if (kind1 == kind2) {
                 switch (kind1) {
                     case Plain:
@@ -603,27 +603,27 @@ public abstract class ShapeKind {
             super(modelName, Profile.Generic.tbOffset);
         }
 
-        private static EnumFacing stairsFacing(IBlockState state) {
-            return state.get(BlockStairs.FACING);
+        private static Direction stairsFacing(BlockState state) {
+            return state.get(StairsBlock.FACING);
         }
 
-        private static int stairsSide(IBlockState state) {
-            if (state.get(BlockStairs.HALF) == Half.TOP)
+        private static int stairsSide(BlockState state) {
+            if (state.get(StairsBlock.HALF) == Half.TOP)
                 return 1;
             else
                 return 0;
         }
 
         @Override
-        public boolean orientOnPlacement(EntityPlayer player, TileShape te,
-                                         BlockPos npos, IBlockState nstate, TileEntity nte, EnumFacing otherFace, Vector3 hit) {
+        public boolean orientOnPlacement(PlayerEntity player, TileShape te,
+                                         BlockPos npos, BlockState nstate, TileEntity nte, Direction otherFace, Vector3 hit) {
             //ArchitectureLog.info("Banister.orientOnPlacement: nstate = %s\n", nstate);
-            if (!player.isSneaking()) {
+            if (!player.isCrouching()) {
                 Block nblock = nstate.getBlock();
                 boolean placedOnStair = false;
                 int nside = -1; // Side that the neighbouring block is placed on
                 int nturn = -1; // Turn of the neighbouring block
-                if (BlockStairs.isBlockStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
+                if (StairsBlock.isBlockStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
                     placedOnStair = true;
                     nside = stairsSide(nstate);
                     nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nstate));

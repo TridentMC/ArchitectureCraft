@@ -35,12 +35,12 @@ public class ShapePage {
     }
 
     public int size() {
-        return shapes.length;
+        return this.shapes.length;
     }
 
     public Shape get(int i) {
-        if (i >= 0 && i < shapes.length)
-            return shapes[i];
+        if (i >= 0 && i < this.shapes.length)
+            return this.shapes[i];
         return null;
     }
 
