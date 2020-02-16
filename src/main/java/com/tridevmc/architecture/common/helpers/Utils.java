@@ -32,6 +32,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -96,17 +97,16 @@ public class Utils {
         return getSpriteForBlockState(blockState);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static int getColourFromState(BlockState state) {
-        if (state == null)
-            return -1;
-
-        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-        return blockColors.getColor(state, null, null, 0);
-    }
-
-    public static String displayNameOfBlock(Block block) {
-        return "Cut from " + displayNameOnlyOfBlock(block);
+    public static String displayNameOfBlock(Block block, int meta) {
+        String name = null;
+        Item item = Item.getItemFromBlock(block);
+        if (item != null) {
+            ItemStack stack = new ItemStack(item, 1, meta);
+            name = stack.getDisplayName();
+        }
+        if (name == null)
+            name = block.getLocalizedName();
+        return I18n.format("tooltip.architecturecraft.cutfrom", name);
     }
 
     public static String displayNameOnlyOfBlock(Block block) {
