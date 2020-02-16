@@ -36,7 +36,7 @@ import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.item.ItemHammer;
 import com.tridevmc.architecture.common.itemgroup.ArchitectureItemGroup;
 import com.tridevmc.architecture.common.shape.ItemShape;
-import com.tridevmc.architecture.common.shape.Shape;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.tile.TileSawbench;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
@@ -47,6 +47,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
@@ -65,8 +66,8 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
 
-    public static final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", ArchitectureMod.CONTENT.itemHammer::getDefaultInstance);
-    public static final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> Shape.ROOF_TILE.kind.newStack(Shape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState(), 1));
+    public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> ArchitectureContent.this.itemHammer != null ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
+    public final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> EnumShape.ROOF_TILE.kind.newStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState(), 1));
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
@@ -87,8 +88,8 @@ public class ArchitectureContent {
     @SubscribeEvent
     public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e) {
         IForgeRegistry<TileEntityType<?>> registry = e.getRegistry();
-        this.registerTileEntity(registry, TileShape::new, "shape");
-        this.registerTileEntity(registry, TileSawbench::new, "sawbench");
+        this.tileTypeShape = this.registerTileEntity(registry, TileShape::new, "shape");
+        this.tileTypeSawbench = this.registerTileEntity(registry, TileSawbench::new, "sawbench");
     }
 
     @SubscribeEvent
@@ -102,7 +103,7 @@ public class ArchitectureContent {
     public void onItemRegister(RegistryEvent.Register<Item> e) {
         IForgeRegistry<Item> registry = e.getRegistry();
         this.itemSawblade = this.registerItem(registry, "sawblade");
-        this.itemLargePulley = this.registerItem(registry, "largePulley");
+        this.itemLargePulley = this.registerItem(registry, "large_pulley");
         this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel());
         this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer());
         this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding());
@@ -148,7 +149,7 @@ public class ArchitectureContent {
             block.setRegistryName(REGISTRY_PREFIX, id);
             registry.register(block);
 
-            BlockItem itemBlock = itemBlockClass.getDeclaredConstructor(Block.class).newInstance(block);
+            BlockItem itemBlock = itemBlockClass.getDeclaredConstructor(Block.class, Item.Properties.class).newInstance(block, new Item.Properties());
             itemBlock.setRegistryName(REGISTRY_PREFIX, id);
             itemBlocksToRegister.add(itemBlock);
             registeredBlocks.put(id, block);

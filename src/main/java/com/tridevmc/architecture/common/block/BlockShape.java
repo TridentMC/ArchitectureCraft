@@ -148,7 +148,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         }
         AxisAlignedBB box = this.getLocalBounds(world, pos, state, null);
         if (box != null)
-            return VoxelShapes.create(this.boxHit);
+            return VoxelShapes.create(box);
         else
             return super.getShape(state, world, pos, context);
     }

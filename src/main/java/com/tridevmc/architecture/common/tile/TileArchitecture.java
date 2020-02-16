@@ -70,7 +70,7 @@ public abstract class TileArchitecture extends TileEntity {
 
     public void sendTileEntityUpdate() {
         IPacket<?> packet = this.getUpdatePacket();
-        if (packet != null && world instanceof ServerWorld) {
+        if (packet != null && this.world instanceof ServerWorld) {
             ServerWorld world = (ServerWorld) this.getWorld();
             world.getChunkProvider().
                     chunkManager.
@@ -158,7 +158,7 @@ public abstract class TileArchitecture extends TileEntity {
     }
 
     public void markForUpdate() {
-        if (world instanceof ServerWorld) {
+        if (this.world instanceof ServerWorld) {
             ServerWorld world = (ServerWorld) this.getWorld();
             world.getChunkProvider().markBlockChanged(this.pos);
         }

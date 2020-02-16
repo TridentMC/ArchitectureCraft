@@ -55,14 +55,14 @@ public class SelectShapeMessage extends Message {
 
     @Override
     public void handle(PlayerEntity player) {
-        World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.getById(dim), false, false);
+        World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.getById(this.dim), false, false);
         if (world == null)
             return;
-        if (world.isBlockLoaded(sawPos)) {
-            TileEntity tile = world.getTileEntity(sawPos);
+        if (world.isBlockLoaded(this.sawPos)) {
+            TileEntity tile = world.getTileEntity(this.sawPos);
             if (tile instanceof TileSawbench) {
                 TileSawbench sawbench = (TileSawbench) tile;
-                sawbench.setSelectedShape(page, slot);
+                sawbench.setSelectedShape(this.page, this.slot);
             }
         }
     }

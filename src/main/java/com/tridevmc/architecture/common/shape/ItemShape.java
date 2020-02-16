@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.common.ArchitectureContent;
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileShape;
@@ -94,20 +95,20 @@ public class ItemShape extends BlockItem {
         CompoundNBT tag = stack.getTag();
         if (tag != null) {
             int id = tag.getInt("Shape");
-            Shape shape = Shape.forId(id);
+            EnumShape shape = EnumShape.forId(id);
             if (shape != null)
                 lines.set(0, new StringTextComponent(shape.title));
             else
                 lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + id + ")"));
             Block baseBlock = Block.getStateById(tag.getInt("Block")).getBlock();
-            lines.add(new StringTextComponent(Utils.displayNameOfBlock(baseBlock)));
+            lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(baseBlock)));
         }
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (group == ArchitectureContent.SHAPE_TAB) {
-            for (Shape shape : Shape.values()) {
+        if (group == ArchitectureMod.CONTENT.SHAPE_TAB) {
+            for (EnumShape shape : EnumShape.values()) {
                 if (shape.isCladding())
                     continue;
 
@@ -127,7 +128,7 @@ public class ItemShape extends BlockItem {
     public ItemStack getDefaultInstance() {
         ItemStack defaultStack = new ItemStack(this, 1);
         CompoundNBT tag = new CompoundNBT();
-        tag.putInt("Shape", Shape.ROOF_TILE.id);
+        tag.putInt("Shape", EnumShape.ROOF_TILE.id);
         tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
         defaultStack.setTag(tag);
 
@@ -141,7 +142,7 @@ public class ItemShape extends BlockItem {
             return super.getDisplayName(stack);
 
         int id = tag.getInt("Shape");
-        Shape shape = Shape.forId(id);
+        EnumShape shape = EnumShape.forId(id);
         BlockState state = Block.getStateById(tag.getInt("Block"));
         return new StringTextComponent(shape.title + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }

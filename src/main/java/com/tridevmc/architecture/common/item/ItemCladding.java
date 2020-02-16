@@ -55,7 +55,7 @@ public class ItemCladding extends ItemArchitecture {
     }
 
     public ItemStack newStack(Block block, int stackSize) {
-        return newStack(block.getDefaultState(), stackSize);
+        return this.newStack(block.getDefaultState(), stackSize);
     }
 
     public BlockState blockStateFromStack(ItemStack stack) {
@@ -74,8 +74,8 @@ public class ItemCladding extends ItemArchitecture {
         CompoundNBT tag = stack.getTag();
         if (tag != null) {
             BlockState state = Block.getStateById(tag.getInt("block"));
-            if (state != null)
-                lines.add(new StringTextComponent(Utils.displayNameOfBlock(state.getBlock())));
+            if (!state.isAir())
+                lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(state.getBlock())));
         }
     }
 

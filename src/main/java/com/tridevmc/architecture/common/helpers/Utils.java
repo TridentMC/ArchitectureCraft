@@ -26,18 +26,17 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.tile.TileShape;
-import javafx.geometry.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -79,7 +78,7 @@ public class Utils {
     public static TextureAtlasSprite getSpriteForPos(IWorldReader world, BlockPos pos, boolean renderPrimary) {
         BlockState blockState = world.getBlockState(pos);
 
-        if (blockState == null)
+        if (blockState.isAir())
             return null;
 
         if (blockState.getBlock() instanceof BlockShape) {
@@ -97,22 +96,19 @@ public class Utils {
         return getSpriteForBlockState(blockState);
     }
 
-    public static String displayNameOfBlock(Block block, int meta) {
-        String name = null;
-        Item item = Item.getItemFromBlock(block);
-        if (item != null) {
-            ItemStack stack = new ItemStack(item, 1, meta);
-            name = stack.getDisplayName();
-        }
-        if (name == null)
-            name = block.getLocalizedName();
-        return I18n.format("tooltip.architecturecraft.cutfrom", name);
+    @OnlyIn(Dist.CLIENT)
+    public static int getColourFromState(BlockState state) {
+        if (state == null)
+            return -1;
+
+        BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+        return blockColors.getColor(state, null, null, 0);
     }
 
     public static String displayNameOnlyOfBlock(Block block) {
         String name = null;
         Item item = Item.getItemFromBlock(block);
-        if (item != null) {
+        if (item != Items.AIR) {
             ItemStack stack = new ItemStack(item, 1);
             name = stack.getDisplayName().getFormattedText();
         }

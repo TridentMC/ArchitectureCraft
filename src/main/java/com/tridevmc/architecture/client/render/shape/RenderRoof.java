@@ -28,7 +28,7 @@ import com.tridevmc.architecture.client.render.target.RenderTargetBase;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.shape.Shape;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.util.Direction;
 
@@ -36,19 +36,19 @@ import java.util.Arrays;
 
 public class RenderRoof extends RenderShape {
 
-    protected final static Shape ridgeShapes[] = {
-            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE};
+    protected final static EnumShape[] ridgeShapes = {
+            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE};
 
-    protected final static Shape ridgeOrSlopeShapes[] = {
-            Shape.ROOF_RIDGE, Shape.ROOF_SMART_RIDGE,
-            Shape.ROOF_TILE, Shape.ROOF_OUTER_CORNER, Shape.ROOF_INNER_CORNER};
+    protected final static EnumShape[] ridgeOrSlopeShapes = {
+            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE,
+            EnumShape.ROOF_TILE, EnumShape.ROOF_OUTER_CORNER, EnumShape.ROOF_INNER_CORNER};
 
-    protected final static Shape valleyShapes[] = {
-            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY};
+    protected final static EnumShape[] valleyShapes = {
+            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY};
 
-    protected final static Shape valleyOrSlopeShapes[] = {
-            Shape.ROOF_VALLEY, Shape.ROOF_SMART_VALLEY,
-            Shape.ROOF_TILE, Shape.ROOF_INNER_CORNER};
+    protected final static EnumShape[] valleyOrSlopeShapes = {
+            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY,
+            EnumShape.ROOF_TILE, EnumShape.ROOF_INNER_CORNER};
 
     protected Direction face;
     protected boolean outerFace;
@@ -65,32 +65,32 @@ public class RenderRoof extends RenderShape {
 
     @Override
     public void render() {
-        switch (te.shape) {
+        switch (this.te.shape) {
             case ROOF_TILE:
-                renderSlope();
+                this.renderSlope();
                 break;
             case ROOF_OUTER_CORNER:
-                renderOuterCorner();
+                this.renderOuterCorner();
                 break;
             case ROOF_INNER_CORNER:
-                renderInnerCorner();
+                this.renderInnerCorner();
                 break;
             case ROOF_RIDGE:
-                renderRidge();
+                this.renderRidge();
                 break;
             case ROOF_SMART_RIDGE:
-                renderSmartRidge();
+                this.renderSmartRidge();
                 break;
             case ROOF_VALLEY:
-                renderValley();
+                this.renderValley();
                 break;
             case ROOF_SMART_VALLEY:
                 StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
                 boolean handleItemState = Arrays.stream(stackTrace).anyMatch(stackTraceElement -> stackTraceElement.getMethodName().startsWith("handleItemState"));
                 if (!handleItemState)
-                    renderSmartValley();
+                    this.renderSmartValley();
                 else
-                    renderSmartValley();
+                    this.renderSmartValley();
                 break;
         }
     }
@@ -98,648 +98,648 @@ public class RenderRoof extends RenderShape {
     //-------------------------------------------------------------------------------------
 
     protected void renderSlope() {
-        boolean valley = valleyAt(0, 0, 1);
-        if (renderSecondary) {
+        boolean valley = this.valleyAt(0, 0, 1);
+        if (this.renderSecondary) {
             // Sloping face
-            beginNegZSlope();
+            this.beginNegZSlope();
             if (valley) {
-                beginTriangle();
-                vertex(1, 1, 1, 0, 0);
-                vertex(1, 0, 0, 0, 1);
-                vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-                newTriangle();
-                vertex(1, 0, 0, 0, 1);
-                vertex(0, 0, 0, 1, 1);
-                vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-                newTriangle();
-                vertex(0, 0, 0, 1, 1);
-                vertex(0, 1, 1, 1, 0);
-                vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-                endFace();
-                connectValleyBack();
+                this.beginTriangle();
+                this.vertex(1, 1, 1, 0, 0);
+                this.vertex(1, 0, 0, 0, 1);
+                this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+                this.newTriangle();
+                this.vertex(1, 0, 0, 0, 1);
+                this.vertex(0, 0, 0, 1, 1);
+                this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+                this.newTriangle();
+                this.vertex(0, 0, 0, 1, 1);
+                this.vertex(0, 1, 1, 1, 0);
+                this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+                this.endFace();
+                this.connectValleyBack();
             } else {
-                beginQuad();
-                vertex(1, 1, 1, 0, 0);
-                vertex(1, 0, 0, 0, 1);
-                vertex(0, 0, 0, 1, 1);
-                vertex(0, 1, 1, 1, 0);
-                endFace();
+                this.beginQuad();
+                this.vertex(1, 1, 1, 0, 0);
+                this.vertex(1, 0, 0, 0, 1);
+                this.vertex(0, 0, 0, 1, 1);
+                this.vertex(0, 1, 1, 1, 0);
+                this.endFace();
             }
         }
         // Other faces
-        if (renderBase) {
-            leftTriangle();
-            rightTriangle();
-            bottomQuad();
+        if (this.renderBase) {
+            this.leftTriangle();
+            this.rightTriangle();
+            this.bottomQuad();
             if (!valley)
-                backQuad();
+                this.backQuad();
         }
-        if (renderSecondary)
-            if (ridgeAt(0, 0, -1))
-                connectRidgeFront();
+        if (this.renderSecondary)
+            if (this.ridgeAt(0, 0, -1))
+                this.connectRidgeFront();
     }
 
     protected void renderOuterCorner() {
-        if (renderSecondary) {
+        if (this.renderSecondary) {
             // Front slope
-            beginNegZSlope();
-            beginTriangle();
-            vertex(0, 1, 1, 1, 0);
-            vertex(1, 0, 0, 0, 1);
-            vertex(0, 0, 0, 1, 1);
-            endFace();
+            this.beginNegZSlope();
+            this.beginTriangle();
+            this.vertex(0, 1, 1, 1, 0);
+            this.vertex(1, 0, 0, 0, 1);
+            this.vertex(0, 0, 0, 1, 1);
+            this.endFace();
             // Left slope
-            beginPosXSlope();
-            beginTriangle();
-            vertex(0, 1, 1, 0, 0);
-            vertex(1, 0, 1, 0, 1);
-            vertex(1, 0, 0, 1, 1);
-            endFace();
+            this.beginPosXSlope();
+            this.beginTriangle();
+            this.vertex(0, 1, 1, 0, 0);
+            this.vertex(1, 0, 1, 0, 1);
+            this.vertex(1, 0, 0, 1, 1);
+            this.endFace();
         }
-        if (renderBase) {
+        if (this.renderBase) {
             // Back
-            beginPosZFace();
-            beginTriangle();
-            vertex(0, 1, 1, 0, 0);
-            vertex(0, 0, 1, 0, 1);
-            vertex(1, 0, 1, 1, 1);
-            endFace();
+            this.beginPosZFace();
+            this.beginTriangle();
+            this.vertex(0, 1, 1, 0, 0);
+            this.vertex(0, 0, 1, 0, 1);
+            this.vertex(1, 0, 1, 1, 1);
+            this.endFace();
             // Other faces
-            rightTriangle();
-            bottomQuad();
+            this.rightTriangle();
+            this.bottomQuad();
         }
-        if (renderSecondary) {
-            if (ridgeAt(0, 0, -1))
-                connectRidgeFront();
-            if (ridgeAt(1, 0, 0))
-                connectRidgeLeft();
+        if (this.renderSecondary) {
+            if (this.ridgeAt(0, 0, -1))
+                this.connectRidgeFront();
+            if (this.ridgeAt(1, 0, 0))
+                this.connectRidgeLeft();
         }
     }
 
     protected void renderInnerCorner() {
-        if (renderSecondary) {
+        if (this.renderSecondary) {
             // Left slope
-            beginPosXSlope();
-            beginTriangle();
-            vertex(0, 1, 0, 1, 0);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(1, 0, 0, 1, 1);
-            endFace();
+            this.beginPosXSlope();
+            this.beginTriangle();
+            this.vertex(0, 1, 0, 1, 0);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(1, 0, 0, 1, 1);
+            this.endFace();
             // Front slope
-            beginNegZSlope();
-            beginTriangle();
-            vertex(1, 1, 1, 0, 0);
-            vertex(1, 0, 0, 0, 1);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            endFace();
+            this.beginNegZSlope();
+            this.beginTriangle();
+            this.vertex(1, 1, 1, 0, 0);
+            this.vertex(1, 0, 0, 0, 1);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.endFace();
         }
-        if (renderBase) {
+        if (this.renderBase) {
             // Front triangle
-            beginNegZFace();
-            beginTriangle();
-            vertex(0, 1, 0, 1, 0);
-            vertex(1, 0, 0, 0, 1);
-            vertex(0, 0, 0, 1, 1);
-            endFace();
+            this.beginNegZFace();
+            this.beginTriangle();
+            this.vertex(0, 1, 0, 1, 0);
+            this.vertex(1, 0, 0, 0, 1);
+            this.vertex(0, 0, 0, 1, 1);
+            this.endFace();
             // Other faces
-            leftTriangle();
-            bottomQuad();
+            this.leftTriangle();
+            this.bottomQuad();
         }
-        if (valleyAt(0, 0, 1))
-            connectValleyBack();
+        if (this.valleyAt(0, 0, 1))
+            this.connectValleyBack();
         else
-            terminateValleyBack();
-        if (valleyAt(-1, 0, 0))
-            connectValleyRight();
+            this.terminateValleyBack();
+        if (this.valleyAt(-1, 0, 0))
+            this.connectValleyRight();
         else
-            terminateValleyRight();
+            this.terminateValleyRight();
     }
 
     protected void renderRidge() {
-        if (renderSecondary) {
+        if (this.renderSecondary) {
             // Front slope
-            beginNegZSlope();
-            beginQuad();
-            vertex(1, 0.5, 0.5, 0, 0.5);
-            vertex(1, 0, 0, 0, 1);
-            vertex(0, 0, 0, 1, 1);
-            vertex(0, 0.5, 0.5, 1, 0.5);
-            endFace();
+            this.beginNegZSlope();
+            this.beginQuad();
+            this.vertex(1, 0.5, 0.5, 0, 0.5);
+            this.vertex(1, 0, 0, 0, 1);
+            this.vertex(0, 0, 0, 1, 1);
+            this.vertex(0, 0.5, 0.5, 1, 0.5);
+            this.endFace();
             // Other slops
-            ridgeBackSlope();
-            ridgeFront(false);
-            ridgeBack(false);
+            this.ridgeBackSlope();
+            this.ridgeFront(false);
+            this.ridgeBack(false);
         }
-        if (renderBase) {
-            ridgeLeftFace();
-            ridgeRightFace();
-            bottomQuad();
+        if (this.renderBase) {
+            this.ridgeLeftFace();
+            this.ridgeRightFace();
+            this.bottomQuad();
         }
     }
 
     protected void renderSmartRidge() {
-        if (renderSecondary) {
-            ridgeLeft();
-            ridgeRight();
-            ridgeBack(true);
-            ridgeFront(true);
+        if (this.renderSecondary) {
+            this.ridgeLeft();
+            this.ridgeRight();
+            this.ridgeBack(true);
+            this.ridgeFront(true);
         }
-        if (renderBase)
-            bottomQuad();
+        if (this.renderBase)
+            this.bottomQuad();
     }
 
     protected void renderValley() {
-        connectValleyLeft();
-        connectValleyRight();
-        smartValleyFront();
-        smartValleyBack();
-        if (renderBase)
-            bottomQuad();
+        this.connectValleyLeft();
+        this.connectValleyRight();
+        this.smartValleyFront();
+        this.smartValleyBack();
+        if (this.renderBase)
+            this.bottomQuad();
     }
 
     protected void renderSmartValley() {
-        smartValleyLeft();
-        smartValleyRight();
-        smartValleyFront();
-        smartValleyBack();
-        if (renderBase)
-            bottomQuad();
+        this.smartValleyLeft();
+        this.smartValleyRight();
+        this.smartValleyFront();
+        this.smartValleyBack();
+        if (this.renderBase)
+            this.bottomQuad();
     }
 
     //-------------------------------------------------------------------------------------
 
     protected void smartValleyLeft() {
-        if (valleyOrSlopeAt(1, 0, 0))
-            connectValleyLeft();
+        if (this.valleyOrSlopeAt(1, 0, 0))
+            this.connectValleyLeft();
         else
-            terminateValleyLeft();
+            this.terminateValleyLeft();
     }
 
     protected void terminateValleyLeft() {
-        if (renderSecondary) {
-            beginNegXSlope();
-            beginTriangle();
-            vertex(1, 1, 0, 0, 0);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(1, 1, 1, 1, 0);
-            endFace();
+        if (this.renderSecondary) {
+            this.beginNegXSlope();
+            this.beginTriangle();
+            this.vertex(1, 1, 0, 0, 0);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(1, 1, 1, 1, 0);
+            this.endFace();
         }
-        if (renderBase)
-            leftQuad();
+        if (this.renderBase)
+            this.leftQuad();
     }
 
     protected void smartValleyRight() {
-        if (valleyOrSlopeAt(-1, 0, 0))
-            connectValleyRight();
+        if (this.valleyOrSlopeAt(-1, 0, 0))
+            this.connectValleyRight();
         else
-            terminateValleyRight();
+            this.terminateValleyRight();
     }
 
     protected void terminateValleyRight() {
-        if (renderSecondary) {
-            beginPosXSlope();
-            beginTriangle();
-            vertex(0, 1, 1, 0, 0);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(0, 1, 0, 1, 0);
-            endFace();
+        if (this.renderSecondary) {
+            this.beginPosXSlope();
+            this.beginTriangle();
+            this.vertex(0, 1, 1, 0, 0);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(0, 1, 0, 1, 0);
+            this.endFace();
         }
-        if (renderBase)
-            rightQuad();
+        if (this.renderBase)
+            this.rightQuad();
     }
 
     protected void smartValleyFront() {
-        if (valleyOrSlopeAt(0, 0, -1))
-            connectValleyFront();
+        if (this.valleyOrSlopeAt(0, 0, -1))
+            this.connectValleyFront();
         else
-            terminateValleyFront();
+            this.terminateValleyFront();
     }
 
     protected void terminateValleyFront() {
-        if (renderSecondary) {
-            beginPosZSlope();
-            beginTriangle();
-            vertex(0, 1, 0, 0, 0);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(1, 1, 0, 1, 0);
-            endFace();
+        if (this.renderSecondary) {
+            this.beginPosZSlope();
+            this.beginTriangle();
+            this.vertex(0, 1, 0, 0, 0);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(1, 1, 0, 1, 0);
+            this.endFace();
         }
-        if (renderBase)
-            frontQuad();
+        if (this.renderBase)
+            this.frontQuad();
     }
 
     protected void smartValleyBack() {
-        if (valleyOrSlopeAt(0, 0, 1))
-            connectValleyBack();
+        if (this.valleyOrSlopeAt(0, 0, 1))
+            this.connectValleyBack();
         else
-            terminateValleyBack();
+            this.terminateValleyBack();
     }
 
     protected void terminateValleyBack() {
-        if (renderSecondary) {
-            beginNegZSlope();
-            beginTriangle();
-            vertex(1, 1, 1, 0, 0);
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(0, 1, 1, 1, 0);
-            endFace();
+        if (this.renderSecondary) {
+            this.beginNegZSlope();
+            this.beginTriangle();
+            this.vertex(1, 1, 1, 0, 0);
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(0, 1, 1, 1, 0);
+            this.endFace();
         }
-        if (renderBase)
-            backQuad();
+        if (this.renderBase)
+            this.backQuad();
     }
 
     //-------------------------------------------------------------------------------------
 
     protected void leftQuad() {
-        beginPosXFace();
-        beginQuad();
-        vertex(1, 1, 1, 0, 0);
-        vertex(1, 0, 1, 0, 1);
-        vertex(1, 0, 0, 1, 1);
-        vertex(1, 1, 0, 1, 0);
-        endFace();
+        this.beginPosXFace();
+        this.beginQuad();
+        this.vertex(1, 1, 1, 0, 0);
+        this.vertex(1, 0, 1, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(1, 1, 0, 1, 0);
+        this.endFace();
     }
 
     protected void rightQuad() {
-        beginNegXFace();
-        beginQuad();
-        vertex(0, 1, 0, 0, 0);
-        vertex(0, 0, 0, 0, 1);
-        vertex(0, 0, 1, 1, 1);
-        vertex(0, 1, 1, 1, 0);
-        endFace();
+        this.beginNegXFace();
+        this.beginQuad();
+        this.vertex(0, 1, 0, 0, 0);
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(0, 0, 1, 1, 1);
+        this.vertex(0, 1, 1, 1, 0);
+        this.endFace();
     }
 
     protected void frontQuad() {
-        beginNegZFace();
-        beginQuad();
-        vertex(1, 1, 0, 0, 0);
-        vertex(1, 0, 0, 0, 1);
-        vertex(0, 0, 0, 1, 1);
-        vertex(0, 1, 0, 1, 0);
-        endFace();
+        this.beginNegZFace();
+        this.beginQuad();
+        this.vertex(1, 1, 0, 0, 0);
+        this.vertex(1, 0, 0, 0, 1);
+        this.vertex(0, 0, 0, 1, 1);
+        this.vertex(0, 1, 0, 1, 0);
+        this.endFace();
     }
 
     protected void backQuad() {
 //		System.out.printf("ShapeRenderer.backQuad\n");
-        beginPosZFace();
-        beginQuad();
-        vertex(0, 1, 1, 0, 0);
-        vertex(0, 0, 1, 0, 1);
-        vertex(1, 0, 1, 1, 1);
-        vertex(1, 1, 1, 1, 0);
-        endFace();
+        this.beginPosZFace();
+        this.beginQuad();
+        this.vertex(0, 1, 1, 0, 0);
+        this.vertex(0, 0, 1, 0, 1);
+        this.vertex(1, 0, 1, 1, 1);
+        this.vertex(1, 1, 1, 1, 0);
+        this.endFace();
     }
 
     protected void bottomQuad() {
-        beginBottomFace();
-        beginQuad();
-        vertex(0, 0, 1, 0, 0);
-        vertex(0, 0, 0, 0, 1);
-        vertex(1, 0, 0, 1, 1);
-        vertex(1, 0, 1, 1, 0);
-        endFace();
+        this.beginBottomFace();
+        this.beginQuad();
+        this.vertex(0, 0, 1, 0, 0);
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(1, 0, 1, 1, 0);
+        this.endFace();
     }
 
     protected void leftTriangle() {
-        beginPosXFace();
-        beginTriangle();
-        vertex(1, 1, 1, 0, 0);
-        vertex(1, 0, 1, 0, 1);
-        vertex(1, 0, 0, 1, 1);
+        this.beginPosXFace();
+        this.beginTriangle();
+        this.vertex(1, 1, 1, 0, 0);
+        this.vertex(1, 0, 1, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
         //vertex(1, 1, 1,   0, 0);
-        endFace();
+        this.endFace();
     }
 
     protected void rightTriangle() {
-        beginNegXFace();
-        beginTriangle();
-        vertex(0, 1, 1, 1, 0);
-        vertex(0, 0, 0, 0, 1);
-        vertex(0, 0, 1, 1, 1);
-        endFace();
+        this.beginNegXFace();
+        this.beginTriangle();
+        this.vertex(0, 1, 1, 1, 0);
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(0, 0, 1, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeLeftFace() {
-        beginPosXFace();
-        beginTriangle();
-        vertex(1, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0, 1, 0, 1);
-        vertex(1, 0, 0, 1, 1);
-        endFace();
+        this.beginPosXFace();
+        this.beginTriangle();
+        this.vertex(1, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0, 1, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeRightFace() {
-        beginNegXFace();
-        beginTriangle();
-        vertex(0, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 0, 0, 0, 1);
-        vertex(0, 0, 1, 1, 1);
-        endFace();
+        this.beginNegXFace();
+        this.beginTriangle();
+        this.vertex(0, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(0, 0, 1, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeBackFace() {
-        beginPosZFace();
-        beginTriangle();
-        vertex(0.5, 0.5, 1, 0.5, 0.5);
-        vertex(0, 0, 1, 0, 1);
-        vertex(1, 0, 1, 1, 1);
-        endFace();
+        this.beginPosZFace();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 1, 0.5, 0.5);
+        this.vertex(0, 0, 1, 0, 1);
+        this.vertex(1, 0, 1, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeFrontFace() {
-        beginNegZFace();
-        beginTriangle();
-        vertex(0.5, 0.5, 0, 0.5, 0.5);
-        vertex(1, 0, 0, 0, 1);
-        vertex(0, 0, 0, 1, 1);
-        endFace();
+        this.beginNegZFace();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0, 0.5, 0.5);
+        this.vertex(1, 0, 0, 0, 1);
+        this.vertex(0, 0, 0, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeFrontSlope() {
-        beginNegZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0, 0, 0, 1);
-        vertex(0, 0, 0, 1, 1);
-        endFace();
+        this.beginNegZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0, 0, 0, 1);
+        this.vertex(0, 0, 0, 1, 1);
+        this.endFace();
     }
 
     protected void ridgeBackSlope() {
-        beginPosZSlope();
-        beginQuad();
-        vertex(0, 0.5, 0.5, 0, 0.5);
-        vertex(0, 0, 1, 0, 1);
-        vertex(1, 0, 1, 1, 1);
-        vertex(1, 0.5, 0.5, 1, 0.5);
-        endFace();
+        this.beginPosZSlope();
+        this.beginQuad();
+        this.vertex(0, 0.5, 0.5, 0, 0.5);
+        this.vertex(0, 0, 1, 0, 1);
+        this.vertex(1, 0, 1, 1, 1);
+        this.vertex(1, 0.5, 0.5, 1, 0.5);
+        this.endFace();
     }
 
     protected void ridgeLeft() {
-        if (ridgeOrSlopeAt(1, 0, 0))
-            connectRidgeLeft();
+        if (this.ridgeOrSlopeAt(1, 0, 0))
+            this.connectRidgeLeft();
         else {
-            beginPosXSlope();
-            beginTriangle();
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(1, 0, 1, 0, 1);
-            vertex(1, 0, 0, 1, 1);
-            endFace();
+            this.beginPosXSlope();
+            this.beginTriangle();
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(1, 0, 1, 0, 1);
+            this.vertex(1, 0, 0, 1, 1);
+            this.endFace();
         }
     }
 
     protected void connectRidgeLeft() {
-        beginNegZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0.5, 0.5, 0, 0.5);
-        vertex(1, 0, 0, 0, 1);
-        endFace();
-        beginPosZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0, 1, 1, 1);
-        vertex(1, 0.5, 0.5, 1, 0.5);
-        endFace();
+        this.beginNegZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0.5, 0.5, 0, 0.5);
+        this.vertex(1, 0, 0, 0, 1);
+        this.endFace();
+        this.beginPosZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0, 1, 1, 1);
+        this.vertex(1, 0.5, 0.5, 1, 0.5);
+        this.endFace();
     }
 
     protected void ridgeRight() {
-        if (ridgeOrSlopeAt(-1, 0, 0))
-            connectRidgeRight();
+        if (this.ridgeOrSlopeAt(-1, 0, 0))
+            this.connectRidgeRight();
         else {
-            beginNegXSlope();
-            beginTriangle();
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(0, 0, 0, 0, 1);
-            vertex(0, 0, 1, 1, 1);
-            endFace();
+            this.beginNegXSlope();
+            this.beginTriangle();
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(0, 0, 0, 0, 1);
+            this.vertex(0, 0, 1, 1, 1);
+            this.endFace();
         }
     }
 
     protected void connectRidgeRight() {
-        beginNegZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 0, 0, 1, 1);
-        vertex(0, 0.5, 0.5, 1, 0.5);
-        endFace();
-        beginPosZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 0.5, 0.5, 0, 0.5);
-        vertex(0, 0, 1, 0, 1);
-        endFace();
+        this.beginNegZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 0, 0, 1, 1);
+        this.vertex(0, 0.5, 0.5, 1, 0.5);
+        this.endFace();
+        this.beginPosZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 0.5, 0.5, 0, 0.5);
+        this.vertex(0, 0, 1, 0, 1);
+        this.endFace();
     }
 
     protected void ridgeFront(boolean fill) {
-        if (ridgeOrSlopeAt(0, 0, -1))
-            connectRidgeFront();
+        if (this.ridgeOrSlopeAt(0, 0, -1))
+            this.connectRidgeFront();
         else if (fill) {
-            beginNegZSlope();
-            beginTriangle();
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(1, 0, 0, 0, 1);
-            vertex(0, 0, 0, 1, 1);
-            endFace();
+            this.beginNegZSlope();
+            this.beginTriangle();
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(1, 0, 0, 0, 1);
+            this.vertex(0, 0, 0, 1, 1);
+            this.endFace();
         }
     }
 
     protected void connectRidgeFront() {
-        beginPosXSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0, 0, 1, 1);
-        vertex(0.5, 0.5, 0, 1, 0.5);
-        endFace();
-        beginNegXSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0.5, 0.5, 0, 0, 0.5);
-        vertex(0, 0, 0, 0, 1);
-        endFace();
+        this.beginPosXSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(0.5, 0.5, 0, 1, 0.5);
+        this.endFace();
+        this.beginNegXSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0.5, 0.5, 0, 0, 0.5);
+        this.vertex(0, 0, 0, 0, 1);
+        this.endFace();
     }
 
     protected void ridgeBack(boolean fill) {
-        if (ridgeOrSlopeAt(0, 0, 1))
-            connectRidgeBack();
+        if (this.ridgeOrSlopeAt(0, 0, 1))
+            this.connectRidgeBack();
         else if (fill) {
-            beginPosZSlope();
-            beginTriangle();
-            vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-            vertex(0, 0, 1, 0, 1);
-            vertex(1, 0, 1, 1, 1);
-            endFace();
+            this.beginPosZSlope();
+            this.beginTriangle();
+            this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+            this.vertex(0, 0, 1, 0, 1);
+            this.vertex(1, 0, 1, 1, 1);
+            this.endFace();
         }
     }
 
     protected void connectRidgeBack() {
-        beginPosXSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0.5, 0.5, 1, 0, 0.5);
-        vertex(1, 0, 1, 0, 1);
-        endFace();
-        beginNegXSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 0, 1, 1, 1);
-        vertex(0.5, 0.5, 1, 1, 0.5);
-        endFace();
+        this.beginPosXSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0.5, 0.5, 1, 0, 0.5);
+        this.vertex(1, 0, 1, 0, 1);
+        this.endFace();
+        this.beginNegXSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 0, 1, 1, 1);
+        this.vertex(0.5, 0.5, 1, 1, 0.5);
+        this.endFace();
     }
 
     protected void connectValleyLeft() {
-        beginPosZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 0.5, 0.5, 1, 0.5);
-        vertex(1, 1, 0, 1, 0);
-        endFace();
-        beginNegZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(1, 1, 1, 0, 0);
-        vertex(1, 0.5, 0.5, 0, 0.5);
-        endFace();
-        valleyEndLeft();
+        this.beginPosZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 0.5, 0.5, 1, 0.5);
+        this.vertex(1, 1, 0, 1, 0);
+        this.endFace();
+        this.beginNegZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(1, 1, 1, 0, 0);
+        this.vertex(1, 0.5, 0.5, 0, 0.5);
+        this.endFace();
+        this.valleyEndLeft();
     }
 
     protected void connectValleyRight() {
-        beginPosZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 1, 0, 0, 0);
-        vertex(0, 0.5, 0.5, 0, 0.5);
-        endFace();
-        beginNegZSlope();
-        beginTriangle();
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0, 0.5, 0.5, 1, 0.5);
-        vertex(0, 1, 1, 1, 0);
-        endFace();
-        valleyEndRight();
+        this.beginPosZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 1, 0, 0, 0);
+        this.vertex(0, 0.5, 0.5, 0, 0.5);
+        this.endFace();
+        this.beginNegZSlope();
+        this.beginTriangle();
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0, 0.5, 0.5, 1, 0.5);
+        this.vertex(0, 1, 1, 1, 0);
+        this.endFace();
+        this.valleyEndRight();
     }
 
     protected void connectValleyFront() {
-        beginPosXSlope();
-        beginTriangle();
-        vertex(0, 1, 0, 1, 0);
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0.5, 0.5, 0, 1, 0.5);
-        endFace();
-        beginNegXSlope();
-        beginTriangle();
-        vertex(1, 1, 0, 0, 0);
-        vertex(0.5, 0.5, 0, 0, 0.5);
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        endFace();
-        valleyEndFront();
+        this.beginPosXSlope();
+        this.beginTriangle();
+        this.vertex(0, 1, 0, 1, 0);
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0.5, 0.5, 0, 1, 0.5);
+        this.endFace();
+        this.beginNegXSlope();
+        this.beginTriangle();
+        this.vertex(1, 1, 0, 0, 0);
+        this.vertex(0.5, 0.5, 0, 0, 0.5);
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.endFace();
+        this.valleyEndFront();
     }
 
     protected void connectValleyBack() {
-        beginPosXSlope();
-        beginTriangle();
-        vertex(0, 1, 1, 0, 0);
-        vertex(0.5, 0.5, 1, 0, 0.5);
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        endFace();
-        beginNegXSlope();
-        beginTriangle();
-        vertex(1, 1, 1, 1, 0);
-        vertex(0.5, 0.5, 0.5, 0.5, 0.5);
-        vertex(0.5, 0.5, 1, 1, 0.5);
-        endFace();
-        valleyEndBack();
+        this.beginPosXSlope();
+        this.beginTriangle();
+        this.vertex(0, 1, 1, 0, 0);
+        this.vertex(0.5, 0.5, 1, 0, 0.5);
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.endFace();
+        this.beginNegXSlope();
+        this.beginTriangle();
+        this.vertex(1, 1, 1, 1, 0);
+        this.vertex(0.5, 0.5, 0.5, 0.5, 0.5);
+        this.vertex(0.5, 0.5, 1, 1, 0.5);
+        this.endFace();
+        this.valleyEndBack();
     }
 
     protected void valleyEndLeft() {
-        beginPosXFace();
-        beginTriangle();
-        vertex(1, 1, 1, 0, 0);
-        vertex(1, 0, 1, 0, 1);
-        vertex(1, 0.5, 0.5, 0.5, 0.5);
-        newTriangle();
-        vertex(1, 0, 1, 0, 1);
-        vertex(1, 0, 0, 1, 1);
-        vertex(1, 0.5, 0.5, 0.5, 0.5);
-        newTriangle();
-        vertex(1, 0, 0, 1, 1);
-        vertex(1, 1, 0, 1, 0);
-        vertex(1, 0.5, 0.5, 0.5, 0.5);
-        endFace();
+        this.beginPosXFace();
+        this.beginTriangle();
+        this.vertex(1, 1, 1, 0, 0);
+        this.vertex(1, 0, 1, 0, 1);
+        this.vertex(1, 0.5, 0.5, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(1, 0, 1, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(1, 0.5, 0.5, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(1, 1, 0, 1, 0);
+        this.vertex(1, 0.5, 0.5, 0.5, 0.5);
+        this.endFace();
     }
 
     protected void valleyEndRight() {
-        beginNegXFace();
-        beginTriangle();
-        vertex(0, 0, 1, 1, 1);
-        vertex(0, 1, 1, 1, 0);
-        vertex(0, 0.5, 0.5, 0.5, 0.5);
-        newTriangle();
-        vertex(0, 0, 0, 0, 1);
-        vertex(0, 0, 1, 1, 1);
-        vertex(0, 0.5, 0.5, 0.5, 0.5);
-        newTriangle();
-        vertex(0, 1, 0, 0, 0);
-        vertex(0, 0, 0, 0, 1);
-        vertex(0, 0.5, 0.5, 0.5, 0.5);
-        endFace();
+        this.beginNegXFace();
+        this.beginTriangle();
+        this.vertex(0, 0, 1, 1, 1);
+        this.vertex(0, 1, 1, 1, 0);
+        this.vertex(0, 0.5, 0.5, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(0, 0, 1, 1, 1);
+        this.vertex(0, 0.5, 0.5, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(0, 1, 0, 0, 0);
+        this.vertex(0, 0, 0, 0, 1);
+        this.vertex(0, 0.5, 0.5, 0.5, 0.5);
+        this.endFace();
     }
 
     protected void valleyEndFront() {
-        beginNegZFace();
-        beginTriangle();
-        vertex(1, 1, 0, 0, 0);
-        vertex(1, 0, 0, 0, 1);
-        vertex(0.5, 0.5, 0, 0.5, 0.5);
-        newTriangle();
-        vertex(1, 0, 0, 0, 1);
-        vertex(1, 0, 0, 1, 1);
-        vertex(0.5, 0.5, 0, 0.5, 0.5);
-        newTriangle();
-        vertex(0, 0, 0, 1, 1);
-        vertex(0, 1, 0, 1, 0);
-        vertex(0.5, 0.5, 0, 0.5, 0.5);
-        endFace();
+        this.beginNegZFace();
+        this.beginTriangle();
+        this.vertex(1, 1, 0, 0, 0);
+        this.vertex(1, 0, 0, 0, 1);
+        this.vertex(0.5, 0.5, 0, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(1, 0, 0, 0, 1);
+        this.vertex(1, 0, 0, 1, 1);
+        this.vertex(0.5, 0.5, 0, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(0, 0, 0, 1, 1);
+        this.vertex(0, 1, 0, 1, 0);
+        this.vertex(0.5, 0.5, 0, 0.5, 0.5);
+        this.endFace();
     }
 
     protected void valleyEndBack() {
-        beginPosZFace();
-        beginTriangle();
-        vertex(0, 1, 1, 0, 0);
-        vertex(0, 0, 1, 0, 1);
-        vertex(0.5, 0.5, 1, 0.5, 0.5);
-        newTriangle();
-        vertex(0, 0, 1, 0, 1);
-        vertex(1, 0, 1, 1, 1);
-        vertex(0.5, 0.5, 1, 0.5, 0.5);
-        newTriangle();
-        vertex(1, 0, 1, 1, 1);
-        vertex(1, 1, 1, 1, 0);
-        vertex(0.5, 0.5, 1, 0.5, 0.5);
-        endFace();
+        this.beginPosZFace();
+        this.beginTriangle();
+        this.vertex(0, 1, 1, 0, 0);
+        this.vertex(0, 0, 1, 0, 1);
+        this.vertex(0.5, 0.5, 1, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(0, 0, 1, 0, 1);
+        this.vertex(1, 0, 1, 1, 1);
+        this.vertex(0.5, 0.5, 1, 0.5, 0.5);
+        this.newTriangle();
+        this.vertex(1, 0, 1, 1, 1);
+        this.vertex(1, 1, 1, 1, 0);
+        this.vertex(0.5, 0.5, 1, 0.5, 0.5);
+        this.endFace();
     }
 
     //-------------------------------------------------------------------------------------
 
     protected boolean ridgeAt(int dx, int dy, int dz) {
-        return hasNeighbour(dx, dy, dz, ridgeShapes);
+        return this.hasNeighbour(dx, dy, dz, ridgeShapes);
     }
 
     protected boolean ridgeOrSlopeAt(int dx, int dy, int dz) {
-        return hasNeighbour(dx, dy, dz, ridgeOrSlopeShapes);
+        return this.hasNeighbour(dx, dy, dz, ridgeOrSlopeShapes);
     }
 
     protected boolean valleyAt(int dx, int dy, int dz) {
-        return hasNeighbour(dx, dy, dz, valleyShapes);
+        return this.hasNeighbour(dx, dy, dz, valleyShapes);
     }
 
     protected boolean valleyOrSlopeAt(int dx, int dy, int dz) {
-        return hasNeighbour(dx, dy, dz, valleyOrSlopeShapes);
+        return this.hasNeighbour(dx, dy, dz, valleyOrSlopeShapes);
     }
 
-    protected boolean hasNeighbour(int dx, int dy, int dz, Shape[] shapes) {
-        Direction dir = t.v(dx, dy, dz).facing();
-        TileShape nte = te.getConnectedNeighbourGlobal(dir);
+    protected boolean hasNeighbour(int dx, int dy, int dz, EnumShape[] shapes) {
+        Direction dir = this.t.v(dx, dy, dz).facing();
+        TileShape nte = this.te.getConnectedNeighbourGlobal(dir);
         if (nte != null) {
             for (int i = 0; i < shapes.length; i++)
                 if (nte.shape == shapes[i])
@@ -751,92 +751,92 @@ public class RenderRoof extends RenderShape {
     //-------------------------------------------------------------------------------------
 
     protected void beginTopFace() {
-        beginOuterFaces(Vector3.unitY);
+        this.beginOuterFaces(Vector3.unitY);
     }
 
     protected void beginBottomFace() {
-        beginOuterFaces(Vector3.unitNY);
+        this.beginOuterFaces(Vector3.unitNY);
     }
 
     protected void beginPosXFace() {
-        beginOuterFaces(Vector3.unitX);
+        this.beginOuterFaces(Vector3.unitX);
     }
 
     protected void beginNegXFace() {
-        beginOuterFaces(Vector3.unitNX);
+        this.beginOuterFaces(Vector3.unitNX);
     }
 
     protected void beginPosZFace() {
-        beginOuterFaces(Vector3.unitZ);
+        this.beginOuterFaces(Vector3.unitZ);
     }
 
     protected void beginNegZFace() {
-        beginOuterFaces(Vector3.unitNZ);
+        this.beginOuterFaces(Vector3.unitNZ);
     }
 
     protected void beginPosXSlope() {
-        beginInnerFaces(Vector3.unitPXPY);
+        this.beginInnerFaces(Vector3.unitPXPY);
     }
 
     protected void beginNegXSlope() {
-        beginInnerFaces(Vector3.unitNXPY);
+        this.beginInnerFaces(Vector3.unitNXPY);
     }
 
     protected void beginPosZSlope() {
-        beginInnerFaces(Vector3.unitPYPZ);
+        this.beginInnerFaces(Vector3.unitPYPZ);
     }
 
     protected void beginNegZSlope() {
-        beginInnerFaces(Vector3.unitPYNZ);
+        this.beginInnerFaces(Vector3.unitPYNZ);
     }
 
     //-------------------------------------------------------------------------------------
 
     protected void beginInnerFaces(Vector3 n) {
-        outerFace = false;
-        normal(n);
-        target.setTexture(textures[2]);
-        target.setColor(getSecondaryColourMult());
+        this.outerFace = false;
+        this.normal(n);
+        this.target.setTexture(this.textures[2]);
+        this.target.setColor(this.getSecondaryColourMult());
     }
 
     protected void beginOuterFaces(Vector3 n) {
-        outerFace = true;
-        normal(n);
-        target.setTexture(textures[1]);
-        target.setColor(getBaseColourMult());
+        this.outerFace = true;
+        this.normal(n);
+        this.target.setTexture(this.textures[1]);
+        this.target.setColor(this.getBaseColourMult());
     }
 
     protected void beginTriangle() {
-        target.beginTriangle();
+        this.target.beginTriangle();
     }
 
     protected void beginQuad() {
-        target.beginQuad();
+        this.target.beginQuad();
     }
 
     protected void newTriangle() {
-        endFace();
-        beginTriangle();
+        this.endFace();
+        this.beginTriangle();
     }
 
     protected void newQuad() {
-        endFace();
-        beginQuad();
+        this.endFace();
+        this.beginQuad();
     }
 
     protected void endFace() {
-        target.endFace();
+        this.target.endFace();
     }
 
     protected void normal(Vector3 n) {
-        Vector3 tn = t.v(n);
-        face = tn.facing();
-        target.setNormal(tn);
+        Vector3 tn = this.t.v(n);
+        this.face = tn.facing();
+        this.target.setNormal(tn);
     }
 
     protected void vertex(double x, double y, double z, double u, double v) {
-        Vector3 q = t.p(x - 0.5, y - 0.5, z - 0.5);
-        target.addVertex(q, u, v);
+        Vector3 q = this.t.p(x - 0.5, y - 0.5, z - 0.5);
+        this.target.addVertex(q, u, v);
     }
 
 }

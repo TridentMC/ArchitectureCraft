@@ -57,13 +57,13 @@ public class ShapeRenderDispatcher implements ICustomRenderer {
         TileShape te = TileShape.get(world, pos);
         if (te != null) {
             Trans3 t2 = t.t(te.localToGlobalRotation());
-            boolean renderBase = canRenderInLayer(te.baseBlockState, layer);
-            boolean renderSecondary = canRenderInLayer(te.secondaryBlockState, layer);
+            boolean renderBase = this.canRenderInLayer(te.baseBlockState, layer);
+            boolean renderSecondary = this.canRenderInLayer(te.secondaryBlockState, layer);
 
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
-            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+            int baseColour = renderBase ? this.getColourFromState(te.baseBlockState) : -1;
+            int secondaryColour = renderSecondary ? this.getColourFromState(te.secondaryBlockState) : baseColour;
 
-            renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
+            this.renderShapeTE(te, target, t2, renderBase, renderSecondary, baseColour, secondaryColour);
         }
     }
 
@@ -78,14 +78,14 @@ public class ShapeRenderDispatcher implements ICustomRenderer {
         TileShape te = new TileShape();
         te.readFromItemStack(stack);
         ItemColors itemColors = Minecraft.getInstance().getItemColors();
-        ItemStack baseStack = getStackFromState(te.baseBlockState);
-        ItemStack secondaryStack = getStackFromState(te.secondaryBlockState);
+        ItemStack baseStack = this.getStackFromState(te.baseBlockState);
+        ItemStack secondaryStack = this.getStackFromState(te.secondaryBlockState);
         int baseColour = baseStack != null ?
                 itemColors.getColor(baseStack, 0) : -1;
         int secondaryColour = secondaryStack != null ?
                 itemColors.getColor(secondaryStack, 0) : baseColour;
 
-        renderShapeTE(te, target, t,
+        this.renderShapeTE(te, target, t,
                 te.baseBlockState != null,
                 te.secondaryBlockState != null,
                 baseColour, secondaryColour);
@@ -152,10 +152,10 @@ public class ShapeRenderDispatcher implements ICustomRenderer {
         if (TileShape.get(world, pos) != null) {
             TileShape te = TileShape.get(world, pos);
             Trans3 t2 = t.t(te.localToGlobalRotation());
-            int baseColour = renderBase ? getColourFromState(te.baseBlockState) : -1;
-            int secondaryColour = renderSecondary ? getColourFromState(te.secondaryBlockState) : baseColour;
+            int baseColour = renderBase ? this.getColourFromState(te.baseBlockState) : -1;
+            int secondaryColour = renderSecondary ? this.getColourFromState(te.secondaryBlockState) : baseColour;
 
-            renderShapeTE(TileShape.get(world, pos), target, t2,
+            this.renderShapeTE(TileShape.get(world, pos), target, t2,
                     renderBase, renderSecondary,
                     baseColour, secondaryColour);
         }

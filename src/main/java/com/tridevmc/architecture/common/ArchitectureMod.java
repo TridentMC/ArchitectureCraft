@@ -55,11 +55,11 @@ public class ArchitectureMod {
 
         FMLJavaModLoadingContext loadingContext = FMLJavaModLoadingContext.get();
         loadingContext.getModEventBus().addListener(this::onSetup);
-
+        loadingContext.getModEventBus().register(CONTENT);
+        MinecraftForge.EVENT_BUS.register(CONTENT);
     }
 
     public void onSetup(FMLCommonSetupEvent e) {
-        MinecraftForge.EVENT_BUS.register(CONTENT);
         PROXY.setup(e);
 
         CompoundNetwork.createNetwork(ModLoadingContext.get().getActiveContainer(), "network");

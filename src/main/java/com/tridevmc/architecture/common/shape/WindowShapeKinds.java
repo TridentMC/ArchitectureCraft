@@ -48,11 +48,11 @@ public class WindowShapeKinds {
     public static class PlainWindow extends ShapeKind.Window {
 
         {
-            frameSides = new Direction[]{DOWN, EAST, UP, WEST};
-            frameAlways = new boolean[]{false, false, false, false};
-            frameKinds = new FrameKind[]{FrameKind.Plain, FrameKind.Plain, FrameKind.None, FrameKind.None, FrameKind.Plain, FrameKind.Plain};
-            frameOrientations = new Direction[]{EAST, EAST, null, null, UP, UP};
-            frameTrans = new Trans3[]{
+            this.frameSides = new Direction[]{DOWN, EAST, UP, WEST};
+            this.frameAlways = new boolean[]{false, false, false, false};
+            this.frameKinds = new FrameKind[]{FrameKind.Plain, FrameKind.Plain, FrameKind.None, FrameKind.None, FrameKind.Plain, FrameKind.Plain};
+            this.frameOrientations = new Direction[]{EAST, EAST, null, null, UP, UP};
+            this.frameTrans = new Trans3[]{
                     Trans3.ident,
                     Trans3.ident.rotZ(90),
                     Trans3.ident.rotZ(180),
@@ -101,7 +101,7 @@ public class WindowShapeKinds {
         }
 
         @Override
-        protected void addGlassBoxesToList(double r, double s, double w, double e[], Trans3 t, List list) {
+        protected void addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, List list) {
             t.addBox(-e[3], -e[0], -w, -r, e[2], w, list);
             t.addBox(r, -e[0], -w, e[1], e[2], w, list);
         }
@@ -111,11 +111,11 @@ public class WindowShapeKinds {
     public static class CornerWindow extends ShapeKind.Window {
 
         {
-            frameSides = new Direction[]{DOWN, SOUTH, UP, WEST};
-            frameAlways = new boolean[]{false, false, false, false};
-            frameKinds = new FrameKind[]{FrameKind.Corner, FrameKind.Corner, FrameKind.None, FrameKind.Plain, FrameKind.Plain, FrameKind.None};
-            frameOrientations = new Direction[]{EAST, EAST, null, UP, UP, null};
-            frameTrans = new Trans3[]{
+            this.frameSides = new Direction[]{DOWN, SOUTH, UP, WEST};
+            this.frameAlways = new boolean[]{false, false, false, false};
+            this.frameKinds = new FrameKind[]{FrameKind.Corner, FrameKind.Corner, FrameKind.None, FrameKind.Plain, FrameKind.Plain, FrameKind.None};
+            this.frameOrientations = new Direction[]{EAST, EAST, null, UP, UP, null};
+            this.frameTrans = new Trans3[]{
                     Trans3.ident,
                     Trans3.ident.rotY(-90).rotZ(90),
                     Trans3.ident.rotY(-90).rotZ(180),
@@ -139,7 +139,7 @@ public class WindowShapeKinds {
         }
 
         @Override
-        protected void addGlassBoxesToList(double r, double s, double w, double e[], Trans3 t, List list) {
+        protected void addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, List list) {
             t.addBox(-e[3], -e[0], -w, -s, e[2], w, list);
             t.addBox(-w, -e[0], s, w, e[2], e[1], list);
         }
@@ -159,8 +159,8 @@ public class WindowShapeKinds {
                             return true;
                         case Plain:
                             Direction nfo = nte.globalFace(nsk.frameOrientationForLocalSide(nlf));
-                            return orientFromAdjacentCorner(te, nfo, hit)
-                                    || orientFromAdjacentCorner(te, nfo.getOpposite(), hit);
+                            return this.orientFromAdjacentCorner(te, nfo, hit)
+                                    || this.orientFromAdjacentCorner(te, nfo.getOpposite(), hit);
                     }
                 }
             }

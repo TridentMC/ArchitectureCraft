@@ -30,7 +30,7 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
-import com.tridevmc.architecture.common.shape.Shape;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -47,7 +47,7 @@ import net.minecraft.world.IBlockReader;
 
 public class TileShape extends TileArchitecture {
 
-    public Shape shape;
+    public EnumShape shape;
     public BlockState baseBlockState;
     public BlockState secondaryBlockState;
     public int disabledConnections;
@@ -55,11 +55,11 @@ public class TileShape extends TileArchitecture {
 
     public TileShape() {
         super(ArchitectureMod.CONTENT.tileTypeShape);
-        this.shape = Shape.ROOF_TILE;
+        this.shape = EnumShape.ROOF_TILE;
         this.baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
     }
 
-    public TileShape(Shape s, BlockState b) {
+    public TileShape(EnumShape s, BlockState b) {
         super(ArchitectureMod.CONTENT.tileTypeShape);
         this.shape = s;
         this.baseBlockState = b;
@@ -127,7 +127,7 @@ public class TileShape extends TileArchitecture {
     }
 
     protected void readShapeFromNBT(CompoundNBT nbt) {
-        this.shape = Shape.forId(nbt.getInt("Shape"));
+        this.shape = EnumShape.forId(nbt.getInt("Shape"));
         this.baseBlockState = Block.getStateById(nbt.getInt("BaseStateId"));
         this.secondaryBlockState = Block.getStateById(nbt.getInt("SecondaryStateId"));
         if (this.baseBlockState == null)
@@ -233,7 +233,7 @@ public class TileShape extends TileArchitecture {
         return null;
     }
 
-    public Shape getShape() {
+    public EnumShape getShape() {
         return this.shape;
     }
 }

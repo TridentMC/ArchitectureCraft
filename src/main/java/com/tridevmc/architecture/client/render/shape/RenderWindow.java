@@ -107,73 +107,73 @@ public class RenderWindow extends RenderShape {
 
     @Override
     public void render() {
-        switch (te.shape) {
+        switch (this.te.shape) {
             case WINDOW_FRAME:
-                renderWindow(frameModels);
+                this.renderWindow(frameModels);
                 break;
             case WINDOW_CORNER:
-                renderWindow(cornerModels);
+                this.renderWindow(cornerModels);
                 break;
             case WINDOW_MULLION:
-                renderWindow(mullionModels);
+                this.renderWindow(mullionModels);
                 break;
         }
     }
 
     protected void renderWindow(WindowModels models) {
-        boolean frame[][] = getFrameFlags();
-        if (renderBase)
-            renderModel(t, models.centre);
+        boolean[][] frame = this.getFrameFlags();
+        if (this.renderBase)
+            this.renderModel(this.t, models.centre);
         for (int i = 0; i <= 3; i++) {
             int j = (i - 1) & 3;
             int k = (i + 1) & 3;
-            Trans3 ts = t.t(kind.frameTrans[i]);
-            if (renderBase) {
+            Trans3 ts = this.t.t(this.kind.frameTrans[i]);
+            if (this.renderBase) {
                 if (frame[i][1])
-                    renderModel(ts, models.side[i]);
+                    this.renderModel(ts, models.side[i]);
                 else if (models.centreEnd != null)
-                    renderModel(t, models.centreEnd[i]);
+                    this.renderModel(this.t, models.centreEnd[i]);
                 if (frame[i][1] && !frame[j][1] || frame[i][0] && frame[j][2])
-                    renderModel(ts, models.end0[i]);
+                    this.renderModel(ts, models.end0[i]);
                 if (frame[i][1] && !frame[k][1] || frame[i][2] && frame[k][0])
-                    renderModel(ts, models.end1[i]);
+                    this.renderModel(ts, models.end1[i]);
             }
-            if (renderSecondary && !frame[i][1] && !frame[i][3])
-                renderModel(ts, models.glassEdge[i]);
+            if (this.renderSecondary && !frame[i][1] && !frame[i][3])
+                this.renderModel(ts, models.glassEdge[i]);
         }
-        if (renderSecondary) {
-            renderModel(t, models.glass);
+        if (this.renderSecondary) {
+            this.renderModel(this.t, models.glass);
         }
     }
 
     protected void renderModel(Trans3 t, IArchitectureModel model) {
         if (model != null)
-            model.render(t, target, getBaseColourMult(), getSecondaryColourMult(), textures);
+            model.render(t, this.target, this.getBaseColourMult(), this.getSecondaryColourMult(), this.textures);
     }
 
     protected boolean[][] getFrameFlags() {
         boolean[][] frame = new boolean[4][4];
-        if (blockWorld == null) {
+        if (this.blockWorld == null) {
             for (int i = 0; i <= 3; i++)
                 frame[i][1] = true;
         } else {
             Direction[] gdir = new Direction[4];
-            TileShape neighbour[] = new TileShape[4];
+            TileShape[] neighbour = new TileShape[4];
             for (int i = 0; i <= 3; i++)
-                gdir[i] = t.t(kind.frameSides[i]);
+                gdir[i] = this.t.t(this.kind.frameSides[i]);
             for (int i = 0; i <= 3; i++) {
-                if (kind.frameAlways[i])
+                if (this.kind.frameAlways[i])
                     frame[i][1] = true;
                 else {
-                    TileShape nte = getConnectedNeighbourGlobal(te, gdir[i]);
+                    TileShape nte = this.getConnectedNeighbourGlobal(this.te, gdir[i]);
                     if (nte == null)
                         frame[i][1] = true;
                     else {
                         int j = (i - 1) & 3;
                         int k = (i + 1) & 3;
-                        if (getConnectedNeighbourGlobal(nte, gdir[j]) == null)
+                        if (this.getConnectedNeighbourGlobal(nte, gdir[j]) == null)
                             frame[j][2] = true;
-                        if (getConnectedNeighbourGlobal(nte, gdir[k]) == null)
+                        if (this.getConnectedNeighbourGlobal(nte, gdir[k]) == null)
                             frame[k][0] = true;
                         if (nte.secondaryBlockState != null)
                             frame[i][3] = true;
@@ -210,7 +210,7 @@ public class RenderWindow extends RenderShape {
     //
 
     protected void dumpFrameFlags(boolean[][] frame) {
-        if (te != null && te.secondaryBlockState != null) {
+        if (this.te != null && this.te.secondaryBlockState != null) {
             ArchitectureLog.info("RenderWindow.getFrameFlags:\n");
             for (int i = 0; i <= 3; i++)
                 ArchitectureLog.info("Side %s: %s %s %s\n", i, frame[i][0], frame[i][1], frame[i][2]);
@@ -218,21 +218,27 @@ public class RenderWindow extends RenderShape {
     }
 
     protected TileShape getConnectedNeighbourGlobal(TileShape te, Direction globalDir) {
-        return kind.getConnectedWindowGlobal(te, globalDir);
+        return this.kind.getConnectedWindowGlobal(te, globalDir);
     }
 
     protected void debug(String fmt, Object... args) {
-        if (blockWorld != null && te.secondaryBlockState != null)
+        if (this.blockWorld != null && this.te.secondaryBlockState != null)
             ArchitectureLog.info(fmt, args);
     }
 
     protected static class WindowModels {
 
-        public IArchitectureModel centre, centreEnd[], side[], end0[], end1[], glass, glassEdge[];
+        public IArchitectureModel centre;
+        public IArchitectureModel[] centreEnd;
+        public IArchitectureModel[] side;
+        public IArchitectureModel[] end0;
+        public IArchitectureModel[] end1;
+        public IArchitectureModel glass;
+        public IArchitectureModel[] glassEdge;
 
-        public WindowModels(IArchitectureModel centre, IArchitectureModel[] centreEnd, IArchitectureModel side[],
-                            IArchitectureModel end0[], IArchitectureModel end1[],
-                            IArchitectureModel glass, IArchitectureModel glassEdge[]) {
+        public WindowModels(IArchitectureModel centre, IArchitectureModel[] centreEnd, IArchitectureModel[] side,
+                            IArchitectureModel[] end0, IArchitectureModel[] end1,
+                            IArchitectureModel glass, IArchitectureModel[] glassEdge) {
             this.centre = centre;
             this.centreEnd = centreEnd;
             this.side = side;

@@ -70,7 +70,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("ALL")
 public class BlockArchitecture<TE extends TileArchitecture>
@@ -176,7 +178,9 @@ public class BlockArchitecture<TE extends TileArchitecture>
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder.add(this.properties));
+        if (this.properties == null) this.defineProperties();
+        Arrays.stream(this.properties).filter(Objects::nonNull).forEach(builder::add);
+        super.fillStateContainer(builder);
     }
 
     // -------------------------- Subtypes ------------------------------

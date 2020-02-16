@@ -41,7 +41,7 @@ import java.util.Map;
 
 import static java.lang.Math.abs;
 
-public enum Shape implements IStringSerializable {
+public enum EnumShape implements IStringSerializable {
 
     ROOF_TILE(0, "Roof Tile", ShapeKind.Roof, ShapeSymmetry.BILATERAL, 1, 2, 0xcf),
     ROOF_OUTER_CORNER(1, "Roof Outer Corner", ShapeKind.Roof, ShapeSymmetry.UNILATERAL, 1, 3, 0x4f),
@@ -147,12 +147,12 @@ public enum Shape implements IStringSerializable {
     STAIRS_INNER_CORNER(93, "Stairs Inner Corner", ShapeKind.Model("stairs_inner_corner", Profile.Generic.rlCorner), ShapeSymmetry.UNILATERAL, 1, 1, 0x0),
     ;
 
-    public static Shape[] values = values();
+    public static EnumShape[] values = values();
     public static boolean debugPlacement = false;
-    protected static Map<Integer, Shape> idMap = new HashMap<Integer, Shape>();
+    protected static Map<Integer, EnumShape> idMap = new HashMap<Integer, EnumShape>();
 
     static {
-        for (Shape s : values)
+        for (EnumShape s : values)
             idMap.put(s.id, s);
     }
 
@@ -171,11 +171,11 @@ public enum Shape implements IStringSerializable {
 //
 //	Shape(int id, String title, ShapeKind kind, ShapeSymmetry sym, int used, int made, int occ, String model)
 
-    Shape(int id, String title, ShapeKind kind, ShapeSymmetry sym, int used, int made, int occ) {
+    EnumShape(int id, String title, ShapeKind kind, ShapeSymmetry sym, int used, int made, int occ) {
         this(id, title, kind, sym, used, made, occ, 0);
     }
 
-    Shape(int id, String title, ShapeKind kind, ShapeSymmetry sym, int used, int made, int occ, int flags) {
+    EnumShape(int id, String title, ShapeKind kind, ShapeSymmetry sym, int used, int made, int occ, int flags) {
         this.id = id;
         this.title = title;
         this.kind = kind;
@@ -193,8 +193,8 @@ public enum Shape implements IStringSerializable {
 //			orientFromHitPosition(player, te, face, hit);
 //	}
 
-    public static Shape forId(int id) {
-        Shape shape = idMap.get(id);
+    public static EnumShape forId(int id) {
+        EnumShape shape = idMap.get(id);
         if (shape == null)
             shape = ROOF_TILE;
         return shape;
@@ -229,71 +229,71 @@ public enum Shape implements IStringSerializable {
         if (te.shape.kind.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
         else
-            orientFromHitPosition(player, te, face, hit);
+            this.orientFromHitPosition(player, te, face, hit);
     }
 
     protected void orientFromHitPosition(PlayerEntity player, TileShape te, Direction face, Vector3 hit) {
         int side, turn;
         switch (face) {
             case UP:
-                side = rightSideUpSide();
+                side = this.rightSideUpSide();
                 break;
             case DOWN:
                 if (te.shape.kind.canPlaceUpsideDown())
-                    side = upsideDownSide();
+                    side = this.upsideDownSide();
                 else
-                    side = rightSideUpSide();
+                    side = this.rightSideUpSide();
                 break;
             default:
                 if (player.isCrouching())
                     side = face.getOpposite().ordinal();
                 else if (hit.y > 0.0 && te.shape.kind.canPlaceUpsideDown())
-                    side = upsideDownSide();
+                    side = this.upsideDownSide();
                 else
-                    side = rightSideUpSide();
+                    side = this.rightSideUpSide();
         }
-        turn = turnForPlacementHit(side, hit, symmetry);
+        turn = turnForPlacementHit(side, hit, this.symmetry);
         if (debugPlacement && !te.getWorld().isRemote) {
             ArchitectureLog.info("Shape.orientFromHitPosition: face %s global hit %s\n", face, hit);
             ArchitectureLog.info("Shape.orientFromHitPosition: side %s turn %s symmetry %s\n", side, turn, te.shape.symmetry);
         }
         te.setSide(side);
         te.setTurn(turn);
-        if ((flags & ShapeFlags.PLACE_OFFSET) != 0) {
-            te.setOffsetX(offsetXForPlacementHit(side, turn, hit));
+        if ((this.flags & ShapeFlags.PLACE_OFFSET) != 0) {
+            te.setOffsetX(this.offsetXForPlacementHit(side, turn, hit));
             if (debugPlacement && !te.getWorld().isRemote)
-                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", kind, te.getOffsetX());
+                ArchitectureLog.info("Shape.orientFromHitPosition: kind = %s offsetX = %.3f\n", this.kind, te.getOffsetX());
         }
     }
 
     public double offsetXForPlacementHit(int side, int turn, Vector3 hit) {
         Vector3 h = Trans3.sideTurn(side, turn).ip(hit);
-        return signedPlacementOffsetX(h.x);
+        return this.signedPlacementOffsetX(h.x);
     }
 
     public double signedPlacementOffsetX(double sign) {
-        double offx = kind.placementOffsetX();
+        double offx = this.kind.placementOffsetX();
         if (sign < 0)
             offx = -offx;
         return offx;
     }
 
     protected int rightSideUpSide() {
-        if (isPlacedUnderneath())
+        if (this.isPlacedUnderneath())
             return 1;
         else
             return 0;
     }
 
     protected int upsideDownSide() {
-        if (isPlacedUnderneath())
+        if (this.isPlacedUnderneath())
             return 0;
         else
             return 1;
     }
 
     protected boolean isPlacedUnderneath() {
-        return (flags & ShapeFlags.PLACE_UNDERNEATH) != 0;
+        return (this.flags & ShapeFlags.PLACE_UNDERNEATH) != 0;
     }
 
     public boolean isCladding() {
@@ -302,6 +302,6 @@ public enum Shape implements IStringSerializable {
 
     @Override
     public String getName() {
-        return title;
+        return this.title;
     }
 }

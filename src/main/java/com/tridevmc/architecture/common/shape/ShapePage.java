@@ -40,7 +40,7 @@ public class ShapePage {
         return this.shapes.length;
     }
 
-    public Shape get(int i) {
+    public EnumShape get(int i) {
         if (i >= 0 && i < this.shapes.length)
             return this.shapes[i];
         return null;

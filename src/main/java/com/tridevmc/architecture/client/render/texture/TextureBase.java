@@ -46,32 +46,32 @@ public abstract class TextureBase implements ITexture {
 
     @Override
     public int tintIndex() {
-        return tintIndex;
+        return this.tintIndex;
     }
 
     @Override
     public double red() {
-        return red;
+        return this.red;
     }
 
     @Override
     public double green() {
-        return green;
+        return this.green;
     }
 
     @Override
     public double blue() {
-        return blue;
+        return this.blue;
     }
 
     @Override
     public boolean isEmissive() {
-        return isEmissive;
+        return this.isEmissive;
     }
 
     @Override
     public boolean isProjected() {
-        return isProjected;
+        return this.isProjected;
     }
 
     @Override
@@ -81,7 +81,7 @@ public abstract class TextureBase implements ITexture {
 
     @Override
     public ResourceLocation location() {
-        return location;
+        return this.location;
     }
 
     @Override
@@ -143,17 +143,17 @@ public abstract class TextureBase implements ITexture {
 
         @Override
         public boolean isSolid() {
-            return base.isSolid();
+            return this.base.isSolid();
         }
 
         @Override
         public double interpolateU(double u) {
-            return base.interpolateU(u);
+            return this.base.interpolateU(u);
         }
 
         @Override
         public double interpolateV(double v) {
-            return base.interpolateV(v);
+            return this.base.interpolateV(v);
         }
 
     }
@@ -166,17 +166,17 @@ public abstract class TextureBase implements ITexture {
 
         public Sprite(TextureAtlasSprite icon) {
             this.icon = icon;
-            red = green = blue = 1.0;
+            this.red = this.green = this.blue = 1.0;
         }
 
         @Override
         public double interpolateU(double u) {
-            return icon.getInterpolatedU(u * 16);
+            return this.icon.getInterpolatedU(u * 16);
         }
 
         @Override
         public double interpolateV(double v) {
-            return icon.getInterpolatedV(v * 16);
+            return this.icon.getInterpolatedV(v * 16);
         }
 
     }
@@ -242,8 +242,8 @@ public abstract class TextureBase implements ITexture {
 
         public TileSet(ITexture base, int numRows, int numCols) {
             super(base);
-            tileSizeU = 1.0 / numCols;
-            tileSizeV = 1.0 / numRows;
+            this.tileSizeU = 1.0 / numCols;
+            this.tileSizeV = 1.0 / numRows;
         }
 
         @Override
@@ -261,20 +261,20 @@ public abstract class TextureBase implements ITexture {
 
         public Tile(TileSet base, int row, int col) {
             super(base);
-            uSize = base.tileSizeU;
-            vSize = base.tileSizeV;
-            u0 = uSize * col;
-            v0 = vSize * row;
+            this.uSize = base.tileSizeU;
+            this.vSize = base.tileSizeV;
+            this.u0 = this.uSize * col;
+            this.v0 = this.vSize * row;
         }
 
         @Override
         public double interpolateU(double u) {
-            return super.interpolateU(u0 + u * uSize);
+            return super.interpolateU(this.u0 + u * this.uSize);
         }
 
         @Override
         public double interpolateV(double v) {
-            return super.interpolateV(v0 + v * vSize);
+            return super.interpolateV(this.v0 + v * this.vSize);
         }
 
     }
@@ -290,7 +290,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateU(double u) {
             double iu = super.interpolateU(u);
-            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", icon.getName(), icon.getMinU(), icon.getMaxU());
+            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", this.icon.getName(), this.icon.getMinU(), this.icon.getMaxU());
             ArchitectureLog.info("BaseTexture: u %s --> %s\n", u, iu);
             return iu;
         }
@@ -298,7 +298,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateV(double v) {
             double iv = super.interpolateV(v);
-            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", icon.getName(), icon.getMinV(), icon.getMaxV());
+            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", this.icon.getName(), this.icon.getMinV(), this.icon.getMaxV());
             ArchitectureLog.info("BaseTexture: v %s --> %s\n", v, iv);
             return iv;
         }

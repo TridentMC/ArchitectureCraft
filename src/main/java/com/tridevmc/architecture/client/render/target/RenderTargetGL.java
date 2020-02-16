@@ -52,52 +52,52 @@ public class RenderTargetGL extends RenderTargetBase {
         glPushAttrib(GL_LIGHTING_BIT | GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
         if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glEnable(GL_RESCALE_NORMAL)\n");
         glEnable(GL_RESCALE_NORMAL);
-        glMode = 0;
-        emissiveMode = -1;
-        texturedMode = -1;
+        this.glMode = 0;
+        this.emissiveMode = -1;
+        this.texturedMode = -1;
     }
 
     @Override
     public void setTexture(ITexture tex) {
-        if (texture != tex) {
+        if (this.texture != tex) {
             super.setTexture(tex);
             ResourceLocation loc = tex.location();
             if (loc != null) {
-                setGLMode(0);
+                this.setGLMode(0);
                 if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: bindTexture(%s)\n", loc);
                 Minecraft.getInstance().getTextureManager().bindTexture(loc);
             }
-            setTexturedMode(!tex.isSolid());
-            setEmissiveMode(tex.isEmissive());
+            this.setTexturedMode(!tex.isSolid());
+            this.setEmissiveMode(tex.isEmissive());
         }
     }
 
     protected void setEmissiveMode(boolean state) {
         int mode = state ? 1 : 0;
-        if (emissiveMode != mode) {
+        if (this.emissiveMode != mode) {
             if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glSetEnabled(GL_LIGHTING, %s)\n", !state);
-            glSetEnabled(GL_LIGHTING, !state);
-            if (usingLightmap)
-                setLightmapEnabled(!state);
-            emissiveMode = mode;
+            this.glSetEnabled(GL_LIGHTING, !state);
+            if (this.usingLightmap)
+                this.setLightmapEnabled(!state);
+            this.emissiveMode = mode;
         }
     }
 
     protected void setTexturedMode(boolean state) {
         int mode = state ? 1 : 0;
-        if (texturedMode != mode) {
+        if (this.texturedMode != mode) {
             //ArchitectureLog.info("BaseGLRenderTarget.setTexturedMode: %s\n", state);
-            setGLMode(0);
+            this.setGLMode(0);
             if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glSetEnabled(GL_TEXTURE_2D, %s)\n", state);
-            glSetEnabled(GL_TEXTURE_2D, state);
-            texturedMode = mode;
+            this.glSetEnabled(GL_TEXTURE_2D, state);
+            this.texturedMode = mode;
         }
     }
 
     protected void setLightmapEnabled(boolean state) {
         //TODO: idk what these are replaced with.
         //OpenGlHelper.glActiveTexture(OpenGlHelper.lightmapTexUnit);
-        glSetEnabled(GL_TEXTURE_2D, state);
+        this.glSetEnabled(GL_TEXTURE_2D, state);
         //OpenGlHelper.glActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
@@ -110,24 +110,24 @@ public class RenderTargetGL extends RenderTargetBase {
 
     @Override
     protected void rawAddVertex(Vector3 p, double u, double v) {
-        setGLMode(verticesPerFace);
+        this.setGLMode(this.verticesPerFace);
         //ArchitectureLog.info("BaseGLRenderTarget: glColor4f(%.2f, %.2f, %.2f, %.2f)\n",
         //  r(), g(), b(), a());
-        glColor4f(r(), g(), b(), a());
-        glNormal3d(normal.x, normal.y, normal.z);
+        glColor4f(this.r(), this.g(), this.b(), this.a());
+        glNormal3d(this.normal.x, this.normal.y, this.normal.z);
         glTexCoord2d(u, v);
         if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glVertex3d%s\n", p);
         glVertex3d(p.x, p.y, p.z);
     }
 
     protected void setGLMode(int mode) {
-        if (glMode != mode) {
-            if (glMode != 0) {
+        if (this.glMode != mode) {
+            if (this.glMode != 0) {
                 if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glEnd()\n");
                 glEnd();
             }
-            glMode = mode;
-            switch (glMode) {
+            this.glMode = mode;
+            switch (this.glMode) {
                 case 0:
                     break;
                 case 3:
@@ -139,16 +139,16 @@ public class RenderTargetGL extends RenderTargetBase {
                     glBegin(GL_QUADS);
                     break;
                 default:
-                    throw new IllegalStateException(String.format("Invalid glMode %s", glMode));
+                    throw new IllegalStateException(String.format("Invalid glMode %s", this.glMode));
             }
         }
     }
 
     @Override
     public void finish() {
-        setGLMode(0);
-        setEmissiveMode(false);
-        setTexturedMode(true);
+        this.setGLMode(0);
+        this.setEmissiveMode(false);
+        this.setTexturedMode(true);
         if (debugGL) ArchitectureLog.info("BaseGLRenderTarget: glPopAttrib()\n");
         glPopAttrib();
         super.finish();

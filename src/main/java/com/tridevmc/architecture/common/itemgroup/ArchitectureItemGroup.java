@@ -16,6 +16,6 @@ public class ArchitectureItemGroup extends ItemGroup {
 
     @Override
     public ItemStack createIcon() {
-        return iconSupplier.get();
+        return this.iconSupplier.get();
     }
 }

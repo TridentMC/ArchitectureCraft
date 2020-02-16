@@ -26,7 +26,7 @@ package com.tridevmc.architecture.common.tile;
 
 import com.tridevmc.architecture.client.ui.UISawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.shape.Shape;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ShapePage;
 import com.tridevmc.architecture.common.ui.IElementProvider;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
@@ -100,7 +100,7 @@ public class TileSawbench extends TileArchitectureInventory implements IElementP
     }
     // has not yet been removed from the material slot
 
-    public Shape getSelectedShape() {
+    public EnumShape getSelectedShape() {
         if (this.selectedPage >= 0 && this.selectedPage < pages.length) {
             int slot = this.selectedSlots[this.selectedPage];
             if (slot >= 0 && slot < pages[this.selectedPage].size())
@@ -218,7 +218,7 @@ public class TileSawbench extends TileArchitectureInventory implements IElementP
     }
 
     protected ItemStack makeResultStack() {
-        Shape resultShape = this.getSelectedShape();
+        EnumShape resultShape = this.getSelectedShape();
         if (resultShape != null) {
             ItemStack materialStack = this.getStackInSlot(materialSlot);
             if (!materialStack.isEmpty() && materialStack.getCount() >= resultShape.materialUsed) {
@@ -250,14 +250,14 @@ public class TileSawbench extends TileArchitectureInventory implements IElementP
             if (materialBlock instanceof SlabBlock)
                 factor = 2;
         }
-        Shape shape = this.getSelectedShape();
+        EnumShape shape = this.getSelectedShape();
         if (shape != null)
             return factor * shape.materialUsed;
         return 0;
     }
 
     public int resultMultiple() {
-        Shape shape = this.getSelectedShape();
+        EnumShape shape = this.getSelectedShape();
         if (shape != null)
             return shape.itemsProduced;
         return 0;
