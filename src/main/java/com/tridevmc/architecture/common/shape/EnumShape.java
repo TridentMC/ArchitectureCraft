@@ -211,7 +211,7 @@ public enum EnumShape implements IStringSerializable {
                 return 0;
             case BILATERAL: // Rotate according to nearest side
                 if (abs(z) > abs(x))
-                    return z < 0 ? 2 : 0;
+                    return (z < 0) ? 2 : 0;
                 else
                     return x > 0 ? 1 : 3;
             case UNILATERAL: // Rotate according to nearest corner

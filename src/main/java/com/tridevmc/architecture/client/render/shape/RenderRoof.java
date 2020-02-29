@@ -85,12 +85,7 @@ public class RenderRoof extends RenderShape {
                 this.renderValley();
                 break;
             case ROOF_SMART_VALLEY:
-                StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-                boolean handleItemState = Arrays.stream(stackTrace).anyMatch(stackTraceElement -> stackTraceElement.getMethodName().startsWith("handleItemState"));
-                if (!handleItemState)
-                    this.renderSmartValley();
-                else
-                    this.renderSmartValley();
+                this.renderSmartValley();
                 break;
         }
     }

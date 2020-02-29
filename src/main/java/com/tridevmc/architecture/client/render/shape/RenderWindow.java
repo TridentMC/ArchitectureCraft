@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.proxy.ClientProxy;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
 import com.tridevmc.architecture.client.render.target.RenderTargetBase;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.ArchitectureLog;
@@ -53,23 +53,23 @@ public class RenderWindow extends RenderShape {
         this.setSecondaryColourMult(secondaryColourMult);
     }
 
-    protected static IArchitectureModel model(String name) {
+    protected static IRenderableModel model(String name) {
         if (name != null)
             return ClientProxy.RENDERING_MANAGER.getModel("shape/window_" + name + ".objson");
         else
             return null;
     }
 
-    protected static IArchitectureModel[] models(String... names) {
-        IArchitectureModel[] result = new IArchitectureModel[names.length];
+    protected static IRenderableModel[] models(String... names) {
+        IRenderableModel[] result = new IRenderableModel[names.length];
         for (int i = 0; i < names.length; i++)
             result[i] = model(names[i]);
         return result;
     }
 
-    protected static IArchitectureModel[] models(int n, String name) {
-        IArchitectureModel[] result = new IArchitectureModel[n];
-        IArchitectureModel m = model(name);
+    protected static IRenderableModel[] models(int n, String name) {
+        IRenderableModel[] result = new IRenderableModel[n];
+        IRenderableModel m = model(name);
         for (int i = 0; i < n; i++)
             result[i] = m;
         return result;
@@ -146,7 +146,7 @@ public class RenderWindow extends RenderShape {
         }
     }
 
-    protected void renderModel(Trans3 t, IArchitectureModel model) {
+    protected void renderModel(Trans3 t, IRenderableModel model) {
         if (model != null)
             model.render(t, this.target, this.getBaseColourMult(), this.getSecondaryColourMult(), this.textures);
     }
@@ -228,17 +228,17 @@ public class RenderWindow extends RenderShape {
 
     protected static class WindowModels {
 
-        public IArchitectureModel centre;
-        public IArchitectureModel[] centreEnd;
-        public IArchitectureModel[] side;
-        public IArchitectureModel[] end0;
-        public IArchitectureModel[] end1;
-        public IArchitectureModel glass;
-        public IArchitectureModel[] glassEdge;
+        public IRenderableModel centre;
+        public IRenderableModel[] centreEnd;
+        public IRenderableModel[] side;
+        public IRenderableModel[] end0;
+        public IRenderableModel[] end1;
+        public IRenderableModel glass;
+        public IRenderableModel[] glassEdge;
 
-        public WindowModels(IArchitectureModel centre, IArchitectureModel[] centreEnd, IArchitectureModel[] side,
-                            IArchitectureModel[] end0, IArchitectureModel[] end1,
-                            IArchitectureModel glass, IArchitectureModel[] glassEdge) {
+        public WindowModels(IRenderableModel centre, IRenderableModel[] centreEnd, IRenderableModel[] side,
+                            IRenderableModel[] end0, IRenderableModel[] end1,
+                            IRenderableModel glass, IRenderableModel[] glassEdge) {
             this.centre = centre;
             this.centreEnd = centreEnd;
             this.side = side;

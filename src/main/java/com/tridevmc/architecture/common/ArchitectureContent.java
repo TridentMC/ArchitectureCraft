@@ -66,7 +66,7 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
 
-    public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> ArchitectureContent.this.itemHammer != null ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
+    public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> (ArchitectureContent.this.itemHammer != null) ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
     public final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> EnumShape.ROOF_TILE.kind.newStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState(), 1));
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();

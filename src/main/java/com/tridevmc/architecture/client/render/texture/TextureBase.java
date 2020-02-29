@@ -40,10 +40,6 @@ public abstract class TextureBase implements ITexture {
         return new Sprite(icon);
     }
 
-    public static Image fromImage(ResourceLocation location) {
-        return new Image(location);
-    }
-
     @Override
     public int tintIndex() {
         return this.tintIndex;
@@ -147,6 +143,11 @@ public abstract class TextureBase implements ITexture {
         }
 
         @Override
+        public TextureAtlasSprite getSprite() {
+            return null;
+        }
+
+        @Override
         public double interpolateU(double u) {
             return this.base.interpolateU(u);
         }
@@ -179,30 +180,9 @@ public abstract class TextureBase implements ITexture {
             return this.icon.getInterpolatedV(v * 16);
         }
 
-    }
-
-    //-------------------------------------------------------------------------------------------
-
-    public static class Image extends TextureBase {
-
-//      public ResourceLocation location;
-
-        public Image(ResourceLocation location) {
-            this.location = location;
-        }
-
-//      public ResourceLocation location() {
-//          return location;
-//      }
-
         @Override
-        public double interpolateU(double u) {
-            return u;
-        }
-
-        @Override
-        public double interpolateV(double v) {
-            return v;
+        public TextureAtlasSprite getSprite() {
+            return this.icon;
         }
 
     }
@@ -220,6 +200,11 @@ public abstract class TextureBase implements ITexture {
         @Override
         public boolean isSolid() {
             return true;
+        }
+
+        @Override
+        public TextureAtlasSprite getSprite() {
+            return null;
         }
 
         @Override

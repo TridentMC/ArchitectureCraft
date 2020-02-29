@@ -24,8 +24,8 @@
 
 package com.tridevmc.architecture.common.shape;
 
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
-import com.tridevmc.architecture.client.render.model.OBJSONModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
+import com.tridevmc.architecture.client.render.model.OBJSONRenderableModel;
 import com.tridevmc.architecture.client.render.shape.RenderRoof;
 import com.tridevmc.architecture.client.render.shape.RenderWindow;
 import com.tridevmc.architecture.client.render.target.RenderTargetBase;
@@ -350,7 +350,7 @@ public abstract class ShapeKind {
     public static class Model extends ShapeKind {
 
         protected String modelName;
-        private IArchitectureModel model;
+        private IRenderableModel model;
 
         public Model(String name, Object[] profiles) {
             this.modelName = "shape/" + name + ".objson";
@@ -372,11 +372,11 @@ public abstract class ShapeKind {
         public void renderShape(TileShape te,
                                 ITexture[] textures, RenderTargetBase target, Trans3 t,
                                 boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            IArchitectureModel model = this.getModel();
+            IRenderableModel model = this.getModel();
             model.render(t, target, baseColourMult, secondaryColourMult, textures);
         }
 
-        protected IArchitectureModel getModel() {
+        protected IRenderableModel getModel() {
             if (this.model == null)
                 this.model = ArchitectureMod.PROXY.getModel(this.modelName);
             return this.model;
@@ -384,8 +384,8 @@ public abstract class ShapeKind {
 
         @Override
         public boolean acceptsCladding() {
-            OBJSONModel model = (OBJSONModel) this.getModel();
-            for (OBJSONModel.Face face : model.faces)
+            OBJSONRenderableModel model = (OBJSONRenderableModel) this.getModel();
+            for (OBJSONRenderableModel.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;

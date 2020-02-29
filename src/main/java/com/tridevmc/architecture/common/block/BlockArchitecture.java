@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Trans3;
@@ -460,7 +460,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                            Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IArchitectureModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
+            IRenderableModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
             Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
@@ -483,7 +483,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                                     Trans3 t, Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IArchitectureModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
+            IRenderableModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
             model.addBoxesToList(t.translate(spec.origin), list);
             return list;

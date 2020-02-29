@@ -35,19 +35,19 @@ public class MiscUtils {
     public static Direction[] facings = Direction.values();
 
     public static int min(int x, int y) {
-        return x < y ? x : y;
+        return Math.min(x, y);
     }
 
     public static int max(int x, int y) {
-        return x > y ? x : y;
+        return Math.max(x, y);
     }
 
     public static double min(double x, double y) {
-        return x < y ? x : y;
+        return Math.min(x, y);
     }
 
     public static double max(double x, double y) {
-        return x > y ? x : y;
+        return Math.max(x, y);
     }
 
     public static int ifloor(double x) {

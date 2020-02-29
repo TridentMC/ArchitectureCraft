@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.proxy.ClientProxy;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
 import com.tridevmc.architecture.client.render.target.RenderTargetBase;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.helpers.Trans3;
@@ -55,7 +55,7 @@ public abstract class RenderShape {
 
     protected abstract void render();
 
-    protected IArchitectureModel getModel(String name) {
+    protected IRenderableModel getModel(String name) {
         return ClientProxy.RENDERING_MANAGER.getModel(name);
     }
 

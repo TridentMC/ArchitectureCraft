@@ -22,41 +22,21 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.client.render.texture;
+package com.tridevmc.architecture.client.render.model;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import com.tridevmc.architecture.client.render.target.RenderTargetBase;
+import com.tridevmc.architecture.client.render.texture.ITexture;
+import com.tridevmc.architecture.common.helpers.Trans3;
+import net.minecraft.util.math.AxisAlignedBB;
 
-public interface ITexture {
-    ResourceLocation location();
+import java.util.List;
 
-    int tintIndex();
+public interface IRenderableModel {
+    AxisAlignedBB getBounds();
 
-    double red();
+    void addBoxesToList(Trans3 t, List<AxisAlignedBB> list);
 
-    double green();
+    ArchitectureModelData generateModelData(Trans3 t, int baseColourMult, int secondaryColourMult, ITexture... textures);
 
-    double blue();
-
-    double interpolateU(double u);
-
-    double interpolateV(double v);
-
-    boolean isEmissive();
-
-    boolean isProjected();
-
-    boolean isSolid();
-
-    TextureAtlasSprite getSprite();
-
-    ITexture tinted(int index);
-
-    ITexture colored(double red, double green, double blue);
-
-    ITexture projected();
-
-    ITexture emissive();
-
-    ITiledTexture tiled(int numRows, int numCols);
+    void render(Trans3 t, RenderTargetBase target, int baseColourMult, int secondaryColourMult, ITexture[] textures);
 }

@@ -64,8 +64,8 @@ public class ItemChisel extends Item {
         }
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        if (block == Blocks.GLASS || block == Blocks.GLASS_PANE
-                || block == Blocks.GLOWSTONE || block == Blocks.ICE) {
+        if ((block == Blocks.GLASS) || (block == Blocks.GLASS_PANE)
+                || (block == Blocks.GLOWSTONE) || (block == Blocks.ICE)) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 0x3);
             if (!world.isRemote) {
                 this.dropBlockAsItem(world, pos, state);

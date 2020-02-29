@@ -11,7 +11,7 @@ ext {
     compoundModules = ['all']
 
     forge = '1.15.2-31.1.1'
-    mappings = '20200210-1.15.1'
+    mappings = '20200215-1.15.1'
 }
 
 if (!ext.early) {

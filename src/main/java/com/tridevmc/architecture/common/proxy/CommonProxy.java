@@ -24,8 +24,8 @@
 
 package com.tridevmc.architecture.common.proxy;
 
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
-import com.tridevmc.architecture.client.render.model.OBJSONModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
+import com.tridevmc.architecture.client.render.model.OBJSONRenderableModel;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.google.common.collect.Maps;
@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class CommonProxy {
 
-    private Map<ResourceLocation, IArchitectureModel> modelCache = Maps.newHashMap();
+    private Map<ResourceLocation, IRenderableModel> modelCache = Maps.newHashMap();
 
     public void setup(FMLCommonSetupEvent e) {
     }
@@ -50,12 +50,12 @@ public class CommonProxy {
     public void registerCustomRenderers() {
     }
 
-    public IArchitectureModel getModel(String name) {
+    public IRenderableModel getModel(String name) {
         ResourceLocation loc = this.modelLocation(name);
-        IArchitectureModel model = this.modelCache.get(loc);
+        IRenderableModel model = this.modelCache.get(loc);
         if (model == null) {
             long t0 = System.nanoTime();
-            model = OBJSONModel.fromResource(loc);
+            model = OBJSONRenderableModel.fromResource(loc);
             this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
             ArchitectureLog.info("Loaded and cached {} in {} nanos.", name, t1 - t0);

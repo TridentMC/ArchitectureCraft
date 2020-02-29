@@ -26,7 +26,7 @@ package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.proxy.ClientProxy;
 import com.tridevmc.architecture.client.render.ICustomRenderer;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
 import com.tridevmc.architecture.client.render.target.RenderTargetBase;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.client.render.texture.TextureBase;
@@ -67,7 +67,7 @@ public class RenderCladding implements ICustomRenderer {
             if (sprite != null) {
                 int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
                 ITexture texture = TextureBase.fromSprite(sprite);
-                IArchitectureModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
+                IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
                 model.render(t, target, colourMult, colourMult, texture);
             }
         }

@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.client.render.model.IRenderableModel;
 import com.tridevmc.architecture.client.render.target.RenderTargetBaked;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.client.render.texture.TextureBase;
@@ -36,7 +36,6 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.item.ItemArchitecture;
 import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
-import com.tridevmc.architecture.legacy.base.ArchitectureModelRenderer;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -122,7 +121,7 @@ public class RenderingManager {
         return obj instanceof ITextureConsumer && ((ITextureConsumer) obj).getTextureNames() != null;
     }
 
-    public IArchitectureModel getModel(String name) {
+    public IRenderableModel getModel(String name) {
         return ArchitectureMod.PROXY.getModel(name);
     }
 
@@ -137,7 +136,7 @@ public class RenderingManager {
     }
 
     protected ICustomRenderer getCustomRendererForSpec(int textureType, ModelSpec spec) {
-        IArchitectureModel model = this.getModel(spec.modelName);
+        IRenderableModel model = this.getModel(spec.modelName);
         ITexture[] textures = new ITexture[spec.textureNames.length];
         for (int i = 0; i < textures.length; i++)
             textures[i] = this.getTexture(textureType, spec.textureNames[i]);
