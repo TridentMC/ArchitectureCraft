@@ -34,7 +34,7 @@ public class QuadBuilder {
     public void putVertex(float x, float y, float z, float u, float v, float normalX, float normalY, float normalZ) {
         Vector4f vec = new Vector4f();
         Vector3f normals = new Vector3f(normalX, normalY, normalZ);
-        for (int e = 0; e < this.format.getSize(); e++) {
+        for (int e = 0; e < this.format.getElements().size(); e++) {
             switch (this.format.getElements().get(e).getUsage()) {
                 case POSITION:
                     if (this.transform.isPresent()) {

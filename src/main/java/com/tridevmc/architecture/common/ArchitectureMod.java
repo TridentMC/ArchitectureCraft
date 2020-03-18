@@ -56,7 +56,9 @@ public class ArchitectureMod {
         FMLJavaModLoadingContext loadingContext = FMLJavaModLoadingContext.get();
         loadingContext.getModEventBus().addListener(this::onSetup);
         loadingContext.getModEventBus().register(CONTENT);
+        loadingContext.getModEventBus().register(PROXY);
         MinecraftForge.EVENT_BUS.register(CONTENT);
+        MinecraftForge.EVENT_BUS.register(PROXY);
     }
 
     public void onSetup(FMLCommonSetupEvent e) {

@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.data;
 
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
@@ -10,12 +10,14 @@ import java.util.Arrays;
 
 public class ArchitectureVertex {
 
-    private ArchitectureQuad parent;
+    private IBakedQuadProvider parent;
     private float[] data;
+    private float[] uvs;
 
-    protected ArchitectureVertex(ArchitectureQuad parent, float[] data) {
+    public ArchitectureVertex(IBakedQuadProvider parent, float[] data, float[] uvs) {
         this.parent = parent;
         this.data = data;
+        this.uvs = uvs;
     }
 
     public Vector3f getNormals() {
@@ -33,44 +35,15 @@ public class ArchitectureVertex {
         return new Vector3f(transformedPosition.getX(), transformedPosition.getY(), transformedPosition.getZ());
     }
 
-    private Direction rotate(Direction direction, TransformationMatrix transform) {
-        Vec3i dir = direction.getDirectionVec();
+    protected Direction rotate(Direction direction, TransformationMatrix transform) {
+        Vec3i dir = direction == null ? new Vec3i(0,0,0) : direction.getDirectionVec();
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
         return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
     }
 
     public float[] getUVs(TransformationMatrix transform) {
-        Vector3f pos = this.getPosition(transform);
-        Direction face = this.rotate(this.parent.getFace(), transform);
-        float u = 0, v = 0;
-        switch (face) {
-            case DOWN:
-                u = pos.getX() * 16F;
-                v = -16F * (pos.getZ() - 1F);
-                break;
-            case UP:
-                u = pos.getX() * 16F;
-                v = pos.getZ() * 16F;
-                break;
-            case NORTH:
-                u = -16F * (pos.getX() - 1F);
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case SOUTH:
-                u = 16F * pos.getX();
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case WEST:
-                u = 16F * pos.getZ();
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case EAST:
-                u = -16F * (pos.getZ() - 1F);
-                v = -16F * (pos.getY() - 1F);
-                break;
-        }
-        return new float[]{u, v};
+        return this.uvs;
     }
 
     public float getX() {
@@ -95,6 +68,10 @@ public class ArchitectureVertex {
 
     public float getNormalZ() {
         return this.getNormals().getZ();
+    }
+
+    protected IBakedQuadProvider getParent() {
+        return this.parent;
     }
 
     @Override

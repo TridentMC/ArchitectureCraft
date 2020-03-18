@@ -1,10 +1,13 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
+import com.tridevmc.architecture.client.render.model.data.ArchitectureQuad;
+import com.tridevmc.architecture.client.render.model.data.IBakedQuadProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.Vector4f;
@@ -14,7 +17,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3i;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
@@ -22,13 +28,13 @@ import java.util.stream.IntStream;
  */
 public class ArchitectureModelData {
 
-    private final Map<Direction, List<ArchitectureQuad>> quads = Maps.newHashMap();
+    private final Map<Direction, List<IBakedQuadProvider>> quads = Maps.newHashMap();
 
     protected BlockState state;
     protected Direction facing = Direction.NORTH;
     protected TransformationMatrix transform = TransformationMatrix.identity();
-    protected ArrayList<Integer>[] tintIndices = new ArrayList[Direction.values().length+1];
-    protected ArrayList<TextureAtlasSprite>[] faceSprites = new ArrayList[Direction.values().length+1];
+    protected ArrayList<Integer>[] tintIndices = new ArrayList[Direction.values().length + 1];
+    protected ArrayList<TextureAtlasSprite>[] faceSprites = new ArrayList[Direction.values().length + 1];
 
     public ArchitectureModelData() {
         for (int i = 0; i < this.tintIndices.length; i++) {
@@ -67,24 +73,24 @@ public class ArchitectureModelData {
     public ModelDataQuads buildModel() {
         List<BakedQuad> generalQuads = Lists.newArrayList();
         Map<Direction, List<BakedQuad>> faceQuads = Maps.newHashMap();
-        IntStream.range(-1, Direction.values().length).forEach((i)->faceQuads.put(i > -1 ? Direction.byIndex(i) : null, Lists.newArrayList()));
+        IntStream.range(-1, Direction.values().length).forEach((i) -> faceQuads.put(i > -1 ? Direction.byIndex(i) : null, Lists.newArrayList()));
 
-        for (Map.Entry<Direction, List<ArchitectureQuad>> entry : this.quads.entrySet()) {
-            Direction oldFace = entry.getKey();
-            Direction newFace = this.rotate(oldFace, this.transform);
-            List<ArchitectureQuad> quads = entry.getValue();
+        for (Map.Entry<Direction, List<IBakedQuadProvider>> quadFaceEntry : this.quads.entrySet()) {
+            Direction oldFace = quadFaceEntry.getKey();
+            Direction newFace = oldFace == null ? null : this.rotate(oldFace, this.transform);
+            int faceIndex = newFace == null ? this.faceSprites.length - 1 : newFace.getIndex();
+            List<IBakedQuadProvider> quads = quadFaceEntry.getValue();
 
-            for (ArchitectureQuad quad : quads) {
-                faceQuads.putIfAbsent(newFace, Lists.newArrayList());
+            ArrayList<TextureAtlasSprite> spritesForFace = this.faceSprites[faceIndex];
+            ArrayList<Integer> tintsForFace = this.tintIndices[faceIndex];
 
-                int spritesForFace = this.faceSprites[newFace.getIndex()].size();
-                for (int spriteIndex = 0; spriteIndex < spritesForFace; spriteIndex++) {
-                    BakedQuad builtQuad = quad.bake(this.transform, newFace,
-                            this.faceSprites[newFace.getIndex()].get(spriteIndex),
-                            this.tintIndices[newFace.getIndex()].get(spriteIndex));
-                    generalQuads.add(builtQuad);
-                    faceQuads.get(newFace).add(builtQuad);
-                }
+            for (int i = 0; i < quads.size(); i++) {
+                IBakedQuadProvider quad = quads.get(i);
+                BakedQuad builtQuad = quad.bake(this.transform, newFace,
+                        spritesForFace.get(i),
+                        tintsForFace.get(i));
+                generalQuads.add(builtQuad);
+                faceQuads.get(newFace).add(builtQuad);
             }
         }
         this.setup();
@@ -102,7 +108,8 @@ public class ArchitectureModelData {
         // reset the model data for a new draw request.
         this.state = Blocks.AIR.getDefaultState();
         this.facing = Direction.NORTH;
-        this.transform = TransformationMatrix.identity();
+
+        this.transform = new TransformationMatrix(Matrix4f.makeTranslate(0.5F, 0.5F, 0.5F));
         this.tintIndices = new ArrayList[Direction.values().length + 1];
         this.faceSprites = new ArrayList[Direction.values().length + 1];
 
@@ -137,12 +144,27 @@ public class ArchitectureModelData {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
-        List<ArchitectureQuad> faceQuads = this.quads.get(facing);
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
         if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
             faceQuads.add(new ArchitectureQuad(facing));
 
-        ArchitectureQuad selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+    }
+
+    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        float[] data = new float[]{x, y, z};
+        float[] uvs = new float[]{u, v};
+
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
     }
 
     public void addTriInstruction(Direction facing, double x, double y, double z) {
@@ -155,16 +177,39 @@ public class ArchitectureModelData {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
-        List<ArchitectureQuad> faceQuads = this.quads.get(facing);
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
         if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
             faceQuads.add(new ArchitectureQuad(facing));
 
-        ArchitectureQuad selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
 
         // If this is the first vertex being added to the quad then add it twice so the tri creates a full quad.
         if (selectedQuad.getNextVertex() == 0)
             selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+    }
+
+    public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
+        this.addTriInstruction(facing, (float) x, (float) y, (float) z, (float) u, (float) v, (float) nX, (float) nY, (float) nZ);
+    }
+
+    public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        float[] data = new float[]{x, y, z};
+        float[] uvs = new float[]{u, v};
+
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+
+        // If this is the first vertex being added to the quad then add it twice so the tri creates a full quad.
+        if (selectedQuad.getNextVertex() == 0)
+            selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
     }
 
     public class ModelDataQuads {

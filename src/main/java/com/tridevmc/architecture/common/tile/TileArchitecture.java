@@ -29,6 +29,7 @@ import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,6 +44,11 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
+
+import javax.annotation.Nonnull;
 
 public abstract class TileArchitecture extends TileEntity {
 
@@ -242,5 +248,15 @@ public abstract class TileArchitecture extends TileEntity {
 
     public void setTurn(byte turn) {
         this.turn = turn;
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        ModelDataMap.Builder builder = new ModelDataMap.Builder();
+        builder.withInitial(ModelProperties.WORLD, this.world);
+        builder.withInitial(ModelProperties.POS, this.pos);
+        builder.withInitial(ModelProperties.TILE, this);
+        return builder.build();
     }
 }

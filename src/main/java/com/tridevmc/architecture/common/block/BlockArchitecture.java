@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.client.render.model.IRenderableModel;
+import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Trans3;
@@ -68,7 +68,6 @@ import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -410,7 +409,6 @@ public class BlockArchitecture<TE extends TileArchitecture>
         return getExtendedState(state, world, pos);
     }
 
-    @Nullable
     @Override
     public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
         boxHit = null;
@@ -460,7 +458,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                            Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IRenderableModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
+            OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
             Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
@@ -483,7 +481,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
                                                     Trans3 t, Entity entity) {
         ModelSpec spec = getModelSpec(state);
         if (spec != null) {
-            IRenderableModel model = ArchitectureMod.PROXY.getModel(spec.modelName);
+            OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
             model.addBoxesToList(t.translate(spec.origin), list);
             return list;

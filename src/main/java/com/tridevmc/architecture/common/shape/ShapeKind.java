@@ -24,12 +24,7 @@
 
 package com.tridevmc.architecture.common.shape;
 
-import com.tridevmc.architecture.client.render.model.IRenderableModel;
-import com.tridevmc.architecture.client.render.model.OBJSONRenderableModel;
-import com.tridevmc.architecture.client.render.shape.RenderRoof;
-import com.tridevmc.architecture.client.render.shape.RenderWindow;
-import com.tridevmc.architecture.client.render.target.RenderTargetBase;
-import com.tridevmc.architecture.client.render.texture.ITexture;
+import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockHelper;
@@ -88,11 +83,6 @@ public abstract class ShapeKind {
     public double placementOffsetX() {
         return 0;
     }
-
-    public abstract void renderShape(TileShape te,
-                                     ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                     boolean renderBase, boolean renderSecondary,
-                                     int baseColourMult, int secondaryColourMult);
 
     public ItemStack newStack(EnumShape shape, BlockState materialState, int stackSize) {
         TileShape te = new TileShape(shape, materialState);
@@ -293,12 +283,6 @@ public abstract class ShapeKind {
             return true;
         }
 
-        @Override
-        public void renderShape(TileShape te,
-                                ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            new RenderRoof(te, textures, t, target, renderBase, renderSecondary, baseColourMult, secondaryColourMult).render();
-        }
 
         @Override
         public Object profileForLocalFace(EnumShape shape, Direction face) {
@@ -350,7 +334,7 @@ public abstract class ShapeKind {
     public static class Model extends ShapeKind {
 
         protected String modelName;
-        private IRenderableModel model;
+        private OBJSON model;
 
         public Model(String name, Object[] profiles) {
             this.modelName = "shape/" + name + ".objson";
@@ -368,24 +352,16 @@ public abstract class ShapeKind {
             return t.t(this.getModel().getBounds());
         }
 
-        @Override
-        public void renderShape(TileShape te,
-                                ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            IRenderableModel model = this.getModel();
-            model.render(t, target, baseColourMult, secondaryColourMult, textures);
-        }
-
-        protected IRenderableModel getModel() {
+        protected OBJSON getModel() {
             if (this.model == null)
-                this.model = ArchitectureMod.PROXY.getModel(this.modelName);
+                this.model = ArchitectureMod.PROXY.getCachedOBJSON(this.modelName);
             return this.model;
         }
 
         @Override
         public boolean acceptsCladding() {
-            OBJSONRenderableModel model = (OBJSONRenderableModel) this.getModel();
-            for (OBJSONRenderableModel.Face face : model.faces)
+            OBJSON model = (OBJSON) this.getModel();
+            for (OBJSON.Face face : model.faces)
                 if (face.texture >= 2)
                     return true;
             return false;
@@ -473,24 +449,9 @@ public abstract class ShapeKind {
         }
 
         @Override
-        public void renderShape(TileShape te,
-                                ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-            new RenderWindow(te, textures, t, target, renderBase, renderSecondary, baseColourMult, secondaryColourMult).render();
-        }
-
-        @Override
         public ItemStack newSecondaryMaterialStack(BlockState state) {
             return BlockHelper.blockStackWithState(state, 1);
         }
-
-//		@Override
-//		public void chiselUsedOnCentre(ShapeTE te, EntityPlayer player) {
-//			if (te.secondaryBlockState != null) {
-//				ItemStack stack = BaseUtils.blockStackWithState(te.secondaryBlockState, 1);
-//				dropSecondaryMaterial(te, player, stack);
-//			}
-//		}
 
         @Override
         public boolean isValidSecondaryMaterial(BlockState state) {
@@ -583,12 +544,6 @@ public abstract class ShapeKind {
     //------------------------------------------------------------------------------
 
     public static class Cladding extends ShapeKind {
-
-        @Override
-        public void renderShape(TileShape te,
-                                ITexture[] textures, RenderTargetBase target, Trans3 t,
-                                boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-        }
 
         @Override
         public ItemStack newStack(EnumShape shape, Block materialBlock, int stackSize) {

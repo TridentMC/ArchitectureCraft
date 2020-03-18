@@ -1,6 +1,7 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
 import com.tridevmc.architecture.client.render.model.builder.QuadBuilder;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
@@ -15,7 +16,7 @@ import java.util.Objects;
 /**
  * A simple representation of the data required to bake a quad.
  */
-public class ArchitectureQuad {
+public class ArchitectureQuad implements IBakedQuadProvider {
 
     private Direction face;
     private ArchitectureVertex[] vertices = new ArchitectureVertex[4];
@@ -57,6 +58,11 @@ public class ArchitectureQuad {
         this.face = face;
     }
 
+    public ArchitectureQuad(Direction face, Vector3f normals) {
+        this.face = face;
+        this.normals = normals;
+    }
+
     /**
      * Converts the quad into a baked quad with the given data then caches it for later use.
      *
@@ -66,9 +72,14 @@ public class ArchitectureQuad {
      * @param tintIndex the tint index to apply to the quad.
      * @return a baked quad matching all the data provided.
      */
+    @Override
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
+        this.normals = null;
+        this.getNormals();
+        prebuiltData = null;
         if (prebuiltData == null) {
+            if (facing == null) facing = this.recalculateFace();
             QuadBuilder builder = new QuadBuilder(transform, facing);
             for (ArchitectureVertex vertex : this.getVertices()) {
                 float[] UVs = vertex.getUVs(transform);
@@ -105,7 +116,18 @@ public class ArchitectureQuad {
      * @param data  the vertex data to add to the specified index.
      */
     public void setVertex(int index, float[] data) {
-        this.vertices[index] = new ArchitectureVertex(this, data);
+        this.vertices[index] = new SmartArchitectureVertex(this, data);
+    }
+
+    /**
+     * Sets the vertex at the given index to the data provided.
+     *
+     * @param index the index the vertex data should be added to.
+     * @param data  the vertex data to add to the specified index.
+     * @param uvs   the uv data to add to the specified index.
+     */
+    public void setVertex(int index, float[] data, float[] uvs) {
+        this.vertices[index] = new ArchitectureVertex(this, data, uvs);
     }
 
     /**
@@ -143,7 +165,7 @@ public class ArchitectureQuad {
 
             this.normals = vNext.copy();
             vNext.cross(vPrev);
-            this.normals.normalize();
+
         }
         return this.normals;
     }
@@ -164,6 +186,17 @@ public class ArchitectureQuad {
      */
     public ArchitectureVertex[] getVertices() {
         return this.vertices;
+    }
+
+    /**
+     * Calculates the face of this quad based on its normals.
+     *
+     * @return the face the quad faces.
+     */
+    public Direction recalculateFace() {
+        Vector3f normals = this.getNormals();
+        this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
+        return this.face;
     }
 
     /**

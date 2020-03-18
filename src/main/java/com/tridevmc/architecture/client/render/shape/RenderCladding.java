@@ -24,54 +24,28 @@
 
 package com.tridevmc.architecture.client.render.shape;
 
-import com.tridevmc.architecture.client.proxy.ClientProxy;
-import com.tridevmc.architecture.client.render.ICustomRenderer;
-import com.tridevmc.architecture.client.render.model.IRenderableModel;
-import com.tridevmc.architecture.client.render.target.RenderTargetBase;
-import com.tridevmc.architecture.client.render.texture.ITexture;
-import com.tridevmc.architecture.client.render.texture.TextureBase;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Utils;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
-public class RenderCladding implements ICustomRenderer {
+public class RenderCladding {
 
-    @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state,
-                            RenderTargetBase target, RenderType layer, Trans3 t) {
-        //NOOP
-    }
-
-    @Override
-    public void renderBlock(IBlockReader world, BlockPos pos, BlockState state, RenderTargetBase target, RenderType layer, Trans3 t, boolean renderPrimary, boolean renderSecondary) {
-        //NOOP
-    }
-
-    @Override
-    public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
-        CompoundNBT tag = stack.getTag();
-        if (tag != null) {
-            BlockState state = Block.getStateById(tag.getInt("block"));
-            TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
-            if (sprite != null) {
-                int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
-                ITexture texture = TextureBase.fromSprite(sprite);
-                IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
-                model.render(t, target, colourMult, colourMult, texture);
-            }
-        }
-    }
+    // TODO: Cladding needs to be reworked for baked conversion.
+    //public void renderItemStack(ItemStack stack, RenderTargetBase target, Trans3 t) {
+    //    CompoundNBT tag = stack.getTag();
+    //    if (tag != null) {
+    //        BlockState state = Block.getStateById(tag.getInt("block"));
+    //        TextureAtlasSprite sprite = Utils.getSpriteForBlockState(state);
+    //        if (sprite != null) {
+    //            int colourMult = Minecraft.getInstance().getItemColors().getColor(stack, 0);
+    //            ITexture texture = TextureBase.fromSprite(sprite);
+    //            IRenderableModel model = ClientProxy.RENDERING_MANAGER.getModel("shape/cladding.objson");
+    //            model.render(t, target, colourMult, colourMult, texture);
+    //        }
+    //    }
+    //}
 
     @Nullable
     private ItemStack getStackFromState(BlockState state) {

@@ -24,7 +24,6 @@
 
 package com.tridevmc.architecture.client.render.shape;
 
-import com.tridevmc.architecture.client.render.target.RenderTargetBase;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
@@ -32,9 +31,7 @@ import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.util.Direction;
 
-import java.util.Arrays;
-
-public class RenderRoof extends RenderShape {
+public class RenderRoof {
 
     protected final static EnumShape[] ridgeShapes = {
             EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE};
@@ -54,40 +51,10 @@ public class RenderRoof extends RenderShape {
     protected boolean outerFace;
     protected boolean renderBase, renderSecondary;
 
-    public RenderRoof(TileShape te, ITexture[] textures, Trans3 t, RenderTargetBase target,
+    public RenderRoof(TileShape te, ITexture[] textures, Trans3 t,
                       boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-        super(te, textures, t, target);
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;
-        this.setBaseColourMult(baseColourMult);
-        this.setSecondaryColourMult(secondaryColourMult);
-    }
-
-    @Override
-    public void render() {
-        switch (this.te.shape) {
-            case ROOF_TILE:
-                this.renderSlope();
-                break;
-            case ROOF_OUTER_CORNER:
-                this.renderOuterCorner();
-                break;
-            case ROOF_INNER_CORNER:
-                this.renderInnerCorner();
-                break;
-            case ROOF_RIDGE:
-                this.renderRidge();
-                break;
-            case ROOF_SMART_RIDGE:
-                this.renderSmartRidge();
-                break;
-            case ROOF_VALLEY:
-                this.renderValley();
-                break;
-            case ROOF_SMART_VALLEY:
-                this.renderSmartValley();
-                break;
-        }
     }
 
     //-------------------------------------------------------------------------------------
@@ -733,13 +700,13 @@ public class RenderRoof extends RenderShape {
     }
 
     protected boolean hasNeighbour(int dx, int dy, int dz, EnumShape[] shapes) {
-        Direction dir = this.t.v(dx, dy, dz).facing();
-        TileShape nte = this.te.getConnectedNeighbourGlobal(dir);
-        if (nte != null) {
-            for (int i = 0; i < shapes.length; i++)
-                if (nte.shape == shapes[i])
-                    return true;
-        }
+        //Direction dir = this.t.v(dx, dy, dz).facing();
+        //TileShape nte = this.te.getConnectedNeighbourGlobal(dir);
+        //if (nte != null) {
+        //    for (int i = 0; i < shapes.length; i++)
+        //        if (nte.shape == shapes[i])
+        //            return true;
+        //}
         return false;
     }
 
@@ -790,23 +757,23 @@ public class RenderRoof extends RenderShape {
     protected void beginInnerFaces(Vector3 n) {
         this.outerFace = false;
         this.normal(n);
-        this.target.setTexture(this.textures[2]);
-        this.target.setColor(this.getSecondaryColourMult());
+        //this.target.setTexture(this.textures[2]);
+        //this.target.setColor(this.getSecondaryColourMult());
     }
 
     protected void beginOuterFaces(Vector3 n) {
         this.outerFace = true;
         this.normal(n);
-        this.target.setTexture(this.textures[1]);
-        this.target.setColor(this.getBaseColourMult());
+        //this.target.setTexture(this.textures[1]);
+        //this.target.setColor(this.getBaseColourMult());
     }
 
     protected void beginTriangle() {
-        this.target.beginTriangle();
+        //this.target.beginTriangle();
     }
 
     protected void beginQuad() {
-        this.target.beginQuad();
+        //this.target.beginQuad();
     }
 
     protected void newTriangle() {
@@ -820,18 +787,18 @@ public class RenderRoof extends RenderShape {
     }
 
     protected void endFace() {
-        this.target.endFace();
+        //this.target.endFace();
     }
 
     protected void normal(Vector3 n) {
-        Vector3 tn = this.t.v(n);
-        this.face = tn.facing();
-        this.target.setNormal(tn);
+        //Vector3 tn = this.t.v(n);
+        //this.face = tn.facing();
+        //this.target.setNormal(tn);
     }
 
     protected void vertex(double x, double y, double z, double u, double v) {
-        Vector3 q = this.t.p(x - 0.5, y - 0.5, z - 0.5);
-        this.target.addVertex(q, u, v);
+        //Vector3 q = this.t.p(x - 0.5, y - 0.5, z - 0.5);
+        //this.target.addVertex(q, u, v);
     }
 
 }
