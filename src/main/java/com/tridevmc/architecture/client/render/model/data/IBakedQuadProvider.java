@@ -63,6 +63,15 @@ public interface IBakedQuadProvider {
     void setVertex(int index, float[] data, float[] uvs);
 
     /**
+     * Gets the ranges for each dimension as a two dimensional array.
+     *
+     * Example: getRanges()[2][0] == range minimum on the z axis.
+     *
+     * @return a two dimensional array of integers representing the range of variables present in each dimension.
+     */
+    int[][] getRanges(TransformationMatrix transform);
+
+    /**
      * Gets the next vertex to be set into the model.
      *
      * @return the index to set the next vertex into.

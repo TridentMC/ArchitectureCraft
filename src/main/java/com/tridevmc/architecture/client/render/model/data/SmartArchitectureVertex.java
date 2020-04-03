@@ -1,18 +1,27 @@
 package com.tridevmc.architecture.client.render.model.data;
 
-import com.tridevmc.architecture.client.render.model.data.ArchitectureQuad;
-import com.tridevmc.architecture.client.render.model.data.ArchitectureVertex;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.util.Direction;
 
+import java.util.stream.IntStream;
+
 public class SmartArchitectureVertex extends ArchitectureVertex {
-    public SmartArchitectureVertex(ArchitectureQuad parent, float[] data) {
+    public SmartArchitectureVertex(IBakedQuadProvider parent, float[] data) {
         super(parent, data, new float[]{0F, 0F});
     }
 
+    @Override
     public float[] getUVs(TransformationMatrix transform) {
+        int[][] ranges = this.getParent().getRanges(transform);
+
         Vector3f pos = this.getPosition(transform);
+        float[] posData = new float[]{pos.getX(), pos.getY(), pos.getZ()};
+        IntStream.range(0, 3).filter(i -> ranges[i][0] == ranges[i][1]).forEach(i -> {
+            posData[i] = posData[i] - ranges[i][1];
+        });
+        pos.set(posData);
+        pos.apply((v) -> v > 1 ? v % 1 : v);
         Direction face = this.rotate(this.getParent().getFace(), transform);
         float u = 0, v = 0;
         switch (face) {

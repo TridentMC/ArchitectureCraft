@@ -72,6 +72,11 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
         return modelSpec;
     }
 
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        return false;
+    }
+
     /*@Override TODO: not sure if this is gone, or just replaced.
     public boolean isFullCube(BlockState state) {
         return false;

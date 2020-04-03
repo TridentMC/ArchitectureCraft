@@ -9,9 +9,8 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A simple representation of the data required to bake a quad.
@@ -75,9 +74,6 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     @Override
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
-        this.normals = null;
-        this.getNormals();
-        prebuiltData = null;
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
             QuadBuilder builder = new QuadBuilder(transform, facing);
@@ -101,6 +97,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      * @return the index of the next empty slot a vertex can be added to.
      * @throws IllegalArgumentException if no slots are available for a vertex to be added to.
      */
+    @Override
     public int getNextVertex() {
         for (int i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i] == null)
@@ -115,6 +112,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      * @param index the index the vertex data should be added to.
      * @param data  the vertex data to add to the specified index.
      */
+    @Override
     public void setVertex(int index, float[] data) {
         this.vertices[index] = new SmartArchitectureVertex(this, data);
     }
@@ -126,6 +124,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      * @param data  the vertex data to add to the specified index.
      * @param uvs   the uv data to add to the specified index.
      */
+    @Override
     public void setVertex(int index, float[] data, float[] uvs) {
         this.vertices[index] = new ArchitectureVertex(this, data, uvs);
     }
@@ -135,6 +134,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      *
      * @return the default face for this quad.
      */
+    @Override
     public Direction getFace() {
         return this.face;
     }
@@ -144,6 +144,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      *
      * @return the normals for this quad.
      */
+    @Override
     public Vector3f getNormals() {
         if (this.normals == null) {
             // Generate normals
@@ -168,6 +169,25 @@ public class ArchitectureQuad implements IBakedQuadProvider {
 
         }
         return this.normals;
+    }
+
+    @Override
+    public int[][] getRanges(TransformationMatrix transform) {
+        int[][] ranges = new int[3][];
+        List<Vector3f> vertices = Arrays.stream(this.getVertices()).map(v -> v.getPosition(transform)).collect(Collectors.toList());
+        List<Integer> xDimensions = vertices.stream().map((v) -> (int) v.getX()).collect(Collectors.toList());
+        ranges[0] = new int[]{xDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
+                xDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
+
+        List<Integer> yDimensions = vertices.stream().map((v) -> (int) v.getY()).collect(Collectors.toList());
+        ranges[1] = new int[]{yDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
+                yDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
+
+        List<Integer> zDimensions = vertices.stream().map((v) -> (int) v.getZ()).collect(Collectors.toList());
+        ranges[2] = new int[]{zDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
+                zDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
+
+        return ranges;
     }
 
     /**
@@ -204,6 +224,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      *
      * @return true if the quad has all the required vertices, false otherwise.
      */
+    @Override
     public boolean isComplete() {
         return Arrays.stream(this.vertices).allMatch(Objects::nonNull);
     }

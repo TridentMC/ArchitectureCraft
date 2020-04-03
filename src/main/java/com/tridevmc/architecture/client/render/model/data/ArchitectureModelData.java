@@ -179,14 +179,30 @@ public class ArchitectureModelData {
 
         List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
         if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing));
+            faceQuads.add(new ArchitectureTri(facing));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+    }
+
+    public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v) {
+        this.addTriInstruction(facing, (float) x, (float) y, (float) z, (float) u, (float) v);
+    }
+
+    public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v) {
+        float[] data = new float[]{x, y, z};
+        float[] uvs = new float[]{u, v};
+
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureTri(facing));
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
 
-        // If this is the first vertex being added to the quad then add it twice so the tri creates a full quad.
-        if (selectedQuad.getNextVertex() == 0)
-            selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
     }
 
     public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
@@ -202,13 +218,10 @@ public class ArchitectureModelData {
 
         List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
         if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
+            faceQuads.add(new ArchitectureTri(facing, new Vector3f(nX, nY, nZ)));
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
 
-        // If this is the first vertex being added to the quad then add it twice so the tri creates a full quad.
-        if (selectedQuad.getNextVertex() == 0)
-            selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
     }
 
