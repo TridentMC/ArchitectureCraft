@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
 import com.tridevmc.architecture.client.render.model.builder.QuadBuilder;
 import net.minecraft.client.renderer.TransformationMatrix;
@@ -10,7 +11,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A simple representation of the data required to bake a quad.
@@ -173,20 +173,29 @@ public class ArchitectureQuad implements IBakedQuadProvider {
 
     @Override
     public int[][] getRanges(TransformationMatrix transform) {
-        int[][] ranges = new int[3][];
-        List<Vector3f> vertices = Arrays.stream(this.getVertices()).map(v -> v.getPosition(transform)).collect(Collectors.toList());
-        List<Integer> xDimensions = vertices.stream().map((v) -> (int) v.getX()).collect(Collectors.toList());
-        ranges[0] = new int[]{xDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
-                xDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
-
-        List<Integer> yDimensions = vertices.stream().map((v) -> (int) v.getY()).collect(Collectors.toList());
-        ranges[1] = new int[]{yDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
-                yDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
-
-        List<Integer> zDimensions = vertices.stream().map((v) -> (int) v.getZ()).collect(Collectors.toList());
-        ranges[2] = new int[]{zDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get(),
-                zDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get()};
-
+        int[][] ranges = new int[3][2];
+        Set<Integer> xDimensions = Sets.newHashSet();
+        Set<Integer> yDimensions = Sets.newHashSet();
+        Set<Integer> zDimensions = Sets.newHashSet();
+        Set<Integer>[] dimensions = new Set[]{xDimensions, yDimensions, zDimensions};
+        for (int i = 0; i < 3; i++) {
+            Set<Integer> targetDimensions = dimensions[i];
+            int[] targetRange = ranges[i];
+            for (ArchitectureVertex vertex : this.getVertices()) {
+                Vector3f position = vertex.getPosition(transform);
+                float[] positionArray = new float[]{position.getX(), position.getY(), position.getZ()};
+                float coord = positionArray[i];
+                int dimension = (int) coord;
+                if (Math.abs(dimension - coord) > 0) {
+                    targetDimensions.add(dimension);
+                }
+            }
+            if (targetDimensions.isEmpty()) {
+                targetDimensions.add(0);
+            }
+            targetRange[0] = targetDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get();
+            targetRange[1] = targetDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get();
+        }
         return ranges;
     }
 
