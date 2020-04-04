@@ -136,6 +136,42 @@ public abstract class OBJSONModel implements IArchitectureModel {
         return resultingTris;
     }
 
+    private List<List<TrackedVertex>> splitTriOnX(List<TrackedVertex> trackedVertices) {
+        OptionalInt minDimension = trackedVertices.stream()
+                .filter(trackedVertex -> Math.abs((((int) trackedVertex.vertex.x)) - (trackedVertex.vertex.x)) > 0)
+                .mapToInt((v) -> (int) v.vertex.x)
+                .min();
+
+        if (!minDimension.isPresent()) {
+            List<List<TrackedVertex>> out = Lists.newArrayList();
+            out.add(trackedVertices);
+            return out;
+        }
+
+        List<TrackedVertex> coreDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.x) == minDimension.getAsInt()).collect(Collectors.toList());
+        List<TrackedVertex> otherDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.x) != minDimension.getAsInt()).collect(Collectors.toList());
+        int splitPoint = minDimension.getAsInt() + 1; // if for example the dimension is 0, then split the try on the x-level 1
+        TrackedVertex loneVertex = coreDimensionVertices.size() == 1 ? coreDimensionVertices.get(0) : otherDimensionVertices.get(0);
+
+        List<List<TrackedVertex>> newTris = Lists.newArrayList();
+
+        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtX(loneVertex.previous.vertex, splitPoint));
+        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtX(loneVertex.next.vertex, splitPoint));
+        newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
+
+        Vector3 lastVertex = loneVertex.previous.vertex;
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex),
+                new TrackedVertex(1, lonePrevSplit.vertex),
+                new TrackedVertex(2, loneNextSplit.vertex)));
+
+        Vector3 nextVertex = loneVertex.next.vertex;
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex),
+                new TrackedVertex(1, lastVertex),
+                new TrackedVertex(2, loneNextSplit.vertex)));
+
+        return newTris;
+    }
+
     private List<List<TrackedVertex>> splitTriOnY(List<TrackedVertex> trackedVertices) {
         OptionalInt minDimension = trackedVertices.stream()
                 .filter(trackedVertex -> Math.abs((((int) trackedVertex.vertex.y)) - (trackedVertex.vertex.y)) > 0)
@@ -151,15 +187,48 @@ public abstract class OBJSONModel implements IArchitectureModel {
         List<TrackedVertex> coreDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.y) == minDimension.getAsInt()).collect(Collectors.toList());
         List<TrackedVertex> otherDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.y) != minDimension.getAsInt()).collect(Collectors.toList());
         int splitPoint = minDimension.getAsInt() + 1; // if for example the dimension is 0, then split the try on the y-level 1
-        List<TrackedVertex> newVertices = Lists.newArrayList();
-
-        List<TrackedVertex> targetVertices = coreDimensionVertices.size() > otherDimensionVertices.size() ? coreDimensionVertices : otherDimensionVertices;
         TrackedVertex loneVertex = coreDimensionVertices.size() == 1 ? coreDimensionVertices.get(0) : otherDimensionVertices.get(0);
 
         List<List<TrackedVertex>> newTris = Lists.newArrayList();
 
         TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtY(loneVertex.previous.vertex, splitPoint));
         TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtY(loneVertex.next.vertex, splitPoint));
+        newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
+
+        Vector3 lastVertex = loneVertex.previous.vertex;
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex),
+                new TrackedVertex(1, lonePrevSplit.vertex),
+                new TrackedVertex(2, loneNextSplit.vertex)));
+
+        Vector3 nextVertex = loneVertex.next.vertex;
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex),
+                new TrackedVertex(1, lastVertex),
+                new TrackedVertex(2, loneNextSplit.vertex)));
+
+        return newTris;
+    }
+
+    private List<List<TrackedVertex>> splitTriOnZ(List<TrackedVertex> trackedVertices) {
+        OptionalInt minDimension = trackedVertices.stream()
+                .filter(trackedVertex -> Math.abs((((int) trackedVertex.vertex.z)) - (trackedVertex.vertex.z)) > 0)
+                .mapToInt((v) -> (int) v.vertex.z)
+                .min();
+
+        if (!minDimension.isPresent()) {
+            List<List<TrackedVertex>> out = Lists.newArrayList();
+            out.add(trackedVertices);
+            return out;
+        }
+
+        List<TrackedVertex> coreDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.z) == minDimension.getAsInt()).collect(Collectors.toList());
+        List<TrackedVertex> otherDimensionVertices = trackedVertices.stream().filter(v -> (int) (v.vertex.z) != minDimension.getAsInt()).collect(Collectors.toList());
+        int splitPoint = minDimension.getAsInt() + 1; // if for example the dimension is 0, then split the try on the z-level 1
+        TrackedVertex loneVertex = coreDimensionVertices.size() == 1 ? coreDimensionVertices.get(0) : otherDimensionVertices.get(0);
+
+        List<List<TrackedVertex>> newTris = Lists.newArrayList();
+
+        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtZ(loneVertex.previous.vertex, splitPoint));
+        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtZ(loneVertex.next.vertex, splitPoint));
         newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
 
         Vector3 lastVertex = loneVertex.previous.vertex;
@@ -186,20 +255,24 @@ public abstract class OBJSONModel implements IArchitectureModel {
         }
 
         public Vector3 calculatePointAtX(Vector3 otherVertex, double targetX) {
-            // First calculate the slope - m = y2-y1 / x2-x1
-            double ySlope = (otherVertex.x - this.vertex.x) / (otherVertex.y - this.vertex.y);
-            double zSlope = (otherVertex.x - this.vertex.x) / (otherVertex.z - this.vertex.z);
+            double yM = this.vertex.getYXSlope(otherVertex);
+            double zM = this.vertex.getZXSlope(otherVertex);
 
-            // Welcome back to high school math everyone! x = y/m
-            double resultingY = targetX / ySlope;
-            double resultingZ = targetX / zSlope;
+            double yB = otherVertex.x - (yM * otherVertex.x);
+            double zB = otherVertex.x - (zM * otherVertex.z);
+
+            double resultingY = (targetX - yB) / yM;
+            double resultingZ = (targetX - zB) / zM;
+
+            resultingY = Double.isNaN(resultingY) ? this.vertex.y : resultingY;
+            resultingZ = Double.isNaN(resultingZ) ? this.vertex.z : resultingZ;
 
             return new Vector3(targetX, resultingY, resultingZ);
         }
 
         public Vector3 calculatePointAtY(Vector3 otherVertex, double targetY) {
-            double xM = this.vertex.getXSlope(otherVertex);
-            double zM = this.vertex.getZSlope(otherVertex);
+            double xM = this.vertex.getXYSlope(otherVertex);
+            double zM = this.vertex.getZYSlope(otherVertex);
 
             double xB = otherVertex.y - (xM * otherVertex.x);
             double zB = otherVertex.y - (zM * otherVertex.z);
@@ -214,13 +287,17 @@ public abstract class OBJSONModel implements IArchitectureModel {
         }
 
         public Vector3 calculatePointAtZ(Vector3 otherVertex, double targetZ) {
-            // First calculate the slope - m = y2-y1 / x2-x1
-            double xSlope = (otherVertex.z - this.vertex.z) / (otherVertex.x - this.vertex.x);
-            double ySlope = (otherVertex.z - this.vertex.z) / (otherVertex.y - this.vertex.y);
+            double xM = this.vertex.getXZSlope(otherVertex);
+            double yM = this.vertex.getYZSlope(otherVertex);
 
-            // Welcome back to high school math everyone! x = y/m
-            double resultingX = targetZ / xSlope;
-            double resultingY = targetZ / ySlope;
+            double xB = otherVertex.z - (xM * otherVertex.x);
+            double yB = otherVertex.z - (yM * otherVertex.y);
+
+            double resultingX = (targetZ - xB) / xM;
+            double resultingY = (targetZ - yB) / yM;
+
+            resultingX = Double.isNaN(resultingX) ? this.vertex.x : resultingX;
+            resultingY = Double.isNaN(resultingY) ? this.vertex.y : resultingY;
 
             return new Vector3(resultingX, resultingY, targetZ);
         }

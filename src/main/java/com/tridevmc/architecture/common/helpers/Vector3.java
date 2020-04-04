@@ -237,12 +237,37 @@ public class Vector3 {
         return (int) Math.round(this.z);
     }
 
-    public double getXSlope(Vector3 other) {
+    /**
+     * Calculates the slope of x in terms of y.
+     */
+    public double getXYSlope(Vector3 other) {
         return (this.y - other.y) / (this.x - other.x);
     }
 
-    public double getZSlope(Vector3 other) {
+    public double getXZSlope(Vector3 other) {
+        return (this.z - other.z) / (this.x - other.x);
+    }
+
+    /**
+     * Calculates the slope of z in terms of y.
+     */
+    public double getZYSlope(Vector3 other) {
         return (this.y - other.y) / (this.z - other.z);
+    }
+
+    public double getZXSlope(Vector3 other){
+        return (this.x - other.x) / (this.z - other.z);
+    }
+
+    /**
+     * Calculates the slope of y in terms of x.
+     */
+    public double getYZSlope(Vector3 other){
+        return (this.x - other.x) / (this.y - other.y);
+    }
+
+    public double getYXSlope(Vector3 other){
+        return (this.z - other.z) / (this.y - other.y);
     }
 
     // Workaround for EnumFacing.getDirectionVec being client-side only
