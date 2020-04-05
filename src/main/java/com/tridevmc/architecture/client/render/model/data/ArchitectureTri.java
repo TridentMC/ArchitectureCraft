@@ -1,17 +1,20 @@
 package com.tridevmc.architecture.client.render.model.data;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
-import com.tridevmc.architecture.client.render.model.builder.QuadBuilder;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.Vec3i;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ArchitectureTri implements IBakedQuadProvider {
@@ -65,23 +68,45 @@ public class ArchitectureTri implements IBakedQuadProvider {
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
         this.recalculateFace();
+        this.reOrderVertices();
         prebuiltData = null;
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
-            QuadBuilder builder = new QuadBuilder(transform, facing);
+            BakedQuadBuilder builder = new BakedQuadBuilder();
+            builder.setTexture(sprite);
+            builder.setQuadTint(tintIndex);
+            builder.setApplyDiffuseLighting(true);
+            builder.setContractUVs(true);
+            builder.setQuadOrientation(facing);
+
             for (int i = 0; i < 4; i++) {
                 ArchitectureVertex vertex = this.vertices[i == 0 ? 0 : i - 1];
-                float[] UVs = vertex.getUVs(transform);
-                float u = sprite.getInterpolatedU(UVs[0]), v = sprite.getInterpolatedV(UVs[1]);
-                builder.putVertex(vertex.getX(), vertex.getY(), vertex.getZ(), u, v,
-                        vertex.getNormalX(), vertex.getNormalY(), vertex.getNormalZ());
+                vertex.pipe(builder, sprite, Optional.of(transform));
             }
-            PrebuiltData baseQuad = new PrebuiltData(builder.build(sprite, tintIndex));
+            PrebuiltData baseQuad = new PrebuiltData(builder.build());
             this.prebuiltQuads.put(transform, baseQuad);
             return baseQuad.baseQuad;
         } else {
             return prebuiltData.getQuad(sprite, tintIndex);
         }
+    }
+
+    private void reOrderVertices() {
+        //if (this.getFace() == Direction.EAST) {
+        //    List<Tuple<Integer, ArchitectureVertex>> indexedVertices = Lists.newArrayList();
+        //    IntStream.range(0, 3).forEach(i -> indexedVertices.add(new Tuple<>(i, this.vertices[i])));
+        //    indexedVertices.sort((o1, o2) -> Float.compare(o2.getB().getY(), o1.getB().getY()));
+        //    Tuple<Integer, ArchitectureVertex> topVertex = indexedVertices.get(0);
+        //    List<Tuple<Integer, ArchitectureVertex>> startCandidates = indexedVertices.stream().filter((t) -> t.getB().getY() == topVertex.getB().getY()).collect(Collectors.toList());
+        //    startCandidates.sort((o1, o2) -> Float.compare(o2.getB().getZ(), o1.getB().getZ()));
+        //    Tuple<Integer, ArchitectureVertex> selectedStart = startCandidates.get(0);
+
+        //    ArchitectureVertex[] newVertices = new ArchitectureVertex[3];
+        //    newVertices[0] = selectedStart.getB();
+        //    newVertices[1] = this.vertices[selectedStart.getA() + 1 > 2 ? 0 : selectedStart.getA() + 1];
+        //    newVertices[2] = this.vertices[selectedStart.getA() - 1 < 0 ? 2 : selectedStart.getA() - 1];
+        //    this.vertices = newVertices;
+        //}
     }
 
     @Override
@@ -171,7 +196,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
             targetRange[0] = targetDimensions.stream().min(Comparator.comparingInt(Integer::intValue)).get();
             targetRange[1] = targetDimensions.stream().max(Comparator.comparingInt(Integer::intValue)).get();
         }
-        
+
         return ranges;
     }
 

@@ -32,6 +32,7 @@ import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -134,6 +135,7 @@ public class ClientProxy extends CommonProxy {
         //RENDERING_MANAGER.addBlockRenderer(ArchitectureMod.CONTENT.blockShape, SHAPE_RENDER_DISPATCHER);
         //RENDERING_MANAGER.addItemRenderer(ArchitectureMod.CONTENT.itemCladding, new RenderCladding());
 
+        RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockShape, (l) -> true);
     }
 

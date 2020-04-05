@@ -116,7 +116,7 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     public BlockArchitecture(Material material, IOrientationHandler orient, Class<TE> teClass, String teID) {
-        super(Block.Properties.create(material, material.getColor()));
+        super(Block.Properties.create(material, material.getColor()).notSolid());
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
