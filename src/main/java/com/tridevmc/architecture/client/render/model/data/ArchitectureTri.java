@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.client.render.model.data;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
@@ -9,12 +8,10 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ArchitectureTri implements IBakedQuadProvider {
@@ -79,8 +76,9 @@ public class ArchitectureTri implements IBakedQuadProvider {
             builder.setContractUVs(true);
             builder.setQuadOrientation(facing);
 
+            int[] vertexIndices = new int[]{0, 0, 1, 2};
             for (int i = 0; i < 4; i++) {
-                ArchitectureVertex vertex = this.vertices[i == 0 ? 0 : i - 1];
+                ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
                 vertex.pipe(builder, sprite, Optional.of(transform));
             }
             PrebuiltData baseQuad = new PrebuiltData(builder.build());
@@ -124,8 +122,6 @@ public class ArchitectureTri implements IBakedQuadProvider {
             }
 
             this.normals.normalize();
-            Vec3i directionVec = Direction.getFacingFromVector(this.normals.getX(), this.normals.getY(), this.normals.getZ()).getDirectionVec();
-            this.normals = new Vector3f(directionVec.getX(), directionVec.getY(), directionVec.getZ());
         }
         return this.normals;
     }
