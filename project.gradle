@@ -10,7 +10,7 @@ ext {
     compoundVersion = '1.4.0-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.15.2-31.1.36'
+    forge = '1.15.2-31.1.39'
     mappings = '20200404-1.15.1'
 }
 
