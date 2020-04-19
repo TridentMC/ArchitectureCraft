@@ -3,12 +3,12 @@ package com.tridevmc.architecture.client.render.model.data;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
-import com.tridevmc.architecture.client.render.model.builder.QuadBuilder;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
 
     private Direction face;
     private ArchitectureVertex[] vertices = new ArchitectureVertex[4];
-    private Vector3f normals = null;
+    private Vector3f normals;
     private Map<TransformationMatrix, PrebuiltData> prebuiltQuads = Maps.newHashMap();
 
     private static class PrebuiltData {
@@ -74,20 +74,59 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     @Override
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
+        this.recalculateFace();
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
-            QuadBuilder builder = new QuadBuilder(transform, facing);
-            for (ArchitectureVertex vertex : this.getVertices()) {
-                float[] UVs = vertex.getUVs(transform);
-                float u = sprite.getInterpolatedU(UVs[0]), v = sprite.getInterpolatedV(UVs[1]);
-                builder.putVertex(vertex.getX(), vertex.getY(), vertex.getZ(), u, v,
-                        vertex.getNormalX(), vertex.getNormalY(), vertex.getNormalZ());
+            BakedQuadBuilder builder = new BakedQuadBuilder();
+            builder.setTexture(sprite);
+            builder.setQuadTint(tintIndex);
+            builder.setApplyDiffuseLighting(true);
+            builder.setContractUVs(true);
+            builder.setQuadOrientation(facing);
+            int[] vertexIndices = new int[]{0, 0, 1, 2};
+            for (int i = 0; i < 4; i++) {
+                ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
+                vertex.pipe(builder, this, sprite, Optional.of(transform));
             }
-            PrebuiltData baseQuad = new PrebuiltData(builder.build(sprite, tintIndex));
+            PrebuiltData baseQuad = new PrebuiltData(builder.build());
             this.prebuiltQuads.put(transform, baseQuad);
             return baseQuad.baseQuad;
         } else {
             return prebuiltData.getQuad(sprite, tintIndex);
+        }
+    }
+
+    @Override
+    public Vector3f getFaceNormal() {
+        if (this.normals == null) {
+            this.normals = new Vector3f(0, 0, 0);
+
+            for (int i = 0; i < this.vertices.length; i++) {
+                ArchitectureVertex currentVertex = this.vertices[i];
+                ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
+
+                this.normals.setX(this.normals.getX() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
+                this.normals.setY(this.normals.getY() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
+                this.normals.setZ(this.normals.getZ() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
+            }
+
+            this.normals.normalize();
+        }
+        return this.normals;
+    }
+
+    @Override
+    public void assignNormals() {
+        for (int i = 0; i < this.vertices.length; i++) {
+            ArchitectureVertex currentVertex = this.vertices[i];
+            if (!currentVertex.assignNormals())
+                continue;
+
+            Vector3f normals = currentVertex.getNormals();
+            ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
+            normals.setX(normals.getX() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
+            normals.setY(normals.getY() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
+            normals.setZ(normals.getZ() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
         }
     }
 
@@ -107,29 +146,6 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     }
 
     /**
-     * Sets the vertex at the given index to the data provided.
-     *
-     * @param index the index the vertex data should be added to.
-     * @param data  the vertex data to add to the specified index.
-     */
-    @Override
-    public void setVertex(int index, float[] data) {
-        this.vertices[index] = new SmartArchitectureVertex(this, data);
-    }
-
-    /**
-     * Sets the vertex at the given index to the data provided.
-     *
-     * @param index the index the vertex data should be added to.
-     * @param data  the vertex data to add to the specified index.
-     * @param uvs   the uv data to add to the specified index.
-     */
-    @Override
-    public void setVertex(int index, float[] data, float[] uvs) {
-        this.vertices[index] = new ArchitectureVertex(this, data, uvs);
-    }
-
-    /**
      * Determines the default face this quad occupies when no transform is applied.
      *
      * @return the default face for this quad.
@@ -137,38 +153,6 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     @Override
     public Direction getFace() {
         return this.face;
-    }
-
-    /**
-     * Determines the normals for this quad then caches the result for later use.
-     *
-     * @return the normals for this quad.
-     */
-    @Override
-    public Vector3f getNormals() {
-        if (this.normals == null) {
-            // Generate normals
-            ArchitectureVertex[] vertices = this.getVertices();
-
-            Vector3f vPrev = vertices[3].getPosition();
-            Vector3f vCur = vertices[0].getPosition();
-            Vector3f vNext = vertices[1].getPosition();
-
-            if (vPrev.equals(vCur)) {
-                vPrev = vertices[2].getPosition();
-            }
-            if (vNext.equals(vCur)) {
-                vNext = vertices[2].getPosition();
-            }
-
-            vPrev.sub(vCur);
-            vNext.sub(vCur);
-
-            this.normals = vNext.copy();
-            vNext.cross(vPrev);
-
-        }
-        return this.normals;
     }
 
     @Override
@@ -199,6 +183,21 @@ public class ArchitectureQuad implements IBakedQuadProvider {
         return ranges;
     }
 
+    @Override
+    public void setVertex(int index, ArchitectureVertex vertex) {
+        this.vertices[index] = vertex;
+    }
+
+    /**
+     * Determines if the quad contains all the vertices required to be baked.
+     *
+     * @return true if the quad has all the required vertices, false otherwise.
+     */
+    @Override
+    public boolean isComplete() {
+        return Arrays.stream(this.vertices).allMatch(Objects::nonNull);
+    }
+
     /**
      * Sets the normals for this quad to the data specified.
      *
@@ -223,18 +222,9 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      * @return the face the quad faces.
      */
     public Direction recalculateFace() {
-        Vector3f normals = this.getNormals();
+        Vector3f normals = this.getFaceNormal();
         this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
         return this.face;
     }
 
-    /**
-     * Determines if the quad contains all the vertices required to be baked.
-     *
-     * @return true if the quad has all the required vertices, false otherwise.
-     */
-    @Override
-    public boolean isComplete() {
-        return Arrays.stream(this.vertices).allMatch(Objects::nonNull);
-    }
 }

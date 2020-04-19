@@ -41,7 +41,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-public class ShapeRenderDispatcher  {
+public class ShapeRenderDispatcher {
 
     // Cannot have any per-render state, because it may be
     // called from more than one thread.
@@ -52,7 +52,7 @@ public class ShapeRenderDispatcher  {
         return state != null && BlockHelper.blockCanRenderInLayer(state, layer);
     }
 
-    public void renderItemStack(ItemStack stack,  Trans3 t) {
+    public void renderItemStack(ItemStack stack, Trans3 t) {
         TileShape te = new TileShape();
         te.readFromItemStack(stack);
         ItemColors itemColors = Minecraft.getInstance().getItemColors();

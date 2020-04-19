@@ -14,20 +14,33 @@ import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * Stores information about a vertex that can be piped into a vertex consumer, assumes all data provided is valid.
+ */
 public class ArchitectureVertex {
 
-    private IBakedQuadProvider parent;
+    private int face;
     private float[] data;
     private float[] uvs;
+    private float[] normals;
 
-    public ArchitectureVertex(IBakedQuadProvider parent, float[] data, float[] uvs) {
-        this.parent = parent;
+    public ArchitectureVertex(int face, float[] data, float[] uvs, float[] normals) {
+        this.face = face;
         this.data = data;
         this.uvs = uvs;
+        this.normals = normals;
+    }
+
+    public boolean assignNormals() {
+        return false;
+    }
+
+    public void setNormals(Vector3f normals) {
+        this.normals = new float[]{normals.getX(), normals.getY(), normals.getZ()};
     }
 
     public Vector3f getNormals() {
-        return this.parent.getNormals();
+        return new Vector3f(this.normals);
     }
 
     public Vector3f getPosition() {
@@ -48,7 +61,7 @@ public class ArchitectureVertex {
         return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
     }
 
-    public float[] getUVs(TransformationMatrix transform) {
+    public float[] getUVs(IBakedQuadProvider quadProvider, TransformationMatrix transform) {
         return this.uvs;
     }
 
@@ -76,14 +89,10 @@ public class ArchitectureVertex {
         return this.getNormals().getZ();
     }
 
-    protected IBakedQuadProvider getParent() {
-        return this.parent;
-    }
-
-    public void pipe(IVertexConsumer consumer, TextureAtlasSprite sprite, Optional<TransformationMatrix> transform) {
+    public void pipe(IVertexConsumer consumer, IBakedQuadProvider bakedQuadProvider, TextureAtlasSprite sprite, Optional<TransformationMatrix> transform) {
         Vector4f pos = new Vector4f(this.getPosition());
         Vector3f normals = this.getNormals();
-        float[] uvs = this.getUVs(transform.orElse(TransformationMatrix.identity()));
+        float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(TransformationMatrix.identity()));
         transform.ifPresent((t) -> {
             t.transformPosition(pos);
             t.transformNormal(normals);
@@ -117,6 +126,10 @@ public class ArchitectureVertex {
                     break;
             }
         }
+    }
+
+    public int getFace() {
+        return this.face;
     }
 
     @Override

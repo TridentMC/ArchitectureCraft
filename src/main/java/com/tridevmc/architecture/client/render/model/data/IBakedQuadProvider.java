@@ -29,7 +29,7 @@ public interface IBakedQuadProvider {
      *
      * @return the normals for the quad.
      */
-    Vector3f getNormals();
+    Vector3f getFaceNormal();
 
     /**
      * Gets the face of the backed object. Used by vertex implementations.
@@ -48,23 +48,19 @@ public interface IBakedQuadProvider {
     /**
      * Sets the vertex in the given index.
      *
-     * @param index the index to set the vertex into.
-     * @param data  the data to apply to the vertex. UVs will be generated automatically.
+     * @param index  the index to set the vertex into.
+     * @param vertex the vertex to set at the given index, this vertex object is not unique to the provider and is pooled by the model data.
      */
-    void setVertex(int index, float[] data);
+    void setVertex(int index, ArchitectureVertex vertex);
 
     /**
-     * Sets the vertex in the given index.
-     *
-     * @param index the index to set the vertex into.
-     * @param data  the date to apply to the vertex.
-     * @param uvs   the uv data to apply to the vertex.
+     * Iterates over the vertices in the quad provider and assigns normal values.
      */
-    void setVertex(int index, float[] data, float[] uvs);
+    void assignNormals();
 
     /**
      * Gets the ranges for each dimension as a two dimensional array.
-     *
+     * <p>
      * Example: getRanges()[2][0] == range minimum on the z axis.
      *
      * @return a two dimensional array of integers representing the range of variables present in each dimension.

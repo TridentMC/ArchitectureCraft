@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.*;
@@ -65,8 +64,6 @@ public class ArchitectureTri implements IBakedQuadProvider {
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
         this.recalculateFace();
-        this.reOrderVertices();
-        prebuiltData = null;
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
             BakedQuadBuilder builder = new BakedQuadBuilder();
@@ -79,7 +76,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
             int[] vertexIndices = new int[]{0, 0, 1, 2};
             for (int i = 0; i < 4; i++) {
                 ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
-                vertex.pipe(builder, sprite, Optional.of(transform));
+                vertex.pipe(builder, this, sprite, Optional.of(transform));
             }
             PrebuiltData baseQuad = new PrebuiltData(builder.build());
             this.prebuiltQuads.put(transform, baseQuad);
@@ -89,38 +86,20 @@ public class ArchitectureTri implements IBakedQuadProvider {
         }
     }
 
-    private void reOrderVertices() {
-        //if (this.getFace() == Direction.EAST) {
-        //    List<Tuple<Integer, ArchitectureVertex>> indexedVertices = Lists.newArrayList();
-        //    IntStream.range(0, 3).forEach(i -> indexedVertices.add(new Tuple<>(i, this.vertices[i])));
-        //    indexedVertices.sort((o1, o2) -> Float.compare(o2.getB().getY(), o1.getB().getY()));
-        //    Tuple<Integer, ArchitectureVertex> topVertex = indexedVertices.get(0);
-        //    List<Tuple<Integer, ArchitectureVertex>> startCandidates = indexedVertices.stream().filter((t) -> t.getB().getY() == topVertex.getB().getY()).collect(Collectors.toList());
-        //    startCandidates.sort((o1, o2) -> Float.compare(o2.getB().getZ(), o1.getB().getZ()));
-        //    Tuple<Integer, ArchitectureVertex> selectedStart = startCandidates.get(0);
-
-        //    ArchitectureVertex[] newVertices = new ArchitectureVertex[3];
-        //    newVertices[0] = selectedStart.getB();
-        //    newVertices[1] = this.vertices[selectedStart.getA() + 1 > 2 ? 0 : selectedStart.getA() + 1];
-        //    newVertices[2] = this.vertices[selectedStart.getA() - 1 < 0 ? 2 : selectedStart.getA() - 1];
-        //    this.vertices = newVertices;
-        //}
-    }
-
     @Override
-    public Vector3f getNormals() {
+    public Vector3f getFaceNormal() {
         if (this.normals == null) {
-            this.normals = new Vector3f(0, 0, 0);
+            ArchitectureVertex vert0 = this.vertices[2];
+            ArchitectureVertex vert1 = this.vertices[1];
+            ArchitectureVertex vert2 = this.vertices[0];
+            Vector3f p0 = vert0.getPosition();
 
-            for (int i = 0; i < this.vertices.length; i++) {
-                ArchitectureVertex currentVertex = this.vertices[i];
-                ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
+            p0.sub(vert1.getPosition());
+            Vector3f p1 = vert2.getPosition();
+            p1.sub(vert1.getPosition());
+            p0.cross(p1);
 
-                this.normals.setX(this.normals.getX() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
-                this.normals.setY(this.normals.getY() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
-                this.normals.setZ(this.normals.getZ() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
-            }
-
+            this.normals = p0.copy();
             this.normals.normalize();
         }
         return this.normals;
@@ -140,7 +119,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
      * @return the face the quad faces.
      */
     public Direction recalculateFace() {
-        Vector3f normals = this.getNormals();
+        Vector3f normals = this.getFaceNormal();
         this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
         return this.face;
     }
@@ -155,13 +134,38 @@ public class ArchitectureTri implements IBakedQuadProvider {
     }
 
     @Override
-    public void setVertex(int index, float[] data) {
-        this.vertices[index] = new SmartArchitectureVertex(this, data);
+    public void setVertex(int index, ArchitectureVertex vertex) {
+        this.vertices[index] = vertex;
     }
 
     @Override
-    public void setVertex(int index, float[] data, float[] uvs) {
-        this.vertices[index] = new ArchitectureVertex(this, data, uvs);
+    public void assignNormals() {
+        ArchitectureVertex vert0 = this.vertices[2];
+        ArchitectureVertex vert1 = this.vertices[1];
+        ArchitectureVertex vert2 = this.vertices[0];
+
+        Vector3f p0 = vert0.getPosition();
+        p0.sub(vert1.getPosition());
+        Vector3f p1 = vert2.getPosition();
+        p1.sub(vert1.getPosition());
+
+        p0.cross(p1);
+        Vector3f normals;
+        if (vert0.assignNormals()) {
+            normals = p0.copy();
+            normals.add(vert0.getNormals());
+            vert0.setNormals(normals);
+        }
+        if (vert1.assignNormals()) {
+            normals = p0.copy();
+            normals.add(vert1.getNormals());
+            vert1.setNormals(normals);
+        }
+        if (vert2.assignNormals()) {
+            normals = p0.copy();
+            normals.add(vert2.getNormals());
+            vert2.setNormals(normals);
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelData;
+import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -11,28 +12,40 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ILightReader;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class OBJSONModel implements IArchitectureModel {
 
     private final OBJSON objson;
     private final ArchitectureModelData convertedModelData;
+    private final boolean generateUVs;
+    private final boolean generateNormals;
     protected ArrayList<Integer>[] textureQuadMap;
 
-    public OBJSONModel(OBJSON objson) {
+    private List<List<Vector3>> knownTris;
+
+    public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson;
         this.convertedModelData = new ArchitectureModelData();
+        this.generateUVs = generateUVs;
+        this.generateNormals = generateNormals;
+        this.knownTris = Lists.newArrayList();
+        List<Tuple<Integer, OBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.faces.length).mapToObj(i -> new Tuple<>(i, this.objson.faces[i])).collect(Collectors.toList());
         ArrayList<ArrayList<Integer>> textureQuads = Lists.newArrayList();
 
         int quadNumber = 0;
-        for (OBJSON.Face face : Arrays.stream(this.objson.faces).sorted(Comparator.comparingInt(o -> o.texture)).collect(Collectors.toList())) {
+        for (Tuple<Integer, OBJSON.Face> indexedFace : mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList())) {
+            int faceIndex = indexedFace.getA();
+            OBJSON.Face face = indexedFace.getB();
             ArrayList<Integer> quadList = this.addOrGet(textureQuads, face.texture, Lists.newArrayList());
             for (int[] tri : face.triangles) {
-                quadNumber = this.splitAndAddTri(convertedModelData, quadList, quadNumber, tri, face.vertices);
+                quadNumber = this.splitAndAddTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
             }
         }
         this.textureQuadMap = new ArrayList[textureQuads.size()];
@@ -41,54 +54,92 @@ public abstract class OBJSONModel implements IArchitectureModel {
         }
     }
 
-    private int splitAndAddTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int quadNumber, int[] tri, double[][] vertices) {
-        Set<Integer> xDimensions = Sets.newHashSet();
-        Set<Integer> yDimensions = Sets.newHashSet();
-        Set<Integer> zDimensions = Sets.newHashSet();
-        Set<Integer>[] dimensions = new Set[]{xDimensions, yDimensions, zDimensions};
-        List<TrackedVertex> trackedVertices = Lists.newArrayList();
+    private int splitAndAddTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int face, int quadNumber, int[] tri, double[][] vertices) {
+        boolean addNormally = true;
+        if (this.generateUVs) {
+            Set<Integer> xDimensions = Sets.newHashSet();
+            Set<Integer> yDimensions = Sets.newHashSet();
+            Set<Integer> zDimensions = Sets.newHashSet();
+            Set<Integer>[] dimensions = new Set[]{xDimensions, yDimensions, zDimensions};
+            List<TrackedVertex> trackedVertices = Lists.newArrayList();
 
-        for (int i = 0; i < 3; i++) {
-            int vertexIndex = tri[i];
-            double[] vertex = vertices[vertexIndex];
+            List<Vector3> newTriData = Lists.newArrayList();
 
-            trackedVertices.add(new TrackedVertex(i, new Vector3(vertex[0] + 0.5, vertex[1] + 0.5, vertex[2] + 0.5)));
-
-            for (int j = 0; j < 3; j++) {
-                double coord = vertex[j] + 0.5;
-                int dimension = (int) coord;
-                if (Math.abs(dimension - coord) > 0) {
-                    dimensions[j].add(dimension);
-                }
-            }
-        }
-
-        boolean needsSplit = Arrays.stream(dimensions).anyMatch(s -> s.size() > 1);
-        if (needsSplit) {
-            for (int i = 0; i < trackedVertices.size(); i++) {
-                TrackedVertex nextVertex = trackedVertices.get(i == trackedVertices.size() - 1 ? 0 : i + 1);
-                TrackedVertex prevVertex = trackedVertices.get(i == 0 ? trackedVertices.size() - 1 : i - 1);
-
-                TrackedVertex curVertex = trackedVertices.get(i);
-                curVertex.next = nextVertex;
-                curVertex.previous = prevVertex;
-            }
-
-            if (yDimensions.size() > 1) {
-                List<List<TrackedVertex>> newTris = this.recursivelySplit(trackedVertices, xDimensions, yDimensions, zDimensions);
-
-                for (List<TrackedVertex> triVertices : newTris) {
-                    triVertices.forEach(v -> modelData.addTriInstruction(null, v.vertex.x - 0.5, v.vertex.y - 0.5, v.vertex.z - 0.5));
-
-                    quadList.add(quadNumber);
-                    quadNumber++;
-                }
-            }
-        } else {
             for (int i = 0; i < 3; i++) {
                 int vertexIndex = tri[i];
                 double[] vertex = vertices[vertexIndex];
-                modelData.addTriInstruction(null, vertex[0], vertex[1], vertex[2]);
+
+                trackedVertices.add(new TrackedVertex(i, new Vector3(vertex[0] + 0.5, vertex[1] + 0.5, vertex[2] + 0.5), new Vector3(vertex[3], vertex[4], vertex[5])));
+                newTriData.add(new Vector3(vertex[0] + 0.5, vertex[1] + 0.5, vertex[2] + 0.5));
+
+                for (int j = 0; j < 3; j++) {
+                    double coord = vertex[j] + 0.5;
+                    int dimension = (int) coord;
+                    if (Math.abs(dimension - coord) > 0) {
+                        dimensions[j].add(dimension);
+                    }
+                }
+            }
+
+            boolean triExists = this.knownTris.stream().anyMatch(t -> {
+                for (Vector3 newTriDatum : newTriData) {
+                    if (!t.contains(newTriDatum)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            if (triExists) {
+                ArchitectureLog.error("Tri already exists with provided data, \"{}\"", newTriData.toString());
+                return quadNumber;
+            }
+
+            this.knownTris.add(newTriData);
+
+            boolean needsSplit = Arrays.stream(dimensions).anyMatch(s -> s.size() > 1);
+            if (needsSplit) {
+                addNormally = false;
+                for (int i = 0; i < trackedVertices.size(); i++) {
+                    TrackedVertex nextVertex = trackedVertices.get(i == trackedVertices.size() - 1 ? 0 : i + 1);
+                    TrackedVertex prevVertex = trackedVertices.get(i == 0 ? trackedVertices.size() - 1 : i - 1);
+
+                    TrackedVertex curVertex = trackedVertices.get(i);
+                    curVertex.next = nextVertex;
+                    curVertex.previous = prevVertex;
+                }
+
+                if (yDimensions.size() > 1) {
+                    List<List<TrackedVertex>> newTris = this.recursivelySplit(trackedVertices, xDimensions, yDimensions, zDimensions);
+
+                    for (List<TrackedVertex> triVertices : newTris) {
+                        triVertices.forEach(v -> {
+                            if (this.generateNormals) {
+                                modelData.addTriInstruction(face, null, v.vertex.x - 0.5, v.vertex.y - 0.5, v.vertex.z - 0.5);
+                            } else {
+                                modelData.addTriInstruction(face, null, v.vertex.x - 0.5, v.vertex.y - 0.5, v.vertex.z - 0.5, v.normal.x, v.normal.y, v.normal.z);
+                            }
+                        });
+
+                        quadList.add(quadNumber);
+                        quadNumber++;
+                    }
+                }
+            }
+        }
+        if (addNormally) {
+            for (int i = 0; i < 3; i++) {
+                int vertexIndex = tri[i];
+                double[] vertex = vertices[vertexIndex];
+                if (this.generateUVs && this.generateNormals) {
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2]);
+                } else if (this.generateUVs) {
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[3], vertex[4], vertex[5]);
+                } else if (this.generateNormals) {
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6], vertex[7]);
+                } else {
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6], vertex[7], vertex[3], vertex[4], vertex[5]);
+                }
             }
             quadList.add(quadNumber);
             quadNumber++;
@@ -155,19 +206,19 @@ public abstract class OBJSONModel implements IArchitectureModel {
 
         List<List<TrackedVertex>> newTris = Lists.newArrayList();
 
-        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtX(loneVertex.previous.vertex, splitPoint));
-        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtX(loneVertex.next.vertex, splitPoint));
+        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtX(loneVertex.previous.vertex, splitPoint), loneVertex.normal);
+        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtX(loneVertex.next.vertex, splitPoint), loneVertex.normal);
         newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
 
         Vector3 lastVertex = loneVertex.previous.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex),
-                new TrackedVertex(1, lonePrevSplit.vertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex, loneVertex.normal),
+                new TrackedVertex(1, lonePrevSplit.vertex, lonePrevSplit.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         Vector3 nextVertex = loneVertex.next.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex),
-                new TrackedVertex(1, lastVertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex, loneVertex.next.normal),
+                new TrackedVertex(1, lastVertex, loneVertex.previous.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         return newTris;
     }
@@ -191,19 +242,19 @@ public abstract class OBJSONModel implements IArchitectureModel {
 
         List<List<TrackedVertex>> newTris = Lists.newArrayList();
 
-        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtY(loneVertex.previous.vertex, splitPoint));
-        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtY(loneVertex.next.vertex, splitPoint));
+        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtY(loneVertex.previous.vertex, splitPoint), loneVertex.normal);
+        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtY(loneVertex.next.vertex, splitPoint), loneVertex.normal);
         newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
 
         Vector3 lastVertex = loneVertex.previous.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex),
-                new TrackedVertex(1, lonePrevSplit.vertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex, loneVertex.previous.normal),
+                new TrackedVertex(1, lonePrevSplit.vertex, lonePrevSplit.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         Vector3 nextVertex = loneVertex.next.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex),
-                new TrackedVertex(1, lastVertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex, loneVertex.next.normal),
+                new TrackedVertex(1, lastVertex, loneVertex.previous.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         return newTris;
     }
@@ -227,19 +278,19 @@ public abstract class OBJSONModel implements IArchitectureModel {
 
         List<List<TrackedVertex>> newTris = Lists.newArrayList();
 
-        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtZ(loneVertex.previous.vertex, splitPoint));
-        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtZ(loneVertex.next.vertex, splitPoint));
+        TrackedVertex lonePrevSplit = new TrackedVertex(loneVertex.previous.index, loneVertex.calculatePointAtZ(loneVertex.previous.vertex, splitPoint), loneVertex.normal);
+        TrackedVertex loneNextSplit = new TrackedVertex(loneVertex.next.index, loneVertex.calculatePointAtZ(loneVertex.next.vertex, splitPoint), loneVertex.normal);
         newTris.add(Lists.newArrayList(lonePrevSplit, loneVertex, loneNextSplit).stream().sorted(Comparator.comparingInt(o -> o.index)).collect(Collectors.toList()));
 
         Vector3 lastVertex = loneVertex.previous.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex),
-                new TrackedVertex(1, lonePrevSplit.vertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, lastVertex, loneVertex.previous.normal),
+                new TrackedVertex(1, lonePrevSplit.vertex, lonePrevSplit.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         Vector3 nextVertex = loneVertex.next.vertex;
-        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex),
-                new TrackedVertex(1, lastVertex),
-                new TrackedVertex(2, loneNextSplit.vertex)));
+        newTris.add(Lists.newArrayList(new TrackedVertex(0, nextVertex, loneVertex.next.normal),
+                new TrackedVertex(1, lastVertex, loneVertex.previous.normal),
+                new TrackedVertex(2, loneNextSplit.vertex, loneNextSplit.normal)));
 
         return newTris;
     }
@@ -248,10 +299,12 @@ public abstract class OBJSONModel implements IArchitectureModel {
         public TrackedVertex previous, next;
         public final int index;
         public final Vector3 vertex;
+        public final Vector3 normal;
 
-        public TrackedVertex(int index, Vector3 vertex) {
+        public TrackedVertex(int index, Vector3 vertex, Vector3 normal) {
             this.index = index;
             this.vertex = vertex;
+            this.normal = normal;
         }
 
         public Vector3 calculatePointAtX(Vector3 otherVertex, double targetX) {
@@ -305,8 +358,8 @@ public abstract class OBJSONModel implements IArchitectureModel {
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
-                    .add("index", index)
-                    .add("vertex", vertex)
+                    .add("index", this.index)
+                    .add("vertex", this.vertex)
                     .toString();
         }
     }

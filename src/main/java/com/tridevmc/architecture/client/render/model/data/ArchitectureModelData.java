@@ -3,8 +3,6 @@ package com.tridevmc.architecture.client.render.model.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
-import com.tridevmc.architecture.client.render.model.data.ArchitectureQuad;
-import com.tridevmc.architecture.client.render.model.data.IBakedQuadProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.renderer.Matrix4f;
@@ -17,10 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3i;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -29,7 +24,9 @@ import java.util.stream.IntStream;
 public class ArchitectureModelData {
 
     private final Map<Direction, List<IBakedQuadProvider>> quads = Maps.newHashMap();
+    private final Map<String, ArchitectureVertex> vertexPool = Maps.newHashMap();
 
+    private boolean isLocked = false;
     protected BlockState state;
     protected Direction facing = Direction.NORTH;
     protected TransformationMatrix transform = TransformationMatrix.identity();
@@ -71,6 +68,9 @@ public class ArchitectureModelData {
     }
 
     public ModelDataQuads buildModel() {
+        if (!this.isLocked()) {
+            this.lock();
+        }
         List<BakedQuad> generalQuads = Lists.newArrayList();
         Map<Direction, List<BakedQuad>> faceQuads = Maps.newHashMap();
         IntStream.range(-1, Direction.values().length).forEach((i) -> faceQuads.put(i > -1 ? Direction.byIndex(i) : null, Lists.newArrayList()));
@@ -89,8 +89,10 @@ public class ArchitectureModelData {
                 BakedQuad builtQuad = quad.bake(this.transform, newFace,
                         spritesForFace.get(i),
                         tintsForFace.get(i));
-                generalQuads.add(builtQuad);
-                faceQuads.get(newFace).add(builtQuad);
+                if (builtQuad != null) {
+                    generalQuads.add(builtQuad);
+                    faceQuads.get(newFace).add(builtQuad);
+                }
             }
         }
         this.setup();
@@ -139,8 +141,10 @@ public class ArchitectureModelData {
     }
 
     public void addQuadInstruction(Direction facing, float x, float y, float z) {
-        float[] data = new float[]{x, y, z};
+        this.addQuadInstruction(-1, facing, x, y, z);
+    }
 
+    public void addQuadInstruction(int face, Direction facing, float x, float y, float z) {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
@@ -149,13 +153,30 @@ public class ArchitectureModelData {
             faceQuads.add(new ArchitectureQuad(facing));
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z));
     }
 
-    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        float[] data = new float[]{x, y, z};
-        float[] uvs = new float[]{u, v};
+    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v) {
+        this.addQuadInstruction(-1, facing, x, y, z, u, v);
+    }
 
+    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float u, float v) {
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureQuad(facing));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v));
+    }
+
+    public void addQuadInstruction(Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        this.addQuadInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    }
+
+    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
@@ -164,16 +185,38 @@ public class ArchitectureModelData {
             faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, nX, nY, nZ));
+    }
+
+    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        this.addQuadInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    }
+
+    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v, nX, nY, nZ));
     }
 
     public void addTriInstruction(Direction facing, double x, double y, double z) {
-        this.addTriInstruction(facing, (float) x, (float) y, (float) z);
+        this.addTriInstruction(-1, facing, x, y, z);
+    }
+
+    public void addTriInstruction(int face, Direction facing, double x, double y, double z) {
+        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z);
     }
 
     public void addTriInstruction(Direction facing, float x, float y, float z) {
-        float[] data = new float[]{x, y, z};
+        this.addTriInstruction(-1, facing, x, y, z);
+    }
 
+    public void addTriInstruction(int face, Direction facing, float x, float y, float z) {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
@@ -182,17 +225,23 @@ public class ArchitectureModelData {
             faceQuads.add(new ArchitectureTri(facing));
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data);
+
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z));
     }
 
     public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v) {
-        this.addTriInstruction(facing, (float) x, (float) y, (float) z, (float) u, (float) v);
+        this.addTriInstruction(-1, facing, x, y, z, u, v);
+    }
+
+    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double u, double v) {
+        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) u, (float) v);
     }
 
     public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v) {
-        float[] data = new float[]{x, y, z};
-        float[] uvs = new float[]{u, v};
+        this.addTriInstruction(-1, facing, x, y, z, u, v);
+    }
 
+    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float u, float v) {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
@@ -202,17 +251,47 @@ public class ArchitectureModelData {
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
 
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v));
+    }
+
+    public void addTriInstruction(Direction facing, double x, double y, double z, float nX, float nY, float nZ) {
+        this.addTriInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    }
+
+    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double nX, double nY, double nZ) {
+        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) nX, (float) nY, (float) nZ);
+    }
+
+    public void addTriInstruction(Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        this.addTriInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    }
+
+    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        if (!this.quads.containsKey(facing))
+            this.quads.put(facing, new ArrayList<>());
+
+        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
+        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
+            faceQuads.add(new ArchitectureTri(facing));
+
+        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, nX, nY, nZ));
     }
 
     public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
-        this.addTriInstruction(facing, (float) x, (float) y, (float) z, (float) u, (float) v, (float) nX, (float) nY, (float) nZ);
+        this.addTriInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    }
+
+    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
+        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) u, (float) v, (float) nX, (float) nY, (float) nZ);
     }
 
     public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        float[] data = new float[]{x, y, z};
-        float[] uvs = new float[]{u, v};
+        this.addTriInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    }
 
+    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
         if (!this.quads.containsKey(facing))
             this.quads.put(facing, new ArrayList<>());
 
@@ -222,7 +301,40 @@ public class ArchitectureModelData {
 
         IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
 
-        selectedQuad.setVertex(selectedQuad.getNextVertex(), data, uvs);
+        selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v, nX, nY, nZ));
+    }
+
+    public ArchitectureVertex getPooledVertex(int face, float... data) {
+        String vertexIdentity = face + Arrays.toString(data);
+        ArchitectureVertex out = this.vertexPool.getOrDefault(vertexIdentity, null);
+        if (out == null) {
+            if (data.length == 3) {
+                out = SmartArchitectureVertex.fromPosition(face, data);
+            } else if (data.length == 5) {
+                out = SmartArchitectureVertex.fromPositionWithUV(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5));
+            } else if (data.length == 6) {
+                out = SmartArchitectureVertex.fromPositionWithNormal(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 6));
+            } else if (data.length == 8) {
+                out = new ArchitectureVertex(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5), Arrays.copyOfRange(data, 5, 8));
+            }
+            this.vertexPool.put(vertexIdentity, out);
+        }
+        return out;
+    }
+
+    public void lock() {
+        this.isLocked = true;
+        this.vertexPool.values().stream().filter(ArchitectureVertex::assignNormals).forEach(v -> v.setNormals(new Vector3f(0, 0, 0)));
+        this.quads.values().forEach(qL -> qL.forEach((IBakedQuadProvider::assignNormals)));
+        this.vertexPool.values().stream().filter(ArchitectureVertex::assignNormals).forEach(v -> {
+            Vector3f normals = v.getNormals();
+            normals.normalize();
+            v.setNormals(normals);
+        });
+    }
+
+    public boolean isLocked() {
+        return this.isLocked;
     }
 
     public class ModelDataQuads {

@@ -15,7 +15,7 @@ public class ArchitectureModelLoader implements IModelLoader<ArchitectureModelGe
         this.geometry = geometry;
     }
 
-    public ArchitectureModelLoader(IBakedModel model, ResourceLocation... textures){
+    public ArchitectureModelLoader(IBakedModel model, ResourceLocation... textures) {
         this.geometry = new ArchitectureModelGeometry(model, textures);
     }
 

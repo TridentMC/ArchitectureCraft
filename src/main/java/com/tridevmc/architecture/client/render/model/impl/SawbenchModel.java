@@ -19,7 +19,7 @@ public class SawbenchModel extends OBJSONModel {
     private static boolean needsInit = true;
 
     public SawbenchModel() {
-        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "models/block/sawbench.objson")));
+        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "models/block/sawbench.objson")), true, false);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class SawbenchModel extends OBJSONModel {
         if (needsInit) {
             Function<ResourceLocation, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
             textures = new TextureAtlasSprite[]{
-                    textureGetter.apply(new ResourceLocation(ArchitectureMod.MOD_ID, "blocks/sawbench-wood")),
-                    textureGetter.apply(new ResourceLocation(ArchitectureMod.MOD_ID, "blocks/sawbench-metal"))
+                    textureGetter.apply(new ResourceLocation("block/oak_planks")),
+                    textureGetter.apply(new ResourceLocation("block/iron_block"))
             };
             colours = new Integer[]{-1, -1};
             needsInit = false;
