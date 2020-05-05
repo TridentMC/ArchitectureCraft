@@ -4,7 +4,7 @@ pipeline {
 		stage('Build') {
 			steps {
 				sh 'rm -f private.gradle'
-				sh './gradlew setupCiWorkspace clean build'
+				sh './gradlew clean build'
 			}
 		}
 		stage('Deploy') {
