@@ -32,10 +32,6 @@ public class SawbenchBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        if (!extraData.hasProperty(ModelProperties.WORLD)) {
-            return Collections.emptyList();
-        }
-
         World world = extraData.getData(ModelProperties.WORLD);
         BlockPos pos = extraData.getData(ModelProperties.POS);
         ArchitectureModelData.ModelDataQuads quads = MODEL.getQuads(state, world, pos);

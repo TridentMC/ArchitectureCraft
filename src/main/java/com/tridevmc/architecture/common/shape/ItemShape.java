@@ -106,7 +106,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (group == ArchitectureMod.CONTENT.SHAPE_TAB) {
+        if (false) {
             for (EnumShape shape : EnumShape.values()) {
                 if (shape.isCladding())
                     continue;

@@ -26,7 +26,6 @@ package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.shape.ShapeKind;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.util.Direction;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,14 +36,14 @@ public class RenderWindow {
 
     //protected static WindowModels frameModels, cornerModels, mullionModels;
     protected boolean renderBase, renderSecondary;
-    protected ShapeKind.Window kind;
+   // protected ShapeKind.Window kind;
 
-    public RenderWindow(TileShape te, ITexture[] textures, Trans3 t, boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
-        this.renderBase = renderBase;
-        this.renderSecondary = renderSecondary;
-        this.kind = (ShapeKind.Window) te.shape.kind;
-
-    }
+    //public RenderWindow(TileShape te, ITexture[] textures, Trans3 t, boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
+    //    this.renderBase = renderBase;
+    //    this.renderSecondary = renderSecondary;
+    //    this.kind = (ShapeKind.Window) te.shape.kind;
+//
+    //}
 
     //protected static IRenderableModel[] models(String... names) {
     //    IRenderableModel[] result = new IRenderableModel[names.length];
@@ -190,9 +189,9 @@ public class RenderWindow {
     //
 
 
-    protected TileShape getConnectedNeighbourGlobal(TileShape te, Direction globalDir) {
-        return this.kind.getConnectedWindowGlobal(te, globalDir);
-    }
+    //protected TileShape getConnectedNeighbourGlobal(TileShape te, Direction globalDir) {
+    //    return this.kind.getConnectedWindowGlobal(te, globalDir);
+    //}
 
     //protected static class WindowModels {
 

@@ -36,7 +36,7 @@ public class Profile {
 
     public static Object getProfileGlobal(EnumShape shape, int side, int turn, Direction globalFace) {
         Direction localFace = Trans3.sideTurnRotations[side][turn].it(globalFace);
-        return shape.kind.profileForLocalFace(shape, localFace);
+        return shape.behaviour.profileForLocalFace(shape, localFace);
     }
 
     public static boolean matches(Object profile1, Object profile2) {

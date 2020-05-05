@@ -174,7 +174,6 @@ public abstract class TileArchitecture extends TileEntity {
         this.world.playSound(null, this.pos.getX() + 0.5, this.pos.getY() + 0.5, this.pos.getZ() + 0.5, name, SoundCategory.BLOCKS, volume, pitch);
     }
 
-    public abstract void onAddedToWorld();
 
     @Override
     public void read(CompoundNBT nbt) {

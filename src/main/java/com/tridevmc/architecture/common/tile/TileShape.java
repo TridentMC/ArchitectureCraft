@@ -87,11 +87,6 @@ public class TileShape extends TileArchitecture {
         return super.localToGlobalTransformation(origin).translate(this.getOffsetX(), 0, 0);
     }
 
-    @Override
-    public void onAddedToWorld() {
-        //NO-OP
-    }
-
     public boolean connectionIsEnabledGlobal(Direction dir) {
         return (this.disabledConnections & (1 << dir.ordinal())) == 0;
     }
@@ -115,7 +110,6 @@ public class TileShape extends TileArchitecture {
 
     @Override
     public void read(CompoundNBT nbt) {
-        //System.out.printf("ShapeTE.read: %s\n", pos);
         super.read(nbt);
         this.readShapeFromNBT(nbt);
         this.offsetX = nbt.getByte("offsetX");
@@ -161,11 +155,11 @@ public class TileShape extends TileArchitecture {
     }
 
     public void onChiselUse(PlayerEntity player, Direction face, float hitX, float hitY, float hitZ) {
-        this.shape.kind.onChiselUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
+        this.shape.behaviour.onChiselUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
     public void onHammerUse(PlayerEntity player, Direction face, float hitX, float hitY, float hitZ) {
-        this.shape.kind.onHammerUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
+        this.shape.behaviour.onHammerUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
     protected Vector3 hitVec(float hitX, float hitY, float hitZ) {
@@ -183,13 +177,13 @@ public class TileShape extends TileArchitecture {
     public boolean applySecondaryMaterial(ItemStack stack, PlayerEntity player) {
         BlockState materialState = null;
         Item item = stack.getItem();
-        if (item instanceof ItemCladding && this.shape.kind.acceptsCladding()) {
+        if (item instanceof ItemCladding && this.shape.behaviour.acceptsCladding()) {
             materialState = ((ItemCladding) item).blockStateFromStack(stack);
         } else {
             Block block = Block.getBlockFromItem(item);
             if (block != null) {
                 BlockState state = block.getDefaultState();
-                if (this.shape.kind.isValidSecondaryMaterial(state)) {
+                if (this.shape.behaviour.isValidSecondaryMaterial(state)) {
                     materialState = state;
                 }
             }

@@ -31,7 +31,6 @@ public class OBJSON {
         return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
     }
 
-
     public void addBoxesToList(Trans3 t, List<AxisAlignedBB> list) {
         if (this.boxes != null && this.boxes.length > 0) {
             Arrays.stream(this.boxes).forEach(b -> this.addBoxToList(b, t, list));
@@ -43,7 +42,6 @@ public class OBJSON {
     protected void addBoxToList(double[] b, Trans3 t, List<AxisAlignedBB> list) {
         t.addBox(b[0], b[1], b[2], b[3], b[4], b[5], list);
     }
-
 
     private void setNormals() {
         for (Face face : this.faces) {

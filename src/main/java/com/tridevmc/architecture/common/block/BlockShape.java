@@ -55,16 +55,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlockShape extends BlockArchitecture<TileShape> {
+public class BlockShape extends BlockArchitecture {
 
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     protected AxisAlignedBB boxHit;
 
     public BlockShape() {
-        super(Material.EARTH, TileShape.class);
+        super(Material.EARTH);
     }
 
     @Override
@@ -143,7 +144,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
         if (this.boxHit != null) {
             TileShape te = TileShape.get(world, pos);
-            if (te != null && te.shape.kind.highlightZones())
+            if (te != null && te.shape.behaviour.highlightZones())
                 return VoxelShapes.create(this.boxHit);
         }
         AxisAlignedBB box = this.getLocalBounds(world, pos, state, null);
@@ -181,7 +182,7 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.blockCenter);
-            return te.shape.kind.getBounds(te, world, pos, state, entity, t);
+            return te.shape.behaviour.getBounds(te, world, pos, state, entity, t);
         }
         return null; // Causes getBoundingBox to fall back on super implementation
     }
@@ -189,26 +190,26 @@ public class BlockShape extends BlockArchitecture<TileShape> {
     protected List<AxisAlignedBB> getCollisionBoxes(TileShape te,
                                                     IBlockReader world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        te.shape.kind.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
+        te.shape.behaviour.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return list;
     }
 
 
-    @Override
-    protected NonNullList<ItemStack> getDropsFromTileEntity(LootContext.Builder context, BlockState state) {
-        NonNullList<ItemStack> result = NonNullList.create();
-        TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
-        if (te instanceof TileShape) {
-            TileShape ste = (TileShape) te;
-            ItemStack stack = ste.shape.kind.newStack(ste.shape, ste.baseBlockState, 1);
-            result.add(stack);
-            if (ste.secondaryBlockState != null) {
-                stack = ste.shape.kind.newSecondaryMaterialStack(ste.secondaryBlockState);
-                result.add(stack);
-            }
-        }
-        return result;
-    }
+    //@Override
+    //protected NonNullList<ItemStack> getDropsFromTileEntity(LootContext.Builder context, BlockState state) {
+    //    NonNullList<ItemStack> result = NonNullList.create();
+    //    TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
+    //    if (te instanceof TileShape) {
+    //        TileShape ste = (TileShape) te;
+    //        ItemStack stack = ste.shape.kind.newStack(ste.shape, ste.baseBlockState, 1);
+    //        result.add(stack);
+    //        if (ste.secondaryBlockState != null) {
+    //            stack = ste.shape.kind.newSecondaryMaterialStack(ste.secondaryBlockState);
+    //            result.add(stack);
+    //        }
+    //    }
+    //    return result;
+    //}
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
@@ -224,6 +225,10 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         if (te != null)
             return te.baseBlockState;
         return null;
+    }
+
+    private TileShape getTileEntity(IBlockReader world, BlockPos pos) {
+        return (TileShape) world.getTileEntity(pos);
     }
 
     @Override
@@ -269,4 +274,9 @@ public class BlockShape extends BlockArchitecture<TileShape> {
         return state.get(LIGHT);
     }
 
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+        return new TileShape();
+    }
 }

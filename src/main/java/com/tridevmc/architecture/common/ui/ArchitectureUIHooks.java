@@ -38,6 +38,7 @@ public class ArchitectureUIHooks {
     private static <C extends Container> IContainerFactory<C> getFactory() {
         return (windowId, inv, data) -> {
             UIType type = UIType.byId(data.readByte());
+            CreateMenuContext context = new CreateMenuContext(windowId, inv.player, inv);
             World world = inv.player.world;
 
             switch (type) {
@@ -45,19 +46,21 @@ public class ArchitectureUIHooks {
                     BlockPos pos = data.readBlockPos();
                     BlockState state = world.getBlockState(pos);
                     TileEntity tile = world.getTileEntity(pos);
+                    context.setPos(pos).setBlockState(state).setTile(tile);
                     if (tile instanceof IElementProvider) {
                         lastProvider = Optional.of((IElementProvider) tile);
-                        return (C) ((IElementProvider) tile).createMenu(windowId, inv, inv.player);
+                        return (C) ((IElementProvider) tile).createMenu(context);
                     } else if (state.getBlock() instanceof IElementProvider) {
                         lastProvider = Optional.of((IElementProvider) state.getBlock());
-                        return (C) ((IElementProvider) state.getBlock()).createMenu(windowId, inv, inv.player);
+                        return (C) ((IElementProvider) state.getBlock()).createMenu(context);
                     }
                 case ENTITY:
                     int entityId = data.readVarInt();
                     Entity entity = world.getEntityByID(entityId);
+                    context.setEntity(entity);
                     if (entity instanceof IElementProvider) {
                         lastProvider = Optional.of((IElementProvider) entity);
-                        return (C) ((IElementProvider) entity).createMenu(windowId, inv, inv.player);
+                        return (C) ((IElementProvider) entity).createMenu(context);
                     }
                 default:
                     lastProvider = Optional.empty();
@@ -92,7 +95,7 @@ public class ArchitectureUIHooks {
 
     public static void openGui(ServerPlayerEntity player, IElementProvider provider, int entity) {
         NetworkHooks.openGui(player, provider, packetBuffer -> {
-            packetBuffer.writeByte(UIType.TILE.id);
+            packetBuffer.writeByte(UIType.ENTITY.id);
             packetBuffer.writeVarInt(entity);
         });
     }

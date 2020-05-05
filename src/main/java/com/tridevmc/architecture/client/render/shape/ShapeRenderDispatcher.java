@@ -101,7 +101,7 @@ public class ShapeRenderDispatcher {
                         } else
                             renderSecondary = false;
                     }
-                    if (renderBase && te.shape.kind.secondaryDefaultsToBase()) {
+                    if (renderBase && te.shape.behaviour.secondaryDefaultsToBase()) {
                         if (secondarySprite == null || (te.secondaryBlockState != null
                                 /*RenderTypeLookup.getRenderType(te.secondaryBlockState) != RenderType.solid())*/)) {
                             textures[2] = textures[0];

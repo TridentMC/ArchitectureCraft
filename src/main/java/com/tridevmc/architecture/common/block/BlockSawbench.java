@@ -24,16 +24,19 @@
 
 package com.tridevmc.architecture.common.block;
 
+import com.tridevmc.architecture.client.ui.UISawbench;
 import com.tridevmc.architecture.common.render.ModelSpec;
-import com.tridevmc.architecture.common.tile.TileSawbench;
+import com.tridevmc.architecture.common.tile.ContainerSawbench;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import com.tridevmc.architecture.common.ui.CreateMenuContext;
+import com.tridevmc.architecture.common.ui.IElementProvider;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -42,13 +45,15 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-public class BlockSawbench extends BlockArchitecture<TileSawbench> {
+import javax.annotation.Nullable;
+
+public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
     static String model = "objson/block/sawbench.objson";
     static ModelSpec modelSpec = new ModelSpec(model);
 
     public BlockSawbench() {
-        super(Material.WOOD, TileSawbench.class);
+        super(Material.WOOD);
     }
 
     @Override
@@ -71,22 +76,11 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
         return false;
     }
 
-    /*@Override TODO: not sure if this is gone, or just replaced.
-    public boolean isFullCube(BlockState state) {
-        return false;
-    }*/
-
-    /*@Override TODO: not sure if this is gone, or just replaced.
-    public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }*/
-
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (!player.isCrouching()) {
-            TileEntity tile = world.getTileEntity(pos);
-            if (tile instanceof TileSawbench) {
-                ArchitectureUIHooks.openGui(player, (TileSawbench) tile);
+            if (!world.isRemote) {
+                ArchitectureUIHooks.openGui((ServerPlayerEntity) player, this, pos);
             }
             return ActionResultType.PASS;
         } else {
@@ -94,19 +88,25 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
         }
     }
 
-
     @Override
-    public TileEntity createNewTileEntity(IBlockReader reader) {
-        return new TileSawbench();
+    public Screen createScreen(ContainerSawbench container, PlayerEntity player) {
+        return new UISawbench(container, player);
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(CreateMenuContext context) {
+        return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState replacedWith, boolean isMoving) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof IInventory) {
-            ItemStack items = ((IInventory) te).getStackInSlot(TileSawbench.materialSlot);
-            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), items);
-        }
+    public boolean hasTileEntity() {
+        return false;
+    }
 
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+        return null;
     }
 }

@@ -37,7 +37,6 @@ import com.tridevmc.architecture.common.item.ItemHammer;
 import com.tridevmc.architecture.common.itemgroup.ArchitectureItemGroup;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.tile.TileSawbench;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import net.minecraft.block.Block;
@@ -67,7 +66,6 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 public class ArchitectureContent {
 
     public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> (ArchitectureContent.this.itemHammer != null) ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
-    public final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> EnumShape.ROOF_TILE.kind.newStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState(), 1));
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
@@ -77,7 +75,6 @@ public class ArchitectureContent {
     public BlockSawbench blockSawbench;
     public BlockShape blockShape;
     public TileEntityType<TileShape> tileTypeShape;
-    public TileEntityType<TileSawbench> tileTypeSawbench;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
@@ -89,7 +86,6 @@ public class ArchitectureContent {
     public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e) {
         IForgeRegistry<TileEntityType<?>> registry = e.getRegistry();
         this.tileTypeShape = this.registerTileEntity(registry, TileShape::new, "shape");
-        this.tileTypeSawbench = this.registerTileEntity(registry, TileSawbench::new, "sawbench");
     }
 
     @SubscribeEvent

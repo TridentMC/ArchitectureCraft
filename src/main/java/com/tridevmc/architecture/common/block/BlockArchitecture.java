@@ -32,7 +32,6 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
-import com.tridevmc.architecture.common.tile.TileArchitecture;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -44,18 +43,15 @@ import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.IProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -63,8 +59,6 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -74,8 +68,7 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("ALL")
-public class BlockArchitecture<TE extends TileArchitecture>
-        extends ContainerBlock implements ITextureConsumer {
+public abstract class BlockArchitecture extends ContainerBlock implements ITextureConsumer {
 
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
@@ -86,41 +79,23 @@ public class BlockArchitecture<TE extends TileArchitecture>
     protected Object[][] propertyValues;
     protected int numProperties; // Do not explicitly initialise
     protected BlockRenderType renderID = BlockRenderType.MODEL;
-    protected Class<? extends TileEntity> tileEntityClass = null;
     protected IOrientationHandler orientationHandler = orient1Way;
     protected String[] textureNames;
     protected ModelSpec modelSpec;
     protected AxisAlignedBB boxHit;
-    protected ThreadLocal<TileEntity> harvestingTileEntity = new ThreadLocal();
 
-    public BlockArchitecture(Material material) {
-        this(material, null, null, null);
-    }
 
     // --------------------------- Constructors -------------------------------
 
+    public BlockArchitecture(Material material) {
+        this(material, null);
+    }
+
     public BlockArchitecture(Material material, IOrientationHandler orient) {
-        this(material, orient, null, null);
-    }
-
-    public BlockArchitecture(Material material, Class<TE> teClass) {
-        this(material, null, teClass, null);
-    }
-
-    public BlockArchitecture(Material material, IOrientationHandler orient, Class<TE> teClass) {
-        this(material, orient, teClass, null);
-    }
-
-    public BlockArchitecture(Material material, Class<TE> teClass, String teID) {
-        this(material, null, teClass, teID);
-    }
-
-    public BlockArchitecture(Material material, IOrientationHandler orient, Class<TE> teClass, String teID) {
         super(Block.Properties.create(material, material.getColor()).notSolid());
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
-        this.tileEntityClass = teClass;
     }
 
     public IOrientationHandler getOrientationHandler() {
@@ -180,33 +155,6 @@ public class BlockArchitecture<TE extends TileArchitecture>
         if (this.properties == null) this.defineProperties();
         Arrays.stream(this.properties).filter(Objects::nonNull).forEach(builder::add);
         super.fillStateContainer(builder);
-    }
-
-    // -------------------------- Subtypes ------------------------------
-
-    @Override
-    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
-        harvestingTileEntity.set(te);
-        super.harvestBlock(world, player, pos, state, te, stack);
-        harvestingTileEntity.set(null);
-    }
-
-    // -------------------------- Harvesting ----------------------------
-
-    @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) {
-        NonNullList<ItemStack> drops = NonNullList.create();
-        TileEntity te = context.getWorld().getTileEntity(context.get(LootParameters.POSITION));
-        if (te == null)
-            te = harvestingTileEntity.get();
-        drops.addAll(getDropsFromTileEntity(context, state));
-        return null;
-    }
-
-    protected NonNullList<ItemStack> getDropsFromTileEntity(LootContext.Builder context, BlockState state) {
-        NonNullList<ItemStack> drops = NonNullList.create();
-        super.getDrops(state, context);
-        return drops;
     }
 
     @Override
@@ -271,63 +219,11 @@ public class BlockArchitecture<TE extends TileArchitecture>
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return tileEntityClass != null;
-    }
-
-    public TE getTileEntity(IBlockReader world, BlockPos pos) {
-        if (hasTileEntity()) {
-            TileEntity te = world.getTileEntity(pos);
-            if (tileEntityClass.isInstance(te))
-                return (TE) te;
-        }
-        return null;
-    }
-
-    // -------------------------- Tile Entity -----------------------------
-
-    @Override
-    public TileEntity createNewTileEntity(IBlockReader reader) {
-        if (tileEntityClass != null) {
-            try {
-                return tileEntityClass.newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else
-            return null;
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         Vec3d hit = context.getHitVec();
         BlockState state = getOrientationHandler().onBlockPlaced(this, context.getWorld(), context.getPos(), context.getFace(),
                 hit.getX(), hit.getY(), hit.getZ(), getDefaultState(), context.getPlayer());
         return state;
-    }
-
-    @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onBlockAdded(state, world, pos, oldState, isMoving);
-
-        if (hasTileEntity(state)) {
-            TileEntity te = getTileEntity(world, pos);
-            if (te instanceof TileArchitecture)
-                ((TileArchitecture) te).onAddedToWorld();
-        }
-    }
-
-    // -------------------------------------------------------------------
-
-
-    @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (hasTileEntity(state)) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof IInventory)
-                InventoryHelper.dropInventoryItems(world, pos, (IInventory) te);
-        }
-        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     @Override

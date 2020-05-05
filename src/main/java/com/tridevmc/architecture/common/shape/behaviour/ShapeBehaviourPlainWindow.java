@@ -2,7 +2,6 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.shape.WindowShapeKinds;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,12 +27,12 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
     public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction face,
                                      Vector3 hit) {
         if (nte != null && !player.isCrouching()) {
-            if (nte.shape.kind instanceof WindowShapeKinds.PlainWindow) {
+            if (nte.shape.behaviour instanceof ShapeBehaviourPlainWindow) {
                 te.setSide(nte.getSide());
                 te.setTurn(nte.getTurn());
                 return true;
             }
-            if (nte.shape.kind instanceof WindowShapeKinds.CornerWindow) {
+            if (nte.shape.behaviour instanceof ShapeBehaviourCornerWindow) {
                 Direction nlf = nte.localFace(face);
                 ShapeBehaviourWindow.FrameType nfk = ((ShapeBehaviourWindow) nte.shape.behaviour).frameTypeForLocalSide(nlf);
                 if (nfk == FrameType.PLAIN) {
