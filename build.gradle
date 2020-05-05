@@ -52,6 +52,7 @@ ext {
 
 configurations {
     nonModDep
+    shade
 }
 
 minecraft {
@@ -121,8 +122,10 @@ def needsShadow = !project.ext.compoundModules.isEmpty()
 if (needsShadow) {
     dependencies {
         for (String module : project.ext.compoundModules) {
-            compile 'com.tridevmc.compound:compound' + '-' + module + ':' + project.ext.compoundVersion
-            nonModDep 'com.tridevmc.compound:compound' + '-' + module + ':' + project.ext.compoundVersion
+            def module_identifier = 'com.tridevmc.compound:compound' + '-' + module + ':' + project.ext.compoundVersion
+            compile module_identifier
+            shade module_identifier
+            nonModDep module_identifier
         }
     }
 
@@ -140,6 +143,11 @@ if (needsShadow) {
     }
 
     compileJava.dependsOn(extractNonMod)
+
+    shadowJar {
+        configurations = [project.configurations.shade]
+        relocate 'com.tridevmc.compound', project.ext.projectPackage + '.com.tridevmc.compound'
+    }
 }
 
 ext.early = false

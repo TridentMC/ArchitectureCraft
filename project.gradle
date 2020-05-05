@@ -2,6 +2,7 @@
 
 ext {
     group = 'com.tridevmc'
+    projectPackage = 'com.tridevmc.architecture'
     projectName = 'architecturecraft'
 
     useElytraVersionFormat = true
