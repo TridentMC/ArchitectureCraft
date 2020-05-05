@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.ui;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,10 +43,14 @@ public class ArchitectureUIHooks {
             switch (type) {
                 case TILE:
                     BlockPos pos = data.readBlockPos();
+                    BlockState state = world.getBlockState(pos);
                     TileEntity tile = world.getTileEntity(pos);
                     if (tile instanceof IElementProvider) {
                         lastProvider = Optional.of((IElementProvider) tile);
                         return (C) ((IElementProvider) tile).createMenu(windowId, inv, inv.player);
+                    } else if (state.getBlock() instanceof IElementProvider) {
+                        lastProvider = Optional.of((IElementProvider) state.getBlock());
+                        return (C) ((IElementProvider) state.getBlock()).createMenu(windowId, inv, inv.player);
                     }
                 case ENTITY:
                     int entityId = data.readVarInt();
