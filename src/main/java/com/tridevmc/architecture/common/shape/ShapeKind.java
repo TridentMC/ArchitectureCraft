@@ -84,16 +84,6 @@ public abstract class ShapeKind {
         return 0;
     }
 
-    public ItemStack newStack(EnumShape shape, BlockState materialState, int stackSize) {
-        TileShape te = new TileShape(shape, materialState);
-        int light = te.baseBlockState.getLightValue();
-        return TileArchitecture.blockStackWithTileEntity(ArchitectureMod.CONTENT.blockShape, stackSize, light, te);
-    }
-
-    public ItemStack newStack(EnumShape shape, Block materialBlock, int stackSize) {
-        return this.newStack(shape, materialBlock.getDefaultState(), stackSize);
-    }
-
     public boolean orientOnPlacement(PlayerEntity player, TileShape te,
                                      BlockPos npos, BlockState nstate, TileEntity nte, Direction otherFace, Vector3 hit) {
         if (nte instanceof TileShape)
@@ -392,7 +382,6 @@ public abstract class ShapeKind {
     }
 
     public static abstract class Window extends ShapeKind {
-
         public Direction[] frameSides;
 
         public boolean[] frameAlways;

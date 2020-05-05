@@ -221,7 +221,7 @@ public class TileSawbench extends TileArchitectureInventory implements IElementP
         EnumShape resultShape = this.getSelectedShape();
         if (resultShape != null) {
             ItemStack materialStack = this.getStackInSlot(materialSlot);
-            if (!materialStack.isEmpty() && materialStack.getCount() >= resultShape.materialUsed) {
+            if (!materialStack.isEmpty() && materialStack.getCount() >= resultShape.materialCost) {
                 Item materialItem = materialStack.getItem();
                 if (materialItem instanceof BlockItem) {
                     Block materialBlock = Block.getBlockFromItem(materialItem);
@@ -252,7 +252,7 @@ public class TileSawbench extends TileArchitectureInventory implements IElementP
         }
         EnumShape shape = this.getSelectedShape();
         if (shape != null)
-            return factor * shape.materialUsed;
+            return factor * shape.materialCost;
         return 0;
     }
 

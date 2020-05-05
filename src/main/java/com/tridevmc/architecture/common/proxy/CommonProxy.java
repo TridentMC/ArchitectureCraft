@@ -24,10 +24,10 @@
 
 package com.tridevmc.architecture.common.proxy;
 
+import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.google.common.collect.Maps;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -63,6 +63,6 @@ public class CommonProxy {
     }
 
     public ResourceLocation modelLocation(String path) {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, "models/" + path);
+        return new ResourceLocation(ArchitectureMod.MOD_ID, path);
     }
 }

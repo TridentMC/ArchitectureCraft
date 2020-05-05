@@ -44,9 +44,8 @@ import net.minecraft.world.World;
 
 public class BlockSawbench extends BlockArchitecture<TileSawbench> {
 
-    static String model = "block/sawbench.objson";
-    static String[] textures = {"sawbench-wood", "sawbench-metal"};
-    static ModelSpec modelSpec = new ModelSpec(model, textures);
+    static String model = "objson/block/sawbench.objson";
+    static ModelSpec modelSpec = new ModelSpec(model);
 
     public BlockSawbench() {
         super(Material.WOOD, TileSawbench.class);
@@ -60,11 +59,6 @@ public class BlockSawbench extends BlockArchitecture<TileSawbench> {
     @Override
     public IOrientationHandler getOrientationHandler() {
         return BaseOrientation.orient4WaysByState;
-    }
-
-    @Override
-    public String[] getTextureNames() {
-        return textures;
     }
 
     @Override

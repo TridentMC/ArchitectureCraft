@@ -24,7 +24,6 @@
 
 package com.tridevmc.architecture.common.shape;
 
-import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
@@ -97,7 +96,7 @@ public class ItemShape extends BlockItem {
             int id = tag.getInt("Shape");
             EnumShape shape = EnumShape.forId(id);
             if (shape != null)
-                lines.set(0, new StringTextComponent(shape.title));
+                lines.set(0, new StringTextComponent(shape.getLocalizedShapeName()));
             else
                 lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + id + ")"));
             Block baseBlock = Block.getStateById(tag.getInt("Block")).getBlock();
@@ -144,6 +143,6 @@ public class ItemShape extends BlockItem {
         int id = tag.getInt("Shape");
         EnumShape shape = EnumShape.forId(id);
         BlockState state = Block.getStateById(tag.getInt("Block"));
-        return new StringTextComponent(shape.title + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        return new StringTextComponent(shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }
