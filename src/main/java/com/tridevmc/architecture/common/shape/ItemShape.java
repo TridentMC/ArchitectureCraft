@@ -24,7 +24,9 @@
 
 package com.tridevmc.architecture.common.shape;
 
+import com.google.common.collect.Maps;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileShape;
@@ -44,16 +46,50 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 public class ItemShape extends BlockItem {
 
-    static Random rand = new Random();
+    private static Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
+    private EnumShape shape;
 
-    public ItemShape(Block block, Item.Properties builder) {
+    public ItemShape(BlockShape block, Item.Properties builder) {
         super(block, builder);
+        this.shape = block.getArchitectureShape();
+        SHAPE_ITEMS.put(block.getArchitectureShape(), this);
+    }
+
+    @Nonnull
+    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState) {
+        return createStack(shape, baseBlockState, 1);
+    }
+
+    @Nonnull
+    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState, int count) {
+        CompoundNBT tag = new CompoundNBT();
+        ItemStack stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
+        tag.putInt("BaseBlockState", Block.getStateId(baseBlockState));
+        stack.setTag(tag);
+        return stack;
+    }
+
+    @Nullable
+    public static EnumShape getShapeFromStack(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item instanceof ItemShape) {
+            return ((ItemShape) item).shape;
+        } else {
+            return null;
+        }
+    }
+
+    @Nonnull
+    public static BlockState getStateFromStack(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        return Block.getStateById(tag.getInt("BaseBlockState"));
     }
 
     @Override
@@ -68,17 +104,16 @@ public class ItemShape extends BlockItem {
         double hitZ = context.getHitVec().getZ();
         if (!world.setBlockState(pos, newState, 3))
             return false;
-        Vec3i d = Vector3.getDirectionVec(face);
-        Vector3 hit = new Vector3(hitX - d.getX() - 0.5, hitY - d.getY() - 0.5, hitZ - d.getZ() - 0.5);
-        TileShape te = TileShape.get(world, pos);
-        if (te != null) {
-            te.readFromItemStack(stack);
-            if (te.shape != null) {
-                BlockPos npos = te.getPos().offset(face.getOpposite());
-                BlockState nstate = world.getBlockState(npos);
-                TileEntity nte = world.getTileEntity(npos);
-                te.shape.orientOnPlacement(player, te, npos, nstate, nte, face, hit);
-            }
+        Vec3i dirVec = Vector3.getDirectionVec(face);
+        Vector3 hit = new Vector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
+        TileShape tile = TileShape.get(world, pos);
+        if (tile != null) {
+            BlockState state = getStateFromStack(stack);
+            tile.setBaseBlockState(state);
+            BlockPos neighbourPos = tile.getPos().offset(face.getOpposite());
+            BlockState neighbourState = world.getBlockState(neighbourPos);
+            TileEntity neighbourTile = world.getTileEntity(neighbourPos);
+            this.shape.orientOnPlacement(player, tile, neighbourPos, neighbourState, neighbourTile, face, hit);
         }
         return true;
     }
@@ -93,31 +128,22 @@ public class ItemShape extends BlockItem {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
         CompoundNBT tag = stack.getTag();
         if (tag != null) {
-            int id = tag.getInt("Shape");
-            EnumShape shape = EnumShape.forId(id);
-            if (shape != null)
-                lines.set(0, new StringTextComponent(shape.getLocalizedShapeName()));
+            if (this.shape != null)
+                lines.set(0, new StringTextComponent(this.shape.getLocalizedShapeName()));
             else
-                lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + id + ")"));
-            Block baseBlock = Block.getStateById(tag.getInt("Block")).getBlock();
+                lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + -1 + ")"));
+            Block baseBlock = getStateFromStack(stack).getBlock();
             lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(baseBlock)));
         }
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (false) {
-            for (EnumShape shape : EnumShape.values()) {
-                if (shape.isCladding())
-                    continue;
+        if (group == ArchitectureMod.CONTENT.TOOL_TAB) {
+            if (this.shape.isCladding())
+                return;
 
-                ItemStack defaultStack = new ItemStack(this, 1);
-                CompoundNBT tag = new CompoundNBT();
-                tag.putInt("Shape", shape.id);
-                tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
-                defaultStack.setTag(tag);
-                items.add(defaultStack);
-            }
+            items.add(createStack(this.shape, Blocks.OAK_PLANKS.getDefaultState()));
         }
 
         super.fillItemGroup(group, items);
@@ -125,13 +151,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public ItemStack getDefaultInstance() {
-        ItemStack defaultStack = new ItemStack(this, 1);
-        CompoundNBT tag = new CompoundNBT();
-        tag.putInt("Shape", EnumShape.ROOF_TILE.id);
-        tag.putInt("Block", Block.getStateId(Blocks.OAK_PLANKS.getDefaultState()));
-        defaultStack.setTag(tag);
-
-        return defaultStack;
+        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState());
     }
 
     @Override
@@ -140,9 +160,7 @@ public class ItemShape extends BlockItem {
         if (tag == null)
             return super.getDisplayName(stack);
 
-        int id = tag.getInt("Shape");
-        EnumShape shape = EnumShape.forId(id);
-        BlockState state = Block.getStateById(tag.getInt("Block"));
-        return new StringTextComponent(shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        BlockState state = getStateFromStack(stack);
+        return new StringTextComponent(this.shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

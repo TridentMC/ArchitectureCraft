@@ -24,8 +24,11 @@
 
 package com.tridevmc.architecture.common.block;
 
+import com.google.common.collect.Maps;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
@@ -39,7 +42,6 @@ import net.minecraft.state.IntegerProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -49,8 +51,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -58,24 +58,33 @@ import net.minecraftforge.common.ToolType;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BlockShape extends BlockArchitecture {
 
+    private static Map<EnumShape, BlockShape> SHAPE_BLOCKS = Maps.newHashMap();
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     protected AxisAlignedBB boxHit;
+    private final EnumShape architectureShape;
 
-    public BlockShape() {
+    public BlockShape(EnumShape architectureShape) {
         super(Material.EARTH);
+        this.architectureShape = architectureShape;
+        SHAPE_BLOCKS.put(architectureShape, this);
     }
 
     @Override
     public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos) {
         TileShape shape = TileShape.get(worldIn, pos);
-        if (shape != null && shape.baseBlockState != null) {
-            return shape.baseBlockState.getBlockHardness(worldIn, pos);
+        if (shape != null && shape.getBaseBlockState() != null) {
+            return shape.getBaseBlockState().getBlockHardness(worldIn, pos);
         }
 
         return super.getBlockHardness(blockState, worldIn, pos);
+    }
+
+    public EnumShape getArchitectureShape() {
+        return this.architectureShape;
     }
 
     public static float acBlockStrength(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
@@ -125,26 +134,10 @@ public class BlockShape extends BlockArchitecture {
         return BaseOrientation.orient24WaysByTE;
     }
 
-    /*@Override TODO: Not sure if this method is gone, or just got a new name.
-    public boolean isFullCube(BlockState state) {
-        return false;
-    }*/
-
-    /*@Override TODO: Not sure if this method is gone, or just got a new name.
-    public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }*/
-
-    /*@Override TODO: Replaced by VoxelShape - not sure how I want to calculate shapes for shape blocks.
-    public BlockFaceShape getBlockFaceShape(IBlockReader worldIn, BlockState state, BlockPos pos, Direction face) {
-        return BlockFaceShape.UNDEFINED;
-    }*/
-
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
         if (this.boxHit != null) {
-            TileShape te = TileShape.get(world, pos);
-            if (te != null && te.shape.behaviour.highlightZones())
+            if (this.getArchitectureShape().behaviour.highlightZones())
                 return VoxelShapes.create(this.boxHit);
         }
         AxisAlignedBB box = this.getLocalBounds(world, pos, state, null);
@@ -162,7 +155,7 @@ public class BlockShape extends BlockArchitecture {
             Trans3 t = te.localToGlobalTransformation();
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return new ArrayList<AxisAlignedBB>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -173,7 +166,7 @@ public class BlockShape extends BlockArchitecture {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return new ArrayList<AxisAlignedBB>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -182,7 +175,7 @@ public class BlockShape extends BlockArchitecture {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.blockCenter);
-            return te.shape.behaviour.getBounds(te, world, pos, state, entity, t);
+            return this.getArchitectureShape().behaviour.getBounds(te, world, pos, state, entity, t);
         }
         return null; // Causes getBoundingBox to fall back on super implementation
     }
@@ -190,7 +183,7 @@ public class BlockShape extends BlockArchitecture {
     protected List<AxisAlignedBB> getCollisionBoxes(TileShape te,
                                                     IBlockReader world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
         List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        te.shape.behaviour.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
+        this.getArchitectureShape().behaviour.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
         return list;
     }
 
@@ -215,7 +208,7 @@ public class BlockShape extends BlockArchitecture {
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
         TileShape te = TileShape.get(world, pos);
         if (te != null)
-            return te.newItemStack(1);
+            return ItemShape.createStack(this.getArchitectureShape(), te.getBaseBlockState(), 1);
         else
             return ItemStack.EMPTY;
     }
@@ -223,7 +216,7 @@ public class BlockShape extends BlockArchitecture {
     public BlockState getBaseBlockState(IBlockReader world, BlockPos pos) {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null)
-            return te.baseBlockState;
+            return te.getBaseBlockState();
         return null;
     }
 
@@ -236,7 +229,6 @@ public class BlockShape extends BlockArchitecture {
         float result = 1.0F;
         BlockState base = this.getBaseBlockState(world, pos);
         if (base != null) {
-            //System.out.printf("ShapeBlock.getPlayerRelativeBlockHardness: base = %s\n", base);
             result = acBlockStrength(base, player, world, pos);
         }
         return result;
@@ -277,6 +269,6 @@ public class BlockShape extends BlockArchitecture {
     @Nullable
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return new TileShape();
+        return new TileShape(this);
     }
 }

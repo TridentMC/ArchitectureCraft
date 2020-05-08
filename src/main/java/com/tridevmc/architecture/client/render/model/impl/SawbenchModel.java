@@ -19,7 +19,7 @@ public class SawbenchModel extends OBJSONModel {
     private static boolean needsInit = true;
 
     public SawbenchModel() {
-        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "objson/block/sawbench.objson")), true, false);
+        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench.objson")), true, false);
     }
 
     @Override

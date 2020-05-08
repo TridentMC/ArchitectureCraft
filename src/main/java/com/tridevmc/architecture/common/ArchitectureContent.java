@@ -35,12 +35,11 @@ import com.tridevmc.architecture.common.item.ItemChisel;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.item.ItemHammer;
 import com.tridevmc.architecture.common.itemgroup.ArchitectureItemGroup;
-import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
@@ -59,6 +58,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
@@ -73,7 +74,7 @@ public class ArchitectureContent {
     private static List<Item> itemBlocksToRegister = Lists.newArrayList();
 
     public BlockSawbench blockSawbench;
-    public BlockShape blockShape;
+    public Map<EnumShape, BlockShape> blockShapes;
     public TileEntityType<TileShape> tileTypeShape;
     public Item itemSawblade;
     public Item itemLargePulley;
@@ -92,7 +93,10 @@ public class ArchitectureContent {
     public void onBlockRegister(RegistryEvent.Register<Block> e) {
         IForgeRegistry<Block> registry = e.getRegistry();
         this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
-        this.blockShape = this.registerBlock(registry, "shape", new BlockShape(), ItemShape.class);
+        this.blockShapes = Maps.newHashMap();
+        for (EnumShape shape : EnumShape.values()) {
+            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getName(), new BlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
+        }
     }
 
     @SubscribeEvent
@@ -140,18 +144,13 @@ public class ArchitectureContent {
         return (T) registeredBlocks.get(id);
     }
 
-    private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, Class<? extends BlockItem> itemBlockClass) {
-        try {
-            block.setRegistryName(REGISTRY_PREFIX, id);
-            registry.register(block);
-
-            BlockItem itemBlock = itemBlockClass.getDeclaredConstructor(Block.class, Item.Properties.class).newInstance(block, new Item.Properties());
-            itemBlock.setRegistryName(REGISTRY_PREFIX, id);
-            itemBlocksToRegister.add(itemBlock);
-            registeredBlocks.put(id, block);
-        } catch (Exception e) {
-            ArchitectureLog.error("Caught exception while registering " + block, e);
-        }
+    private <T extends Block> T registerBlock(IForgeRegistry<Block> registry, String id, T block, Function<T, ? extends BlockItem> itemBlockGenerator) {
+        block.setRegistryName(REGISTRY_PREFIX, id);
+        registry.register(block);
+        BlockItem itemBlock = itemBlockGenerator.apply(block);
+        itemBlock.setRegistryName(REGISTRY_PREFIX, id);
+        itemBlocksToRegister.add(itemBlock);
+        registeredBlocks.put(id, block);
 
         return (T) registeredBlocks.get(id);
     }

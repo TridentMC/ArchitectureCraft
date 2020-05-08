@@ -28,7 +28,7 @@ import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileArchitecture;
+import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -118,8 +118,8 @@ public class BaseOrientation {
         @Override
         public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
             TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileArchitecture) {
-                TileArchitecture bte = (TileArchitecture) te;
+            if (te instanceof TileShape) {
+                TileShape bte = (TileShape) te;
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(world, pos, state, origin);

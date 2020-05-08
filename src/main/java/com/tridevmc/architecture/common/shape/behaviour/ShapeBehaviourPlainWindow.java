@@ -27,14 +27,14 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
     public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction face,
                                      Vector3 hit) {
         if (nte != null && !player.isCrouching()) {
-            if (nte.shape.behaviour instanceof ShapeBehaviourPlainWindow) {
+            if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourPlainWindow) {
                 te.setSide(nte.getSide());
                 te.setTurn(nte.getTurn());
                 return true;
             }
-            if (nte.shape.behaviour instanceof ShapeBehaviourCornerWindow) {
+            if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourCornerWindow) {
                 Direction nlf = nte.localFace(face);
-                ShapeBehaviourWindow.FrameType nfk = ((ShapeBehaviourWindow) nte.shape.behaviour).frameTypeForLocalSide(nlf);
+                ShapeBehaviourWindow.FrameType nfk = ((ShapeBehaviourWindow) nte.getArchitectureShape().behaviour).frameTypeForLocalSide(nlf);
                 if (nfk == FrameType.PLAIN) {
                     Direction lf = face.getOpposite();
                     te.setSide(nte.getSide());

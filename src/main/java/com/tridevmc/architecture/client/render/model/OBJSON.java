@@ -20,7 +20,7 @@ public class OBJSON {
 
     public static OBJSON fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
-        String path = String.format("/data/%s/%s", location.getNamespace(), location.getPath());
+        String path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
         InputStream in = OBJSON.class.getResourceAsStream(path);
         OBJSON model = GSON.fromJson(new InputStreamReader(in), OBJSON.class);
         model.setNormals();

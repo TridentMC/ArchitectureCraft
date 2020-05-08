@@ -31,6 +31,6 @@ public class DumbBlockReader implements IBlockReader {
 
     @Override
     public IFluidState getFluidState(BlockPos pos) {
-        return Fluids.EMPTY.getDefaultState();
+        return this.state.getFluidState();
     }
 }

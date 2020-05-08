@@ -85,9 +85,9 @@ public class Utils {
             TileShape shape = TileShape.get(world, pos);
 
             if (renderPrimary) {
-                return getSpriteForBlockState(shape.baseBlockState);
+                return getSpriteForBlockState(shape.getBaseBlockState());
             } else {
-                return getSpriteForBlockState(shape.secondaryBlockState);
+                return getSpriteForBlockState(shape.getSecondaryBlockState());
             }
         } else if (!renderPrimary) {
             return null;

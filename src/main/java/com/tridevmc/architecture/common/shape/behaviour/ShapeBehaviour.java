@@ -47,15 +47,16 @@ public class ShapeBehaviour {
 
     public boolean orientOnPlacement(PlayerEntity player, TileShape tile, TileShape neighbourTile, Direction otherFace, Vector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
-            Object otherProfile = Profile.getProfileGlobal(neighbourTile.shape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
+            EnumShape neighbourShape = neighbourTile.getArchitectureShape();
+            Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
             if (otherProfile != null) {
                 Direction thisFace = otherFace.getOpposite();
                 for (int i = 0; i < 4; i++) {
                     int turn = (neighbourTile.getTurn() + i) & 3;
-                    Object thisProfile = Profile.getProfileGlobal(tile.shape, neighbourTile.getSide(), turn, thisFace);
+                    Object thisProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), turn, thisFace);
                     if (Profile.matches(thisProfile, otherProfile)) {
                         tile.setSide(neighbourTile.getSide());
-                        tile.setTurn(turn);
+                        tile.setTurn((byte) turn);
                         tile.setOffsetX(neighbourTile.getOffsetX());
                         return true;
                     }
@@ -94,8 +95,8 @@ public class ShapeBehaviour {
     }
 
     public void chiselUsedOnCentre(TileShape te, PlayerEntity player) {
-        if (te.secondaryBlockState != null) {
-            ItemStack stack = this.newSecondaryMaterialStack(te.secondaryBlockState);
+        if (te.getSecondaryBlockState() != null) {
+            ItemStack stack = this.newSecondaryMaterialStack(te.getSecondaryBlockState());
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
                     Block.spawnAsEntity(te.getWorld(), te.getPos(), stack);
@@ -123,7 +124,6 @@ public class ShapeBehaviour {
             if (dx >= 0)
                 te.setTurn((te.getTurn() + 1) % 4);
         }
-        te.markBlockChanged();
     }
 
     public Direction zoneHit(Direction face, Vector3 hit) {
@@ -158,7 +158,7 @@ public class ShapeBehaviour {
 
     public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                         Entity entity, Trans3 t, List list) {
-        int mask = te.shape.occlusionMask;
+        int mask = te.getArchitectureShape().occlusionMask;
         int param = mask & 0xff;
         double r, h;
         switch (mask & 0xff00) {

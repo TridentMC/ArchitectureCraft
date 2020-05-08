@@ -57,7 +57,7 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     @Override
     public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
                                         Entity entity, Trans3 t, List list) {
-        if (te.shape.occlusionMask == 0)
+        if (te.getArchitectureShape().occlusionMask == 0)
             this.getOBJSONModel().addBoxesToList(t, list);
         else
             super.addCollisionBoxesToList(te, world, pos, state, entity, t, list);

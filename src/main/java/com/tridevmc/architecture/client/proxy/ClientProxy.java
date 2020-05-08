@@ -27,7 +27,6 @@ package com.tridevmc.architecture.client.proxy;
 import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureModelLoader;
-import com.tridevmc.architecture.client.render.shape.ShapeRenderDispatcher;
 import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
@@ -49,7 +48,6 @@ import java.util.stream.Collectors;
 
 public class ClientProxy extends CommonProxy {
 
-    public static final ShapeRenderDispatcher SHAPE_RENDER_DISPATCHER = new ShapeRenderDispatcher();
     public static final RenderingManager RENDERING_MANAGER = new RenderingManager();
 
     @Override
@@ -136,7 +134,7 @@ public class ClientProxy extends CommonProxy {
         //RENDERING_MANAGER.addItemRenderer(ArchitectureMod.CONTENT.itemCladding, new RenderCladding());
 
         RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockShape, (l) -> true);
+        ArchitectureMod.CONTENT.blockShapes.values().forEach(b -> RenderTypeLookup.setRenderLayer(b, (l) -> true));
     }
 
     private ResourceLocation[] getTextures(String... textureNames) {

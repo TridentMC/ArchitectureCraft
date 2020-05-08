@@ -28,7 +28,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction otherFace, Vector3 hit) {
         int turn = -1;
         // If click is on side of a non-window block, orient perpendicular to it
-        if (!player.isCrouching() && (nte == null || !(nte.shape.behaviour instanceof ShapeBehaviourWindow))) {
+        if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow))) {
             switch (otherFace) {
                 case EAST:
                 case WEST:
@@ -96,7 +96,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
             }
             e[i] = frame ? 0.5 - r : 0.5;
         }
-        if (te.secondaryBlockState != null)
+        if (te.getSecondaryBlockState() != null)
             this.addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
 
         if (list.isEmpty()) {
@@ -126,8 +126,8 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         if (thisFrameType != FrameType.NONE) {
             Direction thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
             TileShape nte = te.getConnectedNeighbourGlobal(globalDir);
-            if (nte != null && nte.shape.behaviour instanceof ShapeBehaviourWindow) {
-                ShapeBehaviourWindow otherType = (ShapeBehaviourWindow) nte.shape.behaviour;
+            if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
+                ShapeBehaviourWindow otherType = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
                 Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
                 FrameType otherFrameType = otherType.frameTypeForLocalSide(otherLocalDir);
                 if (otherFrameType != FrameType.NONE) {

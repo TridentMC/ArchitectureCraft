@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
-    static String model = "objson/block/sawbench.objson";
+    static String model = "block/sawbench.objson";
     static ModelSpec modelSpec = new ModelSpec(model);
 
     public BlockSawbench() {
@@ -82,7 +82,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
             if (!world.isRemote) {
                 ArchitectureUIHooks.openGui((ServerPlayerEntity) player, this, pos);
             }
-            return ActionResultType.PASS;
+            return ActionResultType.SUCCESS;
         } else {
             return ActionResultType.FAIL;
         }

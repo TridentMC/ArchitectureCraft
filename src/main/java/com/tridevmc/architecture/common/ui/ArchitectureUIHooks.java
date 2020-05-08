@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.ui;
 
+import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.Entity;
@@ -29,7 +30,7 @@ public class ArchitectureUIHooks {
 
     public static <C extends Container> ContainerType<C> register(IForgeRegistry<ContainerType<?>> registry) {
         ContainerType<C> containerType = IForgeContainerType.create(getFactory());
-        containerType.setRegistryName("davincisvessels", "containers");
+        containerType.setRegistryName(ArchitectureMod.MOD_ID, "containers");
         registry.register(containerType);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ScreenManager.registerFactory(containerType, getScreenFactory()));
         return containerType;

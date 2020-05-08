@@ -59,7 +59,7 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
                 int side = otherFace.getOpposite().ordinal();
                 if (side == nside) {
                     Vector3 h = Trans3.sideTurn(side, 0).ip(hit);
-                    double offx = te.shape.offsetXForPlacementHit(side, nturn, hit);
+                    double offx = te.getArchitectureShape().offsetXForPlacementHit(side, nturn, hit);
                     te.setSide(side);
                     te.setTurn(nturn & 3);
                     te.setOffsetX(offx);

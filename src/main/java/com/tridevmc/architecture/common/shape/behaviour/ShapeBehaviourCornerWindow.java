@@ -49,8 +49,8 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
     public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction face,
                                      Vector3 hit) {
         if (nte != null && !player.isCrouching()) {
-            if (nte.shape.behaviour instanceof ShapeBehaviourWindow) {
-                ShapeBehaviourWindow nsk = (ShapeBehaviourWindow) nte.shape.behaviour;
+            if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
+                ShapeBehaviourWindow nsk = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
                 Direction nlf = nte.localFace(face);
                 FrameType nfk = nsk.frameTypeForLocalSide(nlf);
                 switch (nfk) {
@@ -70,8 +70,8 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
 
     protected boolean orientFromAdjacentCorner(TileShape te, Direction face, Vector3 hit) {
         TileShape nte = TileShape.get(te.getWorld(), te.getPos().offset(face.getOpposite()));
-        if (nte != null && nte.shape.behaviour instanceof ShapeBehaviourWindow) {
-            ShapeBehaviourWindow nsk = (ShapeBehaviourWindow) nte.shape.behaviour;
+        if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
+            ShapeBehaviourWindow nsk = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
             Direction nlf = nte.localFace(face);
             FrameType nfk = nsk.frameTypeForLocalSide(nlf);
             if (nfk == FrameType.CORNER) {
