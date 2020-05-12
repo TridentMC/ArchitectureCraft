@@ -6,6 +6,7 @@ import com.tridevmc.architecture.client.render.model.OBJSONModel;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.DumbLightReader;
 import net.minecraft.block.BlockState;
@@ -22,9 +23,11 @@ import java.util.Map;
 public class ShapeModel extends OBJSONModel {
 
     private static final Map<BlockState, TextureAtlasSprite> SPRITE_CACHE = Maps.newHashMap();
+    private EnumShape shape;
 
-    public ShapeModel(EnumShape shape) {
-        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "objson/shape/" + shape.getName() + ".objson")), true, false);
+    public ShapeModel(EnumShape shape, ShapeBehaviourModel shapeBehaviour, boolean generateUVs) {
+        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, shapeBehaviour.getModelName())), generateUVs, false);
+        this.shape = shape;
     }
 
     @Override

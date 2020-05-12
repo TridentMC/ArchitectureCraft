@@ -1,0 +1,5 @@
+{
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "sphere_quarter_r8",
+    "generateUVs": false
+}

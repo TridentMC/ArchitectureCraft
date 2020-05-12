@@ -45,6 +45,10 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
         return this.model;
     }
 
+    public String getModelName() {
+        return this.modelName;
+    }
+
     @Override
     public boolean acceptsCladding() {
         OBJSON model = (OBJSON) this.getOBJSONModel();

@@ -56,6 +56,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 public class ArchitectureContent {
 
     public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> (ArchitectureContent.this.itemHammer != null) ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
+    public final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> (ArchitectureContent.this.itemShapes != null) ? ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() : ItemStack.EMPTY);
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
@@ -81,6 +83,7 @@ public class ArchitectureContent {
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
+    public Map<EnumShape, ItemShape> itemShapes;
     public ContainerType<? extends Container> universalContainerType;
 
     @SubscribeEvent
@@ -102,14 +105,15 @@ public class ArchitectureContent {
     @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> e) {
         IForgeRegistry<Item> registry = e.getRegistry();
-        this.itemSawblade = this.registerItem(registry, "sawblade");
-        this.itemLargePulley = this.registerItem(registry, "large_pulley");
+        this.itemSawblade = this.registerItem(registry, "sawblade", this.TOOL_TAB);
+        this.itemLargePulley = this.registerItem(registry, "large_pulley", this.TOOL_TAB);
         this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel());
         this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer());
         this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding());
 
         itemBlocksToRegister.forEach(registry::register);
-
+        this.itemShapes = Maps.newHashMap();
+        Arrays.stream(EnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
         ArchitectureMod.PROXY.registerCustomRenderers();
     }
 
@@ -155,8 +159,8 @@ public class ArchitectureContent {
         return (T) registeredBlocks.get(id);
     }
 
-    private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id) {
-        ItemArchitecture item = new ItemArchitecture(new Item.Properties());
+    private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, ItemGroup itemGroup) {
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties().group(itemGroup));
         item.setRegistryName(REGISTRY_PREFIX, id);
         registry.register(item);
         registeredItems.put(id, item);

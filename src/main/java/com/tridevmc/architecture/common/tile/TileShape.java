@@ -62,15 +62,17 @@ public class TileShape extends TileEntity {
     private byte side;
     private byte turn;
 
-    public TileShape(){
+    public TileShape() {
         super(ArchitectureMod.CONTENT.tileTypeShape);
-
+        this.block = (BlockShape) this.world.getBlockState(this.pos).getBlock();
+        this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
     public TileShape(BlockShape block) {
         super(ArchitectureMod.CONTENT.tileTypeShape);
         this.block = block;
         this.baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
+        this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
     public static TileShape get(IBlockReader world, BlockPos pos) {
@@ -207,7 +209,7 @@ public class TileShape extends TileEntity {
         this.secondaryBlockState = state;
     }
 
-    public boolean hasSecondaryMaterial(){
+    public boolean hasSecondaryMaterial() {
         return this.getSecondaryBlockState().getBlock() != Blocks.AIR;
     }
 
@@ -243,7 +245,7 @@ public class TileShape extends TileEntity {
         this.side = side;
     }
 
-    public void setTurn(int turn){
+    public void setTurn(int turn) {
         this.setTurn((byte) turn);
     }
 

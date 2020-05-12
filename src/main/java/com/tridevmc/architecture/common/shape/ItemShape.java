@@ -62,6 +62,11 @@ public class ItemShape extends BlockItem {
         SHAPE_ITEMS.put(block.getArchitectureShape(), this);
     }
 
+    @Nullable
+    public static ItemShape getItemFromShape(EnumShape shape) {
+        return SHAPE_ITEMS.getOrDefault(shape, null);
+    }
+
     @Nonnull
     public static ItemStack createStack(EnumShape shape, BlockState baseBlockState) {
         return createStack(shape, baseBlockState, 1);
@@ -139,7 +144,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (group == ArchitectureMod.CONTENT.TOOL_TAB) {
+        if (group == ArchitectureMod.CONTENT.SHAPE_TAB) {
             if (this.shape.isCladding())
                 return;
 

@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.common.item;
 
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -36,7 +37,7 @@ import net.minecraft.world.World;
 public class ItemHammer extends Item {
 
     public ItemHammer() {
-        super(new Item.Properties().maxStackSize(1));
+        super(new Item.Properties().maxStackSize(1).group(ArchitectureMod.CONTENT.TOOL_TAB));
     }
 
     @Override

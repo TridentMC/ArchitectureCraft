@@ -1,0 +1,5 @@
+{
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "sphere_full",
+    "generateUVs": false
+}

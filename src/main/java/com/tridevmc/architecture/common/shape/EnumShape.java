@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.common.shape;
 
+import com.google.common.collect.ImmutableMap;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
@@ -37,7 +38,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
 
 import static com.tridevmc.architecture.common.shape.ShapeFlags.PLACE_OFFSET;
@@ -151,12 +152,20 @@ public enum EnumShape implements IStringSerializable {
     STAIRS_INNER_CORNER(93, "stairs_inner_corner", new ShapeBehaviourModel("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),
     ;
 
-    public static EnumShape[] values = values();
-    protected static Map<Integer, EnumShape> idMap = new HashMap<Integer, EnumShape>();
+    protected static final Map<Integer, EnumShape> SHAPES_BY_ID;
+    protected static final Map<String, EnumShape> SHAPES_BY_NAME;
 
     static {
-        for (EnumShape s : values)
-            idMap.put(s.id, s);
+        ImmutableMap.Builder<Integer, EnumShape> shapesById = ImmutableMap.builder();
+        ImmutableMap.Builder<String, EnumShape> shapesByName = ImmutableMap.builder();
+        Arrays.stream(EnumShape.values()).forEach(
+                s -> {
+                    shapesById.put(s.id, s);
+                    shapesByName.put(s.getName(), s);
+                }
+        );
+        SHAPES_BY_ID = shapesById.build();
+        SHAPES_BY_NAME = shapesByName.build();
     }
 
     public int id;
@@ -184,10 +193,11 @@ public enum EnumShape implements IStringSerializable {
     }
 
     public static EnumShape forId(int id) {
-        EnumShape shape = idMap.get(id);
-        if (shape == null)
-            shape = ROOF_TILE;
-        return shape;
+        return SHAPES_BY_ID.getOrDefault(id, ROOF_TILE);
+    }
+
+    public static EnumShape forName(String name) {
+        return SHAPES_BY_NAME.getOrDefault(name, ROOF_TILE);
     }
 
     public static int turnForPlacementHit(int side, Vector3 hit, ShapeSymmetry symmetry) {

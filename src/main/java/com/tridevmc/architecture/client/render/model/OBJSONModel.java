@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.client.render.model;
 
+import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -16,6 +17,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ILightReader;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,16 +33,19 @@ public abstract class OBJSONModel implements IArchitectureModel {
     private List<List<Vector3>> knownTris;
 
     public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
-        this.objson = objson;
+        this.objson = objson.offset(new Vector3(0.5, 0.5, 0.5));
         this.convertedModelData = new ArchitectureModelData();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
         this.knownTris = Lists.newArrayList();
         List<Tuple<Integer, OBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.faces.length).mapToObj(i -> new Tuple<>(i, this.objson.faces[i])).collect(Collectors.toList());
+        mappedFaces = mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList());
+        int minTexture = mappedFaces.get(0).getB().texture;
+        mappedFaces.forEach(mF -> mF.getB().texture = mF.getB().texture - minTexture);
         ArrayList<ArrayList<Integer>> textureQuads = Lists.newArrayList();
 
         int quadNumber = 0;
-        for (Tuple<Integer, OBJSON.Face> indexedFace : mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList())) {
+        for (Tuple<Integer, OBJSON.Face> indexedFace : mappedFaces) {
             int faceIndex = indexedFace.getA();
             OBJSON.Face face = indexedFace.getB();
             ArrayList<Integer> quadList = this.addOrGet(textureQuads, face.texture, Lists.newArrayList());
@@ -52,6 +57,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
         for (int i = 0; i < textureQuads.size(); i++) {
             this.textureQuadMap[i] = textureQuads.get(i);
         }
+        this.convertedModelData.resetState();
     }
 
     private int splitAndAddTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int face, int quadNumber, int[] tri, double[][] vertices) {
@@ -69,11 +75,11 @@ public abstract class OBJSONModel implements IArchitectureModel {
                 int vertexIndex = tri[i];
                 double[] vertex = vertices[vertexIndex];
 
-                trackedVertices.add(new TrackedVertex(i, new Vector3(vertex[0] + 0.5, vertex[1] + 0.5, vertex[2] + 0.5), new Vector3(vertex[3], vertex[4], vertex[5])));
-                newTriData.add(new Vector3(vertex[0] + 0.5, vertex[1] + 0.5, vertex[2] + 0.5));
+                trackedVertices.add(new TrackedVertex(i, new Vector3(vertex[0], vertex[1], vertex[2]), new Vector3(vertex[3], vertex[4], vertex[5])));
+                newTriData.add(new Vector3(vertex[0], vertex[1], vertex[2]));
 
                 for (int j = 0; j < 3; j++) {
-                    double coord = vertex[j] + 0.5;
+                    double coord = vertex[j];
                     int dimension = (int) coord;
                     if (Math.abs(dimension - coord) > 0) {
                         dimensions[j].add(dimension);
@@ -115,9 +121,9 @@ public abstract class OBJSONModel implements IArchitectureModel {
                     for (List<TrackedVertex> triVertices : newTris) {
                         triVertices.forEach(v -> {
                             if (this.generateNormals) {
-                                modelData.addTriInstruction(face, null, v.vertex.x - 0.5, v.vertex.y - 0.5, v.vertex.z - 0.5);
+                                modelData.addTriInstruction(face, null, v.vertex.x, v.vertex.y, v.vertex.z);
                             } else {
-                                modelData.addTriInstruction(face, null, v.vertex.x - 0.5, v.vertex.y - 0.5, v.vertex.z - 0.5, v.normal.x, v.normal.y, v.normal.z);
+                                modelData.addTriInstruction(face, null, v.vertex.x, v.vertex.y, v.vertex.z, v.normal.x, v.normal.y, v.normal.z);
                             }
                         });
 
@@ -136,9 +142,9 @@ public abstract class OBJSONModel implements IArchitectureModel {
                 } else if (this.generateUVs) {
                     modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[3], vertex[4], vertex[5]);
                 } else if (this.generateNormals) {
-                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6], vertex[7]);
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6] * 16, vertex[7] * 16);
                 } else {
-                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6], vertex[7], vertex[3], vertex[4], vertex[5]);
+                    modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6] * 16, vertex[7] * 16, vertex[3], vertex[4], vertex[5]);
                 }
             }
             quadList.add(quadNumber);

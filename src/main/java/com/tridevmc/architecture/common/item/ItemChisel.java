@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.common.item;
 
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.block.Block;
@@ -42,7 +43,7 @@ import net.minecraft.world.World;
 public class ItemChisel extends Item {
 
     public ItemChisel() {
-        super(new Item.Properties().maxStackSize(1));
+        super(new Item.Properties().maxStackSize(1).group(ArchitectureMod.CONTENT.TOOL_TAB));
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.Vector4f;
@@ -95,7 +94,7 @@ public class ArchitectureModelData {
                 }
             }
         }
-        this.setup();
+        this.resetState();
         return new ModelDataQuads(generalQuads, faceQuads);
     }
 
@@ -106,12 +105,12 @@ public class ArchitectureModelData {
         return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
     }
 
-    protected void setup() {
+    public void resetState() {
         // reset the model data for a new draw request.
         this.state = Blocks.AIR.getDefaultState();
         this.facing = Direction.NORTH;
 
-        this.transform = new TransformationMatrix(Matrix4f.makeTranslate(0.5F, 0.5F, 0.5F));
+        this.transform = TransformationMatrix.identity();
         this.tintIndices = new ArrayList[Direction.values().length + 1];
         this.faceSprites = new ArrayList[Direction.values().length + 1];
 

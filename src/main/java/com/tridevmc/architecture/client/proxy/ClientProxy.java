@@ -27,6 +27,7 @@ package com.tridevmc.architecture.client.proxy;
 import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureModelLoader;
+import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeModelLoader;
 import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
@@ -110,6 +111,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onModelRegistryEvent(ModelRegistryEvent e) {
         ModelLoaderRegistry.registerLoader(new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureModelLoader(new SawbenchBakedModel(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
+        ModelLoaderRegistry.registerLoader(new ResourceLocation(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeModelLoader());
         this.registerDefaultModelLocations();
     }
 

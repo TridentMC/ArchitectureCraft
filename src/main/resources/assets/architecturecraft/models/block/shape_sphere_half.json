@@ -1,0 +1,5 @@
+{
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "sphere_half",
+    "generateUVs": false
+}
