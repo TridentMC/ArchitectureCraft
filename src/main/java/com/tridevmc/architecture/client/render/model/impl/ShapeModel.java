@@ -26,7 +26,7 @@ public class ShapeModel extends OBJSONModel {
     private EnumShape shape;
 
     public ShapeModel(EnumShape shape, ShapeBehaviourModel shapeBehaviour, boolean generateUVs) {
-        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, shapeBehaviour.getModelName())), generateUVs, false);
+        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, shapeBehaviour.getModelName())), false, false);
         this.shape = shape;
     }
 
