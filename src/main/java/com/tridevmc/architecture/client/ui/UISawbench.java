@@ -16,7 +16,6 @@ public class UISawbench extends CompoundUIContainer<ContainerSawbench> {
     }
 
     @Override
-
     public void initElements() {
         // TODO: The size seems about right - no real elements in quite yet.
         LayoutCentered boxLayout = new LayoutCentered(true, true);

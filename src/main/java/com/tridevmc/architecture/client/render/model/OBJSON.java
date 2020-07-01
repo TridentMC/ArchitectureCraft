@@ -14,9 +14,9 @@ import java.util.List;
 public class OBJSON {
 
     private static final Gson GSON = new Gson();
-    public double[] bounds;
-    public Face[] faces;
-    public double[][] boxes;
+    private double[] bounds;
+    private double[][] boxes;
+    private Face[] faces;
 
     public static OBJSON fromResource(ResourceLocation location) {
         // Can't use resource manager because this needs to work on the server
@@ -38,20 +38,19 @@ public class OBJSON {
         out.bounds = this.bounds;
         out.boxes = this.boxes;
         out.faces = new Face[this.faces.length];
-        for (int i = 0; i < out.faces.length; i++) {
-            Face face = this.faces[i];
-            Face newFace = new Face();
-            newFace.texture = face.texture;
-            newFace.vertices = Arrays.copyOf(face.vertices, face.vertices.length);
-            newFace.triangles = Arrays.copyOf(face.triangles, face.triangles.length);
-            newFace.normal = face.normal;
-            for (int v = 0; v < newFace.vertices.length; v++) {
-                double[] vertex = newFace.vertices[v];
-                newFace.vertices[v] = new double[]{vertex[0] + by.x, vertex[1] + by.y, vertex[2] + by.z, vertex[3], vertex[4], vertex[5], vertex[6], vertex[7]};
+        for (int i = 0; i < this.faces.length; i++) {
+            out.faces[i] =this.faces[i].clone();
+            Face face = out.faces[i];
+            for (int v = 0; v < out.faces[i].vertices.length; v++) {
+                Vector3 vPos = face.vertices[v].getPos();
+                face.vertices[v].pos = vPos.add(by).toArray();
             }
-            out.faces[i] = newFace;
         }
         return out;
+    }
+
+    public Face[] getFaces() {
+        return this.faces;
     }
 
     public AxisAlignedBB getBounds() {
@@ -72,17 +71,81 @@ public class OBJSON {
 
     private void setNormals() {
         for (Face face : this.faces) {
-            double[][] p = face.vertices;
-            int[] t = face.triangles[0];
-            face.normal = Vector3.unit(Vector3.sub(p[t[1]], p[t[0]]).cross(Vector3.sub(p[t[2]], p[t[0]])));
+            Vertex[] vertices = face.vertices;
+            Triangle tri = face.triangles[0];
+            face.normal = Vector3.unit(vertices[tri.vertices[1]].getPos().sub(vertices[tri.vertices[0]].getPos())
+                    .cross(vertices[tri.vertices[2]].getPos().sub(vertices[tri.vertices[0]].getPos())));
         }
     }
 
-    public static class Face {
-        public int texture;
-        double[][] vertices;
-        int[][] triangles;
+    public class Face {
+        int texture;
+        Vertex[] vertices;
+        Triangle[] triangles;
         Vector3 normal;
+
+        public Face clone() {
+            Face out = new Face();
+
+            out.texture = this.texture;
+            out.vertices = new Vertex[this.vertices.length];
+            out.triangles = new Triangle[this.triangles.length];
+            out.normal = new Vector3(this.normal);
+
+            for (int i = 0; i < out.vertices.length; i++) {
+                out.vertices[i] = this.vertices[i].clone();
+            }
+
+            for (int i = 0; i < out.triangles.length; i++) {
+                out.triangles[i] = this.triangles[i].clone();
+            }
+
+            return out;
+        }
+
+        public int getTexture(){
+            return this.texture;
+        }
+    }
+
+    public class Triangle {
+        int[] vertices;
+
+        public Triangle clone() {
+            Triangle out = new Triangle();
+            out.vertices = Arrays.copyOf(this.vertices, this.vertices.length);
+            return out;
+        }
+    }
+
+    public class Vertex {
+        double[] pos;
+        double[] normal;
+        double[] uv;
+
+        public Vector3 getPos() {
+            return new Vector3(this.pos[0], this.pos[1], this.pos[2]);
+        }
+
+        public Vector3 getNormal() {
+            return new Vector3(this.normal[0], this.normal[1], this.normal[2]);
+        }
+
+        public double getU(){
+            return this.uv[0];
+        }
+
+        public double getV(){
+            return this.uv[1];
+        }
+
+        public Vertex clone() {
+            Vertex out = new Vertex();
+            out.pos = Arrays.copyOf(this.pos, this.pos.length);
+            out.normal = Arrays.copyOf(this.normal, this.normal.length);
+            out.uv = Arrays.copyOf(this.uv, this.uv.length);
+            return out;
+        }
     }
 
 }

@@ -85,6 +85,10 @@ public class Vector3 {
         this(getDirectionVec(f));
     }
 
+    public Vector3(Vector3 v) {
+        this(v.x, v.y, v.z);
+    }
+
     public static Vector3 blockCenter(double x, double y, double z) {
         return blockCenter.add(x, y, z);
     }
@@ -255,18 +259,18 @@ public class Vector3 {
         return (this.y - other.y) / (this.z - other.z);
     }
 
-    public double getZXSlope(Vector3 other){
+    public double getZXSlope(Vector3 other) {
         return (this.x - other.x) / (this.z - other.z);
     }
 
     /**
      * Calculates the slope of y in terms of x.
      */
-    public double getYZSlope(Vector3 other){
+    public double getYZSlope(Vector3 other) {
         return (this.x - other.x) / (this.y - other.y);
     }
 
-    public double getYXSlope(Vector3 other){
+    public double getYXSlope(Vector3 other) {
         return (this.z - other.z) / (this.y - other.y);
     }
 
@@ -287,5 +291,9 @@ public class Vector3 {
                 .add("y", this.y)
                 .add("z", this.z)
                 .toString();
+    }
+
+    public double[] toArray() {
+        return new double[]{this.x, this.y, this.z};
     }
 }

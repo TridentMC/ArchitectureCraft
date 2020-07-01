@@ -28,15 +28,12 @@ public abstract class OBJSONModel implements IArchitectureModel {
     private final boolean generateNormals;
     protected ArrayList<Integer>[] textureQuadMap;
 
-    private List<List<Vector3>> knownTris;
-
     public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson.offset(new Vector3(0.5, 0.5, 0.5));
         this.convertedModelData = new ArchitectureModelData();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
-        this.knownTris = Lists.newArrayList();
-        List<Tuple<Integer, OBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.faces.length).mapToObj(i -> new Tuple<>(i, this.objson.faces[i])).collect(Collectors.toList());
+        List<Tuple<Integer, OBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> new Tuple<>(i, this.objson.getFaces()[i])).collect(Collectors.toList());
         mappedFaces = mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList());
         int minTexture = mappedFaces.get(0).getB().texture;
         mappedFaces.forEach(mF -> mF.getB().texture = mF.getB().texture - minTexture);
@@ -47,8 +44,8 @@ public abstract class OBJSONModel implements IArchitectureModel {
             int faceIndex = indexedFace.getA();
             OBJSON.Face face = indexedFace.getB();
             ArrayList<Integer> quadList = this.addOrGet(textureQuads, face.texture, Lists.newArrayList());
-            for (int[] tri : face.triangles) {
-                quadNumber = this.addTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
+            for (OBJSON.Triangle tri : face.triangles) {
+                this.addTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
             }
         }
         this.textureQuadMap = new ArrayList[textureQuads.size()];
@@ -58,18 +55,18 @@ public abstract class OBJSONModel implements IArchitectureModel {
         this.convertedModelData.resetState();
     }
 
-    private int addTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int face, int quadNumber, int[] tri, double[][] vertices) {
+    private int addTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int face, int quadNumber, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {
         for (int i = 0; i < 3; i++) {
-            int vertexIndex = tri[i];
-            double[] vertex = vertices[vertexIndex];
+            int vertexIndex = tri.vertices[i];
+            OBJSON.Vertex vertex = vertices[vertexIndex];
             if (this.generateUVs && this.generateNormals) {
-                modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2]);
+                modelData.addTriInstruction(face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z);
             } else if (this.generateUVs) {
-                modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[3], vertex[4], vertex[5]);
+                modelData.addTriInstruction(face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getNormal().x, vertex.getNormal().y, vertex.getNormal().z);
             } else if (this.generateNormals) {
-                modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6] * 16, vertex[7] * 16);
+                modelData.addTriInstruction(face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getU() * 16, vertex.getV() * 16);
             } else {
-                modelData.addTriInstruction(face, null, vertex[0], vertex[1], vertex[2], vertex[6] * 16, vertex[7] * 16, vertex[3], vertex[4], vertex[5]);
+                modelData.addTriInstruction(face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getU() * 16, vertex.getV() * 16, vertex.getNormal().x, vertex.getNormal().y, vertex.getNormal().z);
             }
         }
         quadList.add(quadNumber);
@@ -84,6 +81,8 @@ public abstract class OBJSONModel implements IArchitectureModel {
         }
         return list.get(index);
     }
+
+    // TODO: FIXME!!! - Re-evaluate how we assign textures to model datas based on OBJSON. Something is fucked
 
     @Override
     public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, ILightReader world, BlockPos pos) {

@@ -19,7 +19,7 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     protected String modelName;
     private OBJSON model;
 
-    public ShapeBehaviourModel(String name){
+    public ShapeBehaviourModel(String name) {
         this(name, null);
     }
 
@@ -51,9 +51,9 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
 
     @Override
     public boolean acceptsCladding() {
-        OBJSON model = (OBJSON) this.getOBJSONModel();
-        for (OBJSON.Face face : model.faces)
-            if (face.texture >= 2)
+        OBJSON model = this.getOBJSONModel();
+        for (OBJSON.Face face : model.getFaces())
+            if (face.getTexture() >= 2)
                 return true;
         return false;
     }
