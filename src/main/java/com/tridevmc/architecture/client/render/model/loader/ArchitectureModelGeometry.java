@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public class ArchitectureModelGeometry implements IModelGeometry<ArchitectureModelGeometry> {
 
     private IBakedModel bakedModel;
-    private Collection<Material> textures;
+    private Collection<RenderMaterial> textures;
 
     public ArchitectureModelGeometry(IBakedModel bakedModel, ResourceLocation... textures) {
         this.bakedModel = bakedModel;
-        this.textures = Arrays.stream(textures).map(t -> new Material(AtlasTexture.LOCATION_BLOCKS_TEXTURE, t)).collect(Collectors.toList());
+        this.textures = Arrays.stream(textures).map(t -> new RenderMaterial(AtlasTexture.LOCATION_BLOCKS_TEXTURE, t)).collect(Collectors.toList());
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ArchitectureModelGeometry implements IModelGeometry<ArchitectureMod
     }
 
     @Override
-    public Collection<Material> getTextures(IModelConfiguration owner, Function modelGetter, Set missingTextureErrors) {
+    public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function modelGetter, Set missingTextureErrors) {
         return this.textures;
     }
 

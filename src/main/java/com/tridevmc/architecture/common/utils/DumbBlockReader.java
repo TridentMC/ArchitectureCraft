@@ -2,8 +2,7 @@ package com.tridevmc.architecture.common.utils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -14,7 +13,7 @@ public class DumbBlockReader implements IBlockReader {
 
     private BlockState state = Blocks.AIR.getDefaultState();
 
-    public DumbBlockReader(BlockState state){
+    public DumbBlockReader(BlockState state) {
         this.state = state;
     }
 
@@ -30,7 +29,7 @@ public class DumbBlockReader implements IBlockReader {
     }
 
     @Override
-    public IFluidState getFluidState(BlockPos pos) {
+    public FluidState getFluidState(BlockPos pos) {
         return this.state.getFluidState();
     }
 }

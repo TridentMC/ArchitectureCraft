@@ -113,8 +113,8 @@ public class TileShape extends TileEntity {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
         this.readShapeFromNBT(tag);
         this.side = tag.getByte("Side");
         this.turn = tag.getByte("Turn");

@@ -1,10 +1,10 @@
 package com.tridevmc.architecture.client.render.model.builder;
 
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
 public class QuadPointDumper {

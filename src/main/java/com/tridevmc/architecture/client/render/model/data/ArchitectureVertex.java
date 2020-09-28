@@ -1,14 +1,14 @@
 package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.renderer.TransformationMatrix;
-import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class ArchitectureVertex {
     }
 
     protected Direction rotate(Direction direction, TransformationMatrix transform) {
-        Vec3i dir = direction == null ? new Vec3i(0, 0, 0) : direction.getDirectionVec();
+        Vector3i dir = direction == null ? new Vector3i(0, 0, 0) : direction.getDirectionVec();
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
         return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());

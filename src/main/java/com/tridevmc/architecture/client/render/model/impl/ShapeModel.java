@@ -8,7 +8,7 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.tile.TileShape;
-import com.tridevmc.architecture.common.utils.DumbLightReader;
+import com.tridevmc.architecture.common.utils.DumbBlockDisplayReader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class ShapeModel extends OBJSONModel {
     }
 
     @Override
-    public TextureAtlasSprite[] getTextures(ILightReader world, BlockPos pos) {
+    public TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
             TextureAtlasSprite baseSprite = getSpriteForState(shape.getBaseBlockState());
@@ -47,7 +47,7 @@ public class ShapeModel extends OBJSONModel {
     }
 
     @Override
-    public Integer[] getColours(ILightReader world, BlockPos pos) {
+    public Integer[] getColours(IBlockDisplayReader world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
             int baseColour = getColourForState(world, pos, shape.getBaseBlockState());
@@ -65,9 +65,9 @@ public class ShapeModel extends OBJSONModel {
     }
 
     //TODO: Use model decomposition from CarpentryCubes to get more accurate textures and colours?
-    private static int getColourForState(ILightReader world, BlockPos pos, BlockState state) {
+    private static int getColourForState(IBlockDisplayReader world, BlockPos pos, BlockState state) {
         BlockColors colours = Minecraft.getInstance().getBlockColors();
-        return colours.getColor(state, new DumbLightReader(world, state), pos, 0);
+        return colours.getColor(state, new DumbBlockDisplayReader(world, state), pos, 0);
     }
 
 }

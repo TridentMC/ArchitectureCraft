@@ -3,11 +3,11 @@ package com.tridevmc.architecture.client.render.model.data;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
-import net.minecraft.client.renderer.TransformationMatrix;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
 
         private PrebuiltData(BakedQuad baseQuad) {
             this.baseQuad = baseQuad;
-            this.quadsForSprite.put(baseQuad.func_187508_a(), baseQuad);
+            this.quadsForSprite.put(baseQuad.getSprite(), baseQuad);
         }
 
         private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
@@ -55,8 +55,8 @@ public class ArchitectureTri implements IBakedQuadProvider {
         }
 
         private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
-            return new BakedQuad(quad.getVertexData(), newTint, quad.getFace(), quad.func_187508_a(),
-                    quad.shouldApplyDiffuseLighting());
+            return new BakedQuad(quad.getVertexData(), newTint, quad.getFace(), quad.getSprite(),
+                    quad.applyDiffuseLighting());
         }
     }
 

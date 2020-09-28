@@ -41,7 +41,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -109,7 +109,7 @@ public class ItemShape extends BlockItem {
         double hitZ = context.getHitVec().getZ();
         if (!world.setBlockState(pos, newState, 3))
             return false;
-        Vec3i dirVec = Vector3.getDirectionVec(face);
+        Vector3i dirVec = Vector3.getDirectionVec(face);
         Vector3 hit = new Vector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
         TileShape tile = TileShape.get(world, pos);
         if (tile != null) {
@@ -136,7 +136,7 @@ public class ItemShape extends BlockItem {
             if (this.shape != null)
                 lines.set(0, new StringTextComponent(this.shape.getLocalizedShapeName()));
             else
-                lines.set(0, new StringTextComponent(lines.get(0).getFormattedText() + " (" + -1 + ")"));
+                lines.set(0, new StringTextComponent(lines.get(0).getString() + " (" + -1 + ")"));
             Block baseBlock = getStateFromStack(stack).getBlock();
             lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(baseBlock)));
         }

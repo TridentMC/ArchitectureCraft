@@ -15,7 +15,7 @@ public class BakedQuadRetextured extends BakedQuad {
     private final TextureAtlasSprite texture;
 
     public BakedQuadRetextured(BakedQuad quad, TextureAtlasSprite textureIn) {
-        super(Arrays.copyOf(quad.getVertexData(), quad.getVertexData().length), quad.getTintIndex(), FaceBakery.getFacingFromVertexData(quad.getVertexData()), quad.func_187508_a(), quad.shouldApplyDiffuseLighting());
+        super(Arrays.copyOf(quad.getVertexData(), quad.getVertexData().length), quad.getTintIndex(), FaceBakery.getFacingFromVertexData(quad.getVertexData()), quad.getSprite(), quad.applyDiffuseLighting());
         this.texture = textureIn;
         this.remapQuad();
     }
@@ -41,7 +41,7 @@ public class BakedQuadRetextured extends BakedQuad {
     }
 
     @Override
-    public TextureAtlasSprite func_187508_a() {
+    public TextureAtlasSprite getSprite() {
         return this.texture;
     }
 

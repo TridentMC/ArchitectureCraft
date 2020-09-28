@@ -161,7 +161,7 @@ public enum EnumShape implements IStringSerializable {
         Arrays.stream(EnumShape.values()).forEach(
                 s -> {
                     shapesById.put(s.id, s);
-                    shapesByName.put(s.getName(), s);
+                    shapesByName.put(s.getString(), s);
                 }
         );
         SHAPES_BY_ID = shapesById.build();
@@ -299,7 +299,7 @@ public enum EnumShape implements IStringSerializable {
     }
 
     @Override
-    public String getName() {
+    public String getString() {
         return this.translationKey;
     }
 }

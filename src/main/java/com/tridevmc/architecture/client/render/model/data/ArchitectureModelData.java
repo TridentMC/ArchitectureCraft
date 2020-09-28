@@ -5,14 +5,14 @@ import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.TransformationMatrix;
-import net.minecraft.client.renderer.Vector3f;
-import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.vector.Vector4f;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -99,7 +99,7 @@ public class ArchitectureModelData {
     }
 
     private Direction rotate(Direction direction, TransformationMatrix transform) {
-        Vec3i dir = direction.getDirectionVec();
+        Vector3i dir = direction.getDirectionVec();
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
         return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());

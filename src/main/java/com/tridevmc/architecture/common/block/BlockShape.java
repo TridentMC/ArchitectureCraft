@@ -73,16 +73,6 @@ public class BlockShape extends BlockArchitecture {
         SHAPE_BLOCKS.put(architectureShape, this);
     }
 
-    @Override
-    public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos) {
-        TileShape shape = TileShape.get(worldIn, pos);
-        if (shape != null && shape.getBaseBlockState() != null) {
-            return shape.getBaseBlockState().getBlockHardness(worldIn, pos);
-        }
-
-        return super.getBlockHardness(blockState, worldIn, pos);
-    }
-
     public EnumShape getArchitectureShape() {
         return this.architectureShape;
     }
@@ -105,15 +95,15 @@ public class BlockShape extends BlockArchitecture {
 
     public static boolean acCanHarvestBlock(BlockState state, PlayerEntity player) {
         Block block = state.getBlock();
-        if (state.getMaterial().isToolNotRequired())
+        if (state.canHarvestBlock(new DumbBlockReader(state), BlockPos.ZERO, player))
             return true;
         ItemStack stack = player.inventory.getCurrentItem();
         ToolType tool = block.getHarvestTool(state);
         if (stack.isEmpty() || tool == null)
-            return player.canHarvestBlock(state);
+            return player.func_234569_d_(state);
         int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
         if (toolLevel < 0)
-            return player.canHarvestBlock(state);
+            return player.func_234569_d_(state);
         else
             return toolLevel >= block.getHarvestLevel(state);
     }
@@ -187,7 +177,6 @@ public class BlockShape extends BlockArchitecture {
         return list;
     }
 
-
     //@Override
     //protected NonNullList<ItemStack> getDropsFromTileEntity(LootContext.Builder context, BlockState state) {
     //    NonNullList<ItemStack> result = NonNullList.create();
@@ -254,7 +243,6 @@ public class BlockShape extends BlockArchitecture {
         return ActionResultType.FAIL;
     }
 
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public float getAmbientOcclusionLightValue(BlockState state, IBlockReader world, BlockPos pos) {
@@ -262,7 +250,7 @@ public class BlockShape extends BlockArchitecture {
     }
 
     @Override
-    public int getLightValue(BlockState state) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return state.get(LIGHT);
     }
 

@@ -5,13 +5,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.List;
 
 public interface IArchitectureModel {
 
-    ArchitectureModelData.ModelDataQuads getQuads(BlockState state, ILightReader world, BlockPos pos);
+    ArchitectureModelData.ModelDataQuads getQuads(BlockState state, IBlockDisplayReader world, BlockPos pos);
 
     TextureAtlasSprite getDefaultSprite();
 

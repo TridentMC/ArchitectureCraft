@@ -110,10 +110,10 @@ public class Utils {
         Item item = Item.getItemFromBlock(block);
         if (item != Items.AIR) {
             ItemStack stack = new ItemStack(item, 1);
-            name = stack.getDisplayName().getFormattedText();
+            name = stack.getDisplayName().getString();
         }
         if (name == null)
-            name = block.getNameTextComponent().getFormattedText();
+            name = block.getTranslatedName().getString();
         return name;
     }
 

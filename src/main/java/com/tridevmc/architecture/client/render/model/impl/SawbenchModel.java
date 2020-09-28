@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.function.Function;
 
@@ -29,13 +29,13 @@ public class SawbenchModel extends OBJSONModel {
     }
 
     @Override
-    public TextureAtlasSprite[] getTextures(ILightReader world, BlockPos pos) {
+    public TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos) {
         doInit();
         return textures;
     }
 
     @Override
-    public Integer[] getColours(ILightReader world, BlockPos pos) {
+    public Integer[] getColours(IBlockDisplayReader world, BlockPos pos) {
         doInit();
         return colours;
     }

@@ -24,15 +24,18 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
+import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -41,21 +44,18 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.shapes.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -67,14 +67,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@SuppressWarnings("ALL")
 public abstract class BlockArchitecture extends ContainerBlock implements ITextureConsumer {
+
+    private static final WrappedField<StateContainer<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateContainer", "field_176227_L");
 
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
     protected MaterialColor materialColor;
-    protected IProperty[] properties;
+    protected Property[] stateProperties;
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
     protected int numProperties; // Do not explicitly initialise
@@ -96,6 +97,10 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
+        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        this.fillStateContainer(builder);
+        STATE_CONTAINER.set(this, builder.func_235882_a_(Block::getDefaultState, (block, propertyValues, codec) -> new BlockStateArchitecture((BlockArchitecture) block, propertyValues, codec)));
+        this.setDefaultState(this.stateContainer.getBaseState());
     }
 
     public IOrientationHandler getOrientationHandler() {
@@ -105,32 +110,32 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     // --------------------------- States -------------------------------
 
     protected void defineProperties() {
-        properties = new IProperty[4];
-        propertyValues = new Object[4][];
-        getOrientationHandler().defineProperties(this);
+        this.stateProperties = new Property[4];
+        this.propertyValues = new Object[4][];
+        this.getOrientationHandler().defineProperties(this);
     }
 
-    public void addProperty(IProperty property) {
+    public void addProperty(Property property) {
         if (debugState)
-            ArchitectureLog.info("BaseBlock.addProperty: %s to %s\n", property, getClass().getName());
-        if (numProperties < 4) {
-            int i = numProperties++;
-            properties[i] = property;
+            ArchitectureLog.info("BaseBlock.addProperty: %s to %s\n", property, this.getClass().getName());
+        if (this.numProperties < 4) {
+            int i = this.numProperties++;
+            this.stateProperties[i] = property;
             Object[] values = MiscUtils.arrayOf(property.getAllowedValues());
-            propertyValues[i] = values;
+            this.propertyValues[i] = values;
         } else
-            throw new IllegalStateException("Block " + getClass().getName() +
+            throw new IllegalStateException("Block " + this.getClass().getName() +
                     " has too many properties");
         if (debugState)
             ArchitectureLog.info("BaseBlock.addProperty: %s now has %s properties\n",
-                    getClass().getName(), numProperties);
+                    this.getClass().getName(), this.numProperties);
     }
 
     private void dumpProperties() {
-        ArchitectureLog.info("BaseBlock: Properties of %s:\n", getClass().getName());
-        for (int i = 0; i < numProperties; i++) {
-            ArchitectureLog.info("%s: %s\n", i, properties[i]);
-            Object[] values = propertyValues[i];
+        ArchitectureLog.info("BaseBlock: Properties of %s:\n", this.getClass().getName());
+        for (int i = 0; i < this.numProperties; i++) {
+            ArchitectureLog.info("%s: %s\n", i, this.stateProperties[i]);
+            Object[] values = this.propertyValues[i];
             for (int j = 0; j < values.length; j++)
                 ArchitectureLog.info("   %s: %s\n", j, values[j]);
         }
@@ -138,12 +143,12 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     protected void checkProperties() {
         int n = 1;
-        for (int i = 0; i < numProperties; i++)
-            n *= propertyValues[i].length;
+        for (int i = 0; i < this.numProperties; i++)
+            n *= this.propertyValues[i].length;
         if (n > 16)
             throw new IllegalStateException(String.format(
                     "Block %s has %s combinations of property values (16 allowed)",
-                    getClass().getName(), n));
+                    this.getClass().getName(), n));
     }
 
     public int getNumSubtypes() {
@@ -152,20 +157,20 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        if (this.properties == null) this.defineProperties();
-        Arrays.stream(this.properties).filter(Objects::nonNull).forEach(builder::add);
+        if (this.stateProperties == null) this.defineProperties();
+        Arrays.stream(this.stateProperties).filter(Objects::nonNull).forEach(builder::add);
         super.fillStateContainer(builder);
     }
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
-        return renderID;
+        return this.renderID;
     }
 
     public String getQualifiedRendererClassName() {
-        String name = getRendererClassName();
+        String name = this.getRendererClassName();
         if (name != null)
-            name = getClass().getPackage().getName() + "." + name;
+            name = this.getClass().getPackage().getName() + "." + name;
         return name;
     }
 
@@ -186,31 +191,31 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     public String[] getTextureNames() {
-        return textureNames;
+        return this.textureNames;
     }
 
     public ModelSpec getModelSpec(BlockState state) {
-        return modelSpec;
+        return this.modelSpec;
     }
 
     public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos) {
-        return localToGlobalRotation(world, pos, world.getBlockState(pos));
+        return this.localToGlobalRotation(world, pos, world.getBlockState(pos));
     }
 
     public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos, BlockState state) {
-        return localToGlobalTransformation(world, pos, state, Vector3.zero);
+        return this.localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
     public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos) {
-        return localToGlobalTransformation(world, pos, world.getBlockState(pos));
+        return this.localToGlobalTransformation(world, pos, world.getBlockState(pos));
     }
 
     public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state) {
-        return localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
+        return this.localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
     }
 
     public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
-        IOrientationHandler oh = getOrientationHandler();
+        IOrientationHandler oh = this.getOrientationHandler();
         return oh.localToGlobalTransformation(world, pos, state, origin);
     }
 
@@ -220,17 +225,17 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        Vec3d hit = context.getHitVec();
-        BlockState state = getOrientationHandler().onBlockPlaced(this, context.getWorld(), context.getPos(), context.getFace(),
-                hit.getX(), hit.getY(), hit.getZ(), getDefaultState(), context.getPlayer());
+        Vector3d hit = context.getHitVec();
+        BlockState state = this.getOrientationHandler().onBlockPlaced(this, context.getWorld(), context.getPos(), context.getFace(),
+                hit.getX(), hit.getY(), hit.getZ(), this.getDefaultState(), context.getPlayer());
         return state;
     }
 
     @Override
     public boolean addLandingEffects(BlockState state, ServerWorld world, BlockPos pos,
                                      BlockState iblockstate, LivingEntity entity, int numParticles) {
-        BlockState particleState = getParticleState(world, pos);
-        world.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, particleState), entity.serverPosX, entity.serverPosY, entity.serverPosZ,
+        BlockState particleState = this.getParticleState(world, pos);
+        world.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, particleState), entity.getPosX(), entity.getPosY(), entity.getPosZ(),
                 numParticles, 0, 0, 0, 0.15);
         return true;
     }
@@ -238,12 +243,12 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean addHitEffects(BlockState blockState, World world, RayTraceResult target, ParticleManager pm) {
-        if (!(target instanceof BlockRayTraceResult))
+        if (!(target instanceof BlockRayTraceResult) || !(world instanceof ClientWorld))
             return false;
 
         BlockRayTraceResult hit = (BlockRayTraceResult) target;
         BlockPos pos = hit.getPos();
-        BlockState state = getParticleState(world, pos);
+        BlockState state = this.getParticleState(world, pos);
         DiggingParticle fx;
         int i = pos.getX();
         int j = pos.getY();
@@ -251,9 +256,9 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         VoxelShape voxelShape = blockState.getShape(world, pos);
         AxisAlignedBB boundingBox = voxelShape.getBoundingBox();
         float f = 0.1F;
-        double d0 = i + RANDOM.nextDouble() * (boundingBox.maxX - boundingBox.minX - (f * 2.0F)) + f + boundingBox.minX;
-        double d1 = j + RANDOM.nextDouble() * (boundingBox.maxY - boundingBox.minY - (f * 2.0F)) + f + boundingBox.minY;
-        double d2 = k + RANDOM.nextDouble() * (boundingBox.maxZ - boundingBox.minZ - (f * 2.0F)) + f + boundingBox.minZ;
+        double d0 = i + this.RANDOM.nextDouble() * (boundingBox.maxX - boundingBox.minX - (f * 2.0F)) + f + boundingBox.minX;
+        double d1 = j + this.RANDOM.nextDouble() * (boundingBox.maxY - boundingBox.minY - (f * 2.0F)) + f + boundingBox.minY;
+        double d2 = k + this.RANDOM.nextDouble() * (boundingBox.maxZ - boundingBox.minZ - (f * 2.0F)) + f + boundingBox.minZ;
         switch (hit.getFace()) {
             case DOWN:
                 d1 = j + boundingBox.minY - f;
@@ -274,14 +279,17 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
                 d0 = i + boundingBox.maxX + f;
                 break;
         }
-        fx = new DiggingFX(world, d0, d1, d2, 0, 0, 0, state);
-        pm.addEffect(fx.setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+        fx = new DiggingFX((ClientWorld) world, d0, d1, d2, 0, 0, 0, state);
+        pm.addEffect(fx.setBlockPos(pos).multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F));
         return true;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager pm) {
+        if (!(world instanceof ClientWorld))
+            return false;
+
         DiggingParticle fx;
         byte b0 = 4;
         for (int i = 0; i < b0; ++i) {
@@ -290,7 +298,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
                     double d0 = pos.getX() + (i + 0.5D) / b0;
                     double d1 = pos.getY() + (j + 0.5D) / b0;
                     double d2 = pos.getZ() + (k + 0.5D) / b0;
-                    fx = new DiggingFX(world, d0, d1, d2,
+                    fx = new DiggingFX((ClientWorld) world, d0, d1, d2,
                             d0 - pos.getX() - 0.5D, d1 - pos.getY() - 0.5D, d2 - pos.getZ() - 0.5D,
                             state);
                     pm.addEffect(fx.setBlockPos(pos));
@@ -301,46 +309,45 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     public BlockState getParticleState(IBlockReader world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        return getExtendedState(state, world, pos);
+        return world.getBlockState(pos);
     }
 
-    @Override
-    public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end, RayTraceResult original) {
-        boxHit = null;
-        BlockRayTraceResult result = null;
-        double nearestDistance = 0;
-        List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, null);
-        if (list != null) {
-            int n = list.size();
-            for (int i = 0; i < n; i++) {
-                AxisAlignedBB box = list.get(i);
-                BlockRayTraceResult mp = AxisAlignedBB.rayTrace(ImmutableList.of(box), start, end, pos);
-                if (mp != null) {
-                    mp.subHit = i;
-                    double d = start.squareDistanceTo(mp.getHitVec());
-                    if (result == null || d < nearestDistance) {
-                        result = mp;
-                        nearestDistance = d;
-                    }
-                }
-            }
-        }
-        if (result != null) {
-            //setBlockBounds(list.get(result.subHit));
-            int i = result.subHit;
-            boxHit = list.get(i).offset(-pos.getX(), -pos.getY(), -pos.getZ());
-            result = new BlockRayTraceResult(result.getHitVec(), result.getFace(), pos, false);
-            result.subHit = i;
-        }
-        return result;
-    }
+    //@Override TODO: Replace with raytraceshape. We need mesh voxelization...
+    //public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vector3d start, Vector3d end, RayTraceResult original) {
+    //    boxHit = null;
+    //    BlockRayTraceResult result = null;
+    //    double nearestDistance = 0;
+    //    List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, null);
+    //    if (list != null) {
+    //        int n = list.size();
+    //        for (int i = 0; i < n; i++) {
+    //            AxisAlignedBB box = list.get(i);
+    //            BlockRayTraceResult mp = AxisAlignedBB.rayTrace(ImmutableList.of(box), start, end, pos);
+    //            if (mp != null) {
+    //                mp.subHit = i;
+    //                double d = start.squareDistanceTo(mp.getHitVec());
+    //                if (result == null || d < nearestDistance) {
+    //                    result = mp;
+    //                    nearestDistance = d;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (result != null) {
+    //        //setBlockBounds(list.get(result.subHit));
+    //        int i = result.subHit;
+    //        boxHit = list.get(i).offset(-pos.getX(), -pos.getY(), -pos.getZ());
+    //        result = new BlockRayTraceResult(result.getHitVec(), result.getFace(), pos, false);
+    //        result.subHit = i;
+    //    }
+    //    return result;
+    //}
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        AxisAlignedBB box = boxHit;
+        AxisAlignedBB box = this.boxHit;
         if (box == null)
-            box = getLocalBounds(world, pos, state, null);
+            box = this.getLocalBounds(world, pos, state, null);
 
         if (box != null)
             return VoxelShapes.create(box);
@@ -352,10 +359,10 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     protected AxisAlignedBB getLocalBounds(IBlockReader world, BlockPos pos, BlockState state,
                                            Entity entity) {
-        ModelSpec spec = getModelSpec(state);
+        ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
+            Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
             return t.t(model.getBounds());
         }
         return null;
@@ -363,19 +370,19 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                           BlockState state, Entity entity) {
-        Trans3 t = localToGlobalTransformation(world, pos, state);
-        return getCollisionBoxes(world, pos, state, t, entity);
+        Trans3 t = this.localToGlobalTransformation(world, pos, state);
+        return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
     protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                          BlockState state, Entity entity) {
-        Trans3 t = localToGlobalTransformation(world, pos, state, Vector3.zero);
-        return getCollisionBoxes(world, pos, state, t, entity);
+        Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.zero);
+        return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
     protected List<AxisAlignedBB> getCollisionBoxes(IBlockReader world, BlockPos pos, BlockState state,
                                                     Trans3 t, Entity entity) {
-        ModelSpec spec = getModelSpec(state);
+        ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
             List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
@@ -383,6 +390,10 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
             return list;
         }
         return null;
+    }
+
+    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos, float hardness) {
+        return hardness;
     }
 
     public interface IOrientationHandler {
@@ -415,7 +426,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     @OnlyIn(Dist.CLIENT)
     public static class DiggingFX extends DiggingParticle {
 
-        public DiggingFX(World world, double x1, double y1, double z1, double x2, double y2, double z2, BlockState state) {
+        public DiggingFX(ClientWorld world, double x1, double y1, double z1, double x2, double y2, double z2, BlockState state) {
             super(world, x1, y1, z1, x2, y2, z2, state);
         }
 

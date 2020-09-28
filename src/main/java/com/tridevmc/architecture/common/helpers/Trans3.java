@@ -29,8 +29,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 
 import java.util.List;
 
@@ -188,11 +188,11 @@ public class Trans3 {
         return this.iv(new Vector3(x, y, z));
     }
 
-    public Vector3 v(Vec3i u) {
+    public Vector3 v(Vector3i u) {
         return this.v(u.getX(), u.getY(), u.getZ());
     }
 
-    public Vector3 iv(Vec3i u) {
+    public Vector3 iv(Vector3i u) {
         return this.iv(u.getX(), u.getY(), u.getZ());
     }
 
@@ -212,7 +212,7 @@ public class Trans3 {
         return this.rotation.imul(u).mul(1.0 / this.scaling);
     }
 
-    public Vector3 iv(Vec3d u) {
+    public Vector3 iv(Vector3d u) {
         return this.iv(u.x, u.y, u.z);
     }
 

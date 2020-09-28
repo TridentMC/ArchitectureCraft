@@ -57,7 +57,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos) {
+    public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos, float hardness) {
         return 2.0F;
     }
 
@@ -69,11 +69,6 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     @Override
     public ModelSpec getModelSpec(BlockState state) {
         return modelSpec;
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return false;
     }
 
     @Override
@@ -100,7 +95,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public boolean hasTileEntity() {
+    public boolean hasTileEntity(BlockState state) {
         return false;
     }
 

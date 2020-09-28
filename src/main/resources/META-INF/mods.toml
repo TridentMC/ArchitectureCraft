@@ -2,6 +2,7 @@ modLoader="javafml"
 loaderVersion="[24,)"
 issueTrackerURL="https://github.com/TridentMC/ArchitectureCraft/issues"
 authors="gcewing (Original Developer), darkevilmac (Maintainer)"
+license="MIT License - Copyright (c) 2020 Benjamin K"
 
 [[mods]]
 modId="architecturecraft"

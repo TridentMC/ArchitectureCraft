@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
             OBJSON.Face face = indexedFace.getB();
             ArrayList<Integer> quadList = this.addOrGet(textureQuads, face.texture, Lists.newArrayList());
             for (OBJSON.Triangle tri : face.triangles) {
-                this.addTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
+                quadNumber = this.addTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
             }
         }
         this.textureQuadMap = new ArrayList[textureQuads.size()];
@@ -85,7 +85,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
     // TODO: FIXME!!! - Re-evaluate how we assign textures to model datas based on OBJSON. Something is fucked
 
     @Override
-    public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, ILightReader world, BlockPos pos) {
+    public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, IBlockDisplayReader world, BlockPos pos) {
         this.convertedModelData.setState(state);
         TextureAtlasSprite[] textures = this.getTextures(world, pos);
         Integer[] colours = this.getColours(world, pos);
@@ -112,7 +112,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
         return Collections.emptyList();
     }
 
-    public abstract TextureAtlasSprite[] getTextures(ILightReader world, BlockPos pos);
+    public abstract TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos);
 
-    public abstract Integer[] getColours(ILightReader world, BlockPos pos);
+    public abstract Integer[] getColours(IBlockDisplayReader world, BlockPos pos);
 }

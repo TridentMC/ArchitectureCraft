@@ -98,7 +98,7 @@ public class ArchitectureContent {
         this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
         this.blockShapes = Maps.newHashMap();
         for (EnumShape shape : EnumShape.values()) {
-            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getName(), new BlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
+            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getString(), new BlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
         }
     }
 

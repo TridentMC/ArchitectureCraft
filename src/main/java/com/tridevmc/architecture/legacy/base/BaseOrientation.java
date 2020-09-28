@@ -33,7 +33,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.state.EnumProperty;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -70,7 +70,7 @@ public class BaseOrientation {
 
     public static class Orient4WaysByState implements BlockArchitecture.IOrientationHandler {
 
-        public static IProperty FACING = new PropertyTurn("facing");
+        public static Property<Direction> FACING = new PropertyTurn("facing");
 
         @Override
         public void defineProperties(BlockArchitecture block) {
