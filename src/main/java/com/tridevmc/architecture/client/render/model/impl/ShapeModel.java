@@ -47,14 +47,14 @@ public class ShapeModel extends OBJSONModel {
     }
 
     @Override
-    public Integer[] getColours(IBlockDisplayReader world, BlockPos pos) {
+    public int[] getColours(IBlockDisplayReader world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
             int baseColour = getColourForState(world, pos, shape.getBaseBlockState());
             int secondaryColour = shape.hasSecondaryMaterial() ? getColourForState(world, pos, shape.getSecondaryBlockState()) : baseColour;
-            return new Integer[]{baseColour, secondaryColour};
+            return new int[]{baseColour, secondaryColour};
         }
-        return new Integer[]{-1, -1};
+        return new int[]{-1, -1};
     }
 
     private static TextureAtlasSprite getSpriteForState(BlockState state) {

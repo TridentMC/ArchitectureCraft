@@ -15,7 +15,7 @@ import java.util.function.Function;
 public class SawbenchModel extends OBJSONModel {
 
     private static TextureAtlasSprite[] textures;
-    private static Integer[] colours;
+    private static int[] colours;
     private static boolean needsInit = true;
 
     public SawbenchModel() {
@@ -35,7 +35,7 @@ public class SawbenchModel extends OBJSONModel {
     }
 
     @Override
-    public Integer[] getColours(IBlockDisplayReader world, BlockPos pos) {
+    public int[] getColours(IBlockDisplayReader world, BlockPos pos) {
         doInit();
         return colours;
     }
@@ -47,7 +47,7 @@ public class SawbenchModel extends OBJSONModel {
                     textureGetter.apply(new ResourceLocation("block/oak_planks")),
                     textureGetter.apply(new ResourceLocation("block/iron_block"))
             };
-            colours = new Integer[]{-1, -1};
+            colours = new int[]{-1, -1};
             needsInit = false;
         }
     }

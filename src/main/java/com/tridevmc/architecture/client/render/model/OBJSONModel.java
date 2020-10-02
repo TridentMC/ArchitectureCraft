@@ -26,7 +26,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
     private final ArchitectureModelData convertedModelData;
     private final boolean generateUVs;
     private final boolean generateNormals;
-    protected ArrayList<Integer>[] textureQuadMap;
+    protected int[][] textureQuadMap;
 
     public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson.offset(new Vector3(0.5, 0.5, 0.5));
@@ -48,9 +48,9 @@ public abstract class OBJSONModel implements IArchitectureModel {
                 quadNumber = this.addTri(this.convertedModelData, quadList, faceIndex, quadNumber, tri, face.vertices);
             }
         }
-        this.textureQuadMap = new ArrayList[textureQuads.size()];
+        this.textureQuadMap = new int[textureQuads.size()][];
         for (int i = 0; i < textureQuads.size(); i++) {
-            this.textureQuadMap[i] = textureQuads.get(i);
+            this.textureQuadMap[i] = textureQuads.get(i).stream().mapToInt(t -> t).toArray();
         }
         this.convertedModelData.resetState();
     }
@@ -88,13 +88,13 @@ public abstract class OBJSONModel implements IArchitectureModel {
     public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, IBlockDisplayReader world, BlockPos pos) {
         this.convertedModelData.setState(state);
         TextureAtlasSprite[] textures = this.getTextures(world, pos);
-        Integer[] colours = this.getColours(world, pos);
+        int[] colours = this.getColours(world, pos);
         for (int i = 0; i < this.textureQuadMap.length; i++) {
-            ArrayList<Integer> quads = this.textureQuadMap[i];
+            int[] quads = this.textureQuadMap[i];
             TextureAtlasSprite texture = textures[i];
-            Integer colour = colours[i];
+            int colour = colours[i];
 
-            for (Integer quad : quads) {
+            for (int quad : quads) {
                 this.convertedModelData.setFaceData(quad, null, texture, colour);
             }
         }
@@ -114,5 +114,5 @@ public abstract class OBJSONModel implements IArchitectureModel {
 
     public abstract TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos);
 
-    public abstract Integer[] getColours(IBlockDisplayReader world, BlockPos pos);
+    public abstract int[] getColours(IBlockDisplayReader world, BlockPos pos);
 }
