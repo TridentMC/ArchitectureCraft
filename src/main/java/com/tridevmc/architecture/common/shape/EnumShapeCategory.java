@@ -9,9 +9,9 @@ public enum EnumShapeCategory {
     RAILINGS("architecturecraft.shape.category.railings"),
     OTHER("architecturecraft.shape.category.other");
 
-    private String translationKey;
+    private final String translationKey;
 
-    private EnumShapeCategory(String translationKey) {
+    EnumShapeCategory(String translationKey) {
         this.translationKey = translationKey;
     }
 

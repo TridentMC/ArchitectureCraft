@@ -12,9 +12,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-
-import java.util.List;
 
 public class ShapeBehaviourWindow extends ShapeBehaviour {
     public Direction[] frameSides;
@@ -83,37 +83,39 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     }
 
     @Override
-    public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
-                                        Entity entity, Trans3 t, List list) {
+    protected VoxelShape getCollisionBox(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+        VoxelShape shape = VoxelShapes.empty();
         final double r = 1 / 8d, s = 3 / 32d;
         double[] e = new double[4];
-        this.addCentreBoxesToList(r, s, t, list);
+        shape = this.addCentreBoxesToList(r, s, t, shape);
         for (int i = 0; i <= 3; i++) {
             boolean frame = this.frameAlways[i] || !this.isConnectedGlobal(te, t.t(this.frameSides[i]));
             if (entity == null || frame) {
                 Trans3 ts = t.t(this.frameTrans[i]);
-                this.addFrameBoxesToList(i, r, s, ts, list);
+                shape = this.addFrameBoxesToList(i, r, s, ts, shape);
             }
             e[i] = frame ? 0.5 - r : 0.5;
         }
         if (te.getSecondaryBlockState() != null)
-            this.addGlassBoxesToList(r, s, 1 / 32d, e, t, list);
-
-        if (list.isEmpty()) {
+            shape = this.addGlassBoxesToList(r, s, 1 / 32d, e, t, shape);
+        if (shape.isEmpty()) {
             // Fallback box in the unlikely case that no box was added.
-            this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, list);
+            shape = this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, shape);
         }
+        return shape.simplify();
     }
 
-    protected void addCentreBoxesToList(double r, double s, Trans3 t, List list) {
+    protected VoxelShape addCentreBoxesToList(double r, double s, Trans3 t, VoxelShape shape) {
+        return shape;
     }
 
-    protected void addFrameBoxesToList(int i, double r, double s, Trans3 ts, List list) {
-        ts.addBox(-0.5, -0.5, -s, 0.5, -0.5 + r, s, list);
+    protected VoxelShape addFrameBoxesToList(int i, double r, double s, Trans3 ts, VoxelShape shape) {
+        return ts.addBox(-0.5, -0.5, -s, 0.5, -0.5 + r, s, shape);
+
     }
 
-    protected void addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, List list) {
-        t.addBox(-e[3], -e[0], -w, e[1], e[2], w, list);
+    protected VoxelShape addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, VoxelShape shape) {
+        return t.addBox(-e[3], -e[0], -w, e[1], e[2], w, shape);
     }
 
     protected boolean isConnectedGlobal(TileShape te, Direction globalDir) {

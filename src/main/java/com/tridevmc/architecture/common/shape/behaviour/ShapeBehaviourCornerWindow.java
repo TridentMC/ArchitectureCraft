@@ -5,6 +5,7 @@ import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.shapes.VoxelShape;
 
 import java.util.List;
 
@@ -26,23 +27,26 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
     }
 
     @Override
-    protected void addCentreBoxesToList(double r, double s, Trans3 t, List list) {
-        t.addBox(-r, -0.5, -r, r, 0.5, r, list);
+    protected VoxelShape addCentreBoxesToList(double r, double s, Trans3 t, VoxelShape shape) {
+        return t.addBox(-r, -0.5, -r, r, 0.5, r, shape);
     }
 
     @Override
-    protected void addFrameBoxesToList(int i, double r, double s, Trans3 ts, List list) {
+    protected VoxelShape addFrameBoxesToList(int i, double r, double s, Trans3 ts, VoxelShape shape) {
         if ((i & 1) == 0) {
-            ts.addBox(-0.5, -0.5, -s, s, -0.5 + r, s, list);
-            ts.addBox(-s, -0.5, -s, s, -0.5 + r, 0.5, list);
-        } else
-            super.addFrameBoxesToList(i, r, s, ts, list);
+            shape = ts.addBox(-0.5, -0.5, -s, s, -0.5 + r, s, shape);
+            shape = ts.addBox(-s, -0.5, -s, s, -0.5 + r, 0.5, shape);
+        } else {
+            shape= super.addFrameBoxesToList(i, r, s, ts, shape);
+        }
+        return shape;
     }
 
     @Override
-    protected void addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, List list) {
-        t.addBox(-e[3], -e[0], -w, -s, e[2], w, list);
-        t.addBox(-w, -e[0], s, w, e[2], e[1], list);
+    protected VoxelShape addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, VoxelShape shape) {
+        shape = t.addBox(-e[3], -e[0], -w, -s, e[2], w, shape);
+        shape = t.addBox(-w, -e[0], s, w, e[2], e[1], shape);
+        return shape;
     }
 
     @Override

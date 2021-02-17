@@ -30,6 +30,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
 
+import java.util.Objects;
+import java.util.function.DoubleFunction;
+import java.util.function.DoubleUnaryOperator;
+
 import static java.lang.Math.abs;
 
 public class Vector3 {
@@ -284,6 +288,12 @@ public class Vector3 {
         return new BlockPos(this.floorX(), this.floorY(), this.floorZ());
     }
 
+    public Vector3 apply(DoubleUnaryOperator operator) {
+        return new Vector3(operator.applyAsDouble(this.x),
+                operator.applyAsDouble(this.y),
+                operator.applyAsDouble(this.z));
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -295,5 +305,20 @@ public class Vector3 {
 
     public double[] toArray() {
         return new double[]{this.x, this.y, this.z};
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vector3)) return false;
+        Vector3 vector3 = (Vector3) o;
+        return Double.compare(vector3.x, this.x) == 0 &&
+                Double.compare(vector3.y, this.y) == 0 &&
+                Double.compare(vector3.z, this.z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.x, this.y, this.z);
     }
 }

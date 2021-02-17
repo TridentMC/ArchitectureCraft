@@ -73,4 +73,5 @@ public interface IBakedQuadProvider {
      * @return the index to set the next vertex into.
      */
     int getNextVertex();
+
 }

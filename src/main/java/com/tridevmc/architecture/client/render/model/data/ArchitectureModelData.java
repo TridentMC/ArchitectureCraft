@@ -13,6 +13,7 @@ import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.math.vector.Vector4f;
+import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -88,6 +89,7 @@ public class ArchitectureModelData {
                 BakedQuad builtQuad = quad.bake(this.transform, newFace,
                         spritesForFace.get(i),
                         tintsForFace.get(i));
+                LightUtil.setLightData(builtQuad, 1);
                 if (builtQuad != null) {
                     generalQuads.add(builtQuad);
                     faceQuads.get(newFace).add(builtQuad);

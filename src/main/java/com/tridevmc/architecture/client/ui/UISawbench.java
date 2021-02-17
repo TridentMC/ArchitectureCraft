@@ -8,7 +8,7 @@ import com.tridevmc.compound.ui.layout.*;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class UISawbench extends CompoundUIContainer<ContainerSawbench> {
-    private PlayerEntity player;
+    private final PlayerEntity player;
 
     public UISawbench(ContainerSawbench container, PlayerEntity player) {
         super(container);

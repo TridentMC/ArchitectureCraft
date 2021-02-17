@@ -73,7 +73,7 @@ public class ArchitectureContent {
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
-    private static List<Item> itemBlocksToRegister = Lists.newArrayList();
+    private static final List<Item> itemBlocksToRegister = Lists.newArrayList();
 
     public BlockSawbench blockSawbench;
     public Map<EnumShape, BlockShape> blockShapes;

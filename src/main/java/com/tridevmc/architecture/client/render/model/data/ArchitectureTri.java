@@ -1,8 +1,6 @@
 package com.tridevmc.architecture.client.render.model.data;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
@@ -16,9 +14,8 @@ import java.util.stream.IntStream;
 public class ArchitectureTri implements IBakedQuadProvider {
 
     private Direction face;
-    private ArchitectureVertex[] vertices = new ArchitectureVertex[3];
+    private final ArchitectureVertex[] vertices = new ArchitectureVertex[3];
     private Vector3f normals = null;
-    private Map<TransformationMatrix, PrebuiltData> prebuiltQuads = Maps.newHashMap();
 
     public ArchitectureTri(Direction face) {
         this.face = face;
@@ -29,61 +26,21 @@ public class ArchitectureTri implements IBakedQuadProvider {
         this.normals = normals;
     }
 
-    private static class PrebuiltData {
-        BakedQuad baseQuad;
-        Map<TextureAtlasSprite, BakedQuad> quadsForSprite = Maps.newHashMap();
-
-        private PrebuiltData(BakedQuad baseQuad) {
-            this.baseQuad = baseQuad;
-            this.quadsForSprite.put(baseQuad.getSprite(), baseQuad);
-        }
-
-        private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
-            BakedQuad quadOut = this.quadsForSprite.get(sprite);
-            if (quadOut != null) {
-                if (tint != -1) {
-                    quadOut = this.reTintQuad(quadOut, tint);
-                }
-            } else {
-                quadOut = new BakedQuadRetextured(this.baseQuad, sprite);
-                this.quadsForSprite.put(sprite, quadOut);
-                if (tint != -1) {
-                    quadOut = this.reTintQuad(quadOut, tint);
-                }
-            }
-            return quadOut;
-        }
-
-        private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
-            return new BakedQuad(quad.getVertexData(), newTint, quad.getFace(), quad.getSprite(),
-                    quad.applyDiffuseLighting());
-        }
-    }
-
     @Override
     public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
-        PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
-        this.recalculateFace();
-        if (prebuiltData == null) {
-            if (facing == null) facing = this.recalculateFace();
-            BakedQuadBuilder builder = new BakedQuadBuilder();
-            builder.setTexture(sprite);
-            builder.setQuadTint(tintIndex);
-            builder.setApplyDiffuseLighting(true);
-            builder.setContractUVs(true);
-            builder.setQuadOrientation(facing);
-
-            int[] vertexIndices = new int[]{0, 0, 1, 2};
-            for (int i = 0; i < 4; i++) {
-                ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
-                vertex.pipe(builder, this, sprite, Optional.of(transform));
-            }
-            PrebuiltData baseQuad = new PrebuiltData(builder.build());
-            this.prebuiltQuads.put(transform, baseQuad);
-            return baseQuad.baseQuad;
-        } else {
-            return prebuiltData.getQuad(sprite, tintIndex);
+        if (facing == null) facing = this.getFace();
+        BakedQuadBuilder builder = new BakedQuadBuilder();
+        builder.setTexture(sprite);
+        builder.setQuadTint(tintIndex);
+        builder.setApplyDiffuseLighting(true);
+        builder.setContractUVs(true);
+        builder.setQuadOrientation(facing);
+        int[] vertexIndices = new int[]{0, 0, 1, 2};
+        for (int i = 0; i < 4; i++) {
+            ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
+            vertex.pipe(builder, this, sprite, Optional.of(transform));
         }
+        return builder.build();
     }
 
     @Override
@@ -108,19 +65,9 @@ public class ArchitectureTri implements IBakedQuadProvider {
     @Override
     public Direction getFace() {
         if (this.face == null) {
-            this.recalculateFace();
+            Vector3f normals = this.getFaceNormal();
+            this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
         }
-        return this.face;
-    }
-
-    /**
-     * Calculates the face of this quad based on its normals.
-     *
-     * @return the face the quad faces.
-     */
-    public Direction recalculateFace() {
-        Vector3f normals = this.getFaceNormal();
-        this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
         return this.face;
     }
 

@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
-    static String model = "block/sawbench.objson";
+    static String model = "block/sawbench_all.objson";
     static ModelSpec modelSpec = new ModelSpec(model);
 
     public BlockSawbench() {

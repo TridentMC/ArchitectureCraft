@@ -53,8 +53,8 @@ import java.util.Map;
 
 public class ItemShape extends BlockItem {
 
-    private static Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
-    private EnumShape shape;
+    private static final Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
+    private final EnumShape shape;
 
     public ItemShape(BlockShape block, Item.Properties builder) {
         super(block, builder);

@@ -3,16 +3,14 @@ package com.tridevmc.architecture.common.shape.behaviour;
 import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.tile.TileShape;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShapeBehaviourModel extends ShapeBehaviour {
 
@@ -31,12 +29,6 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     @Override
     public boolean secondaryDefaultsToBase() {
         return true;
-    }
-
-    @Override
-    public AxisAlignedBB getBounds(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
-                                   Entity entity, Trans3 t) {
-        return t.t(this.getOBJSONModel().getBounds());
     }
 
     protected OBJSON getOBJSONModel() {
@@ -59,19 +51,14 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     }
 
     @Override
-    public void addCollisionBoxesToList(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
-                                        Entity entity, Trans3 t, List list) {
-        if (te.getArchitectureShape().occlusionMask == 0)
-            this.getOBJSONModel().addBoxesToList(t, list);
-        else
-            super.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
+    protected VoxelShape getCollisionBox(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+        return this.getOBJSONModel().getVoxelized();
     }
 
     @Override
     public double placementOffsetX() {
-        List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        this.getOBJSONModel().addBoxesToList(Trans3.ident, list);
-        AxisAlignedBB bounds = Utils.unionOfBoxes(list);
+        VoxelShape shape = this.getOBJSONModel().getShape(Trans3.ident, VoxelShapes.empty());
+        AxisAlignedBB bounds = shape.getBoundingBox();
         return 0.5 * (1 - (bounds.maxX - bounds.minX));
     }
 }

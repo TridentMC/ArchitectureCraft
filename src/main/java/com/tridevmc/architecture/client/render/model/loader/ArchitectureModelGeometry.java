@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 public class ArchitectureModelGeometry implements IModelGeometry<ArchitectureModelGeometry> {
 
-    private IBakedModel bakedModel;
-    private Collection<RenderMaterial> textures;
+    private final IBakedModel bakedModel;
+    private final Collection<RenderMaterial> textures;
 
     public ArchitectureModelGeometry(IBakedModel bakedModel, ResourceLocation... textures) {
         this.bakedModel = bakedModel;

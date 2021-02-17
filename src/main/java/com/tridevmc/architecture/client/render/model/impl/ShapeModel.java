@@ -23,10 +23,10 @@ import java.util.Map;
 public class ShapeModel extends OBJSONModel {
 
     private static final Map<BlockState, TextureAtlasSprite> SPRITE_CACHE = Maps.newHashMap();
-    private EnumShape shape;
+    private final EnumShape shape;
 
     public ShapeModel(EnumShape shape, ShapeBehaviourModel shapeBehaviour, boolean generateUVs) {
-        super(OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, shapeBehaviour.getModelName())), false, false);
+        super(ArchitectureMod.PROXY.getCachedOBJSON(shapeBehaviour.getModelName()), false, false);
         this.shape = shape;
     }
 

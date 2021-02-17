@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
 
@@ -29,7 +30,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
     protected int[][] textureQuadMap;
 
     public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
-        this.objson = objson.offset(new Vector3(0.5, 0.5, 0.5));
+        this.objson = objson;
         this.convertedModelData = new ArchitectureModelData();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
@@ -52,7 +53,48 @@ public abstract class OBJSONModel implements IArchitectureModel {
         for (int i = 0; i < textureQuads.size(); i++) {
             this.textureQuadMap[i] = textureQuads.get(i).stream().mapToInt(t -> t).toArray();
         }
+        //for (AxisAlignedBB bb : objson.getVoxelized()) {
+        //    this.makeCuboid(convertedModelData, bb);
+        //}
         this.convertedModelData.resetState();
+    }
+
+    private void makeCuboid(ArchitectureModelData data, AxisAlignedBB bb){
+        float minX = (float) bb.minX;
+        float minY = (float) bb.minY;
+        float minZ = (float) bb.minZ;
+        float maxX = (float) bb.maxX;
+        float maxY = (float) bb.maxY;
+        float maxZ = (float) bb.maxZ;
+        data.addQuadInstruction(null, minX, minY, minZ);
+        data.addQuadInstruction(null, minX, maxY, minZ);
+        data.addQuadInstruction(null, maxX, maxY, minZ);
+        data.addQuadInstruction(null, maxX, minY, minZ);
+
+        data.addQuadInstruction(null, minX, minY, maxZ);
+        data.addQuadInstruction(null, maxX, minY, maxZ);
+        data.addQuadInstruction(null, maxX, maxY, maxZ);
+        data.addQuadInstruction(null, minX, maxY, maxZ);
+
+        data.addQuadInstruction(null, minX, minY, minZ);
+        data.addQuadInstruction(null, minX, maxY, minZ);
+        data.addQuadInstruction(null, minX, maxY, maxZ);
+        data.addQuadInstruction(null, minX, minY, maxZ);
+
+        data.addQuadInstruction(null, maxX, minY, minZ);
+        data.addQuadInstruction(null, maxX, minY, maxZ);
+        data.addQuadInstruction(null, maxX, maxY, maxZ);
+        data.addQuadInstruction(null, maxX, maxY, minZ);
+
+        data.addQuadInstruction(null, minX, maxY, minZ);
+        data.addQuadInstruction(null, minX, maxY, maxZ);
+        data.addQuadInstruction(null, maxX, maxY, maxZ);
+        data.addQuadInstruction(null, maxX, maxY, minZ);
+
+        data.addQuadInstruction(null, minX, maxY, minZ);
+        data.addQuadInstruction(null, maxX, maxY, minZ);
+        data.addQuadInstruction(null, maxX, maxY, maxZ);
+        data.addQuadInstruction(null, minX, maxY, maxZ);
     }
 
     private int addTri(ArchitectureModelData modelData, ArrayList<Integer> quadList, int face, int quadNumber, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {

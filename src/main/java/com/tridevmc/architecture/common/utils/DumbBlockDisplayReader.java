@@ -9,7 +9,7 @@ import net.minecraft.world.lighting.WorldLightManager;
 
 public class DumbBlockDisplayReader extends DumbBlockReader implements IBlockDisplayReader {
 
-    private IBlockDisplayReader realWorld;
+    private final IBlockDisplayReader realWorld;
 
     public DumbBlockDisplayReader(IBlockDisplayReader world, BlockState state) {
         super(state);
@@ -18,7 +18,7 @@ public class DumbBlockDisplayReader extends DumbBlockReader implements IBlockDis
 
     @Override
     public float func_230487_a_(Direction dir, boolean diffuse) {
-        return realWorld.func_230487_a_(dir, diffuse);
+        return this.realWorld.func_230487_a_(dir, diffuse);
     }
 
     @Override

@@ -26,6 +26,8 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.ArchitectureLog;
 
+import java.util.Arrays;
+
 public class Matrix3 {
 
     public static Matrix3 ident = new Matrix3();
@@ -127,4 +129,24 @@ public class Matrix3 {
             ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", this.m[i][0], this.m[i][1], this.m[i][2]);
     }
 
+    public boolean isIdent(){
+        return Arrays.equals(this.m[0], Matrix3.ident.m[0]) &&
+                Arrays.equals(this.m[1], Matrix3.ident.m[1]) &&
+                Arrays.equals(this.m[2], Matrix3.ident.m[2]);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Matrix3)) return false;
+        Matrix3 matrix3 = (Matrix3) o;
+        return Arrays.equals(this.m[0],  matrix3.m[0]) &&
+                Arrays.equals(this.m[1], matrix3.m[1]) &&
+                Arrays.equals(this.m[2], matrix3.m[2]);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(Arrays.stream(this.m).flatMapToDouble(Arrays::stream).toArray());
+    }
 }

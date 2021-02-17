@@ -19,9 +19,9 @@ import java.util.Optional;
  */
 public class ArchitectureVertex {
 
-    private int face;
-    private float[] data;
-    private float[] uvs;
+    private final int face;
+    private final float[] data;
+    private final float[] uvs;
     private float[] normals;
 
     public ArchitectureVertex(int face, float[] data, float[] uvs, float[] normals) {

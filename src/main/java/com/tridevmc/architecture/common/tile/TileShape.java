@@ -64,7 +64,6 @@ public class TileShape extends TileEntity {
 
     public TileShape() {
         super(ArchitectureMod.CONTENT.tileTypeShape);
-        this.block = (BlockShape) this.world.getBlockState(this.pos).getBlock();
         this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
@@ -222,7 +221,7 @@ public class TileShape extends TileEntity {
     }
 
     public EnumShape getArchitectureShape() {
-        return this.block.getArchitectureShape();
+        return this.getBlock().getArchitectureShape();
     }
 
     public int getDisabledConnections() {
@@ -302,6 +301,13 @@ public class TileShape extends TileEntity {
         builder.withInitial(ModelProperties.POS, this.pos);
         builder.withInitial(ModelProperties.TILE, this);
         return builder.build();
+    }
+
+    public BlockShape getBlock() {
+        if(this.block == null){
+            this.block = this.world != null ? (BlockShape) this.world.getBlockState(this.pos).getBlock() : null;
+        }
+        return this.block;
     }
 
 }

@@ -46,7 +46,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
@@ -55,16 +54,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class BlockShape extends BlockArchitecture {
 
-    private static Map<EnumShape, BlockShape> SHAPE_BLOCKS = Maps.newHashMap();
+    private static final Map<EnumShape, BlockShape> SHAPE_BLOCKS = Maps.newHashMap();
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
-    protected AxisAlignedBB boxHit;
     private final EnumShape architectureShape;
 
     public BlockShape(EnumShape architectureShape) {
@@ -125,56 +122,44 @@ public class BlockShape extends BlockArchitecture {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        if (this.boxHit != null) {
-            if (this.getArchitectureShape().behaviour.highlightZones())
-                return VoxelShapes.create(this.boxHit);
-        }
-        AxisAlignedBB box = this.getLocalBounds(world, pos, state, null);
-        if (box != null)
-            return VoxelShapes.create(box);
-        else
-            return super.getShape(state, world, pos, context);
-    }
-
-    @Override
-    protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
+    @Nonnull
+    protected VoxelShape getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                           BlockState state, Entity entity) {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation();
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return new ArrayList<>();
+        return VoxelShapes.empty();
     }
 
     @Override
-    protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
+    @Nonnull
+    protected VoxelShape getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
                                                          BlockState state, Entity entity) {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return new ArrayList<>();
+        return VoxelShapes.empty();
     }
 
     @Override
-    protected AxisAlignedBB getLocalBounds(IBlockReader world, BlockPos pos,
-                                           BlockState state, Entity entity) {
+    @Nonnull
+    protected VoxelShape getLocalBounds(IBlockReader world, BlockPos pos,
+                                        BlockState state, Entity entity) {
         TileShape te = this.getTileEntity(world, pos);
         if (te != null) {
-            Trans3 t = te.localToGlobalTransformation(Vector3.blockCenter);
+            Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return this.getArchitectureShape().behaviour.getBounds(te, world, pos, state, entity, t);
         }
-        return null; // Causes getBoundingBox to fall back on super implementation
+        return VoxelShapes.empty();
     }
 
-    protected List<AxisAlignedBB> getCollisionBoxes(TileShape te,
-                                                    IBlockReader world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
-        List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-        this.getArchitectureShape().behaviour.addCollisionBoxesToList(te, world, pos, state, entity, t, list);
-        return list;
+    @Nonnull
+    protected VoxelShape getCollisionBoxes(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
+        return this.getArchitectureShape().behaviour.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     //@Override

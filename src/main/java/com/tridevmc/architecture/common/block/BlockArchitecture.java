@@ -24,8 +24,9 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.MapCodec;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
@@ -53,8 +54,13 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.shapes.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -62,14 +68,19 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class BlockArchitecture extends ContainerBlock implements ITextureConsumer {
 
     private static final WrappedField<StateContainer<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateContainer", "field_176227_L");
+    private static final LoadingCache<ShapeContext, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<ShapeContext, VoxelShape>() {
+        public VoxelShape load(@Nonnull ShapeContext shapeContext) {
+            VoxelShape shape = shapeContext.state.getBlock().getLocalBounds(shapeContext.world, shapeContext.pos, shapeContext.state, null);
+            return shape;
+        }
+    });
 
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
@@ -83,7 +94,6 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     protected IOrientationHandler orientationHandler = orient1Way;
     protected String[] textureNames;
     protected ModelSpec modelSpec;
-    protected AxisAlignedBB boxHit;
 
 
     // --------------------------- Constructors -------------------------------
@@ -211,7 +221,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state) {
-        return this.localToGlobalTransformation(world, pos, state, Vector3.blockCenter(pos));
+        return this.localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
     public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
@@ -343,53 +353,56 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     //    return result;
     //}
 
+    public static VoxelShape getCachedShape(ShapeContext context) {
+        VoxelShape shape = SHAPE_CACHE.getUnchecked(context);
+        if (shape.isEmpty()) {
+            SHAPE_CACHE.invalidate(context);
+            shape = VoxelShapes.fullCube();
+        }
+        return shape;
+    }
+
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        AxisAlignedBB box = this.boxHit;
-        if (box == null)
-            box = this.getLocalBounds(world, pos, state, null);
-
-        if (box != null)
-            return VoxelShapes.create(box);
-        else
-            return super.getShape(state, world, pos, context);
+        return getCachedShape(new ShapeContext((BlockStateArchitecture) state, world, pos));
     }
 
     //----------------------------- Bounds and collision boxes -----------------------------------
 
-    protected AxisAlignedBB getLocalBounds(IBlockReader world, BlockPos pos, BlockState state,
-                                           Entity entity) {
+    @Nonnull
+    protected VoxelShape getLocalBounds(IBlockReader world, BlockPos pos, BlockState state, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.blockCenter).translate(spec.origin);
-            return t.t(model.getBounds());
+            Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.zero).translate(spec.origin);
+            return t.t(model.getVoxelized());
         }
-        return null;
+        return VoxelShapes.empty();
     }
 
-    protected List<AxisAlignedBB> getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
-                                                          BlockState state, Entity entity) {
+    @Nonnull
+    protected VoxelShape getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
+                                                 BlockState state, Entity entity) {
         Trans3 t = this.localToGlobalTransformation(world, pos, state);
         return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
-    protected List<AxisAlignedBB> getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
-                                                         BlockState state, Entity entity) {
+    @Nonnull
+    protected VoxelShape getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
+                                                BlockState state, Entity entity) {
         Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.zero);
         return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
-    protected List<AxisAlignedBB> getCollisionBoxes(IBlockReader world, BlockPos pos, BlockState state,
-                                                    Trans3 t, Entity entity) {
+    @Nonnull
+    protected VoxelShape getCollisionBoxes(IBlockReader world, BlockPos pos, BlockState state,
+                                           Trans3 t, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            List<AxisAlignedBB> list = new ArrayList<AxisAlignedBB>();
-            model.addBoxesToList(t.translate(spec.origin), list);
-            return list;
+            return model.getShape(t.translate(spec.origin), VoxelShapes.empty());
         }
-        return null;
+        return VoxelShapes.empty();
     }
 
     public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos, float hardness) {
@@ -430,6 +443,31 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
             super(world, x1, y1, z1, x2, y2, z2, state);
         }
 
+    }
+
+    public class ShapeContext {
+        private final BlockStateArchitecture state;
+        private final IBlockReader world;
+        private final BlockPos pos;
+
+        public ShapeContext(BlockStateArchitecture state, IBlockReader world, BlockPos pos) {
+            this.state = state;
+            this.world = world;
+            this.pos = pos;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.state.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof ShapeContext) {
+                return ((ShapeContext) obj).state == this.state;
+            }
+            return false;
+        }
     }
 
 }

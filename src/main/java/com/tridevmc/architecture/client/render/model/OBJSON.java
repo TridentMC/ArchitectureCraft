@@ -1,10 +1,14 @@
 package com.tridevmc.architecture.client.render.model;
 
 import com.google.gson.Gson;
+import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,16 +18,37 @@ import java.util.List;
 public class OBJSON {
 
     private static final Gson GSON = new Gson();
+    private String name;
     private double[] bounds;
     private double[][] boxes;
     private Face[] faces;
+    private VoxelShape voxelized;
 
     public static OBJSON fromResource(ResourceLocation location) {
+        return fromResource(location, Trans3.blockCenter);
+    }
+
+    public static OBJSON fromResource(ResourceLocation location, Trans3 trans) {
         // Can't use resource manager because this needs to work on the server
         String path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
         InputStream in = OBJSON.class.getResourceAsStream(path);
         OBJSON model = GSON.fromJson(new InputStreamReader(in), OBJSON.class);
+        model.name = location.toString();
         model.setNormals();
+
+        for (int i = 0; i < model.faces.length; i++) {
+            Face face = model.faces[i];
+            for (int v = 0; v < model.faces[i].vertices.length; v++) {
+                Vector3 vPos = face.vertices[v].getPos();
+                face.vertices[v].pos = trans.p(vPos).toArray();
+            }
+        }
+        model.bounds = trans.t(model.bounds);
+        model.boxes = model.boxes == null ? new double[0][] : model.boxes;
+        for (int i = 0; i < model.boxes.length; i++) {
+            model.boxes[i] = trans.t(model.boxes[i]);
+        }
+
         return model;
     }
 
@@ -39,7 +64,7 @@ public class OBJSON {
         out.boxes = this.boxes;
         out.faces = new Face[this.faces.length];
         for (int i = 0; i < this.faces.length; i++) {
-            out.faces[i] =this.faces[i].clone();
+            out.faces[i] = this.faces[i].clone();
             Face face = out.faces[i];
             for (int v = 0; v < out.faces[i].vertices.length; v++) {
                 Vector3 vPos = face.vertices[v].getPos();
@@ -53,20 +78,30 @@ public class OBJSON {
         return this.faces;
     }
 
-    public AxisAlignedBB getBounds() {
-        return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
-    }
+    //public AxisAlignedBB getBounds() {
+    //    return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
+    //}
 
-    public void addBoxesToList(Trans3 t, List<AxisAlignedBB> list) {
-        if (this.boxes != null && this.boxes.length > 0) {
-            Arrays.stream(this.boxes).forEach(b -> this.addBoxToList(b, t, list));
-        } else {
-            this.addBoxToList(this.bounds, t, list);
+    public VoxelShape getVoxelized() {
+        if (this.voxelized == null) {
+            long t0 = System.nanoTime();
+            this.voxelized = OBJSONVoxelizer.voxelize(this, 8);
+            long t1 = System.nanoTime();
+            ArchitectureLog.info("Voxelized {} in {} nanos", this.name, t1 - t0);
         }
+        return this.voxelized;
     }
 
-    protected void addBoxToList(double[] b, Trans3 t, List<AxisAlignedBB> list) {
-        t.addBox(b[0], b[1], b[2], b[3], b[4], b[5], list);
+    public VoxelShape getShape(Trans3 t, VoxelShape shape) {
+        VoxelShape voxelized = this.getVoxelized();
+        if (!voxelized.isEmpty()) {
+            for (AxisAlignedBB bb : voxelized.toBoundingBoxList()) {
+                shape = VoxelShapes.or(shape, t.t(VoxelShapes.create(bb)));
+            }
+        } else {
+            return VoxelShapes.or(shape, t.t(VoxelShapes.create(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5])));
+        }
+        return shape;
     }
 
     private void setNormals() {
@@ -103,7 +138,7 @@ public class OBJSON {
             return out;
         }
 
-        public int getTexture(){
+        public int getTexture() {
             return this.texture;
         }
     }
@@ -131,11 +166,11 @@ public class OBJSON {
             return new Vector3(this.normal[0], this.normal[1], this.normal[2]);
         }
 
-        public double getU(){
+        public double getU() {
             return this.uv[0];
         }
 
-        public double getV(){
+        public double getV() {
             return this.uv[1];
         }
 

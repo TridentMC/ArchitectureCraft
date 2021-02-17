@@ -14,8 +14,8 @@ import java.util.stream.IntStream;
  */
 public class SmartArchitectureVertex extends ArchitectureVertex {
 
-    private boolean generateUVs;
-    private boolean assignNormals;
+    private final boolean generateUVs;
+    private final boolean assignNormals;
 
     private SmartArchitectureVertex(int face, float[] data, float[] uvs, float[] normals, boolean generateUVs, boolean assignNormals) {
         super(face, data, uvs, normals);

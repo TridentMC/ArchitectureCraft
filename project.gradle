@@ -8,11 +8,11 @@ ext {
     useElytraVersionFormat = true
     version = '3'
 
-    compoundVersion = '1.6.0-SNAPSHOT'
+    compoundVersion = '1.6.1-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.16.3-34.1.0'
-    mappings = '20200916-1.16.2'
+    forge = '1.16.5-36.0.22'
+    mappings = '20201028-1.16.3'
 }
 
 if (!ext.early) {

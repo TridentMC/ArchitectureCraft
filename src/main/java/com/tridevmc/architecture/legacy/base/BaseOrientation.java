@@ -88,7 +88,7 @@ public class BaseOrientation {
 
         @Override
         public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
-            Direction f = (Direction) state.get(FACING);
+            Direction f = state.get(FACING);
             int i;
             switch (f) {
                 case NORTH:

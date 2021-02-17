@@ -31,12 +31,15 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.progress.StartupMessageManager;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CommonProxy {
 
-    private Map<ResourceLocation, OBJSON> modelCache = Maps.newHashMap();
+    private final Map<ResourceLocation, OBJSON> modelCache = Maps.newHashMap();
 
     public void setup(FMLCommonSetupEvent e) {
     }
@@ -57,8 +60,14 @@ public class CommonProxy {
             model = OBJSON.fromResource(loc);
             this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
-            ArchitectureLog.info("Loaded and cached {} in {} nanos.", name, t1 - t0);
+            String msg = String.format("Loaded and cached '%s' in %s nanos.",  name, t1 - t0);
+            StartupMessageManager.addModMessage(msg);
+            ArchitectureLog.info(msg);
         }
+        String msg = String.format("Voxelizing '%s'", name);
+        StartupMessageManager.addModMessage(msg);
+        ArchitectureLog.info(msg);
+        model.getVoxelized();
         return model;
     }
 

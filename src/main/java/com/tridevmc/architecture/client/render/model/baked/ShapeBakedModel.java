@@ -62,7 +62,7 @@ public class ShapeBakedModel implements IDynamicBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return model.getDefaultSprite();
+        return this.model.getDefaultSprite();
     }
 
     @Override

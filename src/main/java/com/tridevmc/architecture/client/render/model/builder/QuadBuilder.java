@@ -18,9 +18,9 @@ import java.util.Optional;
  */
 public class QuadBuilder {
 
-    private BakedQuadBuilder builder;
-    private VertexFormat format;
-    private Optional<TransformationMatrix> transform;
+    private final BakedQuadBuilder builder;
+    private final VertexFormat format;
+    private final Optional<TransformationMatrix> transform;
 
     public QuadBuilder(@Nullable TransformationMatrix transform, Direction side) {
         this.format = DefaultVertexFormats.BLOCK;

@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  */
 public class CreateMenuContext {
 
-    private int windowId;
-    private PlayerEntity player;
-    private PlayerInventory playerInventory;
+    private final int windowId;
+    private final PlayerEntity player;
+    private final PlayerInventory playerInventory;
     private BlockPos pos;
     private BlockState blockState;
     private TileEntity tile;

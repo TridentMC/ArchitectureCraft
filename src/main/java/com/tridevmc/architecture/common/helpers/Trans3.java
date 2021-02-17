@@ -29,10 +29,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.tridevmc.architecture.common.helpers.Vector3.getDirectionVec;
 import static java.lang.Math.round;
@@ -220,6 +224,30 @@ public class Trans3 {
         return boxEnclosing(this.p(box.minX, box.minY, box.minZ), this.p(box.maxX, box.maxY, box.maxZ));
     }
 
+    public List<AxisAlignedBB> t(List<AxisAlignedBB> boxes) {
+        return boxes.stream().map(this::t).collect(Collectors.toList());
+    }
+
+    public VoxelShape t(VoxelShape shape) {
+        if (this.scaling == 1 && this.rotation.isIdent()) {
+            return shape.withOffset(this.offset.x, this.offset.y, this.offset.z);
+        }
+        List<AxisAlignedBB> boxes = shape.toBoundingBoxList().stream().map(this::t).collect(Collectors.toList());
+        VoxelShape out = boxes.isEmpty() ? VoxelShapes.empty() : VoxelShapes.create(boxes.get(0));
+        if (boxes.size() > 1) {
+            for (int i = 1; i < boxes.size(); i++) {
+                out = VoxelShapes.or(out, VoxelShapes.create(boxes.get(i)));
+            }
+        }
+        return out.simplify();
+    }
+
+    public double[] t(double[] box) {
+        double[] min = this.p(box[0], box[1], box[2]).toArray();
+        double[] max = this.p(box[3], box[4], box[5]).toArray();
+        return new double[]{min[0], min[1], min[2], max[0], max[1], max[2]};
+    }
+
     public AxisAlignedBB box(Vector3 p0, Vector3 p1) {
         return boxEnclosing(this.p(p0), this.p(p1));
     }
@@ -241,6 +269,10 @@ public class Trans3 {
         list.add(box);
     }
 
+    public VoxelShape addBox(double x0, double y0, double z0, double x1, double y1, double z1, VoxelShape shape) {
+        return VoxelShapes.or(shape, VoxelShapes.create(x0, y0, z0, x1, y1, z1));
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -249,4 +281,21 @@ public class Trans3 {
                 .add("scaling", this.scaling)
                 .toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Trans3)) return false;
+        Trans3 trans3 = (Trans3) o;
+        return Double.compare(trans3.scaling, this.scaling) == 0 &&
+                Objects.equals(this.offset, trans3.offset) &&
+                Objects.equals(this.rotation, trans3.rotation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.offset, this.rotation, this.scaling);
+    }
+
+
 }
