@@ -6,34 +6,18 @@ ext {
     projectName = 'architecturecraft'
 
     useElytraVersionFormat = true
-    version = '3'
+    version = '4'
 
-    compoundVersion = '1.6.1-SNAPSHOT'
+    compoundVersion = '1.8.1-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.16.5-36.0.22'
-    mappings = '20201028-1.16.3'
+    forge = '1.19.2-43.0.11'
+    mappingsChannel = 'official'
+    mappingsVersion = '1.19.2'
 }
 
 if (!ext.early) {
     repositories {
-        // the skeleton already defines mavenCentral, jcenter, and the Elytra repo
-        // will also have Shadowfacts' maven if the language is set to kotlin
-        maven {
-            // location of the maven that hosts JEI files
-            name = "Progwml6 maven"
-            url = "http://dvs1.progwml6.com/files/maven"
-        }
-        maven {
-            // location of a maven mirror for JEI files, as a fallback
-            name = "ModMaven"
-            url = "modmaven.k-4u.nl"
-        }
-        maven {
-            // for Architect API
-            name = "Architect maven"
-            url = "http://maven.cil.li/"
-        }
     }
 
     dependencies {

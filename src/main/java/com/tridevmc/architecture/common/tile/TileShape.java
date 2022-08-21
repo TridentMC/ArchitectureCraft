@@ -297,7 +297,7 @@ public class TileShape extends TileEntity {
     @Override
     public IModelData getModelData() {
         ModelDataMap.Builder builder = new ModelDataMap.Builder();
-        builder.withInitial(ModelProperties.WORLD, this.world);
+        builder.withInitial(ModelProperties.LEVEL, this.world);
         builder.withInitial(ModelProperties.POS, this.pos);
         builder.withInitial(ModelProperties.TILE, this);
         return builder.build();

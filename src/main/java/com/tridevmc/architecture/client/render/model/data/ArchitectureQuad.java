@@ -2,13 +2,13 @@ package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
-import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
+import net.minecraft.core.Direction;
+
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     private Direction face;
     private ArchitectureVertex[] vertices = new ArchitectureVertex[4];
     private Vector3f normals;
-    private Map<TransformationMatrix, PrebuiltData> prebuiltQuads = Maps.newHashMap();
+    private Map<Transformation, PrebuiltData> prebuiltQuads = Maps.newHashMap();
 
     private static class PrebuiltData {
         BakedQuad baseQuad;
@@ -48,8 +48,8 @@ public class ArchitectureQuad implements IBakedQuadProvider {
         }
 
         private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
-            return new BakedQuad(quad.getVertexData(), newTint, quad.getFace(), quad.getSprite(),
-                    quad.applyDiffuseLighting());
+            return new BakedQuad(quad.getVertices(), newTint, quad.getDirection(), quad.getSprite(),
+                    quad.isShade());
         }
     }
 
@@ -72,7 +72,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      * @return a baked quad matching all the data provided.
      */
     @Override
-    public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
+    public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
         this.recalculateFace();
         if (prebuiltData == null) {
@@ -156,7 +156,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
     }
 
     @Override
-    public int[][] getRanges(TransformationMatrix transform) {
+    public int[][] getRanges(Transformation transform) {
         int[][] ranges = new int[3][2];
         Set<Integer> xDimensions = Sets.newHashSet();
         Set<Integer> yDimensions = Sets.newHashSet();

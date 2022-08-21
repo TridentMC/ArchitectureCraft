@@ -4,11 +4,11 @@ import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.client.render.model.OBJSONModel;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.LevelAccessor;
 
 import java.util.function.Function;
 
@@ -29,20 +29,20 @@ public class SawbenchModel extends OBJSONModel {
     }
 
     @Override
-    public TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos) {
+    public TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos) {
         doInit();
         return textures;
     }
 
     @Override
-    public int[] getColours(IBlockDisplayReader world, BlockPos pos) {
+    public int[] getColours(LevelAccessor world, BlockPos pos) {
         doInit();
         return colours;
     }
 
     private static void doInit() {
         if (needsInit) {
-            Function<ResourceLocation, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+            Function<ResourceLocation, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(TextureAtlas.LOCATION_BLOCKS);
             textures = new TextureAtlasSprite[]{
                     textureGetter.apply(new ResourceLocation("block/oak_planks")),
                     textureGetter.apply(new ResourceLocation("block/iron_block"))

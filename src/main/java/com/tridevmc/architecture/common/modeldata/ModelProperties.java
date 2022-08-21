@@ -1,14 +1,15 @@
 package com.tridevmc.architecture.common.modeldata;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import java.util.Objects;
 
 public class ModelProperties {
-    public static final ModelProperty<World> WORLD = new ModelProperty<World>(Objects::nonNull);
+    public static final ModelProperty<Level> LEVEL = new ModelProperty<Level>(Objects::nonNull);
     public static final ModelProperty<BlockPos> POS = new ModelProperty<BlockPos>(Objects::nonNull);
-    public static final ModelProperty<TileEntity> TILE = new ModelProperty<TileEntity>();
+    public static final ModelProperty<BlockEntity> TILE = new ModelProperty<BlockEntity>();
 }

@@ -2,18 +2,19 @@ package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
+
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.util.math.vector.Vector4f;
-import net.minecraftforge.client.model.pipeline.LightUtil;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -29,7 +30,7 @@ public class ArchitectureModelData {
     private boolean isLocked = false;
     protected BlockState state;
     protected Direction facing = Direction.NORTH;
-    protected TransformationMatrix transform = TransformationMatrix.identity();
+    protected Transformation transform = Transformation.identity();
     protected ArrayList<Integer>[] tintIndices = new ArrayList[Direction.values().length + 1];
     protected ArrayList<TextureAtlasSprite>[] faceSprites = new ArrayList[Direction.values().length + 1];
 
@@ -40,7 +41,7 @@ public class ArchitectureModelData {
         }
     }
 
-    public ArchitectureModelData(IBakedModel sourceData) {
+    public ArchitectureModelData(BakedModel sourceData) {
         this();
         this.loadFromBakedModel(sourceData);
     }
@@ -58,7 +59,7 @@ public class ArchitectureModelData {
         }
     }
 
-    public void setTransform(Direction facing, TransformationMatrix transform) {
+    public void setTransform(Direction facing, Transformation transform) {
         this.facing = facing;
         this.transform = transform;
     }
@@ -73,12 +74,12 @@ public class ArchitectureModelData {
         }
         List<BakedQuad> generalQuads = Lists.newArrayList();
         Map<Direction, List<BakedQuad>> faceQuads = Maps.newHashMap();
-        IntStream.range(-1, Direction.values().length).forEach((i) -> faceQuads.put(i > -1 ? Direction.byIndex(i) : null, Lists.newArrayList()));
+        IntStream.range(-1, Direction.values().length).forEach((i) -> faceQuads.put(i > -1 ? Direction.from3DDataValue(i) : null, Lists.newArrayList()));
 
         for (Map.Entry<Direction, List<IBakedQuadProvider>> quadFaceEntry : this.quads.entrySet()) {
             Direction oldFace = quadFaceEntry.getKey();
             Direction newFace = oldFace == null ? null : this.rotate(oldFace, this.transform);
-            int faceIndex = newFace == null ? this.faceSprites.length - 1 : newFace.getIndex();
+            int faceIndex = newFace == null ? this.faceSprites.length - 1 : newFace.get3DDataValue();
             List<IBakedQuadProvider> quads = quadFaceEntry.getValue();
 
             ArrayList<TextureAtlasSprite> spritesForFace = this.faceSprites[faceIndex];
@@ -100,19 +101,19 @@ public class ArchitectureModelData {
         return new ModelDataQuads(generalQuads, faceQuads);
     }
 
-    private Direction rotate(Direction direction, TransformationMatrix transform) {
-        Vector3i dir = direction.getDirectionVec();
+    private Direction rotate(Direction direction, Transformation transform) {
+        Vec3i dir = direction.getNormal();
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
-        return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
+        return Direction.getNearest(vec.x(), vec.y(), vec.z());
     }
 
     public void resetState() {
         // reset the model data for a new draw request.
-        this.state = Blocks.AIR.getDefaultState();
+        this.state = Blocks.AIR.defaultBlockState();
         this.facing = Direction.NORTH;
 
-        this.transform = TransformationMatrix.identity();
+        this.transform = Transformation.identity();
         this.tintIndices = new ArrayList[Direction.values().length + 1];
         this.faceSprites = new ArrayList[Direction.values().length + 1];
 
@@ -122,20 +123,20 @@ public class ArchitectureModelData {
         }
     }
 
-    public void loadFromBakedModel(IBakedModel sourceData) {
+    public void loadFromBakedModel(BakedModel sourceData) {
         for (int i = -1; i < Direction.values().length; i++) {
-            Random rand = new Random();
+            RandomSource rand = RandomSource.create();
             rand.setSeed(42L);
             Direction facing = null;
             if (i != -1) {
-                facing = Direction.byIndex(i);
+                facing = Direction.from3DDataValue(i);
             }
-            List<BakedQuad> quads = sourceData.getQuads(Blocks.AIR.getDefaultState(), facing, rand);
+            List<BakedQuad> quads = sourceData.getQuads(Blocks.AIR.defaultBlockState(), facing, rand);
 
             for (BakedQuad quad : quads) {
                 Vector3f[] points = new QuadPointDumper(quad).getPoints();
                 for (Vector3f point : points) {
-                    this.addQuadInstruction(quad.getFace(), point.getX(), point.getY(), point.getZ());
+                    this.addQuadInstruction(quad.getDirection(), point.x(), point.y(), point.z());
                 }
             }
         }

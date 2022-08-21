@@ -1,15 +1,16 @@
 package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.util.math.vector.Vector4f;
-import net.minecraftforge.client.model.pipeline.IVertexConsumer;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class ArchitectureVertex {
     }
 
     public void setNormals(Vector3f normals) {
-        this.normals = new float[]{normals.getX(), normals.getY(), normals.getZ()};
+        this.normals = new float[]{normals.x(), normals.y(), normals.z()};
     }
 
     public Vector3f getNormals() {
@@ -47,21 +48,21 @@ public class ArchitectureVertex {
         return new Vector3f(this.data);
     }
 
-    public Vector3f getPosition(TransformationMatrix transform) {
+    public Vector3f getPosition(Transformation transform) {
         Vector3f position = this.getPosition();
-        Vector4f transformedPosition = new Vector4f(position.getX(), position.getY(), position.getZ(), 1);
+        Vector4f transformedPosition = new Vector4f(position.x(), position.y(), position.z(), 1);
         transform.transformPosition(transformedPosition);
-        return new Vector3f(transformedPosition.getX(), transformedPosition.getY(), transformedPosition.getZ());
+        return new Vector3f(transformedPosition.x(), transformedPosition.y(), transformedPosition.z());
     }
 
-    protected Direction rotate(Direction direction, TransformationMatrix transform) {
-        Vector3i dir = direction == null ? new Vector3i(0, 0, 0) : direction.getDirectionVec();
+    protected Direction rotate(Direction direction, Transformation transform) {
+        Vec3i dir = direction == null ? new Vec3i(0, 0, 0) : direction.getNormal();
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
-        return Direction.getFacingFromVector(vec.getX(), vec.getY(), vec.getZ());
+        return Direction.getNearest(vec.x(), vec.y(), vec.z());
     }
 
-    public float[] getUVs(IBakedQuadProvider quadProvider, TransformationMatrix transform) {
+    public float[] getUVs(IBakedQuadProvider quadProvider, Transformation transform) {
         return this.uvs;
     }
 
@@ -78,21 +79,21 @@ public class ArchitectureVertex {
     }
 
     public float getNormalX() {
-        return this.getNormals().getX();
+        return this.getNormals().x();
     }
 
     public float getNormalY() {
-        return this.getNormals().getY();
+        return this.getNormals().y();
     }
 
     public float getNormalZ() {
-        return this.getNormals().getZ();
+        return this.getNormals().z();
     }
 
-    public void pipe(IVertexConsumer consumer, IBakedQuadProvider bakedQuadProvider, TextureAtlasSprite sprite, Optional<TransformationMatrix> transform) {
+    public void pipe(VertexConsumer consumer, IBakedQuadProvider bakedQuadProvider, TextureAtlasSprite sprite, Optional<Transformation> transform) {
         Vector4f pos = new Vector4f(this.getPosition());
         Vector3f normals = this.getNormals();
-        float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(TransformationMatrix.identity()));
+        float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(Transformation.identity()));
         transform.ifPresent((t) -> {
             t.transformPosition(pos);
             t.transformNormal(normals);

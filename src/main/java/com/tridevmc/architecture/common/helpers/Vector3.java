@@ -25,10 +25,10 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.google.common.base.MoreObjects;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3i;
+import com.mojang.math.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 
 import java.util.Objects;
 import java.util.function.DoubleFunction;
@@ -61,13 +61,13 @@ public class Vector3 {
             {unitZ, unitY}, // WEST
             {unitNZ, unitY}, // EAST
     };
-    public static Vector3i[] directionVec = {
-            new Vector3i(0, -1, 0),
-            new Vector3i(0, 1, 0),
-            new Vector3i(0, 0, -1),
-            new Vector3i(0, 0, 1),
-            new Vector3i(-1, 0, 0),
-            new Vector3i(1, 0, 0)
+    public static Vec3i[] directionVec = {
+            new Vec3i(0, -1, 0),
+            new Vec3i(0, 1, 0),
+            new Vec3i(0, 0, -1),
+            new Vec3i(0, 0, 1),
+            new Vec3i(-1, 0, 0),
+            new Vec3i(1, 0, 0)
     };
     public double x, y, z;
 
@@ -81,7 +81,7 @@ public class Vector3 {
         this(v.x, v.y, v.z);
     }
 
-    public Vector3(Vector3i v) {
+    public Vector3(Vec3i v) {
         this(v.getX(), v.getY(), v.getZ());
     }
 
@@ -145,12 +145,12 @@ public class Vector3 {
         return faceBases[f.ordinal()];
     }
 
-    public static Vector3i getDirectionVec(Direction f) {
+    public static Vec3i getDirectionVec(Direction f) {
         return directionVec[f.ordinal()];
     }
 
-    public Vector3i toVec3i() {
-        return new Vector3i(this.x, this.y, this.z);
+    public Vec3i toVec3i() {
+        return new Vec3i(this.x, this.y, this.z);
     }
 
     public Vector3 add(double x, double y, double z) {
@@ -186,7 +186,7 @@ public class Vector3 {
     }
 
     public double dot(Direction f) {
-        Vector3i v = getDirectionVec(f);
+        Vec3i v = getDirectionVec(f);
         return this.dot(v.getX(), v.getY(), v.getZ());
     }
 

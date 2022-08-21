@@ -1,17 +1,17 @@
 package com.tridevmc.architecture.client.render.model;
 
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelData;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
 public interface IArchitectureModel {
 
-    ArchitectureModelData.ModelDataQuads getQuads(BlockState state, IBlockDisplayReader world, BlockPos pos);
+    ArchitectureModelData.ModelDataQuads getQuads(BlockState state, LevelAccessor world, BlockPos pos);
 
     TextureAtlasSprite getDefaultSprite();
 

@@ -1,13 +1,9 @@
 package com.tridevmc.architecture.client.render.model;
 
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.mojang.math.Vector3d;
 import com.tridevmc.architecture.common.utils.AABBTree;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.CubeCoordinateIterator;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,23 +32,23 @@ public class OBJSONVoxelizer {
         double[] yS = unpackedTris.stream().flatMapToDouble(t -> Arrays.stream(t.getYs())).sorted().toArray();
         double[] zS = unpackedTris.stream().flatMapToDouble(t -> Arrays.stream(t.getZs())).sorted().toArray();
 
-        int minX = (int) (((resolution * Math.round(xS[0] / resolution))) / resolution) ;
-        int minY = (int) (((resolution * Math.round(yS[0] / resolution))) / resolution) ;
-        int minZ = (int) (((resolution * Math.round(zS[0] / resolution))) / resolution) ;
-        int maxX = (int) (((resolution * Math.round(xS[xS.length - 1] / resolution))) / resolution) ;
-        int maxY = (int) (((resolution * Math.round(yS[yS.length - 1] / resolution))) / resolution) ;
-        int maxZ = (int) (((resolution * Math.round(zS[zS.length - 1] / resolution))) / resolution) ;
+        int minX = (int) (((resolution * Math.round(xS[0] / resolution))) / resolution);
+        int minY = (int) (((resolution * Math.round(yS[0] / resolution))) / resolution);
+        int minZ = (int) (((resolution * Math.round(zS[0] / resolution))) / resolution);
+        int maxX = (int) (((resolution * Math.round(xS[xS.length - 1] / resolution))) / resolution);
+        int maxY = (int) (((resolution * Math.round(yS[yS.length - 1] / resolution))) / resolution);
+        int maxZ = (int) (((resolution * Math.round(zS[zS.length - 1] / resolution))) / resolution);
 
 
         VoxelShape out = VoxelShapes.empty();
         for (int y = minY; y < maxY; y++) {
-            AxisAlignedBB layer = null;
+            AABB layer = null;
             for (int x = minX; x < maxX; x++) {
                 for (int z = minZ; z < maxZ; z++) {
                     double bX = x * resolution;
                     double bY = y * resolution;
                     double bZ = z * resolution;
-                    AxisAlignedBB box = new AxisAlignedBB(bX, bY, bZ, bX + resolution, bY + resolution, bZ + resolution);
+                    AABB box = new AABB(bX, bY, bZ, bX + resolution, bY + resolution, bZ + resolution);
                     List<UnpackedTri> tris = aabbTree.search(box);
                     if (tris.stream().anyMatch(t -> checkCollision(box.grow(1D / 16D), t))) {
                         if (layer == null) {
@@ -70,7 +66,7 @@ public class OBJSONVoxelizer {
         return out;
     }
 
-    private static boolean checkCollision(AxisAlignedBB box, UnpackedTri tri) {
+    private static boolean checkCollision(AABB box, UnpackedTri tri) {
         Vector3d aabbCenter = box.getCenter();
         Vector3d aabbSize = new Vector3d(box.getXSize() / 2, box.getYSize() / 2, box.getZSize() / 2);
 
@@ -113,7 +109,7 @@ public class OBJSONVoxelizer {
     }
 
     private static class UnpackedTri {
-        private final AxisAlignedBB box;
+        private final AABB box;
         private final double[][] vertices;
 
         public UnpackedTri(OBJSON.Face face, OBJSON.Triangle triangle, double resolution) {
@@ -128,7 +124,7 @@ public class OBJSONVoxelizer {
             double[] xs = this.getXs();
             double[] ys = this.getYs();
             double[] zs = this.getZs();
-            this.box = new AxisAlignedBB(Arrays.stream(xs).min().orElse(0),
+            this.box = new AABB(Arrays.stream(xs).min().orElse(0),
                     Arrays.stream(ys).min().orElse(0),
                     Arrays.stream(zs).min().orElse(0),
                     Arrays.stream(xs).max().orElse(0),
@@ -136,7 +132,7 @@ public class OBJSONVoxelizer {
                     Arrays.stream(zs).max().orElse(0));
         }
 
-        private AxisAlignedBB getBox() {
+        private AABB getBox() {
             return this.box;
         }
 

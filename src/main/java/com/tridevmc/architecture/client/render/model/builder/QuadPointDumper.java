@@ -1,11 +1,10 @@
 package com.tridevmc.architecture.client.render.model.builder;
 
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.client.model.pipeline.LightUtil;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 
 public class QuadPointDumper {
 
@@ -15,15 +14,15 @@ public class QuadPointDumper {
 
     public QuadPointDumper(BakedQuad quad) {
         float[] data = new float[4];
-        VertexFormat formatFrom = DefaultVertexFormats.BLOCK;
-        this.formatTo = DefaultVertexFormats.BLOCK;
+        VertexFormat formatFrom = DefaultVertexFormat.BLOCK;
+        this.formatTo = DefaultVertexFormat.BLOCK;
         int countFrom = formatFrom.getElements().size();
         int countTo = this.formatTo.getElements().size();
         int[] eMap = LightUtil.mapFormats(formatFrom, this.formatTo);
         for (int v = 0; v < 4; v++) {
             for (int e = 0; e < countFrom; e++) {
                 if (eMap[e] != countTo) {
-                    this.unpack(quad.getVertexData(), data, this.formatTo, v, eMap[e]);
+                    this.unpack(quad.getVertices(), data, this.formatTo, v, eMap[e]);
                     this.put(e, data);
                 } else {
                     this.put(e);
@@ -72,7 +71,7 @@ public class QuadPointDumper {
 
     public void put(int element, float... data) {
         VertexFormatElement elementType = this.formatTo.getElements().get(element);
-        if (elementType != DefaultVertexFormats.POSITION_3F)
+        if (elementType != DefaultVertexFormat.ELEMENT_POSITION)
             return;
 
         if (this.currentPoint == 4) {

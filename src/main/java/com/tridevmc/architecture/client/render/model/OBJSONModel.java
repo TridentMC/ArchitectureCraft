@@ -2,17 +2,19 @@ package com.tridevmc.architecture.client.render.model;
 
 import com.google.common.collect.Lists;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelData;
-import com.tridevmc.architecture.common.helpers.Vector3;
-import net.minecraft.block.BlockState;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +61,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
         this.convertedModelData.resetState();
     }
 
-    private void makeCuboid(ArchitectureModelData data, AxisAlignedBB bb){
+    private void makeCuboid(ArchitectureModelData data, AABB bb){
         float minX = (float) bb.minX;
         float minY = (float) bb.minY;
         float minZ = (float) bb.minZ;
@@ -127,7 +129,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
     // TODO: FIXME!!! - Re-evaluate how we assign textures to model datas based on OBJSON. Something is fucked
 
     @Override
-    public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, IBlockDisplayReader world, BlockPos pos) {
+    public ArchitectureModelData.ModelDataQuads getQuads(BlockState state, LevelAccessor world, BlockPos pos) {
         this.convertedModelData.setState(state);
         TextureAtlasSprite[] textures = this.getTextures(world, pos);
         int[] colours = this.getColours(world, pos);
@@ -146,7 +148,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
 
     @Override
     public TextureAtlasSprite getDefaultSprite() {
-        return Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(MissingTextureSprite.getLocation());
+        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(MissingTextureAtlasSprite.getLocation());
     }
 
     @Override
@@ -154,7 +156,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
         return Collections.emptyList();
     }
 
-    public abstract TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos);
+    public abstract TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos);
 
-    public abstract int[] getColours(IBlockDisplayReader world, BlockPos pos);
+    public abstract int[] getColours(LevelAccessor world, BlockPos pos);
 }

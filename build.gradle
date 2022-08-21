@@ -1,23 +1,11 @@
-buildscript {
-    repositories {
-        maven { url = "https://files.minecraftforge.net/maven" }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "3.+", changing: true
-    }
-}
-
 plugins {
+    id 'eclipse'
+    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 ext.early = true
 apply from: 'project.gradle'
@@ -55,8 +43,12 @@ configurations {
     shade
 }
 
+repositories {
+    maven { url = 'https://repo.tridevmc.com/' }
+}
+
 minecraft {
-    mappings channel: 'snapshot', version: project.ext.mappings
+    mappings channel: project.ext.mappingsChannel, version: project.ext.mappingsVersion
 
     runs {
         client {
@@ -109,12 +101,10 @@ dependencies {
     minecraft "net.minecraftforge:forge:${project.ext.forge}"
 }
 
-repositories {
-    jcenter()
-    mavenCentral()
-    maven {
-        url 'https://repo.tridevmc.com/'
-    }
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 def needsShadow = !project.ext.compoundModules.isEmpty()
@@ -122,10 +112,10 @@ def needsShadow = !project.ext.compoundModules.isEmpty()
 if (needsShadow) {
     dependencies {
         for (String module : project.ext.compoundModules) {
-            def module_identifier = 'com.tridevmc.compound:compound' + '-' + module + ':' + project.ext.compoundVersion
-            compile module_identifier
-            shade module_identifier
-            nonModDep module_identifier
+            def moduleIdentifier = 'com.tridevmc.compound:compound-' + module + ':' + project.ext.compoundVersion
+            implementation(moduleIdentifier)
+            shade(moduleIdentifier)
+            nonModDep(moduleIdentifier)
         }
     }
 

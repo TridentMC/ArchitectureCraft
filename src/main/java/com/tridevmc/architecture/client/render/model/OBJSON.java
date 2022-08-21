@@ -4,11 +4,9 @@ import com.google.gson.Gson;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

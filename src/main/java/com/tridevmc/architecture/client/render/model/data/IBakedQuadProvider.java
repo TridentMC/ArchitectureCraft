@@ -1,10 +1,10 @@
 package com.tridevmc.architecture.client.render.model.data;
 
-import net.minecraft.client.renderer.model.BakedQuad;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.core.Direction;
 
 /**
  * Defines an object that can provide a baked quad with data it already has prepared.
@@ -22,7 +22,7 @@ public interface IBakedQuadProvider {
      * @param tintIndex the tint to apply to the quad.
      * @return a baked quad matching the given information.
      */
-    BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex);
+    BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex);
 
     /**
      * Gets the normals for the baked object. Used by vertex implementations.
@@ -65,7 +65,7 @@ public interface IBakedQuadProvider {
      *
      * @return a two dimensional array of integers representing the range of variables present in each dimension.
      */
-    int[][] getRanges(TransformationMatrix transform);
+    int[][] getRanges(Transformation transform);
 
     /**
      * Gets the next vertex to be set into the model.
