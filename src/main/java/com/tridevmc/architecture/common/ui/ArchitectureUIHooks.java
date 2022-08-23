@@ -47,7 +47,7 @@ public class ArchitectureUIHooks {
                     BlockPos pos = data.readBlockPos();
                     BlockState state = world.getBlockState(pos);
                     TileEntity tile = world.getTileEntity(pos);
-                    context.setPos(pos).setBlockState(state).setTile(tile);
+                    context.setPos(pos).setBlockState(state).setBlockEntity(tile);
                     if (tile instanceof IElementProvider) {
                         lastProvider = Optional.of((IElementProvider) tile);
                         return (C) ((IElementProvider) tile).createMenu(context);

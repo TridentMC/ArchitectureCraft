@@ -1,8 +1,8 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 public class UnpackedBakedQuad extends BakedQuad {
 
@@ -14,7 +14,7 @@ public class UnpackedBakedQuad extends BakedQuad {
     }
 
     @Override
-    public int[] getVertexData() {
+    public int[] getVertices() {
         if(this.packedData == null){
             this.packedData = this.packData();
         }

@@ -30,13 +30,13 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.behaviour.*;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -46,7 +46,7 @@ import static com.tridevmc.architecture.common.shape.ShapeFlags.PLACE_UNDERNEATH
 import static com.tridevmc.architecture.common.shape.ShapeSymmetry.*;
 import static java.lang.Math.abs;
 
-public enum EnumShape implements IStringSerializable {
+public enum EnumShape implements StringRepresentable {
 
     ROOF_TILE(0, "roof_tile", ShapeBehaviourRoof.INSTANCE, BILATERAL, 1, 2, 0xcf),
     ROOF_OUTER_CORNER(1, "roof_outer_corner", ShapeBehaviourRoof.INSTANCE, UNILATERAL, 1, 3, 0x4f),
@@ -161,7 +161,7 @@ public enum EnumShape implements IStringSerializable {
         Arrays.stream(EnumShape.values()).forEach(
                 s -> {
                     shapesById.put(s.id, s);
-                    shapesByName.put(s.getString(), s);
+                    shapesByName.put(s.getSerializedName(), s);
                 }
         );
         SHAPES_BY_ID = shapesById.build();
@@ -224,15 +224,15 @@ public enum EnumShape implements IStringSerializable {
         }
     }
 
-    public void orientOnPlacement(PlayerEntity player, TileShape te,
-                                  BlockPos npos, BlockState nstate, TileEntity nte, Direction face, Vector3 hit) {
+    public void orientOnPlacement(Player player, TileShape te,
+                                  BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, Vector3 hit) {
         if (te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
             return;
         else
             this.orientFromHitPosition(player, te, face, hit);
     }
 
-    protected void orientFromHitPosition(PlayerEntity player, TileShape te, Direction face, Vector3 hit) {
+    protected void orientFromHitPosition(Player player, TileShape te, Direction face, Vector3 hit) {
         byte side, turn;
         switch (face) {
             case UP:
@@ -295,11 +295,12 @@ public enum EnumShape implements IStringSerializable {
     }
 
     public String getLocalizedShapeName() {
-        return I18n.format("architecturecraft.shape." + this.translationKey);
+        return I18n.get("architecturecraft.shape." + this.translationKey);
     }
 
+
     @Override
-    public String getString() {
+    public String getSerializedName() {
         return this.translationKey;
     }
 }

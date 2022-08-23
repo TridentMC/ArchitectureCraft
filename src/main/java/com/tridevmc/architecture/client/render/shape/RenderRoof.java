@@ -29,7 +29,7 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 public class RenderRoof {
 

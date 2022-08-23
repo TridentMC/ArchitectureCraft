@@ -25,14 +25,14 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.google.common.base.MoreObjects;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3i;
+import com.mojang.math.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.List;
 import java.util.Objects;
@@ -103,7 +103,7 @@ public class Trans3 {
     public static int turnFor(Entity e, int side) {
         if (side > 1)
             return 0;
-        int rot = round(e.rotationYaw / 90);
+        int rot = round(e.getYRot() / 90);
         if (side == 0)
             rot = 2 - rot;
         else
@@ -111,8 +111,8 @@ public class Trans3 {
         return rot & 0x3;
     }
 
-    public static AxisAlignedBB boxEnclosing(Vector3 p, Vector3 q) {
-        return new AxisAlignedBB(p.x, p.y, p.z, q.x, q.y, q.z);
+    public static AABB boxEnclosing(Vector3 p, Vector3 q) {
+        return new AABB(p.x, p.y, p.z, q.x, q.y, q.z);
     }
 
     public Trans3 translate(Vector3 v) {
@@ -192,11 +192,11 @@ public class Trans3 {
         return this.iv(new Vector3(x, y, z));
     }
 
-    public Vector3 v(Vector3i u) {
+    public Vector3 v(Vec3i u) {
         return this.v(u.getX(), u.getY(), u.getZ());
     }
 
-    public Vector3 iv(Vector3i u) {
+    public Vector3 iv(Vec3i u) {
         return this.iv(u.getX(), u.getY(), u.getZ());
     }
 
@@ -220,26 +220,26 @@ public class Trans3 {
         return this.iv(u.x, u.y, u.z);
     }
 
-    public AxisAlignedBB t(AxisAlignedBB box) {
+    public AABB t(AABB box) {
         return boxEnclosing(this.p(box.minX, box.minY, box.minZ), this.p(box.maxX, box.maxY, box.maxZ));
     }
 
-    public List<AxisAlignedBB> t(List<AxisAlignedBB> boxes) {
+    public List<AABB> t(List<AABB> boxes) {
         return boxes.stream().map(this::t).collect(Collectors.toList());
     }
 
     public VoxelShape t(VoxelShape shape) {
         if (this.scaling == 1 && this.rotation.isIdent()) {
-            return shape.withOffset(this.offset.x, this.offset.y, this.offset.z);
+            return shape.move(this.offset.x, this.offset.y, this.offset.z);
         }
-        List<AxisAlignedBB> boxes = shape.toBoundingBoxList().stream().map(this::t).collect(Collectors.toList());
-        VoxelShape out = boxes.isEmpty() ? VoxelShapes.empty() : VoxelShapes.create(boxes.get(0));
+        List<AABB> boxes = shape.toAabbs().stream().map(this::t).collect(Collectors.toList());
+        VoxelShape out = boxes.isEmpty() ? Shapes.empty() : Shapes.create(boxes.get(0));
         if (boxes.size() > 1) {
             for (int i = 1; i < boxes.size(); i++) {
-                out = VoxelShapes.or(out, VoxelShapes.create(boxes.get(i)));
+                out = Shapes.or(out, Shapes.create(boxes.get(i)));
             }
         }
-        return out.simplify();
+        return out.optimize();
     }
 
     public double[] t(double[] box) {
@@ -248,7 +248,7 @@ public class Trans3 {
         return new double[]{min[0], min[1], min[2], max[0], max[1], max[2]};
     }
 
-    public AxisAlignedBB box(Vector3 p0, Vector3 p1) {
+    public AABB box(Vector3 p0, Vector3 p1) {
         return boxEnclosing(this.p(p0), this.p(p1));
     }
 
@@ -265,12 +265,12 @@ public class Trans3 {
     }
 
     public void addBox(double x0, double y0, double z0, double x1, double y1, double z1, List list) {
-        AxisAlignedBB box = boxEnclosing(this.p(x0, y0, z0), this.p(x1, y1, z1));
+        AABB box = boxEnclosing(this.p(x0, y0, z0), this.p(x1, y1, z1));
         list.add(box);
     }
 
     public VoxelShape addBox(double x0, double y0, double z0, double x1, double y1, double z1, VoxelShape shape) {
-        return VoxelShapes.or(shape, VoxelShapes.create(x0, y0, z0, x1, y1, z1));
+        return Shapes.or(shape, Shapes.create(x0, y0, z0, x1, y1, z1));
     }
 
     @Override

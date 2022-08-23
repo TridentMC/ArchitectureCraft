@@ -24,9 +24,10 @@
 
 package com.tridevmc.architecture.common.utils;
 
+import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
+
 
 import java.util.Collection;
 

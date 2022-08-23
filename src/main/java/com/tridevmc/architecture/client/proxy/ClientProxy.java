@@ -26,7 +26,7 @@ package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
-import com.tridevmc.architecture.client.render.model.loader.ArchitectureModelLoader;
+import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeModelLoader;
 import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
@@ -34,7 +34,10 @@ import com.tridevmc.architecture.common.proxy.CommonProxy;
 import net.minecraft.client.renderer.RenderType;
 
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -104,9 +107,9 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onModelRegistryEvent(ModelRegistryEvent e) {
-        ModelLoaderRegistry.registerLoader(new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureModelLoader(new SawbenchBakedModel(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
-        ModelLoaderRegistry.registerLoader(new ResourceLocation(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeModelLoader());
+    public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
+        e.register("sawbench_loader", new ArchitectureGeometryLoader(new SawbenchBakedModel(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
+        e.register("shape_loader", new ArchitectureShapeModelLoader());
         this.registerDefaultModelLocations();
     }
 
@@ -130,7 +133,7 @@ public class ClientProxy extends CommonProxy {
         //RENDERING_MANAGER.addBlockRenderer(ArchitectureMod.CONTENT.blockShape, SHAPE_RENDER_DISPATCHER);
         //RENDERING_MANAGER.addItemRenderer(ArchitectureMod.CONTENT.itemCladding, new RenderCladding());
 
-        RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.cutoutMipped());
         ArchitectureMod.CONTENT.blockShapes.values().forEach(b -> RenderTypeLookup.setRenderLayer(b, (l) -> true));
     }
 

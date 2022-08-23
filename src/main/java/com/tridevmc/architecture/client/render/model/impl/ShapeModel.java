@@ -1,24 +1,23 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.client.render.model.OBJSONModel;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.tile.TileShape;
-import com.tridevmc.architecture.common.utils.DumbBlockDisplayReader;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
+
 
 public class ShapeModel extends OBJSONModel {
 
@@ -32,22 +31,22 @@ public class ShapeModel extends OBJSONModel {
 
     @Override
     public TextureAtlasSprite getDefaultSprite() {
-        return getSpriteForState(Blocks.OAK_PLANKS.getDefaultState());
+        return getSpriteForState(Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     @Override
-    public TextureAtlasSprite[] getTextures(IBlockDisplayReader world, BlockPos pos) {
+    public TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
             TextureAtlasSprite baseSprite = getSpriteForState(shape.getBaseBlockState());
             TextureAtlasSprite secondarySprite = shape.hasSecondaryMaterial() ? getSpriteForState(shape.getSecondaryBlockState()) : baseSprite;
             return new TextureAtlasSprite[]{baseSprite, secondarySprite};
         }
-        return new TextureAtlasSprite[]{getSpriteForState(Blocks.OAK_PLANKS.getDefaultState())};
+        return new TextureAtlasSprite[]{getSpriteForState(Blocks.OAK_PLANKS.defaultBlockState())};
     }
 
     @Override
-    public int[] getColours(IBlockDisplayReader world, BlockPos pos) {
+    public int[] getColours(LevelAccessor world, BlockPos pos) {
         TileShape shape = TileShape.get(world, pos);
         if (shape != null) {
             int baseColour = getColourForState(world, pos, shape.getBaseBlockState());
@@ -65,9 +64,9 @@ public class ShapeModel extends OBJSONModel {
     }
 
     //TODO: Use model decomposition from CarpentryCubes to get more accurate textures and colours?
-    private static int getColourForState(IBlockDisplayReader world, BlockPos pos, BlockState state) {
+    private static int getColourForState(LevelAccessor world, BlockPos pos, BlockState state) {
         BlockColors colours = Minecraft.getInstance().getBlockColors();
-        return colours.getColor(state, new DumbBlockDisplayReader(world, state), pos, 0);
+        return colours.getColor(state, world, pos, 0);
     }
 
 }

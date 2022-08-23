@@ -3,11 +3,11 @@ package com.tridevmc.architecture.common.block.state;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.Property;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+
 
 @MethodsReturnNonnullByDefault
 public class BlockStateArchitecture extends BlockState {
@@ -21,7 +21,7 @@ public class BlockStateArchitecture extends BlockState {
     }
 
     @Override
-    public float getBlockHardness(IBlockReader world, BlockPos pos) {
+    public float getBlockHardness(Level world, BlockPos pos) {
         return this.getBlock().getBlockHardness(this.getSelf(), world, pos, super.getBlockHardness(world, pos));
     }
 }

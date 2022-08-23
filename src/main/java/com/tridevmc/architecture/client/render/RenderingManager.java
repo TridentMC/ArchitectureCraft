@@ -28,6 +28,7 @@ import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.client.render.texture.TextureBase;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.render.ITextureConsumer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
@@ -44,7 +45,7 @@ public class RenderingManager {
         return new ResourceLocation(ArchitectureMod.MOD_ID, texturePrefixes[type] + name);
     }
 
-    public void registerSprites(int textureType, AtlasTexture reg, Object obj) {
+    public void registerSprites(int textureType, TextureAtlas reg, Object obj) {
         if (obj instanceof ITextureConsumer) {
             String[] names = ((ITextureConsumer) obj).getTextureNames();
             if (names != null) {

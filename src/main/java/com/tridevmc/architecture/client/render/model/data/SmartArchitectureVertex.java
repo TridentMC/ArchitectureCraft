@@ -1,9 +1,7 @@
 package com.tridevmc.architecture.client.render.model.data;
 
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.math.Transformation;
 
 import java.util.stream.IntStream;
 
@@ -41,47 +39,47 @@ public class SmartArchitectureVertex extends ArchitectureVertex {
     }
 
     @Override
-    public float[] getUVs(IBakedQuadProvider bakedQuadProvider, TransformationMatrix transform) {
+    public float[] getUVs(IBakedQuadProvider bakedQuadProvider, Transformation transform) {
         if (!this.generateUVs) {
             return super.getUVs(bakedQuadProvider, transform);
         }
 
-        int[][] ranges = bakedQuadProvider.getRanges(transform);
+        var ranges = bakedQuadProvider.getRanges(transform);
 
-        Vector3f pos = this.getPosition(transform);
-        float[] posData = new float[]{pos.getX(), pos.getY(), pos.getZ()};
+        var pos = this.getPosition(transform);
+        var posData = new float[]{pos.x(), pos.y(), pos.z()};
         IntStream.range(0, 3).filter(i -> ranges[i][0] == ranges[i][1]).forEach(i -> {
             posData[i] = posData[i] - ranges[i][1];
         });
         pos.set(posData);
-        pos.apply((v) -> v > 1 ? v % 1 : v);
-        Direction face = this.rotate(bakedQuadProvider.getFace(), transform);
+        pos.map((v) -> v > 1 ? v % 1 : v);
+        var face = this.rotate(bakedQuadProvider.getFace(), transform);
         float u = 0, v = 0;
         switch (face) {
-            case DOWN:
-                u = pos.getX() * 16F;
-                v = -16F * (pos.getZ() - 1F);
-                break;
-            case UP:
-                u = pos.getX() * 16F;
-                v = pos.getZ() * 16F;
-                break;
-            case NORTH:
-                u = -16F * (pos.getX() - 1F);
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case SOUTH:
-                u = 16F * pos.getX();
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case WEST:
-                u = 16F * pos.getZ();
-                v = -16F * (pos.getY() - 1F);
-                break;
-            case EAST:
-                u = -16F * (pos.getZ() - 1F);
-                v = -16F * (pos.getY() - 1F);
-                break;
+            case DOWN -> {
+                u = pos.x() * 16F;
+                v = -16F * (pos.z() - 1F);
+            }
+            case UP -> {
+                u = pos.x() * 16F;
+                v = pos.z() * 16F;
+            }
+            case NORTH -> {
+                u = -16F * (pos.x() - 1F);
+                v = -16F * (pos.y() - 1F);
+            }
+            case SOUTH -> {
+                u = 16F * pos.x();
+                v = -16F * (pos.y() - 1F);
+            }
+            case WEST -> {
+                u = 16F * pos.z();
+                v = -16F * (pos.y() - 1F);
+            }
+            case EAST -> {
+                u = -16F * (pos.z() - 1F);
+                v = -16F * (pos.y() - 1F);
+            }
         }
         return new float[]{u, v};
     }

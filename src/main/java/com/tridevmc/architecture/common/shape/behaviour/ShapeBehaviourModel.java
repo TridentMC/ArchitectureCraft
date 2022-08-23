@@ -4,13 +4,13 @@ import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ShapeBehaviourModel extends ShapeBehaviour {
 
@@ -51,14 +51,14 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    protected VoxelShape getCollisionBox(TileShape te, Level world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
         return this.getOBJSONModel().getVoxelized();
     }
 
     @Override
     public double placementOffsetX() {
-        VoxelShape shape = this.getOBJSONModel().getShape(Trans3.ident, VoxelShapes.empty());
-        AxisAlignedBB bounds = shape.getBoundingBox();
+        VoxelShape shape = this.getOBJSONModel().getShape(Trans3.ident, Shapes.empty());
+        AABB bounds = shape.bounds();
         return 0.5 * (1 - (bounds.maxX - bounds.minX));
     }
 }

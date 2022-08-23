@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.shape.EnumShape;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 import java.util.HashMap;
 import java.util.Map;

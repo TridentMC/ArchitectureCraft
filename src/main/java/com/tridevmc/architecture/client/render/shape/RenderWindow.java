@@ -24,10 +24,7 @@
 
 package com.tridevmc.architecture.client.render.shape;
 
-import com.tridevmc.architecture.client.render.texture.ITexture;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.util.Direction;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

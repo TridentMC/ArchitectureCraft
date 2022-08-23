@@ -39,20 +39,19 @@ import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.util.datafix.DataFixesManager;
-import net.minecraft.util.datafix.TypeReferences;
-import net.minecraftforge.event.RegistryEvent;
+
+import net.minecraft.SharedConstants;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -67,8 +66,8 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
 
-    public final ItemGroup TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> (ArchitectureContent.this.itemHammer != null) ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
-    public final ItemGroup SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> (ArchitectureContent.this.itemShapes != null) ? ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() : ItemStack.EMPTY);
+    public final CreativeModeTab TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () -> (ArchitectureContent.this.itemHammer != null) ? ArchitectureContent.this.itemHammer.getDefaultInstance() : ItemStack.EMPTY);
+    public final CreativeModeTab SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () -> (ArchitectureContent.this.itemShapes != null) ? ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() : ItemStack.EMPTY);
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
@@ -77,19 +76,19 @@ public class ArchitectureContent {
 
     public BlockSawbench blockSawbench;
     public Map<EnumShape, BlockShape> blockShapes;
-    public TileEntityType<TileShape> tileTypeShape;
+    public BlockEntityType<TileShape> tileTypeShape;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
     public Map<EnumShape, ItemShape> itemShapes;
-    public ContainerType<? extends Container> universalContainerType;
+    public MenuType<? extends Container> universalMenuType;
 
     @SubscribeEvent
-    public void onTileRegister(RegistryEvent.Register<TileEntityType<?>> e) {
-        IForgeRegistry<TileEntityType<?>> registry = e.getRegistry();
-        this.tileTypeShape = this.registerTileEntity(registry, TileShape::new, "shape");
+    public void onTileRegister(RegistryEvent.Register<BlockEntityType<?>> e) {
+        IForgeRegistry<BlockEntityType<?>> registry = e.getRegistry();
+        this.tileTypeShape = this.registerBlockEntity(registry, TileShape::new, "shape");
     }
 
     @SubscribeEvent
@@ -118,19 +117,19 @@ public class ArchitectureContent {
     }
 
     @SubscribeEvent
-    public void onContainerRegister(final RegistryEvent.Register<ContainerType<?>> e) {
-        this.universalContainerType = ArchitectureUIHooks.register(e.getRegistry());
+    public void onContainerRegister(final RegistryEvent.Register<MenuType<?>> e) {
+        this.universalMenuType = ArchitectureUIHooks.register(e.getRegistry());
     }
 
-    private <T extends TileEntity> TileEntityType<T> registerTileEntity(IForgeRegistry<TileEntityType<?>> registry, Supplier<T> tileSupplier, String id) {
+    private <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(IForgeRegistry<BlockEntityType<?>> registry, Supplier<T> tileSupplier, String id) {
         ResourceLocation key = new ResourceLocation(REGISTRY_PREFIX, id);
         Type<?> dataFixerType = null;
         try {
-            dataFixerType = DataFixesManager.getDataFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getVersion().getWorldVersion())).getChoiceType(TypeReferences.BLOCK_ENTITY, key.toString());
+            dataFixerType = DataFixers.getDataFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getCurrentVersion().getDataVersion().getVersion())).getChoiceType(References.BLOCK_ENTITY, key.toString());
         } catch (IllegalArgumentException e) {
             ArchitectureLog.error("No data fixer was registered for resource id {}", key);
         }
-        TileEntityType<T> tileType = TileEntityType.Builder.create(tileSupplier).build(dataFixerType);
+        BlockEntityType<T> tileType = BlockEntityType.Builder.of(tileSupplier).build(dataFixerType);
         registry.register(tileType.setRegistryName(key));
         return tileType;
     }
@@ -159,8 +158,8 @@ public class ArchitectureContent {
         return (T) registeredBlocks.get(id);
     }
 
-    private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, ItemGroup itemGroup) {
-        ItemArchitecture item = new ItemArchitecture(new Item.Properties().group(itemGroup));
+    private <T extends Item> T registerItem(IForgeRegistry<Item> registry, String id, CreativeModeTab itemGroup) {
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties().tab(itemGroup));
         item.setRegistryName(REGISTRY_PREFIX, id);
         registry.register(item);
         registeredItems.put(id, item);

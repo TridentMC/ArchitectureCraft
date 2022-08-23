@@ -6,22 +6,23 @@ import com.google.gson.JsonObject;
 import com.tridevmc.architecture.client.render.model.baked.ShapeBakedModel;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
-import net.minecraft.resources.IResourceManager;
-import net.minecraftforge.client.model.IModelLoader;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
 
 import java.util.Map;
 
-public class ArchitectureShapeModelLoader implements IModelLoader<ArchitectureModelGeometry> {
+public class ArchitectureShapeModelLoader implements IGeometryLoader<ArchitectureModelGeometry>, ResourceManagerReloadListener {
 
     private final Map<EnumShape, ArchitectureModelGeometry> models = Maps.newHashMap();
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         this.models.clear();
     }
 
     @Override
-    public ArchitectureModelGeometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
+    public ArchitectureModelGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
         String shapeName = modelContents.get("shapeName").getAsString();
         boolean generateUVs = !modelContents.has("generateUVs") || modelContents.get("generateUVs").getAsBoolean();
         EnumShape shape = EnumShape.forName(shapeName);

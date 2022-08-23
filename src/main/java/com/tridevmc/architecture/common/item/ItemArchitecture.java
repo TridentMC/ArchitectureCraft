@@ -26,8 +26,8 @@ package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemArchitecture extends Item implements ITextureConsumer {
 

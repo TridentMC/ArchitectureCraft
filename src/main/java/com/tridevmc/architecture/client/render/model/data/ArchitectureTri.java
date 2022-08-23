@@ -1,12 +1,11 @@
 package com.tridevmc.architecture.client.render.model.data;
 
 import com.google.common.collect.Sets;
-import net.minecraft.client.renderer.model.BakedQuad;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
+import net.minecraft.core.Direction;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -27,7 +26,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
     }
 
     @Override
-    public BakedQuad bake(TransformationMatrix transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
+    public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         if (facing == null) facing = this.getFace();
         BakedQuadBuilder builder = new BakedQuadBuilder();
         builder.setTexture(sprite);
@@ -66,7 +65,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
     public Direction getFace() {
         if (this.face == null) {
             Vector3f normals = this.getFaceNormal();
-            this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
+            this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
         }
         return this.face;
     }
@@ -116,7 +115,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
     }
 
     @Override
-    public int[][] getRanges(TransformationMatrix transform) {
+    public int[][] getRanges(Transformation transform) {
         int[][] ranges = new int[3][2];
 
         Set<Integer> xDimensions = Sets.newHashSet();
@@ -129,7 +128,7 @@ public class ArchitectureTri implements IBakedQuadProvider {
             int[] targetRange = ranges[i];
             for (ArchitectureVertex vertex : this.getVertices()) {
                 Vector3f position = vertex.getPosition(transform);
-                float[] positionArray = new float[]{position.getX(), position.getY(), position.getZ()};
+                float[] positionArray = new float[]{position.x(), position.y(), position.z()};
                 float coord = positionArray[i];
                 int dimension = (int) coord;
                 if (Math.abs(dimension - coord) > 0) {

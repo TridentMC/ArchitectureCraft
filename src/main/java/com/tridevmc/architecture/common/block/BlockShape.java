@@ -32,27 +32,12 @@ import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,7 +50,7 @@ public class BlockShape extends BlockArchitecture {
     private final EnumShape architectureShape;
 
     public BlockShape(EnumShape architectureShape) {
-        super(Material.EARTH);
+        super(Material.DIRT);
         this.architectureShape = architectureShape;
         SHAPE_BLOCKS.put(architectureShape, this);
     }

@@ -26,7 +26,7 @@ package com.tridevmc.architecture.client.render.texture;
 
 import com.tridevmc.architecture.common.ArchitectureLog;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class TextureBase implements ITexture {
 
@@ -172,12 +172,12 @@ public abstract class TextureBase implements ITexture {
 
         @Override
         public double interpolateU(double u) {
-            return this.icon.getInterpolatedU(u * 16);
+            return this.icon.getU(u * 16);
         }
 
         @Override
         public double interpolateV(double v) {
-            return this.icon.getInterpolatedV(v * 16);
+            return this.icon.getV(v * 16);
         }
 
         @Override
@@ -275,7 +275,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateU(double u) {
             double iu = super.interpolateU(u);
-            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", this.icon.getName(), this.icon.getMinU(), this.icon.getMaxU());
+            ArchitectureLog.info("BaseTexture: %s u (%s - %s)\n", this.icon.getName(), this.icon.getU0(), this.icon.getU1());
             ArchitectureLog.info("BaseTexture: u %s --> %s\n", u, iu);
             return iu;
         }
@@ -283,7 +283,7 @@ public abstract class TextureBase implements ITexture {
         @Override
         public double interpolateV(double v) {
             double iv = super.interpolateV(v);
-            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", this.icon.getName(), this.icon.getMinV(), this.icon.getMaxV());
+            ArchitectureLog.info("BaseTexture: %s v (%s - %s)\n", this.icon.getName(), this.icon.getV0(), this.icon.getV1());
             ArchitectureLog.info("BaseTexture: v %s --> %s\n", v, iv);
             return iv;
         }

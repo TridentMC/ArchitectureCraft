@@ -107,14 +107,14 @@ public class ArchitectureVertex {
                     consumer.put(eI, pos.getX(), pos.getY(), pos.getZ(), pos.getW());
                     break;
                 case NORMAL:
-                    consumer.put(eI, normals.getX(), normals.getY(), normals.getZ(), 0F);
+                    consumer.put(eI, normals.x(), normals.y(), normals.z(), 0F);
                     break;
                 case COLOR:
                     consumer.put(eI, 1F, 1F, 1F, 1F);
                     break;
                 case UV:
                     if (element.getIndex() == 0) {
-                        float u = sprite.getInterpolatedU(uvs[0]), v = sprite.getInterpolatedV(uvs[1]);
+                        float u = sprite.getU(uvs[0]), v = sprite.getV(uvs[1]);
                         consumer.put(eI, u, v);
                     } else if (element.getIndex() == 2) {
                         consumer.put(eI, 0, 0, 1, 1);

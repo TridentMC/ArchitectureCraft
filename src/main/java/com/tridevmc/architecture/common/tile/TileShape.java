@@ -34,25 +34,27 @@ import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraft.core.BlockPos;
+
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+
 
 import javax.annotation.Nonnull;
 
 
-public class TileShape extends TileEntity {
+public class TileShape extends BlockEntity {
 
     private BlockShape block;
     private BlockState baseBlockState;
@@ -74,9 +76,9 @@ public class TileShape extends TileEntity {
         this.secondaryBlockState = Blocks.AIR.getDefaultState();
     }
 
-    public static TileShape get(IBlockReader world, BlockPos pos) {
+    public static TileShape get(BlockAndTintGetter world, BlockPos pos) {
         if (world != null) {
-            TileEntity te = world.getTileEntity(pos);
+            var te = world.getBlockEntity(pos);
             if (te instanceof TileShape)
                 return (TileShape) te;
         }
@@ -112,7 +114,7 @@ public class TileShape extends TileEntity {
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
+    public void read(BlockState state, CompoundTag tag) {
         super.read(state, tag);
         this.readShapeFromNBT(tag);
         this.side = tag.getByte("Side");
@@ -120,16 +122,16 @@ public class TileShape extends TileEntity {
         this.offsetX = tag.getByte("OffsetX");
     }
 
-    protected void readShapeFromNBT(CompoundNBT nbt) {
-        this.baseBlockState = Block.getStateById(nbt.getInt("BaseBlockState"));
-        this.secondaryBlockState = Block.getStateById(nbt.getInt("SecondaryBlockState"));
+    protected void readShapeFromNBT(CompoundTag nbt) {
+        this.baseBlockState = Block.stateById(nbt.getInt("BaseBlockState"));
+        this.secondaryBlockState = Block.stateById(nbt.getInt("SecondaryBlockState"));
         if (this.baseBlockState == null)
-            this.baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
+            this.baseBlockState = Blocks.OAK_PLANKS.defaultBlockState();
         this.disabledConnections = nbt.getInt("Disconnected");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundTag write(CompoundTag tag) {
         super.write(tag);
         this.writeShapeToNBT(tag);
 
@@ -145,21 +147,21 @@ public class TileShape extends TileEntity {
         return tag;
     }
 
-    protected void writeShapeToNBT(CompoundNBT nbt) {
+    protected void writeShapeToNBT(CompoundTag nbt) {
         if (this.getArchitectureShape() != null) {
-            nbt.putInt("BaseBlockState", Block.getStateId(this.baseBlockState));
-            nbt.putInt("SecondaryBlockState", Block.getStateId(this.secondaryBlockState));
+            nbt.putInt("BaseBlockState", Block.getId(this.baseBlockState));
+            nbt.putInt("SecondaryBlockState", Block.getId(this.secondaryBlockState));
         }
         if (this.disabledConnections != 0) {
             nbt.putInt("Disconnected", this.disabledConnections);
         }
     }
 
-    public void onChiselUse(PlayerEntity player, Direction face, float hitX, float hitY, float hitZ) {
+    public void onChiselUse(Player player, Direction face, float hitX, float hitY, float hitZ) {
         this.getArchitectureShape().behaviour.onChiselUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
-    public void onHammerUse(PlayerEntity player, Direction face, float hitX, float hitY, float hitZ) {
+    public void onHammerUse(Player player, Direction face, float hitX, float hitY, float hitZ) {
         this.getArchitectureShape().behaviour.onHammerUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
@@ -175,7 +177,7 @@ public class TileShape extends TileEntity {
         return this.localToGlobalRotation().it(face);
     }
 
-    public boolean applySecondaryMaterial(ItemStack stack, PlayerEntity player) {
+    public boolean applySecondaryMaterial(ItemStack stack, Player player) {
         BlockState materialState = null;
         Item item = stack.getItem();
         EnumShape architectureShape = this.getArchitectureShape();
@@ -265,7 +267,7 @@ public class TileShape extends TileEntity {
     }
 
     public TileShape getConnectedNeighbourGlobal(Direction dir) {
-        if (this.world != null) {
+        if (this.level != null) {
             if (this.connectionIsEnabledGlobal(dir)) {
                 TileShape nte = this.getNeighbourGlobal(dir);
                 if (nte != null && nte.connectionIsEnabledGlobal(dir.getOpposite()))
@@ -280,11 +282,11 @@ public class TileShape extends TileEntity {
     }
 
     public Trans3 localToGlobalTransformation() {
-        return this.localToGlobalTransformation(Vector3.blockCenter(this.pos));
+        return this.localToGlobalTransformation(Vector3.blockCenter(this.worldPosition));
     }
 
     public Trans3 localToGlobalTransformation(Vector3 origin) {
-        BlockState state = this.world.getBlockState(this.pos);
+        BlockState state = this.level.getBlockState(this.worldPosition);
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)
             return ((BlockArchitecture) block).localToGlobalTransformation(this.world, this.pos, state, origin).translate(this.getOffsetX(), 0, 0);
@@ -295,7 +297,7 @@ public class TileShape extends TileEntity {
 
     @Nonnull
     @Override
-    public IModelData getModelData() {
+    public ModelData getModelData() {
         ModelDataMap.Builder builder = new ModelDataMap.Builder();
         builder.withInitial(ModelProperties.LEVEL, this.world);
         builder.withInitial(ModelProperties.POS, this.pos);
@@ -305,7 +307,7 @@ public class TileShape extends TileEntity {
 
     public BlockShape getBlock() {
         if(this.block == null){
-            this.block = this.world != null ? (BlockShape) this.world.getBlockState(this.pos).getBlock() : null;
+            this.block = this.level != null ? (BlockShape) this.level.getBlockState(this.worldPosition).getBlock() : null;
         }
         return this.block;
     }

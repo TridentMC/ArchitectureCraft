@@ -5,12 +5,12 @@ import com.tridevmc.compound.ui.Rect2F;
 import com.tridevmc.compound.ui.container.CompoundUIContainer;
 import com.tridevmc.compound.ui.element.ElementBox;
 import com.tridevmc.compound.ui.layout.*;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class UISawbench extends CompoundUIContainer<ContainerSawbench> {
-    private final PlayerEntity player;
+    private final Player player;
 
-    public UISawbench(ContainerSawbench container, PlayerEntity player) {
+    public UISawbench(ContainerSawbench container, Player player) {
         super(container);
         this.player = player;
     }
@@ -28,7 +28,7 @@ public class UISawbench extends CompoundUIContainer<ContainerSawbench> {
         LayoutGrid hotbarGrid = new LayoutGrid(new Rect2F(47, 262, 18 * 9, 18));
         ILayout hotbarLayout = new LayoutMulti(hotbarGrid, new LayoutRelative(bg));
 
-        for (int i = 0; i < this.getContainer().inventorySlots.size(); i++) {
+        for (int i = 0; i < this.getMenu().slots.size(); i++) {
             if (i < 27) {
                 playerGrid.registerElement(this.addSlotElement(playerLayout, i));
             } else {

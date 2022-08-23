@@ -27,6 +27,7 @@ package com.tridevmc.architecture.common.block;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.mojang.math.Vector3d;
 import com.tridevmc.architecture.client.render.model.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
@@ -37,34 +38,28 @@ import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.compound.core.reflect.WrappedField;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ContainerBlock;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.particle.DiggingParticle;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -72,9 +67,9 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class BlockArchitecture extends ContainerBlock implements ITextureConsumer {
+public abstract class BlockArchitecture extends BaseEntityBlock implements ITextureConsumer {
 
-    private static final WrappedField<StateContainer<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateContainer", "field_176227_L");
+    private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateContainer", "field_176227_L");
     private static final LoadingCache<ShapeContext, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<ShapeContext, VoxelShape>() {
         public VoxelShape load(@Nonnull ShapeContext shapeContext) {
             VoxelShape shape = shapeContext.state.getBlock().getLocalBounds(shapeContext.world, shapeContext.pos, shapeContext.state, null);
@@ -103,14 +98,14 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     public BlockArchitecture(Material material, IOrientationHandler orient) {
-        super(Block.Properties.create(material, material.getColor()).notSolid());
+        super(Block.Properties.of(material, material.getColor()).notSolid());
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
-        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        StateDefinition.Builder<Block, BlockState> builder = new StateDefinition.Builder<>(this);
         this.fillStateContainer(builder);
-        STATE_CONTAINER.set(this, builder.func_235882_a_(Block::getDefaultState, (block, propertyValues, codec) -> new BlockStateArchitecture((BlockArchitecture) block, propertyValues, codec)));
-        this.setDefaultState(this.stateContainer.getBaseState());
+        STATE_CONTAINER.set(this, builder.create(Block::defaultBlockState, (block, propertyValues, codec) -> new BlockStateArchitecture((BlockArchitecture) block, propertyValues, codec)));
+        this.registerDefaultState(this.getStateDefinition().any());
     }
 
     public IOrientationHandler getOrientationHandler() {
@@ -131,7 +126,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         if (this.numProperties < 4) {
             int i = this.numProperties++;
             this.stateProperties[i] = property;
-            Object[] values = MiscUtils.arrayOf(property.getAllowedValues());
+            Object[] values = MiscUtils.arrayOf(property.getPossibleValues());
             this.propertyValues[i] = values;
         } else
             throw new IllegalStateException("Block " + this.getClass().getName() +
@@ -166,7 +161,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void fillStateContainer(StateDefinition.Builder<Block, BlockState> builder) {
         if (this.stateProperties == null) this.defineProperties();
         Arrays.stream(this.stateProperties).filter(Objects::nonNull).forEach(builder::add);
         super.fillStateContainer(builder);
@@ -208,23 +203,23 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         return this.modelSpec;
     }
 
-    public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos) {
+    public Trans3 localToGlobalRotation(BlockAndTintGetter world, BlockPos pos) {
         return this.localToGlobalRotation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalRotation(IBlockReader world, BlockPos pos, BlockState state) {
+    public Trans3 localToGlobalRotation(BlockAndTintGetter world, BlockPos pos, BlockState state) {
         return this.localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
-    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos) {
+    public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos) {
         return this.localToGlobalTransformation(world, pos, world.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state) {
+    public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state) {
         return this.localToGlobalTransformation(world, pos, state, Vector3.zero);
     }
 
-    public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
+    public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
         IOrientationHandler oh = this.getOrientationHandler();
         return oh.localToGlobalTransformation(world, pos, state, origin);
     }
@@ -234,15 +229,15 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        Vector3d hit = context.getHitVec();
-        BlockState state = this.getOrientationHandler().onBlockPlaced(this, context.getWorld(), context.getPos(), context.getFace(),
-                hit.getX(), hit.getY(), hit.getZ(), this.getDefaultState(), context.getPlayer());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Vec3 hit = context.getClickLocation();
+        BlockState state = this.getOrientationHandler().onBlockPlaced(this, context.getLevel(), context.getClickedPos(), context.getNearestLookingDirection(),
+                hit.x(), hit.y(), hit.z(), this.defaultBlockState(), context.getPlayer());
         return state;
     }
 
     @Override
-    public boolean addLandingEffects(BlockState state, ServerWorld world, BlockPos pos,
+    public boolean addLandingEffects(BlockState state, ServerLevel world, BlockPos pos,
                                      BlockState iblockstate, LivingEntity entity, int numParticles) {
         BlockState particleState = this.getParticleState(world, pos);
         world.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, particleState), entity.getPosX(), entity.getPosY(), entity.getPosZ(),
@@ -252,52 +247,40 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public boolean addHitEffects(BlockState blockState, World world, RayTraceResult target, ParticleManager pm) {
-        if (!(target instanceof BlockRayTraceResult) || !(world instanceof ClientWorld))
+    public boolean addHitEffects(BlockState blockState, Level world, HitResult target, ParticleEngine pm) {
+        if (!(target instanceof BlockHitResult) || !(world instanceof ClientLevel))
             return false;
 
-        BlockRayTraceResult hit = (BlockRayTraceResult) target;
-        BlockPos pos = hit.getPos();
+        BlockHitResult hit = (BlockHitResult) target;
+        BlockPos pos = hit.getBlockPos();
         BlockState state = this.getParticleState(world, pos);
         DiggingParticle fx;
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
         VoxelShape voxelShape = blockState.getShape(world, pos);
-        AxisAlignedBB boundingBox = voxelShape.getBoundingBox();
+        AABB boundingBox = voxelShape.bounds();
         float f = 0.1F;
         double d0 = i + this.RANDOM.nextDouble() * (boundingBox.maxX - boundingBox.minX - (f * 2.0F)) + f + boundingBox.minX;
         double d1 = j + this.RANDOM.nextDouble() * (boundingBox.maxY - boundingBox.minY - (f * 2.0F)) + f + boundingBox.minY;
         double d2 = k + this.RANDOM.nextDouble() * (boundingBox.maxZ - boundingBox.minZ - (f * 2.0F)) + f + boundingBox.minZ;
-        switch (hit.getFace()) {
-            case DOWN:
-                d1 = j + boundingBox.minY - f;
-                break;
-            case UP:
-                d1 = j + boundingBox.maxY + f;
-                break;
-            case NORTH:
-                d2 = k + boundingBox.minZ - f;
-                break;
-            case SOUTH:
-                d2 = k + boundingBox.maxZ + f;
-                break;
-            case WEST:
-                d0 = i + boundingBox.minX - f;
-                break;
-            case EAST:
-                d0 = i + boundingBox.maxX + f;
-                break;
+        switch (hit.getDirection()) {
+            case DOWN -> d1 = j + boundingBox.minY - f;
+            case UP -> d1 = j + boundingBox.maxY + f;
+            case NORTH -> d2 = k + boundingBox.minZ - f;
+            case SOUTH -> d2 = k + boundingBox.maxZ + f;
+            case WEST -> d0 = i + boundingBox.minX - f;
+            case EAST -> d0 = i + boundingBox.maxX + f;
         }
-        fx = new DiggingFX((ClientWorld) world, d0, d1, d2, 0, 0, 0, state);
-        pm.addEffect(fx.setBlockPos(pos).multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F));
+        fx = new DiggingFX((ClientLevel) world, d0, d1, d2, 0, 0, 0, state);
+        pm.add(fx.setBlockPos(pos).multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F));
         return true;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager pm) {
-        if (!(world instanceof ClientWorld))
+    public boolean addDestroyEffects(BlockState state, Level world, BlockPos pos, ParticleEngine pm) {
+        if (!(world instanceof ClientLevel))
             return false;
 
         DiggingParticle fx;
@@ -308,7 +291,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
                     double d0 = pos.getX() + (i + 0.5D) / b0;
                     double d1 = pos.getY() + (j + 0.5D) / b0;
                     double d2 = pos.getZ() + (k + 0.5D) / b0;
-                    fx = new DiggingFX((ClientWorld) world, d0, d1, d2,
+                    fx = new DiggingFX((ClientLevel) world, d0, d1, d2,
                             d0 - pos.getX() - 0.5D, d1 - pos.getY() - 0.5D, d2 - pos.getZ() - 0.5D,
                             state);
                     pm.addEffect(fx.setBlockPos(pos));
@@ -318,12 +301,12 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         return true;
     }
 
-    public BlockState getParticleState(IBlockReader world, BlockPos pos) {
+    public BlockState getParticleState(BlockAndTintGetter world, BlockPos pos) {
         return world.getBlockState(pos);
     }
 
     //@Override TODO: Replace with raytraceshape. We need mesh voxelization...
-    //public RayTraceResult getRayTraceResult(BlockState state, World world, BlockPos pos, Vector3d start, Vector3d end, RayTraceResult original) {
+    //public RayTraceResult getRayTraceResult(BlockState state, Level world, BlockPos pos, Vector3d start, Vector3d end, RayTraceResult original) {
     //    boxHit = null;
     //    BlockRayTraceResult result = null;
     //    double nearestDistance = 0;
@@ -357,55 +340,55 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         VoxelShape shape = SHAPE_CACHE.getUnchecked(context);
         if (shape.isEmpty()) {
             SHAPE_CACHE.invalidate(context);
-            shape = VoxelShapes.fullCube();
+            shape = Shapes.block();
         }
         return shape;
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockAndTintGetter world, BlockPos pos, ISelectionContext context) {
         return getCachedShape(new ShapeContext((BlockStateArchitecture) state, world, pos));
     }
 
     //----------------------------- Bounds and collision boxes -----------------------------------
 
     @Nonnull
-    protected VoxelShape getLocalBounds(IBlockReader world, BlockPos pos, BlockState state, Entity entity) {
+    protected VoxelShape getLocalBounds(BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
             Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.zero).translate(spec.origin);
             return t.t(model.getVoxelized());
         }
-        return VoxelShapes.empty();
+        return Shapes.empty();
     }
 
     @Nonnull
-    protected VoxelShape getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
+    protected VoxelShape getGlobalCollisionBoxes(BlockAndTintGetter world, BlockPos pos,
                                                  BlockState state, Entity entity) {
         Trans3 t = this.localToGlobalTransformation(world, pos, state);
         return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
     @Nonnull
-    protected VoxelShape getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
+    protected VoxelShape getLocalCollisionBoxes(BlockAndTintGetter world, BlockPos pos,
                                                 BlockState state, Entity entity) {
         Trans3 t = this.localToGlobalTransformation(world, pos, state, Vector3.zero);
         return this.getCollisionBoxes(world, pos, state, t, entity);
     }
 
     @Nonnull
-    protected VoxelShape getCollisionBoxes(IBlockReader world, BlockPos pos, BlockState state,
+    protected VoxelShape getCollisionBoxes(BlockAndTintGetter world, BlockPos pos, BlockState state,
                                            Trans3 t, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            return model.getShape(t.translate(spec.origin), VoxelShapes.empty());
+            return model.getShape(t.translate(spec.origin), Shapes.empty());
         }
-        return VoxelShapes.empty();
+        return Shapes.empty();
     }
 
-    public float getBlockHardness(BlockState state, IBlockReader world, BlockPos pos, float hardness) {
+    public float getBlockHardness(BlockState state, BlockAndTintGetter world, BlockPos pos, float hardness) {
         return hardness;
     }
 
@@ -413,11 +396,11 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
         void defineProperties(BlockArchitecture block);
 
-        BlockState onBlockPlaced(Block block, World world, BlockPos pos, Direction side,
+        BlockState onBlockPlaced(Block block, Level world, BlockPos pos, Direction side,
                                  double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer);
 
         //Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state);
-        Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin);
+        Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin);
     }
 
     public static class Orient1Way implements IOrientationHandler {
@@ -425,12 +408,12 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
         public void defineProperties(BlockArchitecture block) {
         }
 
-        public BlockState onBlockPlaced(Block block, World world, BlockPos pos, Direction side,
+        public BlockState onBlockPlaced(Block block, Level world, BlockPos pos, Direction side,
                                         double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer) {
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
             return new Trans3(origin);
         }
 
@@ -439,7 +422,7 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
     @OnlyIn(Dist.CLIENT)
     public static class DiggingFX extends DiggingParticle {
 
-        public DiggingFX(ClientWorld world, double x1, double y1, double z1, double x2, double y2, double z2, BlockState state) {
+        public DiggingFX(ClientLevel world, double x1, double y1, double z1, double x2, double y2, double z2, BlockState state) {
             super(world, x1, y1, z1, x2, y2, z2, state);
         }
 
@@ -447,10 +430,10 @@ public abstract class BlockArchitecture extends ContainerBlock implements ITextu
 
     public class ShapeContext {
         private final BlockStateArchitecture state;
-        private final IBlockReader world;
+        private final BlockAndTintGetter world;
         private final BlockPos pos;
 
-        public ShapeContext(BlockStateArchitecture state, IBlockReader world, BlockPos pos) {
+        public ShapeContext(BlockStateArchitecture state, BlockAndTintGetter world, BlockPos pos) {
             this.state = state;
             this.world = world;
             this.pos = pos;

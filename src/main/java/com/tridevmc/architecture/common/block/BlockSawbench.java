@@ -31,19 +31,18 @@ import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.common.ui.CreateMenuContext;
 import com.tridevmc.architecture.common.ui.IElementProvider;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+
 
 import javax.annotation.Nullable;
 
@@ -57,7 +56,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public float getBlockHardness(BlockState blockState, IBlockReader worldIn, BlockPos pos, float hardness) {
+    public float getBlockHardness(BlockState blockState, BlockAndTintGetter worldIn, BlockPos pos, float hardness) {
         return 2.0F;
     }
 
@@ -72,7 +71,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!player.isCrouching()) {
             if (!world.isRemote) {
                 ArchitectureUIHooks.openGui((ServerPlayerEntity) player, this, pos);
@@ -84,24 +83,21 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public Screen createScreen(ContainerSawbench container, PlayerEntity player) {
+    public Screen createScreen(ContainerSawbench container, Player player) {
         return new UISawbench(container, player);
     }
 
     @Nullable
     @Override
-    public Container createMenu(CreateMenuContext context) {
+    public AbstractContainerMenu createMenu(CreateMenuContext context) {
         return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
         return null;
     }
+
+
 }

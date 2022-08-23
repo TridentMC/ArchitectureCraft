@@ -26,21 +26,20 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.CommonLevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -54,7 +53,7 @@ public class Utils {
     public static Random random = new Random();
 
     public static int playerTurn(LivingEntity player) {
-        return MathHelper.floor((player.rotationYaw * 4.0 / 360.0) + 0.5) & 3;
+        return floor((player.rotationYaw * 4.0 / 360.0) + 0.5) & 3;
     }
 
     public static int lookTurn(Vector3 look) {
@@ -62,20 +61,20 @@ public class Utils {
         return (int) round(a * 2 / PI) & 3;
     }
 
-    public static boolean playerIsInCreativeMode(PlayerEntity player) {
-        return (player instanceof ServerPlayerEntity)
-                && ((ServerPlayerEntity) player).interactionManager.isCreative();
+    public static boolean playerIsInCreativeMode(Player player) {
+        return (player instanceof ServerPlayer)
+                && player.isCreative();
     }
 
     public static TextureAtlasSprite getSpriteForBlockState(BlockState state) {
         if (state != null)
-            return Minecraft.getInstance().getBlockRendererDispatcher()
-                    .getBlockModelShapes().getTexture(state);
+            return Minecraft.getInstance().getBlockRenderer()
+                    .getBlockModelShaper().getTexture(state);
         else
             return null;
     }
 
-    public static TextureAtlasSprite getSpriteForPos(IWorldReader world, BlockPos pos, boolean renderPrimary) {
+    public static TextureAtlasSprite getSpriteForPos(CommonLevelAccessor world, BlockPos pos, boolean renderPrimary) {
         BlockState blockState = world.getBlockState(pos);
 
         if (blockState.isAir())
@@ -107,21 +106,21 @@ public class Utils {
 
     public static String displayNameOnlyOfBlock(Block block) {
         String name = null;
-        Item item = Item.getItemFromBlock(block);
+        Item item = Item.byBlock(block);
         if (item != Items.AIR) {
             ItemStack stack = new ItemStack(item, 1);
             name = stack.getDisplayName().getString();
         }
         if (name == null)
-            name = block.getTranslatedName().getString();
+            name = block.getName().getString();
         return name;
     }
 
-    public static AxisAlignedBB unionOfBoxes(List<AxisAlignedBB> list) {
-        AxisAlignedBB box = list.get(0);
+    public static AABB unionOfBoxes(List<AABB> list) {
+        AABB box = list.get(0);
         int n = list.size();
         for (int i = 1; i < n; i++)
-            box = box.union(list.get(i));
+            box = box.minmax(list.get(i));
         return box;
     }
 }

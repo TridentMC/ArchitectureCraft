@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.client.render.texture;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public interface ITexture {
     ResourceLocation location();

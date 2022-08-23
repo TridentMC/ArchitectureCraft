@@ -10,22 +10,22 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
 
 public class ShapeBehaviour {
 
@@ -46,8 +46,8 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public boolean orientOnPlacement(PlayerEntity player, TileShape tile,
-                                     BlockPos neighbourPos, BlockState neighbourState, TileEntity neighbourTile,
+    public boolean orientOnPlacement(Player player, TileShape tile,
+                                     BlockPos neighbourPos, BlockState neighbourState, BlockEntity neighbourTile,
                                      Direction otherFace, Vector3 hit) {
         if (neighbourTile instanceof TileShape)
             return this.orientOnPlacement(player, tile, (TileShape) neighbourTile, otherFace, hit);
@@ -55,7 +55,7 @@ public class ShapeBehaviour {
             return this.orientOnPlacement(player, tile, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(PlayerEntity player, TileShape tile, TileShape neighbourTile, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, TileShape tile, TileShape neighbourTile, Direction otherFace, Vector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
             EnumShape neighbourShape = neighbourTile.getArchitectureShape();
             Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
@@ -92,7 +92,7 @@ public class ShapeBehaviour {
         return false;
     }
 
-    public void onChiselUse(TileShape te, PlayerEntity player, Direction face, Vector3 hit) {
+    public void onChiselUse(TileShape te, Player player, Direction face, Vector3 hit) {
         Direction side = this.zoneHit(face, hit);
         if (side != null)
             this.chiselUsedOnSide(te, player, side);
@@ -100,16 +100,16 @@ public class ShapeBehaviour {
             this.chiselUsedOnCentre(te, player);
     }
 
-    public void chiselUsedOnSide(TileShape te, PlayerEntity player, Direction side) {
+    public void chiselUsedOnSide(TileShape te, Player player, Direction side) {
         te.toggleConnectionGlobal(side);
     }
 
-    public void chiselUsedOnCentre(TileShape te, PlayerEntity player) {
+    public void chiselUsedOnCentre(TileShape te, Player player) {
         if (te.getSecondaryBlockState() != null) {
             ItemStack stack = this.newSecondaryMaterialStack(te.getSecondaryBlockState());
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
-                    Block.spawnAsEntity(te.getWorld(), te.getPos(), stack);
+                    Block.dropResources(te.getLevel(), te.getBlockPos(), stack);
                 te.setSecondaryMaterial(null);
             }
         }
@@ -122,7 +122,7 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public void onHammerUse(TileShape te, PlayerEntity player, Direction face, Vector3 hit) {
+    public void onHammerUse(TileShape te, Player player, Direction face, Vector3 hit) {
         if (player.isCrouching())
             te.setSide((te.getSide() + 1) % 6);
         else {
@@ -160,13 +160,13 @@ public class ShapeBehaviour {
     }
 
     @Nonnull
-    public final VoxelShape getBounds(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
-                                Entity entity, Trans3 t) {
+    public final VoxelShape getBounds(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+                                      Entity entity, Trans3 t) {
         return this.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     @Nonnull
-    public final VoxelShape getCollisionBoxCached(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    public final VoxelShape getCollisionBoxCached(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
         BehaviourState bState = new BehaviourState(this, te, world, pos, state, entity, t);
         VoxelShape out = SHAPE_CACHE.getUnchecked(bState);
         if (out.isEmpty()) {
@@ -177,9 +177,9 @@ public class ShapeBehaviour {
 
     @Nonnull
     @Deprecated //TODO: Default implementation needs to be nuked. All the old collision code is too janky.
-    protected VoxelShape getCollisionBox(TileShape te, IBlockReader world, BlockPos pos, BlockState state,
-                                       Entity entity, Trans3 t) {
-        VoxelShape shapeOut = VoxelShapes.empty();
+    protected VoxelShape getCollisionBox(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+                                         Entity entity, Trans3 t) {
+        VoxelShape shapeOut = Shapes.empty();
         int mask = te.getArchitectureShape().occlusionMask;
         int param = mask & 0xff;
         double r, h;
@@ -223,19 +223,19 @@ public class ShapeBehaviour {
 
     @Nonnull
     protected VoxelShape addBox(Vector3 p0, Vector3 p1, Trans3 t, VoxelShape shape) {
-        return VoxelShapes.or(shape, t.t(VoxelShapes.create(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z)));
+        return Shapes.or(shape, t.t(Shapes.create(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z)));
     }
 
     private class BehaviourState {
         private final ShapeBehaviour shapeBehaviour;
         private final TileShape tile;
-        private final IBlockReader world;
+        private final BlockAndTintGetter world;
         private final BlockPos pos;
         private final BlockState state;
         private final Entity entity;
         private final Trans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, TileShape tile, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
+        private BehaviourState(ShapeBehaviour shapeBehaviour, TileShape tile, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;

@@ -24,9 +24,10 @@
 
 package com.tridevmc.architecture.client.render.shape;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
@@ -50,7 +51,7 @@ public class RenderCladding {
     @Nullable
     private ItemStack getStackFromState(BlockState state) {
         if (state != null) {
-            Item itemFromBlock = Item.getItemFromBlock(state.getBlock());
+            Item itemFromBlock = Item.byBlock(state.getBlock());
             ItemStack defaultInstance = itemFromBlock.getDefaultInstance();
             return defaultInstance;
         }

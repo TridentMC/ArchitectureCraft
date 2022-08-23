@@ -1,12 +1,11 @@
 package com.tridevmc.architecture.common.ui;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,14 +16,14 @@ import javax.annotation.Nullable;
 public class CreateMenuContext {
 
     private final int windowId;
-    private final PlayerEntity player;
-    private final PlayerInventory playerInventory;
+    private final Player player;
+    private final Inventory playerInventory;
     private BlockPos pos;
     private BlockState blockState;
-    private TileEntity tile;
+    private BlockEntity blockEntity;
     private Entity entity;
 
-    public CreateMenuContext(int windowId, PlayerEntity player, PlayerInventory playerInventory) {
+    public CreateMenuContext(int windowId, Player player, Inventory playerInventory) {
         this.windowId = windowId;
         this.player = player;
         this.playerInventory = playerInventory;
@@ -40,8 +39,8 @@ public class CreateMenuContext {
         return this;
     }
 
-    public CreateMenuContext setTile(@Nullable TileEntity tile) {
-        this.tile = tile;
+    public CreateMenuContext setBlockEntity(@Nullable BlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
         return this;
     }
 
@@ -55,12 +54,12 @@ public class CreateMenuContext {
     }
 
     @Nonnull
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return this.player;
     }
 
     @Nonnull
-    public PlayerInventory getPlayerInventory() {
+    public Inventory getPlayerInventory() {
         return this.playerInventory;
     }
 
@@ -75,8 +74,8 @@ public class CreateMenuContext {
     }
 
     @Nullable
-    public TileEntity getTile() {
-        return this.tile;
+    public BlockEntity getBlockEntity() {
+        return this.blockEntity;
     }
 
     @Nullable
@@ -93,7 +92,7 @@ public class CreateMenuContext {
     }
 
     public boolean hasTile() {
-        return this.tile != null;
+        return this.blockEntity != null;
     }
 
     public boolean hasEntity() {

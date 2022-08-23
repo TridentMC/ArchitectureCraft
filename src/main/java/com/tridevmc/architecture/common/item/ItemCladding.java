@@ -25,17 +25,17 @@
 package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.helpers.Utils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -48,39 +48,39 @@ public class ItemCladding extends ItemArchitecture {
 
     public ItemStack newStack(BlockState state, int stackSize) {
         ItemStack result = new ItemStack(this, stackSize);
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putInt("block", Block.getStateId(state));
+        var nbt = new CompoundTag();
+        nbt.putInt("block", Block.getId(state));
         result.setTag(nbt);
         return result;
     }
 
     public ItemStack newStack(Block block, int stackSize) {
-        return this.newStack(block.getDefaultState(), stackSize);
+        return this.newStack(block.defaultBlockState(), stackSize);
     }
 
     public BlockState blockStateFromStack(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+        var tag = stack.getTag();
         if (tag != null) {
-            BlockState state = Block.getStateById(tag.getInt("block"));
+            BlockState state = Block.stateById(tag.getInt("block"));
             return state;
         }
         return null;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
-        lines.set(0, super.getDisplayName(stack));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> lines, TooltipFlag flagIn) {
+        lines.set(0, super.getName(stack));
 
-        CompoundNBT tag = stack.getTag();
+        var tag = stack.getTag();
         if (tag != null) {
-            BlockState state = Block.getStateById(tag.getInt("block"));
+            BlockState state = Block.stateById(tag.getInt("block"));
             if (!state.isAir())
-                lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(state.getBlock())));
+                lines.add(Component.literal(Utils.displayNameOnlyOfBlock(state.getBlock())));
         }
     }
 
     @Override
-    protected boolean isInGroup(ItemGroup group) {
+    protected boolean allowedIn(CreativeModeTab group) {
         return false;
     }
 
@@ -89,13 +89,15 @@ public class ItemCladding extends ItemArchitecture {
         return 16;
     }
 
-    @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
-        if (tag == null)
-            return super.getDisplayName(stack);
 
-        BlockState state = Block.getStateById(tag.getInt("block"));
-        return new TranslationTextComponent("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(state.getBlock()));
+
+    @Override
+    public Component getName(ItemStack stack) {
+        var tag = stack.getTag();
+        if (tag == null)
+            return super.getName(stack);
+
+        BlockState state = Block.stateById(tag.getInt("block"));
+        return Component.translatable("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

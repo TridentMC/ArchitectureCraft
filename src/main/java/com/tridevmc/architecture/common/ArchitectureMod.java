@@ -27,7 +27,6 @@ package com.tridevmc.architecture.common;
 import com.tridevmc.architecture.client.proxy.ClientProxy;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.compound.network.core.CompoundNetwork;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -39,10 +38,7 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 @Mod(MOD_ID)
 public class ArchitectureMod {
-    public static final String MOD_NAME = "ArchitectureCraft";
     public static final String MOD_ID = "architecturecraft";
-    public static final String MOD_VER = "@VERSION@";
-    public static final String RESOURCE_DOMAIN = "architecturecraft:";
 
     public static final ArchitectureContent CONTENT = new ArchitectureContent();
     public static ArchitectureMod INSTANCE;

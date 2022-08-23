@@ -1,17 +1,17 @@
 package com.tridevmc.architecture.client.render;
 
 import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraftforge.client.event.DrawHighlightEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 // TODO: Rewrite?
 public class PreviewRenderer {
 
     @SubscribeEvent
-    public static void onDrawBlockHighlight(DrawHighlightEvent e) {
+    public static void onDrawBlockHighlight(RenderHighlightEvent e) {
         //if (!e.isCanceled() && e.getTarget() instanceof BlockRayTraceResult) {
         //    PlayerEntity player = Minecraft.getInstance().player;
         //    World world = player.getEntityWorld();
@@ -57,7 +57,7 @@ public class PreviewRenderer {
         //}
     }
 
-    private static void simulatePlacement(PlayerEntity player, IBlockReader world, TileShape shape, BlockRayTraceResult hit) {
+    private static void simulatePlacement(Player player, BlockAndTintGetter world, TileShape shape, BlockHitResult hit) {
         //Vec3i direction = Vector3.getDirectionVec(hit.getFace());
         //Vector3 hitVec = new Vector3(hit.getHitVec().subtract(hit.getPos().getX(), hit.getPos().getY(), hit.getPos().getZ()));
         //hitVec = new Vector3(hitVec.x - direction.getX() - 0.5, hitVec.y - direction.getY() - 0.5, hitVec.z - direction.getZ() - 0.5);
