@@ -3,18 +3,18 @@ package com.tridevmc.architecture.common.shape.behaviour;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.PaneBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CrossCollisionBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ShapeBehaviourWindow extends ShapeBehaviour {
     public Direction[] frameSides;
@@ -25,19 +25,13 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public Trans3[] frameTrans;
 
     @Override
-    public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction otherFace, Vector3 hit) {
         int turn = -1;
         // If click is on side of a non-window block, orient perpendicular to it
         if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow))) {
             switch (otherFace) {
-                case EAST:
-                case WEST:
-                    turn = 0;
-                    break;
-                case NORTH:
-                case SOUTH:
-                    turn = 1;
-                    break;
+                case EAST, WEST -> turn = 0;
+                case NORTH, SOUTH -> turn = 1;
             }
         }
         if (turn >= 0) {
@@ -79,12 +73,12 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     @Override
     public boolean isValidSecondaryMaterial(BlockState state) {
         Block block = state.getBlock();
-        return block instanceof PaneBlock;
+        return block instanceof CrossCollisionBlock;
     }
 
     @Override
-    protected VoxelShape getCollisionBox(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
-        VoxelShape shape = VoxelShapes.empty();
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+        VoxelShape shape = Shapes.empty();
         final double r = 1 / 8d, s = 3 / 32d;
         double[] e = new double[4];
         shape = this.addCentreBoxesToList(r, s, t, shape);
@@ -102,7 +96,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
             // Fallback box in the unlikely case that no box was added.
             shape = this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, shape);
         }
-        return shape.simplify();
+        return shape.optimize();
     }
 
     protected VoxelShape addCentreBoxesToList(double r, double s, Trans3 t, VoxelShape shape) {
@@ -118,16 +112,16 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         return t.addBox(-e[3], -e[0], -w, e[1], e[2], w, shape);
     }
 
-    protected boolean isConnectedGlobal(TileShape te, Direction globalDir) {
+    protected boolean isConnectedGlobal(ShapeBlockEntity te, Direction globalDir) {
         return this.getConnectedWindowGlobal(te, globalDir) != null;
     }
 
-    public TileShape getConnectedWindowGlobal(TileShape te, Direction globalDir) {
+    public ShapeBlockEntity getConnectedWindowGlobal(ShapeBlockEntity te, Direction globalDir) {
         Direction thisLocalDir = te.localFace(globalDir);
         FrameType thisFrameType = this.frameTypeForLocalSide(thisLocalDir);
         if (thisFrameType != FrameType.NONE) {
             Direction thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
-            TileShape nte = te.getConnectedNeighbourGlobal(globalDir);
+            ShapeBlockEntity nte = te.getConnectedNeighbourGlobal(globalDir);
             if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
                 ShapeBehaviourWindow otherType = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
                 Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
@@ -146,12 +140,10 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     protected boolean framesMatch(FrameType type0, FrameType type1,
                                   Direction orient1, Direction orient2) {
         if (type0 == type1) {
-            switch (type0) {
-                case PLAIN:
-                    return orient1.getAxis() == orient2.getAxis();
-                default:
-                    return orient1 == orient2;
-            }
+            return switch (type0) {
+                case PLAIN -> orient1.getAxis() == orient2.getAxis();
+                default -> orient1 == orient2;
+            };
         }
         return false;
     }

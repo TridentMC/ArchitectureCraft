@@ -42,7 +42,7 @@ public class SawbenchModel extends OBJSONModel {
 
     private static void doInit() {
         if (needsInit) {
-            Function<ResourceLocation, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(TextureAtlas.LOCATION_BLOCKS);
+            var textureGetter = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
             textures = new TextureAtlasSprite[]{
                     textureGetter.apply(new ResourceLocation("block/oak_planks")),
                     textureGetter.apply(new ResourceLocation("block/iron_block"))

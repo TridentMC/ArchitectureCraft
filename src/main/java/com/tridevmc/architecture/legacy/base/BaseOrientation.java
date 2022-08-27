@@ -26,19 +26,18 @@ package com.tridevmc.architecture.legacy.base;
 
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,34 +77,24 @@ public class BaseOrientation {
         }
 
         @Override
-        public BlockState onBlockPlaced(Block block, World world, BlockPos pos, Direction side,
+        public BlockState onBlockPlaced(Block block, Level world, BlockPos pos, Direction side,
                                         double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer) {
-            Direction dir = placer.getHorizontalFacing();
+            var dir = placer.getDirection();
             if (debugPlacement)
                 ArchitectureLog.info("BaseOrientation.Orient4WaysByState: Placing block with FACING = %s\n", dir);
-            return baseState.with(FACING, dir);
+            return baseState.setValue(FACING, dir);
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
-            Direction f = state.get(FACING);
-            int i;
-            switch (f) {
-                case NORTH:
-                    i = 0;
-                    break;
-                case WEST:
-                    i = 1;
-                    break;
-                case SOUTH:
-                    i = 2;
-                    break;
-                case EAST:
-                    i = 3;
-                    break;
-                default:
-                    i = 0;
-            }
+        public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
+            var f = state.getValue(FACING);
+            int i = switch (f) {
+                case NORTH -> 0;
+                case WEST -> 1;
+                case SOUTH -> 2;
+                case EAST -> 3;
+                default -> 0;
+            };
             return new Trans3(origin).turn(i);
         }
 
@@ -116,10 +105,10 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, BlockState state, Vector3 origin) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileShape) {
-                TileShape bte = (TileShape) te;
+        public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
+            var te = world.getBlockEntity(pos);
+            if (te instanceof ShapeBlockEntity) {
+                ShapeBlockEntity bte = (ShapeBlockEntity) te;
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(world, pos, state, origin);

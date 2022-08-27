@@ -2,7 +2,7 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 public class ShapeBehaviourRoof extends ShapeBehaviour {
 

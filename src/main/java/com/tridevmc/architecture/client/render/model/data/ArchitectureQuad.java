@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
+import com.tridevmc.architecture.client.render.model.builder.BakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -77,18 +78,17 @@ public class ArchitectureQuad implements IBakedQuadProvider {
         this.recalculateFace();
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
-            BakedQuadBuilder builder = new BakedQuadBuilder();
-            builder.setTexture(sprite);
-            builder.setQuadTint(tintIndex);
-            builder.setApplyDiffuseLighting(true);
-            builder.setContractUVs(true);
-            builder.setQuadOrientation(facing);
+            var builder = new BakedQuadBuilderVertexConsumer();
+            builder.setSprite(sprite);
+            builder.setTintIndex(tintIndex);
+            builder.setShade(true);
+            builder.setDirection(facing);
             int[] vertexIndices = new int[]{0, 0, 1, 2};
             for (int i = 0; i < 4; i++) {
                 ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
                 vertex.pipe(builder, this, sprite, Optional.of(transform));
             }
-            PrebuiltData baseQuad = new PrebuiltData(builder.build());
+            PrebuiltData baseQuad = new PrebuiltData(builder.getBakedQuad());
             this.prebuiltQuads.put(transform, baseQuad);
             return baseQuad.baseQuad;
         } else {
@@ -105,9 +105,9 @@ public class ArchitectureQuad implements IBakedQuadProvider {
                 ArchitectureVertex currentVertex = this.vertices[i];
                 ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
 
-                this.normals.setX(this.normals.getX() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
-                this.normals.setY(this.normals.getY() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
-                this.normals.setZ(this.normals.getZ() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
+                this.normals.setX(this.normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
+                this.normals.setY(this.normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
+                this.normals.setZ(this.normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
             }
 
             this.normals.normalize();
@@ -124,9 +124,9 @@ public class ArchitectureQuad implements IBakedQuadProvider {
 
             Vector3f normals = currentVertex.getNormals();
             ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
-            normals.setX(normals.getX() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
-            normals.setY(normals.getY() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
-            normals.setZ(normals.getZ() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
+            normals.setX(normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
+            normals.setY(normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
+            normals.setZ(normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
         }
     }
 
@@ -167,7 +167,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
             int[] targetRange = ranges[i];
             for (ArchitectureVertex vertex : this.getVertices()) {
                 Vector3f position = vertex.getPosition(transform);
-                float[] positionArray = new float[]{position.getX(), position.getY(), position.getZ()};
+                float[] positionArray = new float[]{position.x(), position.y(), position.z()};
                 float coord = positionArray[i];
                 int dimension = (int) coord;
                 if (Math.abs(dimension - coord) > 0) {
@@ -223,7 +223,7 @@ public class ArchitectureQuad implements IBakedQuadProvider {
      */
     public Direction recalculateFace() {
         Vector3f normals = this.getFaceNormal();
-        this.face = Direction.getFacingFromVector(normals.getX(), normals.getY(), normals.getZ());
+        this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
         return this.face;
     }
 

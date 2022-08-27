@@ -29,13 +29,25 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -59,7 +71,7 @@ public class BlockShape extends BlockArchitecture {
         return this.architectureShape;
     }
 
-    public static float acBlockStrength(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
+    public static float acBlockStrength(BlockState state, Player player, BlockAndTintGetter world, BlockPos pos) {
         float hardness = 2F;
         try {
             hardness = state.getBlockHardness(new DumbBlockReader(state), pos);
@@ -75,12 +87,12 @@ public class BlockShape extends BlockArchitecture {
             return strength / 30F;
     }
 
-    public static boolean acCanHarvestBlock(BlockState state, PlayerEntity player) {
-        Block block = state.getBlock();
+    public static boolean acCanHarvestBlock(BlockState state, Player player) {
+        var block = state.getBlock();
         if (state.canHarvestBlock(new DumbBlockReader(state), BlockPos.ZERO, player))
             return true;
-        ItemStack stack = player.inventory.getCurrentItem();
-        ToolType tool = block.getHarvestTool(state);
+        var stack = player.getUseItem();
+        var tool = block.getHarvestTool(state);
         if (stack.isEmpty() || tool == null)
             return player.func_234569_d_(state);
         int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
@@ -108,42 +120,42 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     @Nonnull
-    protected VoxelShape getGlobalCollisionBoxes(IBlockReader world, BlockPos pos,
-                                                          BlockState state, Entity entity) {
-        TileShape te = this.getTileEntity(world, pos);
+    protected VoxelShape getGlobalCollisionBoxes(BlockAndTintGetter world, BlockPos pos,
+                                                 BlockState state, Entity entity) {
+        ShapeBlockEntity te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation();
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return VoxelShapes.empty();
+        return Shapes.empty();
     }
 
     @Override
     @Nonnull
-    protected VoxelShape getLocalCollisionBoxes(IBlockReader world, BlockPos pos,
+    protected VoxelShape getLocalCollisionBoxes(BlockAndTintGetter world, BlockPos pos,
                                                          BlockState state, Entity entity) {
-        TileShape te = this.getTileEntity(world, pos);
+        ShapeBlockEntity te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return this.getCollisionBoxes(te, world, pos, state, t, entity);
         }
-        return VoxelShapes.empty();
+        return Shapes.empty();
     }
 
     @Override
     @Nonnull
-    protected VoxelShape getLocalBounds(IBlockReader world, BlockPos pos,
+    protected VoxelShape getLocalBounds(BlockAndTintGetter world, BlockPos pos,
                                         BlockState state, Entity entity) {
-        TileShape te = this.getTileEntity(world, pos);
+        ShapeBlockEntity te = this.getTileEntity(world, pos);
         if (te != null) {
             Trans3 t = te.localToGlobalTransformation(Vector3.zero);
             return this.getArchitectureShape().behaviour.getBounds(te, world, pos, state, entity, t);
         }
-        return VoxelShapes.empty();
+        return Shapes.empty();
     }
 
     @Nonnull
-    protected VoxelShape getCollisionBoxes(TileShape te, IBlockReader world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
+    protected VoxelShape getCollisionBoxes(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
         return this.getArchitectureShape().behaviour.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
@@ -164,27 +176,27 @@ public class BlockShape extends BlockArchitecture {
     //}
 
     @Override
-    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        TileShape te = TileShape.get(world, pos);
+    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, Player player) {
+        ShapeBlockEntity te = ShapeBlockEntity.get(world, pos);
         if (te != null)
             return ItemShape.createStack(this.getArchitectureShape(), te.getBaseBlockState(), 1);
         else
             return ItemStack.EMPTY;
     }
 
-    public BlockState getBaseBlockState(IBlockReader world, BlockPos pos) {
-        TileShape te = this.getTileEntity(world, pos);
+    public BlockState getBaseBlockState(BlockAndTintGetter world, BlockPos pos) {
+        ShapeBlockEntity te = this.getTileEntity(world, pos);
         if (te != null)
             return te.getBaseBlockState();
         return null;
     }
 
-    private TileShape getTileEntity(IBlockReader world, BlockPos pos) {
-        return (TileShape) world.getTileEntity(pos);
+    private ShapeBlockEntity getTileEntity(BlockAndTintGetter world, BlockPos pos) {
+        return (ShapeBlockEntity) world.getBlockEntity(pos);
     }
 
     @Override
-    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos) {
+    public float getPlayerRelativeBlockHardness(BlockState state, Player player, IBlockReader world, BlockPos pos) {
         float result = 1.0F;
         BlockState base = this.getBaseBlockState(world, pos);
         if (base != null) {
@@ -194,23 +206,23 @@ public class BlockShape extends BlockArchitecture {
     }
 
     @Override
-    public BlockState getParticleState(IBlockReader world, BlockPos pos) {
+    public BlockState getParticleState(BlockAndTintGetter world, BlockPos pos) {
         BlockState base = this.getBaseBlockState(world, pos);
         if (base != null)
             return base;
         else
-            return this.getDefaultState();
+            return this.defaultBlockState();
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        ItemStack stack = player.inventory.getCurrentItem();
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack stack = player.getUseItem();
         if (!stack.isEmpty()) {
-            TileShape te = TileShape.get(world, pos);
+            ShapeBlockEntity te = ShapeBlockEntity.get(world, pos);
             if (te != null)
-                return te.applySecondaryMaterial(stack, player) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+                return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         }
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -221,12 +233,12 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.get(LIGHT);
+        return state.getValue(LIGHT);
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return new TileShape(this);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ShapeBlockEntity(pos, state, this);
     }
 }

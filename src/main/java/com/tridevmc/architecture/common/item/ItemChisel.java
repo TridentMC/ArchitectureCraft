@@ -26,7 +26,7 @@ package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockHelper;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -53,9 +53,9 @@ public class ItemChisel extends Item {
         var hitY = (float) context.getClickLocation().y();
         var hitZ = (float) context.getClickLocation().z();
         var te = world.getBlockEntity(pos);
-        if (te instanceof TileShape) {
+        if (te instanceof ShapeBlockEntity) {
             if (!world.isClientSide()) {
-                TileShape ste = (TileShape) te;
+                ShapeBlockEntity ste = (ShapeBlockEntity) te;
                 ste.onChiselUse(player, side, hitX, hitY, hitZ);
             }
             return InteractionResult.SUCCESS;
@@ -76,7 +76,7 @@ public class ItemChisel extends Item {
 
     private void dropBlockAsItem(Level world, BlockPos pos, BlockState state) {
         ItemStack stack = BlockHelper.blockStackWithState(state, 1);
-        Block.dropResources(world, pos, stack);
+        Block.popResource(world, pos, stack);
     }
 
 }

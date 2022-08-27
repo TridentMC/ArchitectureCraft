@@ -47,8 +47,8 @@ public class ArchitectureModelData {
     }
 
     public void setFaceData(int quadNumber, Direction side, TextureAtlasSprite sprite, int tintIndex) {
-        this.addOrSet(this.faceSprites[side != null ? side.getIndex() : Direction.values().length], quadNumber, sprite);
-        this.addOrSet(this.tintIndices[side != null ? side.getIndex() : Direction.values().length], quadNumber, tintIndex);
+        this.addOrSet(this.faceSprites[side != null ? side.get3DDataValue() : Direction.values().length], quadNumber, sprite);
+        this.addOrSet(this.tintIndices[side != null ? side.get3DDataValue() : Direction.values().length], quadNumber, tintIndex);
     }
 
     private void addOrSet(ArrayList list, int index, Object element) {
@@ -90,6 +90,7 @@ public class ArchitectureModelData {
                 BakedQuad builtQuad = quad.bake(this.transform, newFace,
                         spritesForFace.get(i),
                         tintsForFace.get(i));
+
                 LightUtil.setLightData(builtQuad, 1);
                 if (builtQuad != null) {
                     generalQuads.add(builtQuad);

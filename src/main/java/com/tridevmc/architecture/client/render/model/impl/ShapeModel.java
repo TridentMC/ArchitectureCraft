@@ -6,7 +6,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -36,7 +36,7 @@ public class ShapeModel extends OBJSONModel {
 
     @Override
     public TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos) {
-        TileShape shape = TileShape.get(world, pos);
+        ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
         if (shape != null) {
             TextureAtlasSprite baseSprite = getSpriteForState(shape.getBaseBlockState());
             TextureAtlasSprite secondarySprite = shape.hasSecondaryMaterial() ? getSpriteForState(shape.getSecondaryBlockState()) : baseSprite;
@@ -47,7 +47,7 @@ public class ShapeModel extends OBJSONModel {
 
     @Override
     public int[] getColours(LevelAccessor world, BlockPos pos) {
-        TileShape shape = TileShape.get(world, pos);
+        ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
         if (shape != null) {
             int baseColour = getColourForState(world, pos, shape.getBaseBlockState());
             int secondaryColour = shape.hasSecondaryMaterial() ? getColourForState(world, pos, shape.getSecondaryBlockState()) : baseColour;

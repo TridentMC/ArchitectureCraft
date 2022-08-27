@@ -25,36 +25,33 @@
 package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
+
 
 public class ItemHammer extends Item {
 
     public ItemHammer() {
-        super(new Item.Properties().maxStackSize(1).group(ArchitectureMod.CONTENT.TOOL_TAB));
+        super(new Item.Properties().stacksTo(1).tab(ArchitectureMod.CONTENT.TOOL_TAB));
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
-        PlayerEntity player = context.getPlayer();
-        Direction side = context.getFace();
-        float hitX = (float) context.getHitVec().getX();
-        float hitY = (float) context.getHitVec().getY();
-        float hitZ = (float) context.getHitVec().getZ();
-        TileShape te = TileShape.get(world, pos);
+    public InteractionResult useOn(UseOnContext context) {
+        var world = context.getLevel();
+        var pos = context.getClickedPos();
+        var player = context.getPlayer();
+        var side = context.getClickedFace();
+        var hitX = (float) context.getClickLocation().x();
+        var hitY = (float) context.getClickLocation().y();
+        var hitZ = (float) context.getClickLocation().z();
+        ShapeBlockEntity te = ShapeBlockEntity.get(world, pos);
         if (te != null) {
             te.onHammerUse(player, side, hitX, hitY, hitZ);
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
 
 }

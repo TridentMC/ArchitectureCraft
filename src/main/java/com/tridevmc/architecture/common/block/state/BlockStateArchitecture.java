@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -21,7 +23,7 @@ public class BlockStateArchitecture extends BlockState {
     }
 
     @Override
-    public float getBlockHardness(Level world, BlockPos pos) {
-        return this.getBlock().getBlockHardness(this.getSelf(), world, pos, super.getBlockHardness(world, pos));
+    public boolean hasBlockEntity() {
+        return this.getBlock().hasBlockEntity(this);
     }
 }

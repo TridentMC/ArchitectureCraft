@@ -2,14 +2,13 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.List;
+import static net.minecraft.core.Direction.*;
 
-import static net.minecraft.util.Direction.*;
 
 public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
 
@@ -50,7 +49,7 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
     }
 
     @Override
-    public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction face,
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction face,
                                      Vector3 hit) {
         if (nte != null && !player.isCrouching()) {
             if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
@@ -58,22 +57,24 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
                 Direction nlf = nte.localFace(face);
                 FrameType nfk = nsk.frameTypeForLocalSide(nlf);
                 switch (nfk) {
-                    case CORNER:
+                    case CORNER -> {
                         te.setSide(nte.getSide());
                         te.setTurn(nte.getTurn());
                         return true;
-                    case PLAIN:
+                    }
+                    case PLAIN -> {
                         Direction nfo = nte.globalFace(nsk.frameOrientationForLocalSide(nlf));
                         return this.orientFromAdjacentCorner(te, nfo, hit)
                                 || this.orientFromAdjacentCorner(te, nfo.getOpposite(), hit);
+                    }
                 }
             }
         }
         return super.orientOnPlacement(player, te, nte, face, hit);
     }
 
-    protected boolean orientFromAdjacentCorner(TileShape te, Direction face, Vector3 hit) {
-        TileShape nte = TileShape.get(te.getWorld(), te.getPos().offset(face.getOpposite()));
+    protected boolean orientFromAdjacentCorner(ShapeBlockEntity te, Direction face, Vector3 hit) {
+        ShapeBlockEntity nte = ShapeBlockEntity.get(te.getLevel(), te.getBlockPos().relative(face.getOpposite()));
         if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
             ShapeBehaviourWindow nsk = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
             Direction nlf = nte.localFace(face);

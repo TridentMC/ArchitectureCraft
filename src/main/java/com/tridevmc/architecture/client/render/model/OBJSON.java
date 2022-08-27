@@ -5,13 +5,13 @@ import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.List;
 
 public class OBJSON {
 
@@ -93,11 +93,11 @@ public class OBJSON {
     public VoxelShape getShape(Trans3 t, VoxelShape shape) {
         VoxelShape voxelized = this.getVoxelized();
         if (!voxelized.isEmpty()) {
-            for (AxisAlignedBB bb : voxelized.toBoundingBoxList()) {
-                shape = VoxelShapes.or(shape, t.t(VoxelShapes.create(bb)));
+            for (AABB bb : voxelized.toAabbs()) {
+                shape = Shapes.or(shape, t.t(Shapes.create(bb)));
             }
         } else {
-            return VoxelShapes.or(shape, t.t(VoxelShapes.create(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5])));
+            return Shapes.or(shape, t.t(Shapes.create(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5])));
         }
         return shape;
     }

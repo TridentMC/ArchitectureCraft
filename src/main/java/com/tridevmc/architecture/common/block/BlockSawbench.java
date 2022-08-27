@@ -25,24 +25,24 @@
 package com.tridevmc.architecture.common.block;
 
 import com.tridevmc.architecture.client.ui.UISawbench;
+import com.tridevmc.architecture.common.block.entity.ContainerSawbench;
 import com.tridevmc.architecture.common.render.ModelSpec;
-import com.tridevmc.architecture.common.tile.ContainerSawbench;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.common.ui.CreateMenuContext;
 import com.tridevmc.architecture.common.ui.IElementProvider;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
-
 
 import javax.annotation.Nullable;
 
@@ -71,14 +71,14 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!player.isCrouching()) {
-            if (!world.isRemote) {
-                ArchitectureUIHooks.openGui((ServerPlayerEntity) player, this, pos);
+            if (!world.isClientSide()) {
+                ArchitectureUIHooks.openGui((ServerPlayer) player, this, pos);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
     }
 
@@ -92,12 +92,5 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     public AbstractContainerMenu createMenu(CreateMenuContext context) {
         return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
     }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return null;
-    }
-
 
 }

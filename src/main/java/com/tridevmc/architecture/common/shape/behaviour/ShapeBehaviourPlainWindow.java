@@ -1,13 +1,13 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
 import com.tridevmc.architecture.common.utils.MiscUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
 
 public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
     public ShapeBehaviourPlainWindow() {
@@ -24,7 +24,7 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
     }
 
     @Override
-    public boolean orientOnPlacement(PlayerEntity player, TileShape te, TileShape nte, Direction face,
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction face,
                                      Vector3 hit) {
         if (nte != null && !player.isCrouching()) {
             if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourPlainWindow) {
@@ -39,12 +39,14 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
                     Direction lf = face.getOpposite();
                     te.setSide(nte.getSide());
                     switch (nlf) {
-                        case SOUTH:
+                        case SOUTH -> {
                             te.setTurn(MiscUtils.turnToFace(WEST, lf));
                             return true;
-                        case WEST:
+                        }
+                        case WEST -> {
                             te.setTurn(MiscUtils.turnToFace(EAST, lf));
                             return true;
+                        }
                     }
                 }
             }

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.tile;
+package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
@@ -34,10 +34,8 @@ import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
-
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -49,13 +47,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
 
-public class TileShape extends BlockEntity {
-
+public class ShapeBlockEntity extends BlockEntity {
     private BlockShape block;
     private BlockState baseBlockState;
     private BlockState secondaryBlockState;
@@ -64,23 +61,23 @@ public class TileShape extends BlockEntity {
     private byte side;
     private byte turn;
 
-    public TileShape() {
-        super(ArchitectureMod.CONTENT.tileTypeShape);
-        this.secondaryBlockState = Blocks.AIR.getDefaultState();
+    public ShapeBlockEntity(BlockPos pos, BlockState state) {
+        super(ArchitectureMod.CONTENT.tileTypeShape, pos, state);
+        this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 
-    public TileShape(BlockShape block) {
-        super(ArchitectureMod.CONTENT.tileTypeShape);
+    public ShapeBlockEntity(BlockPos pos, BlockState state, BlockShape block) {
+        this(pos, state);
         this.block = block;
-        this.baseBlockState = Blocks.OAK_PLANKS.getDefaultState();
-        this.secondaryBlockState = Blocks.AIR.getDefaultState();
+        this.baseBlockState = Blocks.OAK_PLANKS.defaultBlockState();
+        this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 
-    public static TileShape get(BlockAndTintGetter world, BlockPos pos) {
+    public static ShapeBlockEntity get(BlockAndTintGetter world, BlockPos pos) {
         if (world != null) {
             var te = world.getBlockEntity(pos);
-            if (te instanceof TileShape)
-                return (TileShape) te;
+            if (te instanceof ShapeBlockEntity)
+                return (ShapeBlockEntity) te;
         }
         return null;
     }
@@ -108,14 +105,14 @@ public class TileShape extends BlockEntity {
     public void toggleConnectionGlobal(Direction dir) {
         boolean newState = !this.connectionIsEnabledGlobal(dir);
         this.setConnectionEnabledGlobal(dir, newState);
-        TileShape nte = this.getNeighbourGlobal(dir);
+        ShapeBlockEntity nte = this.getNeighbourGlobal(dir);
         if (nte != null)
             nte.setConnectionEnabledGlobal(dir.getOpposite(), newState);
     }
 
     @Override
-    public void read(BlockState state, CompoundTag tag) {
-        super.read(state, tag);
+    public void load(@NotNull CompoundTag tag) {
+        super.load(tag);
         this.readShapeFromNBT(tag);
         this.side = tag.getByte("Side");
         this.turn = tag.getByte("Turn");
@@ -131,8 +128,8 @@ public class TileShape extends BlockEntity {
     }
 
     @Override
-    public CompoundTag write(CompoundTag tag) {
-        super.write(tag);
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
         this.writeShapeToNBT(tag);
 
         if (this.offsetX != 0) {
@@ -144,7 +141,6 @@ public class TileShape extends BlockEntity {
         if (this.turn != 0) {
             tag.putByte("Turn", (byte) this.getTurn());
         }
-        return tag;
     }
 
     protected void writeShapeToNBT(CompoundTag nbt) {
@@ -184,8 +180,8 @@ public class TileShape extends BlockEntity {
         if (item instanceof ItemCladding && architectureShape.behaviour.acceptsCladding()) {
             materialState = ((ItemCladding) item).blockStateFromStack(stack);
         } else {
-            Block block = Block.getBlockFromItem(item);
-            BlockState state = block.getDefaultState();
+            Block block = Block.byItem(item);
+            BlockState state = block.defaultBlockState();
             if (architectureShape.behaviour.isValidSecondaryMaterial(state)) {
                 materialState = state;
             }
@@ -262,14 +258,14 @@ public class TileShape extends BlockEntity {
         return false;
     }
 
-    public TileShape getNeighbourGlobal(Direction dir) {
-        return TileShape.get(this.world, this.pos.offset(dir));
+    public ShapeBlockEntity getNeighbourGlobal(Direction dir) {
+        return ShapeBlockEntity.get(this.getLevel(), this.getBlockPos().relative(dir));
     }
 
-    public TileShape getConnectedNeighbourGlobal(Direction dir) {
+    public ShapeBlockEntity getConnectedNeighbourGlobal(Direction dir) {
         if (this.level != null) {
             if (this.connectionIsEnabledGlobal(dir)) {
-                TileShape nte = this.getNeighbourGlobal(dir);
+                ShapeBlockEntity nte = this.getNeighbourGlobal(dir);
                 if (nte != null && nte.connectionIsEnabledGlobal(dir.getOpposite()))
                     return nte;
             }
@@ -289,7 +285,7 @@ public class TileShape extends BlockEntity {
         BlockState state = this.level.getBlockState(this.worldPosition);
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)
-            return ((BlockArchitecture) block).localToGlobalTransformation(this.world, this.pos, state, origin).translate(this.getOffsetX(), 0, 0);
+            return ((BlockArchitecture) block).localToGlobalTransformation(this.getLevel(), this.getBlockPos(), state, origin).translate(this.getOffsetX(), 0, 0);
         else {
             return new Trans3(origin).translate(this.getOffsetX(), 0, 0);
         }
@@ -298,15 +294,15 @@ public class TileShape extends BlockEntity {
     @Nonnull
     @Override
     public ModelData getModelData() {
-        ModelDataMap.Builder builder = new ModelDataMap.Builder();
-        builder.withInitial(ModelProperties.LEVEL, this.world);
-        builder.withInitial(ModelProperties.POS, this.pos);
-        builder.withInitial(ModelProperties.TILE, this);
+        var builder = ModelData.builder();
+        builder.with(ModelProperties.LEVEL, this.getLevel());
+        builder.with(ModelProperties.POS, this.getBlockPos());
+        builder.with(ModelProperties.TILE, this);
         return builder.build();
     }
 
     public BlockShape getBlock() {
-        if(this.block == null){
+        if (this.block == null) {
             this.block = this.level != null ? (BlockShape) this.level.getBlockState(this.worldPosition).getBlock() : null;
         }
         return this.block;

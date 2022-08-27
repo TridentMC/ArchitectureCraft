@@ -24,16 +24,16 @@
 
 package com.tridevmc.architecture.common.utils;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.item.ItemStack;
 
 public class InventoryUtils {
 
-    public static InventorySide inventorySide(IInventory base, Direction side) {
-        if (base instanceof ISidedInventory)
-            return new SidedInventorySide((ISidedInventory) base, side);
+    public static InventorySide inventorySide(Container base, Direction side) {
+        if (base instanceof WorldlyContainer)
+            return new SidedInventorySide((WorldlyContainer) base, side);
         else
             return new UnsidedInventorySide(base);
     }
@@ -50,21 +50,21 @@ public class InventoryUtils {
 
     public static class UnsidedInventorySide extends InventorySide {
 
-        IInventory base;
+        Container base;
 
-        public UnsidedInventorySide(IInventory base) {
+        public UnsidedInventorySide(Container base) {
             this.base = base;
-            this.size = base.getSizeInventory();
+            this.size = base.getContainerSize();
         }
 
         @Override
         public ItemStack get(int slot) {
-            return this.base.getStackInSlot(slot);
+            return this.base.getItem(slot);
         }
 
         @Override
         public boolean set(int slot, ItemStack stack) {
-            this.base.setInventorySlotContents(slot, stack);
+            this.base.setItem(slot, stack);
             return true;
         }
 
@@ -77,11 +77,11 @@ public class InventoryUtils {
 
     public static class SidedInventorySide extends InventorySide {
 
-        ISidedInventory base;
+        WorldlyContainer base;
         Direction side;
         int[] slots;
 
-        public SidedInventorySide(ISidedInventory base, Direction side) {
+        public SidedInventorySide(WorldlyContainer base, Direction side) {
             this.base = base;
             this.side = side;
             this.slots = base.getSlotsForFace(side);
@@ -90,14 +90,14 @@ public class InventoryUtils {
 
         @Override
         public ItemStack get(int i) {
-            return this.base.getStackInSlot(this.slots[i]);
+            return this.base.getItem(this.slots[i]);
         }
 
         @Override
         public boolean set(int i, ItemStack stack) {
             int slot = this.slots[i];
-            if (this.base.canInsertItem(slot, stack, this.side)) {
-                this.base.setInventorySlotContents(slot, stack);
+            if (this.base.canPlaceItemThroughFace(slot, stack, this.side)) {
+                this.base.setItem(slot, stack);
                 return true;
             } else
                 return false;
@@ -106,8 +106,8 @@ public class InventoryUtils {
         @Override
         public ItemStack extract(int i) {
             int slot = this.slots[i];
-            ItemStack stack = this.base.getStackInSlot(slot);
-            if (this.base.canExtractItem(slot, stack, this.side))
+            ItemStack stack = this.base.getItem(slot);
+            if (this.base.canTakeItemThroughFace(slot, stack, this.side))
                 return stack;
             else
                 return ItemStack.EMPTY;

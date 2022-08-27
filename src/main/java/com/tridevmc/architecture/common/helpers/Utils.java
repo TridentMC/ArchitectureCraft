@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -53,7 +53,7 @@ public class Utils {
     public static Random random = new Random();
 
     public static int playerTurn(LivingEntity player) {
-        return floor((player.rotationYaw * 4.0 / 360.0) + 0.5) & 3;
+        return (int) floor(player.getYRot() * 4.0 / 360.0 + 0.5) & 3;
     }
 
     public static int lookTurn(Vector3 look) {
@@ -69,7 +69,7 @@ public class Utils {
     public static TextureAtlasSprite getSpriteForBlockState(BlockState state) {
         if (state != null)
             return Minecraft.getInstance().getBlockRenderer()
-                    .getBlockModelShaper().getTexture(state);
+                    .getBlockModelShaper().getParticleIcon(state);
         else
             return null;
     }
@@ -81,7 +81,7 @@ public class Utils {
             return null;
 
         if (blockState.getBlock() instanceof BlockShape) {
-            TileShape shape = TileShape.get(world, pos);
+            ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
 
             if (renderPrimary) {
                 return getSpriteForBlockState(shape.getBaseBlockState());

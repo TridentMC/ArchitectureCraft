@@ -3,6 +3,7 @@ package com.tridevmc.architecture.client.render.model.data;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
+import com.tridevmc.architecture.client.render.model.builder.BakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -28,18 +29,17 @@ public class ArchitectureTri implements IBakedQuadProvider {
     @Override
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
         if (facing == null) facing = this.getFace();
-        BakedQuadBuilder builder = new BakedQuadBuilder();
-        builder.setTexture(sprite);
-        builder.setQuadTint(tintIndex);
-        builder.setApplyDiffuseLighting(true);
-        builder.setContractUVs(true);
-        builder.setQuadOrientation(facing);
+        var builder = new BakedQuadBuilderVertexConsumer();
+        builder.setSprite(sprite);
+        builder.setTintIndex(tintIndex);
+        builder.setShade(true);
+        builder.setDirection(facing);
         int[] vertexIndices = new int[]{0, 0, 1, 2};
         for (int i = 0; i < 4; i++) {
             ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
             vertex.pipe(builder, this, sprite, Optional.of(transform));
         }
-        return builder.build();
+        return builder.getBakedQuad();
     }
 
     @Override

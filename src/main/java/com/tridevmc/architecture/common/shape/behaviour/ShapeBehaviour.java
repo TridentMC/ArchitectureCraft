@@ -9,7 +9,7 @@ import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -46,16 +46,16 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public boolean orientOnPlacement(Player player, TileShape tile,
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile,
                                      BlockPos neighbourPos, BlockState neighbourState, BlockEntity neighbourTile,
                                      Direction otherFace, Vector3 hit) {
-        if (neighbourTile instanceof TileShape)
-            return this.orientOnPlacement(player, tile, (TileShape) neighbourTile, otherFace, hit);
+        if (neighbourTile instanceof ShapeBlockEntity)
+            return this.orientOnPlacement(player, tile, (ShapeBlockEntity) neighbourTile, otherFace, hit);
         else
             return this.orientOnPlacement(player, tile, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(Player player, TileShape tile, TileShape neighbourTile, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile, ShapeBlockEntity neighbourTile, Direction otherFace, Vector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
             EnumShape neighbourShape = neighbourTile.getArchitectureShape();
             Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
@@ -92,7 +92,7 @@ public class ShapeBehaviour {
         return false;
     }
 
-    public void onChiselUse(TileShape te, Player player, Direction face, Vector3 hit) {
+    public void onChiselUse(ShapeBlockEntity te, Player player, Direction face, Vector3 hit) {
         Direction side = this.zoneHit(face, hit);
         if (side != null)
             this.chiselUsedOnSide(te, player, side);
@@ -100,16 +100,16 @@ public class ShapeBehaviour {
             this.chiselUsedOnCentre(te, player);
     }
 
-    public void chiselUsedOnSide(TileShape te, Player player, Direction side) {
+    public void chiselUsedOnSide(ShapeBlockEntity te, Player player, Direction side) {
         te.toggleConnectionGlobal(side);
     }
 
-    public void chiselUsedOnCentre(TileShape te, Player player) {
+    public void chiselUsedOnCentre(ShapeBlockEntity te, Player player) {
         if (te.getSecondaryBlockState() != null) {
             ItemStack stack = this.newSecondaryMaterialStack(te.getSecondaryBlockState());
             if (stack != null) {
                 if (!Utils.playerIsInCreativeMode(player))
-                    Block.dropResources(te.getLevel(), te.getBlockPos(), stack);
+                    Block.popResource(te.getLevel(), te.getBlockPos(), stack);
                 te.setSecondaryMaterial(null);
             }
         }
@@ -122,7 +122,7 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public void onHammerUse(TileShape te, Player player, Direction face, Vector3 hit) {
+    public void onHammerUse(ShapeBlockEntity te, Player player, Direction face, Vector3 hit) {
         if (player.isCrouching())
             te.setSide((te.getSide() + 1) % 6);
         else {
@@ -160,13 +160,13 @@ public class ShapeBehaviour {
     }
 
     @Nonnull
-    public final VoxelShape getBounds(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+    public final VoxelShape getBounds(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state,
                                       Entity entity, Trans3 t) {
         return this.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     @Nonnull
-    public final VoxelShape getCollisionBoxCached(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
         BehaviourState bState = new BehaviourState(this, te, world, pos, state, entity, t);
         VoxelShape out = SHAPE_CACHE.getUnchecked(bState);
         if (out.isEmpty()) {
@@ -177,7 +177,7 @@ public class ShapeBehaviour {
 
     @Nonnull
     @Deprecated //TODO: Default implementation needs to be nuked. All the old collision code is too janky.
-    protected VoxelShape getCollisionBox(TileShape te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state,
                                          Entity entity, Trans3 t) {
         VoxelShape shapeOut = Shapes.empty();
         int mask = te.getArchitectureShape().occlusionMask;
@@ -228,14 +228,14 @@ public class ShapeBehaviour {
 
     private class BehaviourState {
         private final ShapeBehaviour shapeBehaviour;
-        private final TileShape tile;
+        private final ShapeBlockEntity tile;
         private final BlockAndTintGetter world;
         private final BlockPos pos;
         private final BlockState state;
         private final Entity entity;
         private final Trans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, TileShape tile, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
+        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;

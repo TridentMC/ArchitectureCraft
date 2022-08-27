@@ -4,18 +4,18 @@ import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.utils.MiscUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.properties.Half;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Half;
 
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
+
 
 public class ShapeBehaviourBanister extends ShapeBehaviourModel {
 
@@ -24,35 +24,35 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
     }
 
     private static Direction stairsFacing(BlockState state) {
-        return state.get(StairsBlock.FACING);
+        return state.getValue(StairBlock.FACING);
     }
 
     private static int stairsSide(BlockState state) {
-        if (state.get(StairsBlock.HALF) == Half.TOP)
+        if (state.getValue(StairBlock.HALF) == Half.TOP)
             return 1;
         else
             return 0;
     }
 
     @Override
-    public boolean orientOnPlacement(PlayerEntity player, TileShape te,
-                                     BlockPos npos, BlockState nstate, TileEntity nte, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity te,
+                                     BlockPos npos, BlockState nstate, BlockEntity nte, Direction otherFace, Vector3 hit) {
         if (!player.isCrouching()) {
-            Block nblock = nstate.getBlock();
+            var nblock = nstate.getBlock();
             boolean placedOnStair = false;
             int nside = -1; // Side that the neighbouring block is placed on
             int nturn = -1; // Turn of the neighbouring block
-            if (StairsBlock.isBlockStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
+            if (StairBlock.isStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
                 placedOnStair = true;
                 nside = stairsSide(nstate);
                 nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nstate));
                 if (nside == 1 && (nturn & 1) == 0)
                     nturn ^= 2;
             } else if (nblock instanceof BlockShape) {
-                if (nte instanceof TileShape) {
+                if (nte instanceof ShapeBlockEntity) {
                     placedOnStair = true;
-                    nside = ((TileShape) nte).getSide();
-                    nturn = ((TileShape) nte).getTurn();
+                    nside = ((ShapeBlockEntity) nte).getSide();
+                    nturn = ((ShapeBlockEntity) nte).getTurn();
                 }
             }
             if (placedOnStair) {

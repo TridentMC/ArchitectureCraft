@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.tile;
+package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.compound.ui.container.CompoundContainerMenu;

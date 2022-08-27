@@ -81,16 +81,12 @@ public class MiscUtils {
     }
 
     public static int turnToFaceEast(Direction f) {
-        switch (f) {
-            case SOUTH:
-                return 1;
-            case WEST:
-                return 2;
-            case NORTH:
-                return 3;
-            default:
-                return 0;
-        }
+        return switch (f) {
+            case SOUTH -> 1;
+            case WEST -> 2;
+            case NORTH -> 3;
+            default -> 0;
+        };
     }
 
     public static MinecraftServer getMinecraftServer() {

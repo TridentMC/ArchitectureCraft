@@ -29,22 +29,16 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.tile.TileShape;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -74,16 +68,16 @@ public class ItemShape extends BlockItem {
 
     @Nonnull
     public static ItemStack createStack(EnumShape shape, BlockState baseBlockState, int count) {
-        CompoundNBT tag = new CompoundNBT();
-        ItemStack stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
-        tag.putInt("BaseBlockState", Block.getStateId(baseBlockState));
+        var tag = new CompoundTag();
+        var stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
+        tag.putInt("BaseBlockState", Block.getId(baseBlockState));
         stack.setTag(tag);
         return stack;
     }
 
     @Nullable
     public static EnumShape getShapeFromStack(ItemStack stack) {
-        Item item = stack.getItem();
+        var item = stack.getItem();
         if (item instanceof ItemShape) {
             return ((ItemShape) item).shape;
         } else {
@@ -93,31 +87,31 @@ public class ItemShape extends BlockItem {
 
     @Nonnull
     public static BlockState getStateFromStack(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
-        return Block.getStateById(tag.getInt("BaseBlockState"));
+        var tag = stack.getTag();
+        return Block.stateById(tag.getInt("BaseBlockState"));
     }
 
     @Override
-    protected boolean placeBlock(BlockItemUseContext context, BlockState newState) {
-        PlayerEntity player = context.getPlayer();
-        World world = context.getWorld();
-        BlockPos pos = context.getPos();
-        Direction face = context.getFace();
-        ItemStack stack = context.getItem();
-        double hitX = context.getHitVec().getX();
-        double hitY = context.getHitVec().getY();
-        double hitZ = context.getHitVec().getZ();
-        if (!world.setBlockState(pos, newState, 3))
+    protected boolean placeBlock(BlockPlaceContext context, BlockState newState) {
+        var player = context.getPlayer();
+        var world = context.getLevel();
+        var pos = context.getClickedPos();
+        var face = context.getNearestLookingDirection();
+        var stack = context.getItemInHand();
+        var hitX = context.getClickLocation().x();
+        var hitY = context.getClickLocation().y();
+        var hitZ = context.getClickLocation().z();
+        if (!world.setBlock(pos, newState, 3))
             return false;
-        Vector3i dirVec = Vector3.getDirectionVec(face);
-        Vector3 hit = new Vector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
-        TileShape tile = TileShape.get(world, pos);
+        var dirVec = Vector3.getDirectionVec(face);
+        var hit = new Vector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
+        var tile = ShapeBlockEntity.get(world, pos);
         if (tile != null) {
-            BlockState state = getStateFromStack(stack);
+            var state = getStateFromStack(stack);
             tile.setBaseBlockState(state);
-            BlockPos neighbourPos = tile.getPos().offset(face.getOpposite());
-            BlockState neighbourState = world.getBlockState(neighbourPos);
-            TileEntity neighbourTile = world.getTileEntity(neighbourPos);
+            var neighbourPos = tile.getBlockPos().relative(face.getOpposite());
+            var neighbourState = world.getBlockState(neighbourPos);
+            var neighbourTile = world.getBlockEntity(neighbourPos);
             this.shape.orientOnPlacement(player, tile, neighbourPos, neighbourState, neighbourTile, face, hit);
         }
         return true;
@@ -125,47 +119,47 @@ public class ItemShape extends BlockItem {
 
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack) {
+    public CompoundTag getShareTag(ItemStack stack) {
         return stack.getTag();
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> lines, ITooltipFlag flagIn) {
-        CompoundNBT tag = stack.getTag();
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> lines, TooltipFlag flagIn) {
+        CompoundTag tag = stack.getTag();
         if (tag != null) {
             if (this.shape != null)
-                lines.set(0, new StringTextComponent(this.shape.getLocalizedShapeName()));
+                lines.set(0, Component.literal(this.shape.getLocalizedShapeName()));
             else
-                lines.set(0, new StringTextComponent(lines.get(0).getString() + " (" + -1 + ")"));
+                lines.set(0, Component.literal(lines.get(0).getString() + " (" + -1 + ")"));
             Block baseBlock = getStateFromStack(stack).getBlock();
-            lines.add(new StringTextComponent(Utils.displayNameOnlyOfBlock(baseBlock)));
+            lines.add(Component.literal(Utils.displayNameOnlyOfBlock(baseBlock)));
         }
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (group == ArchitectureMod.CONTENT.SHAPE_TAB) {
             if (this.shape.isCladding())
                 return;
 
-            items.add(createStack(this.shape, Blocks.OAK_PLANKS.getDefaultState()));
+            items.add(createStack(this.shape, Blocks.OAK_PLANKS.defaultBlockState()));
         }
 
-        super.fillItemGroup(group, items);
+        super.fillItemCategory(group, items);
     }
 
     @Override
     public ItemStack getDefaultInstance() {
-        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.getDefaultState());
+        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+    public Component getName(ItemStack stack) {
+        var tag = stack.getTag();
         if (tag == null)
-            return super.getDisplayName(stack);
+            return super.getName(stack);
 
         BlockState state = getStateFromStack(stack);
-        return new StringTextComponent(this.shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        return Component.literal(this.shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }

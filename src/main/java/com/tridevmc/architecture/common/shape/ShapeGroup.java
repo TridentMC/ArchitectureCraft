@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.shape;
 
-import net.minecraft.client.resources.I18n;
+
+import net.minecraft.client.resources.language.I18n;
 
 public class ShapeGroup {
 
@@ -73,6 +74,6 @@ public class ShapeGroup {
     }
 
     public String getLocalizedName() {
-        return I18n.format(this.translationKey);
+        return I18n.get(this.translationKey);
     }
 }

@@ -42,6 +42,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -49,6 +52,8 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -62,6 +67,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -85,7 +91,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
     protected int numProperties; // Do not explicitly initialise
-    protected BlockRenderType renderID = BlockRenderType.MODEL;
+    protected RenderShape renderID = RenderShape.MODEL;
     protected IOrientationHandler orientationHandler = orient1Way;
     protected String[] textureNames;
     protected ModelSpec modelSpec;
@@ -98,12 +104,12 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     }
 
     public BlockArchitecture(Material material, IOrientationHandler orient) {
-        super(Block.Properties.of(material, material.getColor()).notSolid());
+        super(Block.Properties.of(material, material.getColor()).dynamicShape());
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;
-        StateDefinition.Builder<Block, BlockState> builder = new StateDefinition.Builder<>(this);
-        this.fillStateContainer(builder);
+        var builder = new StateDefinition.Builder<Block, BlockState>(this);
+        this.createBlockStateDefinition(builder);
         STATE_CONTAINER.set(this, builder.create(Block::defaultBlockState, (block, propertyValues, codec) -> new BlockStateArchitecture((BlockArchitecture) block, propertyValues, codec)));
         this.registerDefaultState(this.getStateDefinition().any());
     }
@@ -161,14 +167,14 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     }
 
     @Override
-    protected void fillStateContainer(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         if (this.stateProperties == null) this.defineProperties();
         Arrays.stream(this.stateProperties).filter(Objects::nonNull).forEach(builder::add);
-        super.fillStateContainer(builder);
+        super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return this.renderID;
     }
 
@@ -240,7 +246,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     public boolean addLandingEffects(BlockState state, ServerLevel world, BlockPos pos,
                                      BlockState iblockstate, LivingEntity entity, int numParticles) {
         BlockState particleState = this.getParticleState(world, pos);
-        world.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, particleState), entity.getPosX(), entity.getPosY(), entity.getPosZ(),
+        world.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, particleState), entity.getX(), entity.getY(), entity.getZ(),
                 numParticles, 0, 0, 0, 0.15);
         return true;
     }
@@ -392,6 +398,16 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return hardness;
     }
 
+    public boolean hasBlockEntity(BlockState state) {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return null;
+    }
+
     public interface IOrientationHandler {
 
         void defineProperties(BlockArchitecture block);
@@ -415,15 +431,6 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
         public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
             return new Trans3(origin);
-        }
-
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static class DiggingFX extends DiggingParticle {
-
-        public DiggingFX(ClientLevel world, double x1, double y1, double z1, double x2, double y2, double z2, BlockState state) {
-            super(world, x1, y1, z1, x2, y2, z2, state);
         }
 
     }

@@ -28,7 +28,7 @@ import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.tile.TileShape;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.Direction;
 
 public class RenderRoof {
@@ -51,7 +51,7 @@ public class RenderRoof {
     protected boolean outerFace;
     protected boolean renderBase, renderSecondary;
 
-    public RenderRoof(TileShape te, ITexture[] textures, Trans3 t,
+    public RenderRoof(ShapeBlockEntity te, ITexture[] textures, Trans3 t,
                       boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;

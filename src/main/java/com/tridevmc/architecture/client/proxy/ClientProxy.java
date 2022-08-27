@@ -117,10 +117,10 @@ public class ClientProxy extends CommonProxy {
     public void onStitch(TextureStitchEvent.Pre e) {
         //RENDERING_MANAGER.clearTextureCache();
         for (Block block : ArchitectureContent.registeredBlocks.values())
-            RENDERING_MANAGER.registerSprites(0, e.getMap(), block);
+            RENDERING_MANAGER.registerSprites(0, e.getAtlas(), block);
 
         for (Item item : ArchitectureContent.registeredItems.values())
-            RENDERING_MANAGER.registerSprites(1, e.getMap(), item);
+            RENDERING_MANAGER.registerSprites(1, e.getAtlas(), item);
     }
 
     @Override
