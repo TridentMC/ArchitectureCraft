@@ -101,10 +101,10 @@ public class ClientProxy extends CommonProxy {
         //}
     }
 
-    @SubscribeEvent
-    public void onModelBakeEvent(ModelBakeEvent e) {
-        //RENDERING_MANAGER.getItemBakedModel().install(e);
-    }
+    //@SubscribeEvent
+    //public void onModelBakeEvent(ModelBakeEvent e) {
+    //    //RENDERING_MANAGER.getItemBakedModel().install(e);
+    //}
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
@@ -133,8 +133,8 @@ public class ClientProxy extends CommonProxy {
         //RENDERING_MANAGER.addBlockRenderer(ArchitectureMod.CONTENT.blockShape, SHAPE_RENDER_DISPATCHER);
         //RENDERING_MANAGER.addItemRenderer(ArchitectureMod.CONTENT.itemCladding, new RenderCladding());
 
-        RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.cutoutMipped());
-        ArchitectureMod.CONTENT.blockShapes.values().forEach(b -> RenderTypeLookup.setRenderLayer(b, (l) -> true));
+        //RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.cutoutMipped());
+        //ArchitectureMod.CONTENT.blockShapes.values().forEach(b -> RenderTypeLookup.setRenderLayer(b, (l) -> true));
     }
 
     private ResourceLocation[] getTextures(String... textureNames) {

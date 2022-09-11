@@ -1,88 +1,77 @@
 package com.tridevmc.architecture.client.render.model.builder;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
-import com.mojang.math.Vector3f;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class QuadPointDumper {
 
-    private Vector3f[] points = new Vector3f[4];
-    private int currentPoint = 0;
-    private VertexFormat formatTo;
+    private final List<Vec3> points = Lists.newArrayListWithCapacity(4);
+    private ImmutableList<Vec3> immutablePoints;
 
     public QuadPointDumper(BakedQuad quad) {
-        float[] data = new float[4];
-        VertexFormat formatFrom = DefaultVertexFormat.BLOCK;
-        this.formatTo = DefaultVertexFormat.BLOCK;
-        int countFrom = formatFrom.getElements().size();
-        int countTo = this.formatTo.getElements().size();
-        int[] eMap = LightUtil.mapFormats(formatFrom, this.formatTo);
-        for (int v = 0; v < 4; v++) {
-            for (int e = 0; e < countFrom; e++) {
-                if (eMap[e] != countTo) {
-                    this.unpack(quad.getVertices(), data, this.formatTo, v, eMap[e]);
-                    this.put(e, data);
-                } else {
-                    this.put(e);
-                }
+        var consumer = new DumpingVertexConsumer();
+        var poseStack = new PoseStack();
+        consumer.putBulkData(poseStack.last(), quad, 1F, 1F, 1F, 1F, 1, 1, true);
+        if (this.immutablePoints.size() < 4) {
+            throw new IllegalArgumentException("QuadPointDumper was given a quad with less than 4 points!");
+        }
+    }
+
+    private class DumpingVertexConsumer implements VertexConsumer {
+        @Override
+        public VertexConsumer vertex(double x, double y, double z) {
+            QuadPointDumper.this.points.add(new Vec3(x, y, z));
+            return this;
+        }
+
+        @Override
+        public VertexConsumer color(int r, int g, int b, int a) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv(float u, float v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer overlayCoords(int u1, int v1) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv2(int u2, int v2) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer normal(float nX, float nY, float nZ) {
+            return this;
+        }
+
+        @Override
+        public void endVertex() {
+            if (QuadPointDumper.this.points.size() == 4) {
+                QuadPointDumper.this.immutablePoints = ImmutableList.copyOf(QuadPointDumper.this.points);
             }
         }
-    }
 
-    private void unpack(int[] from, float[] to, VertexFormat formatFrom, int v, int e) {
-        int length = Math.min(4, to.length);
-        VertexFormatElement element = formatFrom.getElements().get(e);
-        int vertexStart = v * formatFrom.getSize() + formatFrom.getOffset(e);
-        int count = element.getElementCount();
-        VertexFormatElement.Type type = element.getType();
-        int size = type.getSize();
-        int mask = (256 << (8 * (size - 1))) - 1;
-        for (int i = 0; i < length; i++) {
-            if (i < count) {
-                int pos = vertexStart + size * i;
-                int index = pos >> 2;
-                int offset = pos & 3;
-                int bits = from[index];
-                bits = bits >>> (offset * 8);
-                if ((pos + size - 1) / 4 != index) {
-                    bits |= from[index + 1] << ((4 - offset) * 8);
-                }
-                bits &= mask;
-                if (type == VertexFormatElement.Type.FLOAT) {
-                    to[i] = Float.intBitsToFloat(bits);
-                } else if (type == VertexFormatElement.Type.UBYTE || type == VertexFormatElement.Type.USHORT) {
-                    to[i] = (float) bits / mask;
-                } else if (type == VertexFormatElement.Type.UINT) {
-                    to[i] = (float) ((double) (bits & 0xFFFFFFFFL) / 0xFFFFFFFFL);
-                } else if (type == VertexFormatElement.Type.BYTE) {
-                    to[i] = ((float) (byte) bits) / (mask >> 1);
-                } else if (type == VertexFormatElement.Type.SHORT) {
-                    to[i] = ((float) (short) bits) / (mask >> 1);
-                } else if (type == VertexFormatElement.Type.INT) {
-                    to[i] = (float) ((double) (bits & 0xFFFFFFFFL) / (0xFFFFFFFFL >> 1));
-                }
-            } else {
-                to[i] = 0;
-            }
+        @Override
+        public void defaultColor(int r, int g, int b, int a) {
+        }
+
+        @Override
+        public void unsetDefaultColor() {
         }
     }
 
-    public void put(int element, float... data) {
-        VertexFormatElement elementType = this.formatTo.getElements().get(element);
-        if (elementType != DefaultVertexFormat.ELEMENT_POSITION)
-            return;
-
-        if (this.currentPoint == 4) {
-            return;
-        }
-
-        this.points[this.currentPoint] = new Vector3f(data[0], data[1], data[2]);
-        this.currentPoint++;
-    }
-
-    public Vector3f[] getPoints() {
-        return this.points;
+    public ImmutableList<Vec3> getPoints() {
+        return this.immutablePoints;
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -160,13 +161,13 @@ public class ShapeBehaviour {
     }
 
     @Nonnull
-    public final VoxelShape getBounds(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+    public final VoxelShape getBounds(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
                                       Entity entity, Trans3 t) {
         return this.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     @Nonnull
-    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
         BehaviourState bState = new BehaviourState(this, te, world, pos, state, entity, t);
         VoxelShape out = SHAPE_CACHE.getUnchecked(bState);
         if (out.isEmpty()) {
@@ -177,7 +178,7 @@ public class ShapeBehaviour {
 
     @Nonnull
     @Deprecated //TODO: Default implementation needs to be nuked. All the old collision code is too janky.
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state,
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
                                          Entity entity, Trans3 t) {
         VoxelShape shapeOut = Shapes.empty();
         int mask = te.getArchitectureShape().occlusionMask;
@@ -229,13 +230,13 @@ public class ShapeBehaviour {
     private class BehaviourState {
         private final ShapeBehaviour shapeBehaviour;
         private final ShapeBlockEntity tile;
-        private final BlockAndTintGetter world;
+        private final BlockGetter world;
         private final BlockPos pos;
         private final BlockState state;
         private final Entity entity;
         private final Trans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
+        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;

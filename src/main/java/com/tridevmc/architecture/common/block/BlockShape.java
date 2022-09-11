@@ -94,18 +94,20 @@ public class BlockShape extends BlockArchitecture {
     }
 
     public static boolean acCanHarvestBlock(BlockState state, Player player) {
-        var block = state.getBlock();
-        if (state.canHarvestBlock(new DumbBlockReader(state), BlockPos.ZERO, player))
-            return true;
-        var stack = player.getUseItem();
-        var tool = block.getHarvestTool(state);
-        if (stack.isEmpty() || tool == null)
-            return player.func_234569_d_(state);
-        int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
-        if (toolLevel < 0)
-            return player.func_234569_d_(state);
-        else
-            return toolLevel >= block.getHarvestLevel(state);
+        // TODO: Commented out for now.
+        //var block = state.getBlock();
+        //if (state.canHarvestBlock(new DumbBlockReader(state), BlockPos.ZERO, player))
+        //    return true;
+        //var stack = player.getUseItem();
+        //var tool = block.getHarvestTool(state);
+        //if (stack.isEmpty() || tool == null)
+        //    return player.func_234569_d_(state);
+        //int toolLevel = stack.getItem().getHarvestLevel(stack, tool, player, state);
+        //if (toolLevel < 0)
+        //    return player.func_234569_d_(state);
+        //else
+        //    return toolLevel >= block.getHarvestLevel(state);
+        return true;
     }
 
     @Override
@@ -150,7 +152,7 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     @Nonnull
-    protected VoxelShape getLocalBounds(BlockAndTintGetter level, BlockPos pos,
+    protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos,
                                         BlockState state, Entity entity) {
         ShapeBlockEntity te = this.getTileEntity(level, pos);
         if (te != null) {

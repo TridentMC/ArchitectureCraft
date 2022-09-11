@@ -6,7 +6,6 @@ import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
-
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -15,8 +14,12 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -91,7 +94,8 @@ public class ArchitectureModelData {
                         spritesForFace.get(i),
                         tintsForFace.get(i));
 
-                LightUtil.setLightData(builtQuad, 1);
+                // TODO: Do we need this anymore?
+                //LightUtil.setLightData(builtQuad, 1);
                 if (builtQuad != null) {
                     generalQuads.add(builtQuad);
                     faceQuads.get(newFace).add(builtQuad);
@@ -135,9 +139,12 @@ public class ArchitectureModelData {
             List<BakedQuad> quads = sourceData.getQuads(Blocks.AIR.defaultBlockState(), facing, rand);
 
             for (BakedQuad quad : quads) {
-                Vector3f[] points = new QuadPointDumper(quad).getPoints();
-                for (Vector3f point : points) {
-                    this.addQuadInstruction(quad.getDirection(), point.x(), point.y(), point.z());
+                var points = new QuadPointDumper(quad).getPoints();
+                for (Vec3 point : points) {
+                    this.addQuadInstruction(quad.getDirection(),
+                            (float) point.x(),
+                            (float) point.y(),
+                            (float) point.z());
                 }
             }
         }

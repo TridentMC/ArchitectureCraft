@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CrossCollisionBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,7 +78,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockAndTintGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
         VoxelShape shape = Shapes.empty();
         final double r = 1 / 8d, s = 3 / 32d;
         double[] e = new double[4];
