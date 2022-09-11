@@ -1,7 +1,7 @@
 plugins {
     id 'eclipse'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
@@ -39,7 +39,6 @@ ext {
 }
 
 configurations {
-    nonModDep
     shade
 }
 
@@ -52,12 +51,6 @@ minecraft {
 
     runs {
         client {
-            environment "MOD_CLASSES", [
-                    sourceSets.main.output.resourcesDir.absolutePath,
-                    sourceSets.main.output.classesDirs.asPath,
-                    project.compoundClassesDir.absolutePath
-            ].join(File.pathSeparator)
-
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -74,12 +67,6 @@ minecraft {
         }
 
         server {
-            environment "MOD_CLASSES", [
-                    sourceSets.main.output.resourcesDir.absolutePath,
-                    sourceSets.main.output.classesDirs.asPath,
-                    project.compoundClassesDir.absolutePath
-            ].join(File.pathSeparator)
-
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -115,7 +102,6 @@ if (needsShadow) {
             def moduleIdentifier = 'com.tridevmc.compound:compound-' + module + ':' + project.ext.compoundVersion
             implementation(moduleIdentifier)
             shade(moduleIdentifier)
-            nonModDep(moduleIdentifier)
         }
     }
 
@@ -124,15 +110,6 @@ if (needsShadow) {
     artifacts {
         archives shadowJar
     }
-
-    task extractNonMod(type: Copy) {
-        project.compoundClassesDir.delete()
-        project.compoundClassesDir.mkdirs()
-        from zipTree(project.configurations.nonModDep.find { it.name.startsWith("compound") })
-        into project.compoundClassesDir
-    }
-
-    compileJava.dependsOn(extractNonMod)
 
     shadowJar {
         configurations = [project.configurations.shade]
