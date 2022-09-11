@@ -100,7 +100,7 @@ if (needsShadow) {
     dependencies {
         for (String module : project.ext.compoundModules) {
             def moduleIdentifier = 'com.tridevmc.compound:compound-' + module + ':' + project.ext.compoundVersion
-            implementation(moduleIdentifier)
+            minecraftLibrary(moduleIdentifier)
             shade(moduleIdentifier)
         }
     }
@@ -111,9 +111,20 @@ if (needsShadow) {
         archives shadowJar
     }
 
+    jar {
+        archiveClassifier = 'slim'
+    }
+
     shadowJar {
         configurations = [project.configurations.shade]
         relocate 'com.tridevmc.compound', project.ext.projectPackage + '.com.tridevmc.compound'
+        finalizedBy 'reobfShadowJar'
+    }
+
+    assemble.dependsOn shadowJar
+
+    reobf {
+        shadowJar {}
     }
 }
 
