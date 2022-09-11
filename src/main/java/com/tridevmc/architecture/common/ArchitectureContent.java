@@ -100,7 +100,6 @@ public class ArchitectureContent {
         e.register(ForgeRegistries.Keys.BLOCKS, this::onBlockRegister);
         e.register(ForgeRegistries.Keys.ITEMS, this::onItemRegister);
         e.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, this::onBlockEntityRegister);
-        e.register(ForgeRegistries.Keys.BLOCKS, this::onBlockRegister);
         e.register(ForgeRegistries.Keys.MENU_TYPES, this::onMenuTypeRegister);
     }
 
