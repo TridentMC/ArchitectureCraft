@@ -56,7 +56,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public float getBlockHardness(BlockState blockState, BlockAndTintGetter worldIn, BlockPos pos, float hardness) {
+    public float getBlockHardness(BlockState blockState, BlockAndTintGetter level, BlockPos pos, float hardness) {
         return 2.0F;
     }
 
@@ -71,9 +71,9 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!player.isCrouching()) {
-            if (!world.isClientSide()) {
+            if (!level.isClientSide()) {
                 ArchitectureUIHooks.openGui((ServerPlayer) player, this, pos);
             }
             return InteractionResult.SUCCESS;

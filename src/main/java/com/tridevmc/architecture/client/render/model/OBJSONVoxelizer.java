@@ -1,8 +1,10 @@
 package com.tridevmc.architecture.client.render.model;
 
-import com.mojang.math.Vector3d;
 import com.tridevmc.architecture.common.utils.AABBTree;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Arrays;
@@ -19,9 +21,9 @@ import java.util.stream.Stream;
  */
 public class OBJSONVoxelizer {
 
-    private static final Vector3d xNormal = new Vector3d(1, 0, 0);
-    private static final Vector3d yNormal = new Vector3d(0, 1, 0);
-    private static final Vector3d zNormal = new Vector3d(0, 0, 1);
+    private static final Vec3 xNormal = new Vec3(1, 0, 0);
+    private static final Vec3 yNormal = new Vec3(0, 1, 0);
+    private static final Vec3 zNormal = new Vec3(0, 0, 1);
 
     public static VoxelShape voxelize(OBJSON model, int blockResolution) {
         double resolution = 1D / blockResolution;
@@ -40,7 +42,7 @@ public class OBJSONVoxelizer {
         int maxZ = (int) (((resolution * Math.round(zS[zS.length - 1] / resolution))) / resolution);
 
 
-        VoxelShape out = VoxelShapes.empty();
+        VoxelShape out = Shapes.empty();
         for (int y = minY; y < maxY; y++) {
             AABB layer = null;
             for (int x = minX; x < maxX; x++) {
@@ -50,16 +52,16 @@ public class OBJSONVoxelizer {
                     double bZ = z * resolution;
                     AABB box = new AABB(bX, bY, bZ, bX + resolution, bY + resolution, bZ + resolution);
                     List<UnpackedTri> tris = aabbTree.search(box);
-                    if (tris.stream().anyMatch(t -> checkCollision(box.grow(1D / 16D), t))) {
+                    if (tris.stream().anyMatch(t -> checkCollision(box.inflate(1D / 16D), t))) {
                         if (layer == null) {
                             layer = box;
                         }
-                        layer = layer.union(box);
+                        layer = layer.minmax(box);
                     }
                 }
             }
             if (layer != null) {
-                out = VoxelShapes.combine(out, VoxelShapes.create(layer), IBooleanFunction.OR);
+                out = Shapes.join(out, Shapes.create(layer), BooleanOp.OR);
             }
         }
 
@@ -67,42 +69,42 @@ public class OBJSONVoxelizer {
     }
 
     private static boolean checkCollision(AABB box, UnpackedTri tri) {
-        Vector3d aabbCenter = box.getCenter();
-        Vector3d aabbSize = new Vector3d(box.getXSize() / 2, box.getYSize() / 2, box.getZSize() / 2);
+        var aabbCenter = box.getCenter();
+        var aabbSize = new Vec3(box.getXsize() / 2, box.getYsize() / 2, box.getZsize() / 2);
 
-        Vector3d v0 = tri.getV0().subtract(aabbCenter);
-        Vector3d v1 = tri.getV1().subtract(aabbCenter);
-        Vector3d v2 = tri.getV2().subtract(aabbCenter);
+        var v0 = tri.getV0().subtract(aabbCenter);
+        var v1 = tri.getV1().subtract(aabbCenter);
+        var v2 = tri.getV2().subtract(aabbCenter);
 
-        Vector3d l0 = v1.subtract(v0);
-        Vector3d l1 = v2.subtract(v1);
-        Vector3d l2 = v0.subtract(v2);
+        var l0 = v1.subtract(v0);
+        var l1 = v2.subtract(v1);
+        var l2 = v0.subtract(v2);
 
-        Vector3d xAxis0 = xNormal.crossProduct(l0);
-        Vector3d xAxis1 = xNormal.crossProduct(l1);
-        Vector3d xAxis2 = xNormal.crossProduct(l2);
+        var xAxis0 = xNormal.cross(l0);
+        var xAxis1 = xNormal.cross(l1);
+        var xAxis2 = xNormal.cross(l2);
 
-        Vector3d yAxis0 = yNormal.crossProduct(l0);
-        Vector3d yAxis1 = yNormal.crossProduct(l1);
-        Vector3d yAxis2 = yNormal.crossProduct(l2);
+        var yAxis0 = yNormal.cross(l0);
+        var yAxis1 = yNormal.cross(l1);
+        var yAxis2 = yNormal.cross(l2);
 
-        Vector3d zAxis0 = zNormal.crossProduct(l0);
-        Vector3d zAxis1 = zNormal.crossProduct(l1);
-        Vector3d zAxis2 = zNormal.crossProduct(l2);
+        var zAxis0 = zNormal.cross(l0);
+        var zAxis1 = zNormal.cross(l1);
+        var zAxis2 = zNormal.cross(l2);
 
-        Vector3d[] axes = new Vector3d[]{xAxis0, xAxis1, xAxis2, yAxis0, yAxis1, yAxis2, zAxis0, zAxis1, zAxis2, xNormal, yNormal, zNormal, l0.crossProduct(l1)};
+        var axes = new Vec3[]{xAxis0, xAxis1, xAxis2, yAxis0, yAxis1, yAxis2, zAxis0, zAxis1, zAxis2, xNormal, yNormal, zNormal, l0.cross(l1)};
 
         return Arrays.stream(axes).noneMatch(a -> testSeparatingAxis(v0, v1, v2, a, aabbSize));
     }
 
-    private static boolean testSeparatingAxis(Vector3d v0, Vector3d v1, Vector3d v2, Vector3d axis, Vector3d aabbSize) {
-        double v0Projection = v0.dotProduct(axis);
-        double v1Projection = v1.dotProduct(axis);
-        double v2Projection = v2.dotProduct(axis);
+    private static boolean testSeparatingAxis(Vec3 v0, Vec3 v1, Vec3 v2, Vec3 axis, Vec3 aabbSize) {
+        double v0Projection = v0.dot(axis);
+        double v1Projection = v1.dot(axis);
+        double v2Projection = v2.dot(axis);
 
-        double r = aabbSize.x * Math.abs(xNormal.dotProduct(axis)) +
-                aabbSize.y * Math.abs(yNormal.dotProduct(axis)) +
-                aabbSize.z * Math.abs(zNormal.dotProduct(axis));
+        double r = aabbSize.x * Math.abs(xNormal.dot(axis)) +
+                aabbSize.y * Math.abs(yNormal.dot(axis)) +
+                aabbSize.z * Math.abs(zNormal.dot(axis));
 
         double[] projections = new double[]{v0Projection, v1Projection, v2Projection};
         return Math.max(-Arrays.stream(projections).max().getAsDouble(), Arrays.stream(projections).min().getAsDouble()) > r;
@@ -148,16 +150,16 @@ public class OBJSONVoxelizer {
             return new double[]{this.vertices[0][2], this.vertices[1][2], this.vertices[2][2]};
         }
 
-        private Vector3d getV0() {
-            return new Vector3d(this.vertices[0][0], this.vertices[0][1], this.vertices[0][2]);
+        private Vec3 getV0() {
+            return new Vec3(this.vertices[0][0], this.vertices[0][1], this.vertices[0][2]);
         }
 
-        private Vector3d getV1() {
-            return new Vector3d(this.vertices[1][0], this.vertices[1][1], this.vertices[1][2]);
+        private Vec3 getV1() {
+            return new Vec3(this.vertices[1][0], this.vertices[1][1], this.vertices[1][2]);
         }
 
-        private Vector3d getV2() {
-            return new Vector3d(this.vertices[2][0], this.vertices[2][1], this.vertices[2][2]);
+        private Vec3 getV2() {
+            return new Vec3(this.vertices[2][0], this.vertices[2][1], this.vertices[2][2]);
         }
     }
 }

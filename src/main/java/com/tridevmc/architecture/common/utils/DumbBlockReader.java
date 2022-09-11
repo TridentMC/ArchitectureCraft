@@ -1,26 +1,19 @@
 package com.tridevmc.architecture.common.utils;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+public class DumbBlockReader implements BlockGetter {
 
-public class DumbBlockReader implements IBlockReader {
-
-    private BlockState state = Blocks.AIR.getDefaultState();
+    private BlockState state = Blocks.AIR.defaultBlockState();
 
     public DumbBlockReader(BlockState state) {
         this.state = state;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity getTileEntity(BlockPos pos) {
-        return null;
     }
 
     @Override
@@ -31,5 +24,21 @@ public class DumbBlockReader implements IBlockReader {
     @Override
     public FluidState getFluidState(BlockPos pos) {
         return this.state.getFluidState();
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity getBlockEntity(BlockPos p_45570_) {
+        return null;
+    }
+
+    @Override
+    public int getHeight() {
+        return 0;
+    }
+
+    @Override
+    public int getMinBuildHeight() {
+        return 0;
     }
 }

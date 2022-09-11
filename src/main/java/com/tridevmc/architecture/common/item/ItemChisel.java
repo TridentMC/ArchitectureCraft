@@ -67,7 +67,7 @@ public class ItemChisel extends Item {
             world.setBlock(pos, Blocks.AIR.defaultBlockState(), 0x3);
             if (!world.isClientSide()) {
                 this.dropBlockAsItem(world, pos, state);
-                world.playEvent(2001, pos, Block.getId(Blocks.STONE.defaultBlockState())); // block breaking sound and particles
+                world.levelEvent(2001, pos, Block.getId(Blocks.STONE.defaultBlockState())); // block breaking sound and particles
             }
             return InteractionResult.SUCCESS;
         }

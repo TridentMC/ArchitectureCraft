@@ -41,7 +41,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -73,9 +73,9 @@ public class ShapeBlockEntity extends BlockEntity {
         this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 
-    public static ShapeBlockEntity get(BlockAndTintGetter world, BlockPos pos) {
-        if (world != null) {
-            var te = world.getBlockEntity(pos);
+    public static ShapeBlockEntity get(BlockGetter level, BlockPos pos) {
+        if (level != null) {
+            var te = level.getBlockEntity(pos);
             if (te instanceof ShapeBlockEntity)
                 return (ShapeBlockEntity) te;
         }

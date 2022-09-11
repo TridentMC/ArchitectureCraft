@@ -33,6 +33,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,7 +78,7 @@ public class BaseOrientation {
         }
 
         @Override
-        public BlockState onBlockPlaced(Block block, Level world, BlockPos pos, Direction side,
+        public BlockState onBlockPlaced(Block block, Level level, BlockPos pos, Direction side,
                                         double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer) {
             var dir = placer.getDirection();
             if (debugPlacement)
@@ -86,7 +87,7 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
             var f = state.getValue(FACING);
             int i = switch (f) {
                 case NORTH -> 0;
@@ -105,13 +106,13 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockAndTintGetter world, BlockPos pos, BlockState state, Vector3 origin) {
-            var te = world.getBlockEntity(pos);
+        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
+            var te = level.getBlockEntity(pos);
             if (te instanceof ShapeBlockEntity) {
                 ShapeBlockEntity bte = (ShapeBlockEntity) te;
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
-                return super.localToGlobalTransformation(world, pos, state, origin);
+                return super.localToGlobalTransformation(level, pos, state, origin);
         }
 
     }

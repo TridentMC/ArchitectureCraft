@@ -66,7 +66,7 @@ public class AABBTree<T> {
         }
 
         private double calculateVolume(AABB other) {
-            var intersection = this.getValue().intersect(other);
+            var intersection = this.getValue().minmax(other);
             return Math.max(0, intersection.getXsize() * intersection.getYsize() * intersection.getZsize());
         }
     }
