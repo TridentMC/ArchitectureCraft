@@ -100,7 +100,7 @@ if (needsShadow) {
     dependencies {
         for (String module : project.ext.compoundModules) {
             def moduleIdentifier = 'com.tridevmc.compound:compound-' + module + ':' + project.ext.compoundVersion
-            minecraftLibrary(moduleIdentifier)
+            implementation(moduleIdentifier)
             shade(moduleIdentifier)
         }
     }
