@@ -249,4 +249,9 @@ public class BlockShape extends BlockArchitecture {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new ShapeBlockEntity(pos, state, this);
     }
+
+    @Override
+    public boolean hasBlockEntity(BlockState state) {
+        return true;
+    }
 }

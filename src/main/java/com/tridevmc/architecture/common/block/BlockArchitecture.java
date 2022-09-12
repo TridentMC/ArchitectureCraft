@@ -84,7 +84,7 @@ import java.util.function.Predicate;
 
 public abstract class BlockArchitecture extends BaseEntityBlock implements ITextureConsumer {
 
-    private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateContainer", "field_176227_L");
+    private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
     private static final LoadingCache<ShapeContext, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
         public VoxelShape load(@Nonnull ShapeContext shapeContext) {
             return shapeContext.state.getBlock().getLocalBounds(shapeContext.level, shapeContext.pos, shapeContext.state, null);

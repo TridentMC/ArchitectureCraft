@@ -135,7 +135,7 @@ public abstract class OBJSONModel implements IArchitectureModel {
         int[] colours = this.getColours(world, pos);
         for (int i = 0; i < this.textureQuadMap.length; i++) {
             int[] quads = this.textureQuadMap[i];
-            TextureAtlasSprite texture = textures[i];
+            TextureAtlasSprite texture = textures[Math.min(i, textures.length - 1)];
             int colour = colours[i];
 
             for (int quad : quads) {
