@@ -10,13 +10,12 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 
-
 import java.util.*;
 
 /**
  * A simple representation of the data required to bake a quad.
  */
-public class ArchitectureQuad implements IBakedQuadProvider {
+public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
 
     private Direction face;
     private ArchitectureVertex[] vertices = new ArchitectureVertex[4];
@@ -34,16 +33,12 @@ public class ArchitectureQuad implements IBakedQuadProvider {
 
         private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
             BakedQuad quadOut = this.quadsForSprite.get(sprite);
-            if (quadOut != null) {
-                if (tint != -1) {
-                    quadOut = this.reTintQuad(quadOut, tint);
-                }
-            } else {
+            if (quadOut == null) {
                 quadOut = new BakedQuadRetextured(this.baseQuad, sprite);
                 this.quadsForSprite.put(sprite, quadOut);
-                if (tint != -1) {
-                    quadOut = this.reTintQuad(quadOut, tint);
-                }
+            }
+            if (tint != -1) {
+                quadOut = this.reTintQuad(quadOut, tint);
             }
             return quadOut;
         }
@@ -54,11 +49,13 @@ public class ArchitectureQuad implements IBakedQuadProvider {
         }
     }
 
-    public ArchitectureQuad(Direction face) {
+    public ArchitectureQuad(T metadata, Direction face) {
+        super(metadata);
         this.face = face;
     }
 
-    public ArchitectureQuad(Direction face, Vector3f normals) {
+    public ArchitectureQuad(T metadata, Direction face, Vector3f normals) {
+        super(metadata);
         this.face = face;
         this.normals = normals;
     }

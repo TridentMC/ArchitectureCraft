@@ -1,13 +1,15 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.OBJSONModel;
+import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.objson.OBJSONModel;
+import com.tridevmc.architecture.client.render.model.objson.OBJSONQuadMetadata;
+import com.tridevmc.architecture.client.render.model.objson.OBJSONQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -35,6 +37,10 @@ public class ShapeModel extends OBJSONModel {
     }
 
     @Override
+    public IQuadMetadataResolver<OBJSONQuadMetadata> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state) {
+        return new OBJSONQuadMetadataResolver(this.getTextures(level, pos), this.getColours(level, pos));
+    }
+
     public TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos) {
         ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
         if (shape != null) {
@@ -45,7 +51,6 @@ public class ShapeModel extends OBJSONModel {
         return new TextureAtlasSprite[]{getSpriteForState(Blocks.OAK_PLANKS.defaultBlockState())};
     }
 
-    @Override
     public int[] getColours(LevelAccessor world, BlockPos pos) {
         ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
         if (shape != null) {

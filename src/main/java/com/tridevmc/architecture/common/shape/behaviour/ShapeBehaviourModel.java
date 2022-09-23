@@ -1,12 +1,11 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.client.render.model.OBJSON;
+import com.tridevmc.architecture.client.render.model.objson.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;

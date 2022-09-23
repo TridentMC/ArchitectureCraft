@@ -27,7 +27,7 @@ package com.tridevmc.architecture.common.block;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.tridevmc.architecture.client.render.model.OBJSON;
+import com.tridevmc.architecture.client.render.model.objson.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;

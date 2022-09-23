@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.objson;
 
 import com.google.gson.Gson;
 import com.tridevmc.architecture.common.ArchitectureLog;

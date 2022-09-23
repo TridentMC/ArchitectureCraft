@@ -11,17 +11,19 @@ import net.minecraft.core.Direction;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class ArchitectureTri implements IBakedQuadProvider {
+public class ArchitectureTri<T> extends BakedQuadProvider<T> {
 
     private Direction face;
     private final ArchitectureVertex[] vertices = new ArchitectureVertex[3];
     private Vector3f normals = null;
 
-    public ArchitectureTri(Direction face) {
+    public ArchitectureTri(T metadata, Direction face) {
+        super(metadata);
         this.face = face;
     }
 
-    public ArchitectureTri(Direction face, Vector3f normals) {
+    public ArchitectureTri(T metadata, Direction face, Vector3f normals) {
+        super(metadata);
         this.face = face;
         this.normals = normals;
     }
@@ -86,9 +88,9 @@ public class ArchitectureTri implements IBakedQuadProvider {
 
     @Override
     public void assignNormals() {
-        ArchitectureVertex vert0 = this.vertices[2];
-        ArchitectureVertex vert1 = this.vertices[1];
-        ArchitectureVertex vert2 = this.vertices[0];
+        var vert0 = this.vertices[2];
+        var vert1 = this.vertices[1];
+        var vert2 = this.vertices[0];
 
         Vector3f p0 = vert0.getPosition();
         p0.sub(vert1.getPosition());

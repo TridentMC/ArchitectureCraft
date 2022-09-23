@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.client.render.model.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.math.Transformation;
@@ -7,103 +8,160 @@ import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Stores quad info that can be modified with given transforms, tintindices, and face sprites.
  */
-public class ArchitectureModelData {
+public class ArchitectureModelData<T> {
 
-    private final Map<Direction, List<IBakedQuadProvider>> quads = Maps.newHashMap();
+    private static final Direction[] DIRECTIONS_WITH_NULL = new Direction[]{null, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN};
+    private final DirectionalQuads quads = new DirectionalQuads();
     private final Map<String, ArchitectureVertex> vertexPool = Maps.newHashMap();
-
-    private boolean isLocked = false;
-    protected BlockState state;
     protected Direction facing = Direction.NORTH;
-    protected Transformation transform = Transformation.identity();
-    protected ArrayList<Integer>[] tintIndices = new ArrayList[Direction.values().length + 1];
-    protected ArrayList<TextureAtlasSprite>[] faceSprites = new ArrayList[Direction.values().length + 1];
 
-    public ArchitectureModelData() {
-        for (int i = 0; i < this.tintIndices.length; i++) {
-            this.tintIndices[i] = Lists.newArrayList();
-            this.faceSprites[i] = Lists.newArrayList();
+    /**
+     * Stores quads for each cardinal direction as well as general quads that don't fit into a specific direction.
+     */
+    protected class DirectionalQuads {
+        private final List<IBakedQuadProvider<T>> northQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> southQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> eastQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> westQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> upQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> downQuads = Lists.newArrayList();
+        private final List<IBakedQuadProvider<T>> generalQuads = Lists.newArrayList();
+        private final ImmutableList<List<IBakedQuadProvider<T>>> allQuads = ImmutableList.of(northQuads, southQuads, eastQuads, westQuads, upQuads, downQuads, generalQuads);
+
+        private List<IBakedQuadProvider<T>> getQuads(@Nullable Direction direction) {
+            if (direction == null) {
+                return this.generalQuads;
+            }
+            return switch (direction) {
+                case NORTH -> northQuads;
+                case SOUTH -> southQuads;
+                case EAST -> eastQuads;
+                case WEST -> westQuads;
+                case UP -> upQuads;
+                case DOWN -> downQuads;
+            };
         }
-    }
 
-    public ArchitectureModelData(BakedModel sourceData) {
-        this();
-        this.loadFromBakedModel(sourceData);
-    }
-
-    public void setFaceData(int quadNumber, Direction side, TextureAtlasSprite sprite, int tintIndex) {
-        this.addOrSet(this.faceSprites[side != null ? side.get3DDataValue() : Direction.values().length], quadNumber, sprite);
-        this.addOrSet(this.tintIndices[side != null ? side.get3DDataValue() : Direction.values().length], quadNumber, tintIndex);
-    }
-
-    private void addOrSet(ArrayList list, int index, Object element) {
-        if (index >= list.size()) {
-            list.add(index, element);
-        } else {
-            list.set(index, element);
+        private Stream<IBakedQuadProvider<T>> getAllQuads() {
+            return Stream.of(northQuads,
+                            southQuads,
+                            eastQuads,
+                            westQuads,
+                            upQuads,
+                            downQuads,
+                            generalQuads)
+                    .flatMap(List::stream);
         }
-    }
 
-    public void setTransform(Direction facing, Transformation transform) {
-        this.facing = facing;
-        this.transform = transform;
-    }
-
-    public void setState(BlockState state) {
-        this.state = state;
-    }
-
-    public ModelDataQuads buildModel() {
-        if (!this.isLocked()) {
-            this.lock();
-        }
-        List<BakedQuad> generalQuads = Lists.newArrayList();
-        Map<Direction, List<BakedQuad>> faceQuads = Maps.newHashMap();
-        IntStream.range(-1, Direction.values().length).forEach((i) -> faceQuads.put(i > -1 ? Direction.from3DDataValue(i) : null, Lists.newArrayList()));
-
-        for (Map.Entry<Direction, List<IBakedQuadProvider>> quadFaceEntry : this.quads.entrySet()) {
-            Direction oldFace = quadFaceEntry.getKey();
-            Direction newFace = oldFace == null ? null : this.rotate(oldFace, this.transform);
-            int faceIndex = newFace == null ? this.faceSprites.length - 1 : newFace.get3DDataValue();
-            List<IBakedQuadProvider> quads = quadFaceEntry.getValue();
-
-            ArrayList<TextureAtlasSprite> spritesForFace = this.faceSprites[faceIndex];
-            ArrayList<Integer> tintsForFace = this.tintIndices[faceIndex];
-
-            for (int i = 0; i < quads.size(); i++) {
-                IBakedQuadProvider quad = quads.get(i);
-                BakedQuad builtQuad = quad.bake(this.transform, newFace,
-                        spritesForFace.get(i),
-                        tintsForFace.get(i));
-
-                // TODO: Do we need this anymore?
-                //LightUtil.setLightData(builtQuad, 1);
-                if (builtQuad != null) {
-                    generalQuads.add(builtQuad);
-                    faceQuads.get(newFace).add(builtQuad);
+        private void addQuad(@Nullable Direction direction, IBakedQuadProvider<T> quad) {
+            if (direction == null) {
+                this.generalQuads.add(quad);
+            } else {
+                switch (direction) {
+                    case NORTH -> northQuads.add(quad);
+                    case SOUTH -> southQuads.add(quad);
+                    case EAST -> eastQuads.add(quad);
+                    case WEST -> westQuads.add(quad);
+                    case UP -> upQuads.add(quad);
+                    case DOWN -> downQuads.add(quad);
                 }
             }
         }
-        this.resetState();
-        return new ModelDataQuads(generalQuads, faceQuads);
+
+        private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
+            var quads = getQuads(direction);
+            if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
+                quads.add(new ArchitectureQuad<>(metadata, direction));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
+            var quads = getQuads(direction);
+            if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
+                quads.add(new ArchitectureQuad<>(metadata, direction, normals));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
+            var quads = getQuads(direction);
+            if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
+                quads.add(new ArchitectureTri<>(metadata, direction));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
+            var quads = getQuads(direction);
+            if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
+                quads.add(new ArchitectureTri<>(metadata, direction, normals));
+            return quads.get(quads.size() - 1);
+        }
+
+        protected int getQuadCount(Direction direction) {
+            return getQuads(direction).size();
+        }
+
+        protected int getNorthQuadCount() {
+            return this.northQuads.size();
+        }
+
+        protected int getSouthQuadCount() {
+            return this.southQuads.size();
+        }
+
+        protected int getEastQuadCount() {
+            return this.eastQuads.size();
+        }
+
+        protected int getWestQuadCount() {
+            return this.westQuads.size();
+        }
+
+        protected int getUpQuadCount() {
+            return this.upQuads.size();
+        }
+
+        protected int getDownQuadCount() {
+            return this.downQuads.size();
+        }
+
+        protected int getGeneralQuadCount() {
+            return this.generalQuads.size();
+        }
+    }
+
+    public ArchitectureModelData() {
+    }
+
+    public ArchitectureModelData(BakedModel sourceData) {
+        this.loadFromBakedModel(sourceData);
+    }
+
+    public ArchitectureModelDataQuads getQuadsFor(IQuadMetadataResolver<T> metadataResolver, Transformation transform) {
+        var out = new ArchitectureModelDataQuads(this.quads, transform);
+        for (var dir : DIRECTIONS_WITH_NULL) {
+            dir = dir != null ? transform.rotateTransform(dir) : null;
+            var quads = this.quads.getQuads(dir);
+            for (var quad : quads) {
+                out.addQuad(dir, quad.bake(transform, dir, metadataResolver));
+            }
+        }
+        return out;
     }
 
     private Direction rotate(Direction direction, Transformation transform) {
@@ -111,21 +169,6 @@ public class ArchitectureModelData {
         Vector4f vec = new Vector4f(dir.getX(), dir.getY(), dir.getZ(), 0);
         transform.transformPosition(vec);
         return Direction.getNearest(vec.x(), vec.y(), vec.z());
-    }
-
-    public void resetState() {
-        // reset the model data for a new draw request.
-        this.state = Blocks.AIR.defaultBlockState();
-        this.facing = Direction.NORTH;
-
-        this.transform = Transformation.identity();
-        this.tintIndices = new ArrayList[Direction.values().length + 1];
-        this.faceSprites = new ArrayList[Direction.values().length + 1];
-
-        for (int i = 0; i < this.tintIndices.length; i++) {
-            this.tintIndices[i] = Lists.newArrayList();
-            this.faceSprites[i] = Lists.newArrayList();
-        }
     }
 
     public void loadFromBakedModel(BakedModel sourceData) {
@@ -141,7 +184,8 @@ public class ArchitectureModelData {
             for (BakedQuad quad : quads) {
                 var points = new QuadPointDumper(quad).getPoints();
                 for (Vec3 point : points) {
-                    this.addQuadInstruction(quad.getDirection(),
+                    this.addQuadInstruction(null,
+                            quad.getDirection(),
                             (float) point.x(),
                             (float) point.y(),
                             (float) point.z());
@@ -150,166 +194,108 @@ public class ArchitectureModelData {
         }
     }
 
-    public void addQuadInstruction(Direction facing, float x, float y, float z) {
-        this.addQuadInstruction(-1, facing, x, y, z);
+    public void addQuadInstruction(T metadata, Direction facing, float x, float y, float z) {
+        this.addQuadInstruction(metadata, -1, facing, x, y, z);
     }
 
-    public void addQuadInstruction(int face, Direction facing, float x, float y, float z) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addQuadInstruction(T metadata, int face, Direction facing, float x, float y, float z) {
+        var selectedQuad = this.quads.getCurrentlyBuildingQuad(metadata, facing);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z));
     }
 
-    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v) {
-        this.addQuadInstruction(-1, facing, x, y, z, u, v);
+    public void addQuadInstruction(T metadata, Direction facing, float x, float y, float z, float u, float v) {
+        this.addQuadInstruction(metadata, -1, facing, x, y, z, u, v);
     }
 
-    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float u, float v) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addQuadInstruction(T metadata, int face, Direction facing, float x, float y, float z, float u, float v) {
+        var selectedQuad = this.quads.getCurrentlyBuildingQuad(metadata, facing);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v));
     }
 
-    public void addQuadInstruction(Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
-        this.addQuadInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    public void addQuadInstruction(T metadata, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        this.addQuadInstruction(metadata, -1, facing, x, y, z, nX, nY, nZ);
     }
 
-    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addQuadInstruction(T metadata, int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        var selectedQuad = this.quads.getCurrentlyBuildingQuad(metadata, facing, new Vector3f(nX, nY, nZ));
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, nX, nY, nZ));
     }
 
-    public void addQuadInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        this.addQuadInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    public void addQuadInstruction(T metadata, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        this.addQuadInstruction(metadata, -1, facing, x, y, z, u, v, nX, nY, nZ);
     }
 
-    public void addQuadInstruction(int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureQuad(facing, new Vector3f(nX, nY, nZ)));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addQuadInstruction(T metadata, int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        var selectedQuad = this.quads.getCurrentlyBuildingQuad(metadata, facing, new Vector3f(nX, nY, nZ));
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v, nX, nY, nZ));
     }
 
-    public void addTriInstruction(Direction facing, double x, double y, double z) {
-        this.addTriInstruction(-1, facing, x, y, z);
+    public void addTriInstruction(T metadata, Direction facing, double x, double y, double z) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z);
     }
 
-    public void addTriInstruction(int face, Direction facing, double x, double y, double z) {
-        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z);
+    public void addTriInstruction(T metadata, int face, Direction facing, double x, double y, double z) {
+        this.addTriInstruction(metadata, face, facing, (float) x, (float) y, (float) z);
     }
 
-    public void addTriInstruction(Direction facing, float x, float y, float z) {
-        this.addTriInstruction(-1, facing, x, y, z);
+    public void addTriInstruction(T metadata, Direction facing, float x, float y, float z) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z);
     }
 
-    public void addTriInstruction(int face, Direction facing, float x, float y, float z) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureTri(facing));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
-
+    public void addTriInstruction(T metadata, int face, Direction facing, float x, float y, float z) {
+        var selectedQuad = this.quads.getCurrentlyBuildingTri(metadata, facing);
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z));
     }
 
-    public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v) {
-        this.addTriInstruction(-1, facing, x, y, z, u, v);
+    public void addTriInstruction(T metadata, Direction facing, double x, double y, double z, double u, double v) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, u, v);
     }
 
-    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double u, double v) {
-        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) u, (float) v);
+    public void addTriInstruction(T metadata, int face, Direction facing, double x, double y, double z, double u, double v) {
+        this.addTriInstruction(metadata, face, facing, (float) x, (float) y, (float) z, (float) u, (float) v);
     }
 
-    public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v) {
-        this.addTriInstruction(-1, facing, x, y, z, u, v);
+    public void addTriInstruction(T metadata, Direction facing, float x, float y, float z, float u, float v) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, u, v);
     }
 
-    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float u, float v) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureTri(facing));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addTriInstruction(T metadata, int face, Direction facing, float x, float y, float z, float u, float v) {
+        var selectedQuad = this.quads.getCurrentlyBuildingTri(metadata, facing);
 
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v));
     }
 
-    public void addTriInstruction(Direction facing, double x, double y, double z, float nX, float nY, float nZ) {
-        this.addTriInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    public void addTriInstruction(T metadata, Direction facing, double x, double y, double z, float nX, float nY, float nZ) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, nX, nY, nZ);
     }
 
-    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double nX, double nY, double nZ) {
-        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) nX, (float) nY, (float) nZ);
+    public void addTriInstruction(T metadata, int face, Direction facing, double x, double y, double z, double nX, double nY, double nZ) {
+        this.addTriInstruction(metadata, face, facing, (float) x, (float) y, (float) z, (float) nX, (float) nY, (float) nZ);
     }
 
-    public void addTriInstruction(Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
-        this.addTriInstruction(-1, facing, x, y, z, nX, nY, nZ);
+    public void addTriInstruction(T metadata, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, nX, nY, nZ);
     }
 
-    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureTri(facing));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
-
+    public void addTriInstruction(T metadata, int face, Direction facing, float x, float y, float z, float nX, float nY, float nZ) {
+        var selectedQuad = this.quads.getCurrentlyBuildingTri(metadata, facing, new Vector3f(nX, nY, nZ));
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, nX, nY, nZ));
     }
 
-    public void addTriInstruction(Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
-        this.addTriInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    public void addTriInstruction(T metadata, Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, u, v, nX, nY, nZ);
     }
 
-    public void addTriInstruction(int face, Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
-        this.addTriInstruction(face, facing, (float) x, (float) y, (float) z, (float) u, (float) v, (float) nX, (float) nY, (float) nZ);
+    public void addTriInstruction(T metadata, int face, Direction facing, double x, double y, double z, double u, double v, double nX, double nY, double nZ) {
+        this.addTriInstruction(metadata, face, facing, (float) x, (float) y, (float) z, (float) u, (float) v, (float) nX, (float) nY, (float) nZ);
     }
 
-    public void addTriInstruction(Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        this.addTriInstruction(-1, facing, x, y, z, u, v, nX, nY, nZ);
+    public void addTriInstruction(T metadata, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        this.addTriInstruction(metadata, -1, facing, x, y, z, u, v, nX, nY, nZ);
     }
 
-    public void addTriInstruction(int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
-        if (!this.quads.containsKey(facing))
-            this.quads.put(facing, new ArrayList<>());
-
-        List<IBakedQuadProvider> faceQuads = this.quads.get(facing);
-        if (faceQuads.isEmpty() || faceQuads.get(faceQuads.size() - 1).isComplete())
-            faceQuads.add(new ArchitectureTri(facing, new Vector3f(nX, nY, nZ)));
-
-        IBakedQuadProvider selectedQuad = faceQuads.get(faceQuads.size() - 1);
+    public void addTriInstruction(T metadata, int face, Direction facing, float x, float y, float z, float u, float v, float nX, float nY, float nZ) {
+        var selectedQuad = this.quads.getCurrentlyBuildingTri(metadata, facing, new Vector3f(nX, nY, nZ));
 
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v, nX, nY, nZ));
     }
@@ -332,36 +318,8 @@ public class ArchitectureModelData {
         return out;
     }
 
-    public void lock() {
-        this.isLocked = true;
-        this.vertexPool.values().stream().filter(ArchitectureVertex::assignNormals).forEach(v -> v.setNormals(new Vector3f(0, 0, 0)));
-        this.quads.values().forEach(qL -> qL.forEach((IBakedQuadProvider::assignNormals)));
-        this.vertexPool.values().stream().filter(ArchitectureVertex::assignNormals).forEach(v -> {
-            Vector3f normals = v.getNormals();
-            normals.normalize();
-            v.setNormals(normals);
-        });
+    protected DirectionalQuads getQuads() {
+        return quads;
     }
 
-    public boolean isLocked() {
-        return this.isLocked;
-    }
-
-    public class ModelDataQuads {
-        private final List<BakedQuad> generalQuads;
-        private final Map<Direction, List<BakedQuad>> faceQuads;
-
-        public ModelDataQuads(List<BakedQuad> generalQuads, Map<Direction, List<BakedQuad>> faceQuads) {
-            this.generalQuads = generalQuads;
-            this.faceQuads = faceQuads;
-        }
-
-        public List<BakedQuad> getGeneralQuads() {
-            return this.generalQuads;
-        }
-
-        public Map<Direction, List<BakedQuad>> getFaceQuads() {
-            return this.faceQuads;
-        }
-    }
 }

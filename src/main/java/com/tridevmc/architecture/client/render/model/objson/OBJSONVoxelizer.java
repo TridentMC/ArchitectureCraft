@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.objson;
 
 import com.tridevmc.architecture.common.utils.AABBTree;
 import net.minecraft.world.phys.AABB;

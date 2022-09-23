@@ -104,35 +104,6 @@ public class ArchitectureVertex {
                 .uv(sprite.getU(uvs[0]), sprite.getV(uvs[1]))
                 .uv2(1,1)
                 .endVertex();
-//        VertexFormat format = consumer.getVertexFormat();
-//        ImmutableList<VertexFormatElement> elements = format.getElements();
-//        for (int eI = 0; eI < elements.size(); eI++) {
-//            VertexFormatElement element = elements.get(eI);
-//            switch (element.getUsage()) {
-//                case POSITION:
-//                    consumer.put(eI, pos.getX(), pos.getY(), pos.getZ(), pos.getW());
-//                    break;
-//                case NORMAL:
-//                    consumer.put(eI, normals.x(), normals.y(), normals.z(), 0F);
-//                    break;
-//                case COLOR:
-//                    consumer.put(eI, 1F, 1F, 1F, 1F);
-//                    break;
-//                case UV:
-//                    if (element.getIndex() == 0) {
-//                        float u = sprite.getU(uvs[0]), v = sprite.getV(uvs[1]);
-//                        consumer.put(eI, u, v);
-//                    } else if (element.getIndex() == 2) {
-//                        consumer.put(eI, 0, 0, 1, 1);
-//                    } else {
-//                        consumer.put(eI);
-//                    }
-//                    break;
-//                default:
-//                    consumer.put(eI);
-//                    break;
-//            }
-//        }
     }
 
     public int getFace() {

@@ -11,7 +11,19 @@ import net.minecraft.core.Direction;
  * <p>
  * Allows for non-quad objects to be rendered as quads with some trickery.
  */
-public interface IBakedQuadProvider {
+public interface IBakedQuadProvider<T> {
+
+    /**
+     * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
+     *
+     * @param transform a transformation to apply to the quad.
+     * @param facing    the face of the baked quad.
+     * @param resolver  a metadata resolver to use for pulling the tint and texture for the quad.
+     * @return a baked quad matching the given information.
+     */
+    default BakedQuad bake(Transformation transform, Direction facing, IQuadMetadataResolver<T> resolver) {
+        return this.bake(transform, facing, resolver.getTexture(this), resolver.getTint(this));
+    }
 
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
@@ -73,5 +85,12 @@ public interface IBakedQuadProvider {
      * @return the index to set the next vertex into.
      */
     int getNextVertex();
+
+    /**
+     * Gets the metadata about the quad provider used for fetching texture and tint data prior to baking.
+     *
+     * @return the metadata for the quad provider.
+     */
+    T getMetadata();
 
 }

@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.tridevmc.architecture.client.render.model.data.ArchitectureModelData;
 import com.tridevmc.architecture.client.render.model.impl.ShapeModel;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -34,9 +33,8 @@ public class ShapeBakedModel implements IDynamicBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         var level = extraData.get(ModelProperties.LEVEL);
         var pos = extraData.get(ModelProperties.POS);
-        ArchitectureModelData.ModelDataQuads quads = this.model.getQuads(state, level, pos);
 
-        return quads.getFaceQuads().get(side);
+        return this.model.getQuads(level, pos, state).getQuads(side);
     }
 
     @Override

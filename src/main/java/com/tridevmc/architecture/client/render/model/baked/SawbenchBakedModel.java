@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.tridevmc.architecture.client.render.model.data.ArchitectureModelData;
+import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 
@@ -35,8 +35,8 @@ public class SawbenchBakedModel implements IDynamicBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @org.jetbrains.annotations.Nullable RenderType renderType) {
         Level level = extraData.get(ModelProperties.LEVEL);
         BlockPos pos = extraData.get(ModelProperties.POS);
-        ArchitectureModelData.ModelDataQuads quads = MODEL.getQuads(state, level, pos);
-        return quads.getFaceQuads().get(side);
+        ArchitectureModelDataQuads quads = MODEL.getQuads(level, pos, state);
+        return quads.getQuads(side);
     }
 
     @Override

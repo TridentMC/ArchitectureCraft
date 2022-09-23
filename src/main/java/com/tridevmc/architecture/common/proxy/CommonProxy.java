@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.proxy;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.OBJSON;
+import com.tridevmc.architecture.client.render.model.objson.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.resources.ResourceLocation;
@@ -34,8 +34,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.progress.StartupMessageManager;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class CommonProxy {
 
