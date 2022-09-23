@@ -194,6 +194,7 @@ public class ArchitectureModelData<T> {
         }
     }
 
+    // TODO: BakedQuadProviders need to build themselves next instead of just piping data one method call at a time.
     public void addQuadInstruction(T metadata, Direction facing, float x, float y, float z) {
         this.addQuadInstruction(metadata, -1, facing, x, y, z);
     }

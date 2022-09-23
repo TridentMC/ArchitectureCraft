@@ -19,7 +19,7 @@ public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQ
     }
 
     @Override
-    public int getTint(OBJSONQuadMetadata metadata) {
+    public int getColour(OBJSONQuadMetadata metadata) {
         return tints[Math.min(metadata.tint(), tints.length - 1)];
     }
 }

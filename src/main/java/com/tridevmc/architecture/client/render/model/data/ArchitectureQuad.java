@@ -66,30 +66,30 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
      * @param transform the transform to apply to the quad.
      * @param facing    the face the quad will occupy on a model.
      * @param sprite    the sprite to apply to the quad.
-     * @param tintIndex the tint index to apply to the quad.
+     * @param colour the tint index to apply to the quad.
      * @return a baked quad matching all the data provided.
      */
     @Override
-    public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex) {
+    public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         PrebuiltData prebuiltData = this.prebuiltQuads.get(transform);
         this.recalculateFace();
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
             var builder = new BakedQuadBuilderVertexConsumer();
             builder.setSprite(sprite);
-            builder.setTintIndex(tintIndex);
+            builder.setTintIndex(colour);
             builder.setShade(true);
             builder.setDirection(facing);
             int[] vertexIndices = new int[]{0, 0, 1, 2};
             for (int i = 0; i < 4; i++) {
                 ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
-                vertex.pipe(builder, this, sprite, Optional.of(transform));
+                vertex.pipe(builder, this, Optional.of(transform), sprite, colour);
             }
             PrebuiltData baseQuad = new PrebuiltData(builder.getBakedQuad());
             this.prebuiltQuads.put(transform, baseQuad);
             return baseQuad.baseQuad;
         } else {
-            return prebuiltData.getQuad(sprite, tintIndex);
+            return prebuiltData.getQuad(sprite, colour);
         }
     }
 

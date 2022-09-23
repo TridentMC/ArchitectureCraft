@@ -1,9 +1,6 @@
 package com.tridevmc.architecture.client.render.model.data;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
@@ -90,7 +87,9 @@ public class ArchitectureVertex {
         return this.getNormals().z();
     }
 
-    public void pipe(VertexConsumer consumer, IBakedQuadProvider bakedQuadProvider, TextureAtlasSprite sprite, Optional<Transformation> transform) {
+    public void pipe(VertexConsumer consumer, IBakedQuadProvider<?> bakedQuadProvider,
+                     Optional<Transformation> transform, TextureAtlasSprite sprite,
+                     int colour) {
         Vector4f pos = new Vector4f(this.getPosition());
         Vector3f normals = this.getNormals();
         float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(Transformation.identity()));
@@ -100,9 +99,11 @@ public class ArchitectureVertex {
         });
         // TODO: UV2 seems to be lighting related, need to look at this closer as lighting is the biggest blocker atm
         consumer.vertex(pos.x(),pos.y(),pos.z())
+                .color(colour)
                 .normal(normals.x(),normals.y(),normals.z())
                 .uv(sprite.getU(uvs[0]), sprite.getV(uvs[1]))
-                .uv2(1,1)
+                .uv2(1,0)
+                .overlayCoords(1,0)
                 .endVertex();
     }
 

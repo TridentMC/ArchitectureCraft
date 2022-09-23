@@ -22,7 +22,7 @@ public interface IBakedQuadProvider<T> {
      * @return a baked quad matching the given information.
      */
     default BakedQuad bake(Transformation transform, Direction facing, IQuadMetadataResolver<T> resolver) {
-        return this.bake(transform, facing, resolver.getTexture(this), resolver.getTint(this));
+        return this.bake(transform, facing, resolver.getTexture(this), resolver.getColour(this));
     }
 
     /**
@@ -31,10 +31,10 @@ public interface IBakedQuadProvider<T> {
      * @param transform a transform to apply to the quad while baking.
      * @param facing    the face of the baked quad.
      * @param sprite    the sprite to apply to the quad.
-     * @param tintIndex the tint to apply to the quad.
+     * @param colour    the colour to apply to the quad.
      * @return a baked quad matching the given information.
      */
-    BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int tintIndex);
+    BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour);
 
     /**
      * Gets the normals for the baked object. Used by vertex implementations.

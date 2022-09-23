@@ -10,10 +10,10 @@ public interface IQuadMetadataResolver<T> {
 
     TextureAtlasSprite getTexture(T metadata);
 
-    default int getTint(IBakedQuadProvider<T> provider) {
-        return this.getTint(provider.getMetadata());
+    default int getColour(IBakedQuadProvider<T> provider) {
+        return this.getColour(provider.getMetadata());
     }
 
-    int getTint(T metadata);
+    int getColour(T metadata);
 
 }
