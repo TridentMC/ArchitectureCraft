@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.fml.loading.progress.StartupMessageManager;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,6 +37,7 @@ public class OBJSON {
 
         for (int i = 0; i < model.faces.length; i++) {
             Face face = model.faces[i];
+            face.model = model;
             for (int v = 0; v < model.faces[i].vertices.length; v++) {
                 Vector3 vPos = face.vertices[v].getPos();
                 face.vertices[v].pos = trans.p(vPos).toArray();
@@ -80,10 +82,17 @@ public class OBJSON {
     //    return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
     //}
 
+    public String getName() {
+        return name;
+    }
+
     public VoxelShape getVoxelized() {
         if (this.voxelized == null) {
+            String msg = String.format("Voxelizing '%s'", name);
+            StartupMessageManager.addModMessage(msg);
+            ArchitectureLog.info(msg);
             long t0 = System.nanoTime();
-            this.voxelized = OBJSONVoxelizer.voxelize(this, 8);
+            this.voxelized = OBJSONVoxelizer.voxelizeShape(this, 16);
             long t1 = System.nanoTime();
             ArchitectureLog.info("Voxelized {} in {} nanos", this.name, t1 - t0);
         }
@@ -91,7 +100,7 @@ public class OBJSON {
     }
 
     public VoxelShape getShape(Trans3 t, VoxelShape shape) {
-        VoxelShape voxelized = this.getVoxelized();
+        var voxelized = this.getVoxelized();
         if (!voxelized.isEmpty()) {
             for (AABB bb : voxelized.toAabbs()) {
                 shape = Shapes.or(shape, t.t(Shapes.create(bb)));
@@ -112,6 +121,7 @@ public class OBJSON {
     }
 
     public class Face {
+        OBJSON model;
         int texture;
         Vertex[] vertices;
         Triangle[] triangles;

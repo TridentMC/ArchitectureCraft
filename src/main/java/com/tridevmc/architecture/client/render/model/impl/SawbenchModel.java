@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class SawbenchModel extends OBJSONModel {
 
     private static TextureAtlasSprite[] textures;
-    private static int[] tints;
+    private static int[] colours;
     private static final IQuadMetadataResolver<OBJSONQuadMetadata> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
@@ -24,7 +24,7 @@ public class SawbenchModel extends OBJSONModel {
             },
             m -> {
                 doInit();
-                return tints[Math.min(m.texture(), tints.length -1)];
+                return colours[Math.min(m.tintIndex(), colours.length -1)];
             }
     );
     private static boolean needsInit = true;
@@ -51,7 +51,7 @@ public class SawbenchModel extends OBJSONModel {
                     textureGetter.apply(new ResourceLocation("block/oak_planks")),
                     textureGetter.apply(new ResourceLocation("block/iron_block"))
             };
-            tints = new int[]{-1, -1};
+            colours = new int[]{-1, -1};
             needsInit = false;
         }
     }

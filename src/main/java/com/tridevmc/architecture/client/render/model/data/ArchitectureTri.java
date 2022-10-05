@@ -31,14 +31,14 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
     @Override
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         if (facing == null) facing = this.getFace();
-        var builder = new BakedQuadBuilderVertexConsumer();
-        builder.setSprite(sprite);
-        builder.setTintIndex(colour);
-        builder.setShade(true);
-        builder.setDirection(facing);
+        var builder = new BakedQuadBuilderVertexConsumer()
+                .setSprite(sprite)
+                .setTintIndex(colour)
+                .setShade(true)
+                .setDirection(facing);
         int[] vertexIndices = new int[]{0, 0, 1, 2};
         for (int i = 0; i < 4; i++) {
-            ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
+            var vertex = this.vertices[vertexIndices[i]];
             vertex.pipe(builder, this, Optional.of(transform), sprite, colour);
         }
         return builder.getBakedQuad();

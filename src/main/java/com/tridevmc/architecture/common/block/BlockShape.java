@@ -128,30 +128,6 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     @Nonnull
-    protected VoxelShape getGlobalCollisionBoxes(BlockAndTintGetter level, BlockPos pos,
-                                                 BlockState state, Entity entity) {
-        ShapeBlockEntity te = this.getTileEntity(level, pos);
-        if (te != null) {
-            Trans3 t = te.localToGlobalTransformation();
-            return this.getCollisionBoxes(te, level, pos, state, t, entity);
-        }
-        return Shapes.empty();
-    }
-
-    @Override
-    @Nonnull
-    protected VoxelShape getLocalCollisionBoxes(BlockAndTintGetter level, BlockPos pos,
-                                                BlockState state, Entity entity) {
-        ShapeBlockEntity te = this.getTileEntity(level, pos);
-        if (te != null) {
-            Trans3 t = te.localToGlobalTransformation(Vector3.zero);
-            return this.getCollisionBoxes(te, level, pos, state, t, entity);
-        }
-        return Shapes.empty();
-    }
-
-    @Override
-    @Nonnull
     protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos,
                                         BlockState state, Entity entity) {
         ShapeBlockEntity te = this.getTileEntity(level, pos);
@@ -160,11 +136,6 @@ public class BlockShape extends BlockArchitecture {
             return this.getArchitectureShape().behaviour.getBounds(te, level, pos, state, entity, t);
         }
         return Shapes.empty();
-    }
-
-    @Nonnull
-    protected VoxelShape getCollisionBoxes(ShapeBlockEntity te, BlockAndTintGetter level, BlockPos pos, BlockState state, Trans3 t, Entity entity) {
-        return this.getArchitectureShape().behaviour.getCollisionBoxCached(te, level, pos, state, entity, t);
     }
 
     //@Override

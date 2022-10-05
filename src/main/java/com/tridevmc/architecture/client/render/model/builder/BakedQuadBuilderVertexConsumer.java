@@ -15,20 +15,29 @@ public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
         this.realConsumer = new QuadBakingVertexConsumer(q -> this.out = q);
     }
 
-    public void setTintIndex(int tintIndex) {
+    public BakedQuadBuilderVertexConsumer setTintIndex(int tintIndex) {
         this.realConsumer.setTintIndex(tintIndex);
+        return this;
     }
 
-    public void setDirection(Direction direction) {
+    public BakedQuadBuilderVertexConsumer setDirection(Direction direction) {
         this.realConsumer.setDirection(direction);
+        return this;
     }
 
-    public void setSprite(TextureAtlasSprite sprite) {
+    public BakedQuadBuilderVertexConsumer setSprite(TextureAtlasSprite sprite) {
         this.realConsumer.setSprite(sprite);
+        return this;
     }
 
-    public void setShade(boolean shade) {
+    public BakedQuadBuilderVertexConsumer setShade(boolean shade) {
         this.realConsumer.setShade(shade);
+        return this;
+    }
+
+    public BakedQuadBuilderVertexConsumer setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
+        realConsumer.setHasAmbientOcclusion(hasAmbientOcclusion);
+        return this;
     }
 
     @Override

@@ -6,11 +6,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQuadMetadata> {
 
     private final TextureAtlasSprite[] textures;
-    private final int[] tints;
+    private final int[] colours;
 
-    public OBJSONQuadMetadataResolver(TextureAtlasSprite[] textures, int[] tints) {
+    public OBJSONQuadMetadataResolver(TextureAtlasSprite[] textures, int[] colours) {
         this.textures = textures;
-        this.tints = tints;
+        this.colours = colours;
     }
 
     @Override
@@ -20,6 +20,6 @@ public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQ
 
     @Override
     public int getColour(OBJSONQuadMetadata metadata) {
-        return tints[Math.min(metadata.tint(), tints.length - 1)];
+        return colours[metadata.tintIndex()];
     }
 }

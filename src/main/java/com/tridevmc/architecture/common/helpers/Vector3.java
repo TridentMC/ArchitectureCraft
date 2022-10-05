@@ -29,6 +29,7 @@ import com.mojang.math.Vector3d;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 import java.util.function.DoubleFunction;
@@ -40,6 +41,7 @@ public class Vector3 {
 
     public static Vector3 zero = new Vector3(0, 0, 0);
     public static Vector3 blockCenter = new Vector3(0.5, 0.5, 0.5);
+    public static Vector3 invBlockCenter = blockCenter.mul(-1);
 
     public static Vector3 unitX = new Vector3(1, 0, 0);
     public static Vector3 unitY = new Vector3(0, 1, 0);
@@ -151,6 +153,10 @@ public class Vector3 {
 
     public Vec3i toVec3i() {
         return new Vec3i(this.x, this.y, this.z);
+    }
+
+    public Vec3 toMCVec3(){
+        return new Vec3(this.x, this.y, this.z);
     }
 
     public Vector3 add(double x, double y, double z) {

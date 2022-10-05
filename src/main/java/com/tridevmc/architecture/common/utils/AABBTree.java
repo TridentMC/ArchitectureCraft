@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class AABBTree<T> {
 
-    private class Node {
+    public class Node {
         private Node left;
         private Node right;
         private AABB value;
@@ -73,10 +73,10 @@ public class AABBTree<T> {
 
     private Node theNode;
 
-    public AABBTree(Collection<T> items, Function<T, AABB> boxGetter){
+    public AABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
         items.forEach(t -> {
             var box = boxGetter.apply(t);
-            if(AABBTree.this.theNode == null){
+            if (AABBTree.this.theNode == null) {
                 AABBTree.this.theNode = new Node(box, t);
             } else {
                 AABBTree.this.theNode.addNode(box, t);
@@ -88,8 +88,16 @@ public class AABBTree<T> {
         this.theNode = new Node(startBox, item);
     }
 
+    public Node getRoot(){
+        return this.theNode;
+    }
+
     public void add(AABB box, T item) {
         this.theNode.addNode(box, item);
+    }
+
+    public AABB getBounds(){
+        return this.theNode.getValue();
     }
 
     public List<T> search(AABB box) {
@@ -98,7 +106,7 @@ public class AABBTree<T> {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove(0);
-            if (node.value.intersects(box)) {
+            if (box.intersects(node.getValue())) {
                 if (node.item == null) {
                     queue.add(node.left);
                     queue.add(node.right);

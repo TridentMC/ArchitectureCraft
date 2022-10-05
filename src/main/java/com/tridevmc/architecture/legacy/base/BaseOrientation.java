@@ -96,7 +96,7 @@ public class BaseOrientation {
                 case EAST -> 3;
                 default -> 0;
             };
-            return new Trans3(origin).turn(i);
+            return new Trans3(origin).turnAround(Vector3.blockCenter, i);
         }
 
     }
@@ -109,7 +109,7 @@ public class BaseOrientation {
         public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
             var te = level.getBlockEntity(pos);
             if (te instanceof ShapeBlockEntity) {
-                ShapeBlockEntity bte = (ShapeBlockEntity) te;
+                var bte = (ShapeBlockEntity) te;
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(level, pos, state, origin);

@@ -62,9 +62,6 @@ public class CommonProxy {
             StartupMessageManager.addModMessage(msg);
             ArchitectureLog.info(msg);
         }
-        String msg = String.format("Voxelizing '%s'", name);
-        StartupMessageManager.addModMessage(msg);
-        ArchitectureLog.info(msg);
         model.getVoxelized();
         return model;
     }

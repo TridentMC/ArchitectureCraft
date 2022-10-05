@@ -18,7 +18,7 @@ public interface IBakedQuadProvider<T> {
      *
      * @param transform a transformation to apply to the quad.
      * @param facing    the face of the baked quad.
-     * @param resolver  a metadata resolver to use for pulling the tint and texture for the quad.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
      * @return a baked quad matching the given information.
      */
     default BakedQuad bake(Transformation transform, Direction facing, IQuadMetadataResolver<T> resolver) {
@@ -31,7 +31,7 @@ public interface IBakedQuadProvider<T> {
      * @param transform a transform to apply to the quad while baking.
      * @param facing    the face of the baked quad.
      * @param sprite    the sprite to apply to the quad.
-     * @param colour    the colour to apply to the quad.
+     * @param colour    the tintIndex to apply to the quad.
      * @return a baked quad matching the given information.
      */
     BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour);
@@ -87,7 +87,7 @@ public interface IBakedQuadProvider<T> {
     int getNextVertex();
 
     /**
-     * Gets the metadata about the quad provider used for fetching texture and tint data prior to baking.
+     * Gets the metadata about the quad provider used for fetching texture and tintIndex data prior to baking.
      *
      * @return the metadata for the quad provider.
      */

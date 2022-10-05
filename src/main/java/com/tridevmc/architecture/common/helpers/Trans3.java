@@ -45,7 +45,6 @@ public class Trans3 {
 
     public static Trans3 ident = new Trans3(Vector3.zero);
     public static Trans3 blockCenter = new Trans3(Vector3.blockCenter);
-
     public static Trans3[][] sideTurnRotations = new Trans3[6][4];
 
     static {
@@ -159,6 +158,11 @@ public class Trans3 {
 
     public Trans3 turn(int i) {
         return this.rotate(Matrix3.turnRotations[i]);
+    }
+
+    public Trans3 turnAround(Vector3 origin, int i) {
+        // Use multiplied variables instead of cross, saves some heap allocation.
+        return this.translate(origin).turn(i).translate(origin.x * -1, origin.y * -1, origin.z * -1);
     }
 
     public Trans3 t(Trans3 t) {
@@ -277,7 +281,7 @@ public class Trans3 {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("offset", this.offset)
-                .add("rotation", this.rotation)
+                .add("rotation", this.rotation.toString())
                 .add("scaling", this.scaling)
                 .toString();
     }

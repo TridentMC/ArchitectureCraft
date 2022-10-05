@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.common.helpers;
 
+import com.google.common.base.MoreObjects;
 import com.tridevmc.architecture.common.ArchitectureLog;
 
 import java.util.Arrays;
@@ -148,5 +149,12 @@ public class Matrix3 {
     @Override
     public int hashCode() {
         return Arrays.hashCode(Arrays.stream(this.m).flatMapToDouble(Arrays::stream).toArray());
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("m", m)
+                .toString();
     }
 }

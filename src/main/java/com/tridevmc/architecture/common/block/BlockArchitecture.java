@@ -74,9 +74,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -86,7 +86,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
     private static final LoadingCache<ShapeContext, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
-        public VoxelShape load(@Nonnull ShapeContext shapeContext) {
+        public VoxelShape load(@NotNull ShapeContext shapeContext) {
             return shapeContext.state.getBlock().getLocalBounds(shapeContext.level, shapeContext.pos, shapeContext.state, null);
         }
     });
@@ -382,7 +382,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     //}
 
     public static VoxelShape getCachedShape(ShapeContext context) {
-        VoxelShape shape = SHAPE_CACHE.getUnchecked(context);
+        var shape = SHAPE_CACHE.getUnchecked(context);
         if (shape.isEmpty()) {
             SHAPE_CACHE.invalidate(context);
             shape = Shapes.block();
@@ -390,43 +390,20 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return shape;
     }
 
+    @NotNull
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return getCachedShape(new ShapeContext((BlockStateArchitecture) state, level, pos));
     }
 
-    @Nonnull
+    @NotNull
     protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos, BlockState state, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            Trans3 t = this.localToGlobalTransformation(level, pos, state, Vector3.zero).translate(spec.origin);
-            return t.t(model.getVoxelized());
-        }
-        return Shapes.empty();
-    }
-
-    @Nonnull
-    protected VoxelShape getGlobalCollisionBoxes(BlockAndTintGetter level, BlockPos pos,
-                                                 BlockState state, Entity entity) {
-        Trans3 t = this.localToGlobalTransformation(level, pos, state);
-        return this.getCollisionBoxes(level, pos, state, t, entity);
-    }
-
-    @Nonnull
-    protected VoxelShape getLocalCollisionBoxes(BlockAndTintGetter level, BlockPos pos,
-                                                BlockState state, Entity entity) {
-        Trans3 t = this.localToGlobalTransformation(level, pos, state, Vector3.zero);
-        return this.getCollisionBoxes(level, pos, state, t, entity);
-    }
-
-    @Nonnull
-    protected VoxelShape getCollisionBoxes(BlockAndTintGetter level, BlockPos pos, BlockState state,
-                                           Trans3 t, Entity entity) {
-        ModelSpec spec = this.getModelSpec(state);
-        if (spec != null) {
-            OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            return model.getShape(t.translate(spec.origin), Shapes.empty());
+            Trans3 t = this.localToGlobalTransformation(level, pos, state);
+            var voxelized = model.getVoxelized();
+            return t.t(voxelized);
         }
         return Shapes.empty();
     }

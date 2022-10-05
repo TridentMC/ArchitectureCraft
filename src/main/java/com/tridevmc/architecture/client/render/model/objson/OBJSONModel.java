@@ -10,15 +10,14 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,62 +38,66 @@ public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetada
         int minTexture = mappedFaces.get(0).getB().texture;
         mappedFaces.forEach(mF -> mF.getB().texture = mF.getB().texture - minTexture);
 
+        var rand = new Random();
         for (Tuple<Integer, OBJSON.Face> indexedFace : mappedFaces) {
             int faceIndex = indexedFace.getA();
             OBJSON.Face face = indexedFace.getB();
             for (OBJSON.Triangle tri : face.triangles) {
-                this.addTri(this.convertedModelData, faceIndex, face.texture, tri, face.vertices);
+                this.addTri(this.convertedModelData, faceIndex, face.texture, 0, tri, face.vertices);
             }
         }
 
-        //for (AxisAlignedBB bb : objson.getVoxelized()) {
+        //for (AABB bb : OBJSONVoxelizer.voxelize(objson, 16)) {
         //    this.makeCuboid(convertedModelData, bb);
         //}
     }
 
     private void makeCuboid(ArchitectureModelData data, AABB bb) {
+        var meta = new OBJSONQuadMetadata(0,-1);
         float minX = (float) bb.minX;
         float minY = (float) bb.minY;
         float minZ = (float) bb.minZ;
         float maxX = (float) bb.maxX;
         float maxY = (float) bb.maxY;
         float maxZ = (float) bb.maxZ;
-        data.addQuadInstruction(null, null, minX, minY, minZ);
-        data.addQuadInstruction(null, null, minX, maxY, minZ);
-        data.addQuadInstruction(null, null, maxX, maxY, minZ);
-        data.addQuadInstruction(null, null, maxX, minY, minZ);
 
-        data.addQuadInstruction(null, null, minX, minY, maxZ);
-        data.addQuadInstruction(null, null, maxX, minY, maxZ);
-        data.addQuadInstruction(null, null, maxX, maxY, maxZ);
-        data.addQuadInstruction(null, null, minX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.NORTH, minX, minY, maxZ);
+        data.addQuadInstruction(meta, Direction.NORTH, minX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.NORTH, minX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.NORTH, minX, minY, minZ);
 
-        data.addQuadInstruction(null, null, minX, minY, minZ);
-        data.addQuadInstruction(null, null, minX, maxY, minZ);
-        data.addQuadInstruction(null, null, minX, maxY, maxZ);
-        data.addQuadInstruction(null, null, minX, minY, maxZ);
+        data.addQuadInstruction(meta, Direction.SOUTH, maxX, minY, minZ);
+        data.addQuadInstruction(meta, Direction.SOUTH, maxX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.SOUTH, maxX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.SOUTH, maxX, minY, maxZ);
 
-        data.addQuadInstruction(null, null, maxX, minY, minZ);
-        data.addQuadInstruction(null, null, maxX, minY, maxZ);
-        data.addQuadInstruction(null, null, maxX, maxY, maxZ);
-        data.addQuadInstruction(null, null, maxX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.WEST, minX, minY, minZ);
+        data.addQuadInstruction(meta, Direction.WEST, minX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.WEST, maxX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.WEST, maxX, minY, minZ);
 
-        data.addQuadInstruction(null, null, minX, maxY, minZ);
-        data.addQuadInstruction(null, null, minX, maxY, maxZ);
-        data.addQuadInstruction(null, null, maxX, maxY, maxZ);
-        data.addQuadInstruction(null, null, maxX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.EAST, maxX, minY, maxZ);
+        data.addQuadInstruction(meta, Direction.EAST, maxX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.EAST, minX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.EAST, minX, minY, maxZ);
 
-        data.addQuadInstruction(null, null, minX, maxY, minZ);
-        data.addQuadInstruction(null, null, maxX, maxY, minZ);
-        data.addQuadInstruction(null, null, maxX, maxY, maxZ);
-        data.addQuadInstruction(null, null, minX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.DOWN, maxX, minY, minZ);
+        data.addQuadInstruction(meta, Direction.DOWN, maxX, minY, maxZ);
+        data.addQuadInstruction(meta, Direction.DOWN, minX, minY, maxZ);
+        data.addQuadInstruction(meta, Direction.DOWN, minX, minY, minZ);
+
+        data.addQuadInstruction(meta, Direction.UP, minX, maxY, minZ);
+        data.addQuadInstruction(meta, Direction.UP, minX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.UP, maxX, maxY, maxZ);
+        data.addQuadInstruction(meta, Direction.UP, maxX, maxY, minZ);
+
     }
 
-    private void addTri(ArchitectureModelData modelData, int face, int texture, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {
+    private void addTri(ArchitectureModelData modelData, int face, int texture, int colour, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {
         for (int i = 0; i < 3; i++) {
             int vertexIndex = tri.vertices[i];
             OBJSON.Vertex vertex = vertices[vertexIndex];
-            var metadata = new OBJSONQuadMetadata(texture, 0);
+            var metadata = new OBJSONQuadMetadata(texture, colour);
             if (this.generateUVs && this.generateNormals) {
                 modelData.addTriInstruction(metadata, face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z);
             } else if (this.generateUVs) {

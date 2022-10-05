@@ -34,7 +34,7 @@ public class ModelSpec {
     public Vector3 origin;
 
     public ModelSpec(String model, String... textures) {
-        this(model, Vector3.zero, textures);
+        this(model, Vector3.blockCenter, textures);
     }
 
     public ModelSpec(String model, Vector3 origin, String... textures) {
@@ -50,7 +50,8 @@ public class ModelSpec {
 
         ModelSpec modelSpec = (ModelSpec) o;
 
-        if (this.modelName != null ? !this.modelName.equals(modelSpec.modelName) : modelSpec.modelName != null) return false;
+        if (this.modelName != null ? !this.modelName.equals(modelSpec.modelName) : modelSpec.modelName != null)
+            return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(this.textureNames, modelSpec.textureNames)) return false;
         return this.origin != null ? this.origin.equals(modelSpec.origin) : modelSpec.origin == null;
