@@ -11,9 +11,9 @@ ext {
     compoundVersion = '1.8.2-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.19.2-43.0.11'
-    mappingsChannel = 'official'
-    mappingsVersion = '1.19.2'
+    forge = '1.19.2-43.1.27'
+    mappingsChannel = 'parchment'
+    mappingsVersion = '2022.09.18-1.19.2'
 }
 
 if (!ext.early) {
