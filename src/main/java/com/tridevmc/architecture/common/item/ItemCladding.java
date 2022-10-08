@@ -25,10 +25,8 @@
 package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.helpers.Utils;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -88,7 +86,6 @@ public class ItemCladding extends ItemArchitecture {
     public int getNumSubtypes() {
         return 16;
     }
-
 
 
     @Override

@@ -58,7 +58,7 @@ public class CommonProxy {
             model = OBJSON.fromResource(loc);
             this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
-            String msg = String.format("Loaded and cached '%s' in %s nanos.",  name, t1 - t0);
+            String msg = String.format("Loaded and cached '%s' in %s nanos.", name, t1 - t0);
             StartupMessageManager.addModMessage(msg);
             ArchitectureLog.info(msg);
         }

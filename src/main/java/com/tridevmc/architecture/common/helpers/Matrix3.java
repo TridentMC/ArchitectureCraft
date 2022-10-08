@@ -38,12 +38,12 @@ public class Matrix3 {
     };
 
     public static Matrix3[] sideRotations = {
-        /*0, -Y, DOWN */ ident,
-        /*1, +Y, UP   */ rotX(180),
-        /*2, -Z, NORTH*/ rotX(90),
-        /*3, +Z, SOUTH*/ rotX(-90).mul(rotY(180)),
-        /*4, -X, WEST */ rotZ(-90).mul(rotY(90)),
-        /*5, +X, EAST */ rotZ(90).mul(rotY(-90))
+            /*0, -Y, DOWN */ ident,
+            /*1, +Y, UP   */ rotX(180),
+            /*2, -Z, NORTH*/ rotX(90),
+            /*3, +Z, SOUTH*/ rotX(-90).mul(rotY(180)),
+            /*4, -X, WEST */ rotZ(-90).mul(rotY(90)),
+            /*5, +X, EAST */ rotZ(90).mul(rotY(-90))
     };
 
     public static Matrix3[][] sideTurnRotations = new Matrix3[6][4];
@@ -130,7 +130,7 @@ public class Matrix3 {
             ArchitectureLog.info("[%6.3f %6.3f %6.3f]\n", this.m[i][0], this.m[i][1], this.m[i][2]);
     }
 
-    public boolean isIdent(){
+    public boolean isIdent() {
         return Arrays.equals(this.m[0], Matrix3.ident.m[0]) &&
                 Arrays.equals(this.m[1], Matrix3.ident.m[1]) &&
                 Arrays.equals(this.m[2], Matrix3.ident.m[2]);
@@ -139,9 +139,8 @@ public class Matrix3 {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Matrix3)) return false;
-        Matrix3 matrix3 = (Matrix3) o;
-        return Arrays.equals(this.m[0],  matrix3.m[0]) &&
+        if (!(o instanceof Matrix3 matrix3)) return false;
+        return Arrays.equals(this.m[0], matrix3.m[0]) &&
                 Arrays.equals(this.m[1], matrix3.m[1]) &&
                 Arrays.equals(this.m[2], matrix3.m[2]);
     }

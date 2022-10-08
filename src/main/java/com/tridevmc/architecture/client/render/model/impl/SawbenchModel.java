@@ -20,11 +20,11 @@ public class SawbenchModel extends OBJSONModel {
     private static final IQuadMetadataResolver<OBJSONQuadMetadata> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
-                return textures[Math.min(m.texture(), textures.length -1)];
+                return textures[Math.min(m.texture(), textures.length - 1)];
             },
             m -> {
                 doInit();
-                return colours[Math.min(m.tintIndex(), colours.length -1)];
+                return colours[Math.min(m.tintIndex(), colours.length - 1)];
             }
     );
     private static boolean needsInit = true;

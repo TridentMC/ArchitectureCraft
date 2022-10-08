@@ -3,7 +3,6 @@ package com.tridevmc.architecture.client.render.model.baked;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
-
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

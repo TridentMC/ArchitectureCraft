@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -53,7 +52,7 @@ public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetada
     }
 
     private void makeCuboid(ArchitectureModelData data, AABB bb) {
-        var meta = new OBJSONQuadMetadata(0,-1);
+        var meta = new OBJSONQuadMetadata(0, -1);
         float minX = (float) bb.minX;
         float minY = (float) bb.minY;
         float minZ = (float) bb.minZ;

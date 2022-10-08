@@ -4,18 +4,17 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -249,8 +248,7 @@ public class ShapeBehaviour {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof BehaviourState)) return false;
-            BehaviourState that = (BehaviourState) o;
+            if (!(o instanceof BehaviourState that)) return false;
             return Objects.equals(this.state, that.state) &&
                     Objects.equals(this.transform, that.transform) &&
                     Objects.equals(this.tile.getDisabledConnections(), that.tile.getDisabledConnections()) &&

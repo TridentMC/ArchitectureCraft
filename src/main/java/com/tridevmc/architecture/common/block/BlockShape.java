@@ -25,17 +25,15 @@
 package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
-
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +42,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -59,7 +56,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class BlockShape extends BlockArchitecture {
 
@@ -199,9 +195,9 @@ public class BlockShape extends BlockArchitecture {
         if (!stack.isEmpty()) {
             ShapeBlockEntity te = ShapeBlockEntity.get(level, pos);
             if (te != null)
-                return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+                return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-        return InteractionResult.FAIL;
+        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getArchitectureShape());
     }
 
     @OnlyIn(Dist.CLIENT)

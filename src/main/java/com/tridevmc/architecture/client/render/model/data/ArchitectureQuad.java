@@ -18,9 +18,9 @@ import java.util.*;
 public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
 
     private Direction face;
-    private ArchitectureVertex[] vertices = new ArchitectureVertex[4];
+    private final ArchitectureVertex[] vertices = new ArchitectureVertex[4];
     private Vector3f normals;
-    private Map<Transformation, PrebuiltData> prebuiltQuads = Maps.newHashMap();
+    private final Map<Transformation, PrebuiltData> prebuiltQuads = Maps.newHashMap();
 
     private static class PrebuiltData {
         BakedQuad baseQuad;

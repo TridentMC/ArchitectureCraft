@@ -32,7 +32,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
-import java.util.function.DoubleFunction;
 import java.util.function.DoubleUnaryOperator;
 
 import static java.lang.Math.abs;
@@ -92,6 +91,10 @@ public class Vector3 {
     }
 
     public Vector3(Vector3 v) {
+        this(v.x, v.y, v.z);
+    }
+
+    public Vector3(Vec3 v) {
         this(v.x, v.y, v.z);
     }
 
@@ -155,7 +158,7 @@ public class Vector3 {
         return new Vec3i(this.x, this.y, this.z);
     }
 
-    public Vec3 toMCVec3(){
+    public Vec3 toMCVec3() {
         return new Vec3(this.x, this.y, this.z);
     }
 
@@ -316,8 +319,7 @@ public class Vector3 {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Vector3)) return false;
-        Vector3 vector3 = (Vector3) o;
+        if (!(o instanceof Vector3 vector3)) return false;
         return Double.compare(vector3.x, this.x) == 0 &&
                 Double.compare(vector3.y, this.y) == 0 &&
                 Double.compare(vector3.z, this.z) == 0;

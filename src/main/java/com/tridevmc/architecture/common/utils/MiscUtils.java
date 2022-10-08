@@ -24,12 +24,18 @@
 
 package com.tridevmc.architecture.common.utils;
 
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.ServerLifecycleHooks;
-
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 public class MiscUtils {
 
@@ -89,9 +95,51 @@ public class MiscUtils {
         };
     }
 
+    /**
+     * Gets the minimum and maximum values of the given list, or null if the list is empty.
+     *
+     * @param elements   the list to get the min and max of.
+     * @param comparator the comparator to use to compare the elements.
+     * @param <T>        the type of the elements in the list.
+     * @return the minimum and maximum values of the given list, or null if the list is empty.
+     */
+    @Nullable
+    public static <T> Pair<T, T> getEdges(List<T> elements, Comparator<T> comparator) {
+        return getEdges(elements.stream(), comparator);
+    }
+
+    /**
+     * Gets the minimum and maximum values of the given stream, or null if the stream is empty.
+     *
+     * @param elements   the stream to get the min and max of.
+     * @param comparator the comparator to use to compare the elements.
+     * @param <T>        the type of the elements in the stream.
+     * @return the minimum and maximum values of the given stream, or null if the stream is empty.
+     */
+    @Nullable
+    public static <T> Pair<T, T> getEdges(Stream<T> elements, Comparator<T> comparator) {
+        List<T> sorted = elements.sorted(comparator).toList();
+        if (sorted.isEmpty())
+            return null;
+        return Pair.of(sorted.get(0), sorted.get(sorted.size() - 1));
+    }
+
+    /**
+     * Gets the minimum and maximum values of the given stream, or null if the stream is empty.
+     *
+     * @param elements the stream to get the min and max of.
+     * @return the minimum and maximum values of the given stream, or null if the stream is empty.
+     */
+    @Nullable
+    public static DoubleDoubleImmutablePair getEdges(DoubleStream elements) {
+        var sorted = elements.sorted().toArray();
+        if (sorted.length == 0)
+            return null;
+        return new DoubleDoubleImmutablePair(sorted[0], sorted[sorted.length - 1]);
+    }
+
     public static MinecraftServer getMinecraftServer() {
         return ServerLifecycleHooks.getCurrentServer();
     }
-
 
 }

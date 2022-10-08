@@ -32,7 +32,6 @@ import com.tridevmc.architecture.common.helpers.Vector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -108,8 +107,7 @@ public class BaseOrientation {
         @Override
         public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
             var te = level.getBlockEntity(pos);
-            if (te instanceof ShapeBlockEntity) {
-                var bte = (ShapeBlockEntity) te;
+            if (te instanceof ShapeBlockEntity bte) {
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(level, pos, state, origin);

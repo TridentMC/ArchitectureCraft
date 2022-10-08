@@ -88,7 +88,7 @@ public class AABBTree<T> {
         this.theNode = new Node(startBox, item);
     }
 
-    public Node getRoot(){
+    public Node getRoot() {
         return this.theNode;
     }
 
@@ -96,7 +96,7 @@ public class AABBTree<T> {
         this.theNode.addNode(box, item);
     }
 
-    public AABB getBounds(){
+    public AABB getBounds() {
         return this.theNode.getValue();
     }
 

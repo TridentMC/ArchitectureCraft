@@ -11,7 +11,7 @@ ext {
     compoundVersion = '1.8.2-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = '1.19.2-43.1.27'
+    forge = '1.19.2-43.1.33'
     mappingsChannel = 'parchment'
     mappingsVersion = '2022.09.18-1.19.2'
 }

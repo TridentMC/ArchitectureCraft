@@ -15,13 +15,13 @@ public class UnpackedBakedQuad extends BakedQuad {
 
     @Override
     public int[] getVertices() {
-        if(this.packedData == null){
+        if (this.packedData == null) {
             this.packedData = this.packData();
         }
         return this.packedData;
     }
 
-    private int[] packData(){
+    private int[] packData() {
         int[] out = new int[32];
 
         return null;

@@ -289,8 +289,7 @@ public class Trans3 {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Trans3)) return false;
-        Trans3 trans3 = (Trans3) o;
+        if (!(o instanceof Trans3 trans3)) return false;
         return Double.compare(trans3.scaling, this.scaling) == 0 &&
                 Objects.equals(this.offset, trans3.offset) &&
                 Objects.equals(this.rotation, trans3.rotation);

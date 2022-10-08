@@ -21,6 +21,7 @@ public class OBJSON {
     private double[] bounds;
     private double[][] boxes;
     private Face[] faces;
+    private OBJSONVoxelizer voxelizer;
     private VoxelShape voxelized;
 
     public static OBJSON fromResource(ResourceLocation location) {
@@ -48,7 +49,7 @@ public class OBJSON {
         for (int i = 0; i < model.boxes.length; i++) {
             model.boxes[i] = trans.t(model.boxes[i]);
         }
-
+        model.voxelizer = new OBJSONVoxelizer(model, 16);
         return model;
     }
 
@@ -92,7 +93,7 @@ public class OBJSON {
             StartupMessageManager.addModMessage(msg);
             ArchitectureLog.info(msg);
             long t0 = System.nanoTime();
-            this.voxelized = OBJSONVoxelizer.voxelizeShape(this, 16);
+            this.voxelized = this.voxelizer.voxelizeShape();
             long t1 = System.nanoTime();
             ArchitectureLog.info("Voxelized {} in {} nanos", this.name, t1 - t0);
         }
@@ -118,6 +119,10 @@ public class OBJSON {
             face.normal = Vector3.unit(vertices[tri.vertices[1]].getPos().sub(vertices[tri.vertices[0]].getPos())
                     .cross(vertices[tri.vertices[2]].getPos().sub(vertices[tri.vertices[0]].getPos())));
         }
+    }
+
+    public OBJSONVoxelizer getVoxelizer() {
+        return this.voxelizer;
     }
 
     public class Face {

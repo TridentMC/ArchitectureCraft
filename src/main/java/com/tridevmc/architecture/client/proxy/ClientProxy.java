@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.client.proxy;
 
+import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
@@ -31,16 +32,16 @@ import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeMod
 import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
-import net.minecraft.client.renderer.RenderType;
-
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -52,6 +53,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void setup(FMLCommonSetupEvent e) {
         super.setup(e);
+        if (!FMLEnvironment.production)
+            MinecraftForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
     }
 
     public void registerDefaultModelLocations() {

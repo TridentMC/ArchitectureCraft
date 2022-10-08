@@ -25,10 +25,10 @@
 package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.render.texture.ITexture;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.Direction;
 
 public class RenderRoof {

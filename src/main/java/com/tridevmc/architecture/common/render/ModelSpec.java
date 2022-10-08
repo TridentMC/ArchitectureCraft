@@ -27,6 +27,7 @@ package com.tridevmc.architecture.common.render;
 import com.tridevmc.architecture.common.helpers.Vector3;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ModelSpec {
     public String modelName;
@@ -50,11 +51,11 @@ public class ModelSpec {
 
         ModelSpec modelSpec = (ModelSpec) o;
 
-        if (this.modelName != null ? !this.modelName.equals(modelSpec.modelName) : modelSpec.modelName != null)
+        if (!Objects.equals(this.modelName, modelSpec.modelName))
             return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals
         if (!Arrays.equals(this.textureNames, modelSpec.textureNames)) return false;
-        return this.origin != null ? this.origin.equals(modelSpec.origin) : modelSpec.origin == null;
+        return Objects.equals(this.origin, modelSpec.origin);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class RenderWindow {
 
     //protected static WindowModels frameModels, cornerModels, mullionModels;
     protected boolean renderBase, renderSecondary;
-   // protected ShapeKind.Window kind;
+    // protected ShapeKind.Window kind;
 
     //public RenderWindow(TileShape te, ITexture[] textures, Trans3 t, boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
     //    this.renderBase = renderBase;

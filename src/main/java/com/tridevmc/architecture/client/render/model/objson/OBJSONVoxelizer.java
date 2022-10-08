@@ -1,18 +1,21 @@
 package com.tridevmc.architecture.client.render.model.objson;
 
 import com.google.common.collect.ImmutableList;
+import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.utils.AABBTree;
+import com.tridevmc.architecture.common.utils.MiscUtils;
+import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,12 +27,43 @@ import java.util.stream.Stream;
  */
 public class OBJSONVoxelizer {
 
+    private static final ExecutorService POOL = Executors.newWorkStealingPool();
+
     private static final Vec3 xNormal = new Vec3(1, 0, 0);
     private static final Vec3 yNormal = new Vec3(0, 1, 0);
     private static final Vec3 zNormal = new Vec3(0, 0, 1);
 
-    public static VoxelShape voxelizeShape(OBJSON model, int blockResolution) {
-        var aabbs = voxelize(model, blockResolution);
+    private final OBJSON objson;
+    private final Mesh mesh;
+    private final int blockResolution;
+    private final Vec3i min, max;
+
+    public OBJSONVoxelizer(OBJSON objson, int blockResolution) {
+        this.objson = objson;
+        this.blockResolution = blockResolution;
+        this.mesh = new Mesh(Arrays.stream(objson.getFaces())
+                .flatMap((Function<OBJSON.Face, Stream<UnpackedTri>>) face -> Arrays.stream(face.triangles)
+                        .map(t -> new UnpackedTri(face, t, 1D / (blockResolution * 64))))
+                .collect(Collectors.toList()));
+
+        var xEdges = MiscUtils.getEdges(this.mesh.tris.stream().flatMapToDouble(t -> Arrays.stream(t.getXs())));
+        var yEdges = MiscUtils.getEdges(this.mesh.tris.stream().flatMapToDouble(t -> Arrays.stream(t.getYs())));
+        var zEdges = MiscUtils.getEdges(this.mesh.tris.stream().flatMapToDouble(t -> Arrays.stream(t.getZs())));
+
+        var resolution = 1D / blockResolution;
+        int minX = (int) (((resolution * Math.round(xEdges.leftDouble() / resolution))) / resolution);
+        int minY = (int) (((resolution * Math.round(yEdges.leftDouble() / resolution))) / resolution);
+        int minZ = (int) (((resolution * Math.round(zEdges.leftDouble() / resolution))) / resolution);
+        int maxX = (int) (((resolution * Math.round(xEdges.rightDouble() / resolution))) / resolution);
+        int maxY = (int) (((resolution * Math.round(yEdges.rightDouble() / resolution))) / resolution);
+        int maxZ = (int) (((resolution * Math.round(zEdges.rightDouble() / resolution))) / resolution);
+
+        this.min = new Vec3i(minX, minY, minZ);
+        this.max = new Vec3i(maxX, maxY, maxZ);
+    }
+
+    public VoxelShape voxelizeShape() {
+        var aabbs = voxelize();
         return aabbs.stream()
                 .map(Shapes::create)
                 .reduce((a, b) -> Shapes.joinUnoptimized(a, b, BooleanOp.OR))
@@ -37,71 +71,102 @@ public class OBJSONVoxelizer {
                 .optimize();
     }
 
-    public static List<AABB> voxelize(OBJSON model, int blockResolution) {
-        double resolution = 1D / blockResolution;
-        List<UnpackedTri> unpackedTris = Arrays.stream(model.getFaces()).flatMap((Function<OBJSON.Face, Stream<UnpackedTri>>) face -> Arrays.stream(face.triangles).map(t -> new UnpackedTri(face, t, 1D / (blockResolution * 64)))).collect(Collectors.toList());
-        Mesh mesh = new Mesh(unpackedTris);
-
-        double[] xS = unpackedTris.stream().flatMapToDouble(t -> Arrays.stream(t.getXs())).sorted().toArray();
-        double[] yS = unpackedTris.stream().flatMapToDouble(t -> Arrays.stream(t.getYs())).sorted().toArray();
-        double[] zS = unpackedTris.stream().flatMapToDouble(t -> Arrays.stream(t.getZs())).sorted().toArray();
-
-        int minX = (int) (((resolution * Math.round(xS[0] / resolution))) / resolution);
-        int minY = (int) (((resolution * Math.round(yS[0] / resolution))) / resolution);
-        int minZ = (int) (((resolution * Math.round(zS[0] / resolution))) / resolution);
-        int maxX = (int) (((resolution * Math.round(xS[xS.length - 1] / resolution))) / resolution);
-        int maxY = (int) (((resolution * Math.round(yS[yS.length - 1] / resolution))) / resolution);
-        int maxZ = (int) (((resolution * Math.round(zS[zS.length - 1] / resolution))) / resolution);
-
-        var out = new ArrayList<AABB>();
-        for (int y = minY; y < maxY; y++) {
-            for (int x = minX; x < maxX; x++) {
-                for (int z = minZ; z < maxZ; z++) {
-                    double bX = x * resolution;
-                    double bY = y * resolution;
-                    double bZ = z * resolution;
-                    var box = new AABB(bX, bY, bZ, bX + resolution, bY + resolution, bZ + resolution);
-                    if (doesBoxIntersectWithPolyhedron(mesh, box.deflate(1D /( blockResolution * 32))) || isPointWithinPolyhedron(mesh, box.getCenter())) {
-                        out.add(box);
-                    }
+    public List<AABB> voxelize() {
+        var dimensions = this.max.subtract(this.min);
+        var futures = new ArrayList<Future<AABB>>(dimensions.getX() * dimensions.getY() * dimensions.getZ());
+        for (int y = this.min.getY(); y < this.max.getY(); y++) {
+            for (int x = this.min.getX(); x < this.max.getX(); x++) {
+                for (int z = this.min.getZ(); z < this.max.getZ(); z++) {
+                    var box = getBoxForOffset(x, y, z);
+                    futures.add(POOL.submit(() -> {
+                        if (isBoxValidVoxel(box)) {
+                            return box;
+                        }
+                        return null;
+                    }));
                 }
             }
         }
-        return out;
+        return futures.stream()
+                .map(f -> {
+                    try {
+                        return f.get();
+                    } catch (Exception e) {
+                        ArchitectureLog.error("Failed to voxelize model {}, throwing exception", this.objson.getName());
+                        throw new RuntimeException("Failed to voxelize " + this.objson.getName(), e);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 
-    private static boolean doesBoxIntersectWithPolyhedron(Mesh polyhedron, AABB box) {
-        return polyhedron.search(box).stream().anyMatch(t -> t.intersects(box));
+    public boolean isBoxValidVoxel(AABB box) {
+        return doesBoxIntersect(box) || isPointWithinPolyhedron(box.getCenter());
     }
 
-    private static boolean isPointWithinPolyhedron(Mesh polyhedron, Vec3 point) {
-        var meshBounds = polyhedron.getBounds();
-        var closestX = point.x - meshBounds.minX > meshBounds.maxX - point.x ? meshBounds.maxX + 64 : meshBounds.minX - 64;
-        var closestY = point.y - meshBounds.minY > meshBounds.maxY - point.y ? meshBounds.maxY + 64 : meshBounds.minY - 64;
-        var closestZ = point.z - meshBounds.minZ > meshBounds.maxZ - point.z ? meshBounds.maxZ + 64 : meshBounds.minZ - 64;
+    public AABB getBoxForOffset(Vec3i offset) {
+        return getBoxForOffset(offset.getX(), offset.getY(), offset.getZ());
+    }
 
-        var closestPoints = Stream.of(
-                        new Vec3(closestX, point.y, point.z),
-                        new Vec3(point.x, closestY, point.z),
-                        new Vec3(point.x, point.y, closestZ))
-                .sorted(Comparator.comparingDouble(point::distanceTo)).toList();
-        for (var p : closestPoints) {
-            var ray = new Ray(point, p.subtract(point));
-            var intersections = polyhedron.search(new AABB(point, p)).stream()
-                    .map(t -> ImmutablePair.of(t, ray.intersect(t)))
-                    .filter(ip -> ip.getRight() != null)
-                    .sorted(Comparator.comparingDouble(ip -> ip.getRight().distanceTo(point)))
-                    .toList();
-            if (intersections.size() > 0) {
-                var minPoint = intersections.get(0).getRight();
-                if (intersections.stream()
-                        .filter(ip -> ip.getRight().equals(minPoint))
-                        .anyMatch(ip -> ip.getLeft().isFacing(point))) {
-                    return true;
-                }
+    public AABB getBoxForOffset(int x, int y, int z) {
+        double resolution = 1D / this.blockResolution;
+        double bX = x * resolution;
+        double bY = y * resolution;
+        double bZ = z * resolution;
+        return new AABB(bX, bY, bZ, bX + resolution, bY + resolution, bZ + resolution);
+    }
+
+    public boolean doesBoxIntersect(AABB box) {
+        return getIntersectingTris(box.deflate(1D / (blockResolution * 32))).findAny().isPresent();
+    }
+
+    public Stream<UnpackedTri> getIntersectingTris(AABB box) {
+        return this.mesh.search(box).stream().filter(t -> t.intersects(box));
+    }
+
+    private boolean isPointWithinPolyhedron(Vec3 point) {
+        var meshBounds = this.mesh.getBounds();
+        var fromPoint = new Vec3(meshBounds.minX - 1, point.y, point.z);
+        var toPoint = new Vec3(meshBounds.maxX + 1, point.y, point.z);
+        var rayDirection = toPoint.subtract(fromPoint);
+        var ray = new Ray(fromPoint, rayDirection);
+
+        var hits = ray.intersect(this.mesh)
+                .map(h -> {
+                    var hit = h.rounded();
+                    return Pair.of(hit, hit.distanceTo(point));
+                })
+                .sorted(Comparator.comparingDouble(Pair::right))
+                .toList();
+        double minDistance = hits.size() > 0 ? hits.get(0).right() : Double.MAX_VALUE;
+        for (var hitData : hits) {
+            if (hitData.right() > minDistance) {
+                return false;
+            } else if (hitData.left().tri.isFacing(point)) {
+                return true;
             }
         }
         return false;
+    }
+
+    public OBJSON getObjson() {
+        return objson;
+    }
+
+    public Mesh getMesh() {
+        return mesh;
+    }
+
+    public int getBlockResolution() {
+        return blockResolution;
+    }
+
+    public Vec3i getMin() {
+        return min;
+    }
+
+    public Vec3i getMax() {
+        return max;
     }
 
     private static double getFastWindingNumber(Mesh polyhedron, Vec3 point) {
@@ -139,74 +204,129 @@ public class OBJSONVoxelizer {
         return Math.max(-Arrays.stream(projections).max().getAsDouble(), Arrays.stream(projections).min().getAsDouble()) > r;
     }
 
-    private static class Ray {
-        private final Vec3 origin;
-        private final Vec3 direction;
-
-        public Ray(Vec3 origin, Vec3 direction) {
-            this.origin = origin;
-            this.direction = direction;
+    /**
+     * A record representing a ray in 3D space, with an origin and direction.
+     *
+     * @param origin    the origin of the ray.
+     * @param direction the direction of the ray.
+     */
+    public record Ray(Vec3 origin, Vec3 direction) {
+        /**
+         * Attempts to intersect this ray with the given triangle.
+         *
+         * @param tri the triangle to intersect with.
+         * @return a hit containing the point of intersection and the triangle, or an invalid hit if there is no intersection.
+         */
+        public Hit intersect(UnpackedTri tri) {
+            return new Hit(this, tri.intersect(this), tri);
         }
 
-        public Vec3 getOrigin() {
-            return origin;
+        /**
+         * Attempts to intersect this ray with the given mesh, returns a stream of valid hits.
+         *
+         * @param mesh the mesh to intersect with.
+         * @return a stream of valid hits.
+         */
+        public Stream<Hit> intersect(Mesh mesh) {
+            return intersectUnfiltered(mesh).filter(Hit::isValidHit);
         }
 
-        public Vec3 getDirection() {
-            return direction;
+        /**
+         * Attempts to intersect this ray with the given mesh, returns a stream of hits including invalid hits.
+         *
+         * @param mesh the mesh to intersect with.
+         * @return a stream of hits or failed hits.
+         */
+        public Stream<Hit> intersectUnfiltered(Mesh mesh) {
+            return mesh.search(new AABB(origin, origin.add(direction)))
+                    .stream()
+                    .map(this::intersect);
         }
 
-        public Vec3 intersect(UnpackedTri tri) {
-            return tri.intersect(this);
+        /**
+         * A record representing a hit between a ray and a triangle.
+         *
+         * @param ray   the ray that was used to calculate any hit.
+         * @param point the point of intersection, if any.
+         * @param tri   the triangle that was hit, if any.
+         */
+        public record Hit(Ray ray, Vec3 point, UnpackedTri tri) {
+            /**
+             * Determines if the hit is valid, i.e. if the hit point is not null.
+             *
+             * @return true if the hit is valid, false otherwise.
+             */
+            public boolean isValidHit() {
+                return point != null;
+            }
+
+            /**
+             * Gets the distance between the hit point and the given point.
+             *
+             * @param point the point to calculate the distance to.
+             * @return the distance between the hit point and the given point.
+             */
+            public double distanceTo(Vec3 point) {
+                return point.distanceTo(this.point);
+            }
+
+            public Hit rounded() {
+                // Round the hit point to the nearest 256th of a block.
+                return new Hit(ray, new Vec3(Math.round(point.x * 256) / 256D, Math.round(point.y * 256) / 256D, Math.round(point.z * 256) / 256D), tri);
+            }
         }
     }
+
 
     private static class UnpackedTri {
         private final AABB box;
         private final double[][] vertices;
+        private final Vec3 normal;
 
         public UnpackedTri(OBJSON.Face face, OBJSON.Triangle triangle, double resolution) {
             this.vertices = new double[3][];
             for (int i = 0; i < this.vertices.length; i++) {
-                this.vertices[i] = face.vertices[triangle.vertices[i]].getPos().apply(d->{
-                    // Clamp to the nearest multiple of resolution
-                    return d;
-                }).toArray();
+                this.vertices[i] = face.vertices[triangle.vertices[i]].getPos().toArray();
             }
-            double[] xs = this.getXs();
-            double[] ys = this.getYs();
-            double[] zs = this.getZs();
-            this.box = new AABB(Arrays.stream(xs).min().orElse(0),
-                    Arrays.stream(ys).min().orElse(0),
-                    Arrays.stream(zs).min().orElse(0),
-                    Arrays.stream(xs).max().orElse(0),
-                    Arrays.stream(ys).max().orElse(0),
-                    Arrays.stream(zs).max().orElse(0));
+            this.normal = getV1().subtract(getV0()).cross(getV2().subtract(getV0())).normalize();
+
+            var xEdges = MiscUtils.getEdges(Arrays.stream(this.getXs()));
+            var yEdges = MiscUtils.getEdges(Arrays.stream(this.getYs()));
+            var zEdges = MiscUtils.getEdges(Arrays.stream(this.getZs()));
+
+            this.box = new AABB(
+                    xEdges.leftDouble(),
+                    yEdges.leftDouble(),
+                    zEdges.leftDouble(),
+                    xEdges.rightDouble(),
+                    yEdges.rightDouble(),
+                    zEdges.rightDouble()
+            );
         }
 
         public Vec3 intersect(Ray ray) {
             // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
             var e1 = this.getV1().subtract(this.getV0());
             var e2 = this.getV2().subtract(this.getV0());
-            var p = ray.getDirection().cross(e2);
+            var p = ray.direction().cross(e2);
             var det = e1.dot(p);
             if (det > -1e-8 && det < 1e-8) {
                 return null;
             }
             var invDet = 1 / det;
-            var t = ray.getOrigin().subtract(this.getV0()).scale(invDet);
+            var t = ray.origin().subtract(this.getV0()).scale(invDet);
             var q = t.cross(e1);
             var u = t.dot(p);
             if (u < 0 || u > 1) {
                 return null;
             }
-            var v = ray.getDirection().dot(q);
+            var v = ray.direction().dot(q);
             if (v < 0 || u + v > 1) {
                 return null;
             }
             var t2 = e2.dot(q);
             if (t2 > 1e-8) {
-                return ray.getOrigin().add(ray.getDirection().scale(t2));
+                return ray.origin().add(ray.direction().scale(t2));
             }
             return null;
         }
@@ -242,11 +362,7 @@ public class OBJSONVoxelizer {
 
         public boolean isFacing(Vec3 point) {
             // Determine if the triangle is facing towards the given point, the triangle's vertices are stored in a clockwise order
-            var v0 = this.getV0();
-            var v1 = this.getV1();
-            var v2 = this.getV2();
-            var normal = v1.subtract(v0).cross(v2.subtract(v0)).normalize();
-            return normal.dot(point.subtract(v0)) < 0;
+            return this.normal.dot(point.subtract(getV0())) < 0;
         }
 
         private AABB getBox() {
@@ -280,22 +396,22 @@ public class OBJSONVoxelizer {
 
     }
 
-    private static class Mesh {
+    public static class Mesh {
         private final List<UnpackedTri> tris;
         private final AABBTree<UnpackedTri> trisTree;
-        private final Vec3 meanNormal;
+        //private final Vec3 meanNormal;
 
         public Mesh(List<UnpackedTri> unpackedTris) {
             this.tris = ImmutableList.copyOf(unpackedTris);
             this.trisTree = new AABBTree<UnpackedTri>(unpackedTris, UnpackedTri::getBox);
 
-            var meanNormal = new Vec3(0, 0, 0);
-            for (var unpackedTri : this.tris) {
-                // Calculate the area of the triangle
-                var area = unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).length() / 2;
-                meanNormal = meanNormal.add(unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).scale(area));
-            }
-            this.meanNormal = meanNormal;
+            //var meanNormal = new Vec3(0, 0, 0);
+            //for (var unpackedTri : this.tris) {
+            //    // Calculate the area of the triangle
+            //    var area = unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).length() / 2;
+            //    meanNormal = meanNormal.add(unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).scale(area));
+            //}
+            //this.meanNormal = meanNormal;
         }
 
         public AABBTree<UnpackedTri>.Node getRoot() {

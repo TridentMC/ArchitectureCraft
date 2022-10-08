@@ -1,15 +1,14 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.block.BlockHelper;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CrossCollisionBlock;
@@ -123,8 +122,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         if (thisFrameType != FrameType.NONE) {
             Direction thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
             ShapeBlockEntity nte = te.getConnectedNeighbourGlobal(globalDir);
-            if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow) {
-                ShapeBehaviourWindow otherType = (ShapeBehaviourWindow) nte.getArchitectureShape().behaviour;
+            if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow otherType) {
                 Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
                 FrameType otherFrameType = otherType.frameTypeForLocalSide(otherLocalDir);
                 if (otherFrameType != FrameType.NONE) {

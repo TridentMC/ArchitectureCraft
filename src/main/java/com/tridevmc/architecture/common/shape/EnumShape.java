@@ -25,11 +25,11 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.google.common.collect.ImmutableMap;
+import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.shape.behaviour.*;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -152,8 +152,8 @@ public enum EnumShape implements StringRepresentable {
     STAIRS_INNER_CORNER(93, "stairs_inner_corner", new ShapeBehaviourModel("stairs_inner_corner", Profile.Generic.rlCorner), UNILATERAL, 1, 1, 0x0),
     ;
 
-    protected static final Map<Integer, EnumShape> SHAPES_BY_ID;
-    protected static final Map<String, EnumShape> SHAPES_BY_NAME;
+    private static final Map<Integer, EnumShape> SHAPES_BY_ID;
+    private static final Map<String, EnumShape> SHAPES_BY_NAME;
 
     static {
         ImmutableMap.Builder<Integer, EnumShape> shapesById = ImmutableMap.builder();
@@ -226,13 +226,13 @@ public enum EnumShape implements StringRepresentable {
 
     public void orientOnPlacement(Player player, ShapeBlockEntity te,
                                   BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, Vector3 hit) {
-        if (te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit))
-            return;
+        if (te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
+        }
         else
             this.orientFromHitPosition(player, te, face, hit);
     }
 
-    protected void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, Vector3 hit) {
+    private void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, Vector3 hit) {
         byte side, turn;
         switch (face) {
             case UP:
@@ -272,21 +272,21 @@ public enum EnumShape implements StringRepresentable {
         return offx;
     }
 
-    protected int rightSideUpSide() {
+    private int rightSideUpSide() {
         if (this.isPlacedUnderneath())
             return 1;
         else
             return 0;
     }
 
-    protected int upsideDownSide() {
+    private int upsideDownSide() {
         if (this.isPlacedUnderneath())
             return 0;
         else
             return 1;
     }
 
-    protected boolean isPlacedUnderneath() {
+    private boolean isPlacedUnderneath() {
         return (this.flags & PLACE_UNDERNEATH) != 0;
     }
 

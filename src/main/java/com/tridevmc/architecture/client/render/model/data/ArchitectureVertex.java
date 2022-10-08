@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 
-
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -98,12 +97,12 @@ public class ArchitectureVertex {
             t.transformNormal(normals);
         });
         // TODO: UV2 seems to be lighting related, need to look at this closer as lighting is the biggest blocker atm
-        consumer.vertex(pos.x(),pos.y(),pos.z())
+        consumer.vertex(pos.x(), pos.y(), pos.z())
                 .color(colour)
-                .normal(normals.x(),normals.y(),normals.z())
+                .normal(normals.x(), normals.y(), normals.z())
                 .uv(sprite.getU(uvs[0]), sprite.getV(uvs[1]))
-                .uv2(1,0)
-                .overlayCoords(1,0)
+                .uv2(1, 0)
+                .overlayCoords(1, 0)
                 .endVertex();
     }
 
