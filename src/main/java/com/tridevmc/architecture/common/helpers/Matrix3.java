@@ -92,14 +92,6 @@ public class Matrix3 {
         return r;
     }
 
-//  public Matrix3 imul(Matrix3 n) {
-//      Matrix3 r = new Matrix3();
-//      for (int i = 0; i < 3; i++)
-//          for (int j = 0; j < 3; j++)
-//              r.m[i][j] = m[0][i] * n.m[j][0] + m[1][i] * n.m[j][1] + m[2][i] * n.m[j][2];
-//      return r;
-//  }
-
     public Vector3 mul(double x, double y, double z) {
         return new Vector3(
                 x * this.m[0][0] + y * this.m[0][1] + z * this.m[0][2],

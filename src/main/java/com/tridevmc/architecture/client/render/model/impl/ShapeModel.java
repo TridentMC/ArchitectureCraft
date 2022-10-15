@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
 
-
 public class ShapeModel extends OBJSONModel {
 
     private static final Map<BlockState, TextureAtlasSprite> SPRITE_CACHE = Maps.newHashMap();

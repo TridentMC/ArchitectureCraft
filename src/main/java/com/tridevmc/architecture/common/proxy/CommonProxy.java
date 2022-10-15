@@ -44,7 +44,6 @@ public class CommonProxy {
 
     public void registerHandlers() {
         MinecraftForge.EVENT_BUS.register(this);
-        //NetworkRegistry.INSTANCE.registerGuiHandler(ArchitectureMod.INSTANCE, new ArchitectureGuiHandler()); TODO: Register gui handler somewhere. Who knows where? I sure dont.
     }
 
     public void registerCustomRenderers() {

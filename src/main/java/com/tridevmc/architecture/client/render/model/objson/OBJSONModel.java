@@ -16,7 +16,10 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -89,7 +92,6 @@ public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetada
         data.addQuadInstruction(meta, Direction.UP, minX, maxY, maxZ);
         data.addQuadInstruction(meta, Direction.UP, maxX, maxY, maxZ);
         data.addQuadInstruction(meta, Direction.UP, maxX, maxY, minZ);
-
     }
 
     private void addTri(ArchitectureModelData modelData, int face, int texture, int colour, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {
@@ -109,18 +111,9 @@ public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetada
         }
     }
 
-    private <T> T addOrGet(ArrayList<T> list, int index, T element) {
-        if (index >= list.size()) {
-            list.add(index, element);
-        }
-        return list.get(index);
-    }
-
-    // TODO: FIXME!!! - Re-evaluate how we assign textures to model datas based on OBJSON. Something is fucked
-
     @Override
-    public ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state) {
-        return this.convertedModelData.getQuadsFor(this.getMetadataResolver(level, pos, state), Transformation.identity());
+    public ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state, Transformation transform) {
+        return this.convertedModelData.getQuadsFor(this.getMetadataResolver(level, pos, state), transform);
     }
 
     @Override

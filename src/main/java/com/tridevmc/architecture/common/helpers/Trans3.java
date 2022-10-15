@@ -25,7 +25,10 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Transformation;
 import com.mojang.math.Vector3d;
+import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -162,7 +165,9 @@ public class Trans3 {
 
     public Trans3 turnAround(Vector3 origin, int i) {
         // Use multiplied variables instead of cross, saves some heap allocation.
-        return this.translate(origin).turn(i).translate(origin.x * -1, origin.y * -1, origin.z * -1);
+        return this.translate(origin)
+                .turn(i)
+                .translate(origin.x * -1, origin.y * -1, origin.z * -1);
     }
 
     public Trans3 t(Trans3 t) {
@@ -226,6 +231,30 @@ public class Trans3 {
 
     public AABB t(AABB box) {
         return boxEnclosing(this.p(box.minX, box.minY, box.minZ), this.p(box.maxX, box.maxY, box.maxZ));
+    }
+
+    public Transformation toTransformation() {
+        // Create a Matrix4F from the translation, rotation and scaling.
+        Matrix4f matrix = new Matrix4f(new float[]{
+                (float) this.rotation.m[0][0],
+                (float) this.rotation.m[0][1],
+                (float) this.rotation.m[0][2],
+                (float) this.offset.x,
+                (float) this.rotation.m[1][0],
+                (float) this.rotation.m[1][1],
+                (float) this.rotation.m[1][2],
+                (float) this.offset.y,
+                (float) this.rotation.m[2][0],
+                (float) this.rotation.m[2][1],
+                (float) this.rotation.m[2][2],
+                (float) this.offset.z,
+                0.0f,
+                0.0f,
+                0.0f,
+                1.0f});
+
+
+        return new Transformation(matrix);
     }
 
     public List<AABB> t(List<AABB> boxes) {

@@ -25,7 +25,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Objects;
 
-import static com.tridevmc.architecture.client.debug.ArchitectureRenderTypes.ARCHITECTURE_LINE_TYPE;
+import static com.tridevmc.architecture.client.debug.ArchitectureDebugRenderTypes.ARCHITECTURE_DEBUG_LINE;
 
 /**
  * Quick and dirty debug renderer for voxelization.
@@ -58,7 +58,7 @@ public class ArchitectureDebugEventListeners {
         var ray = new OBJSONVoxelizer.Ray(fromPoint, rayDirection);
         var hits = ray.intersectUnfiltered(targetVoxelizer.getMesh())
                 .toList();
-        var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_LINE_TYPE);
+        var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_DEBUG_LINE);
 
         RenderSystem.disableDepthTest();
         matrix.pushPose();
@@ -73,7 +73,7 @@ public class ArchitectureDebugEventListeners {
             LevelRenderer.renderLineBox(matrix, lineBuffer, box, 1F, 0.5F, 0F, 1);
         }
         matrix.popPose();
-        bufferSource.endBatch(ARCHITECTURE_LINE_TYPE);
+        bufferSource.endBatch(ARCHITECTURE_DEBUG_LINE);
         RenderSystem.enableDepthTest();
     }
 

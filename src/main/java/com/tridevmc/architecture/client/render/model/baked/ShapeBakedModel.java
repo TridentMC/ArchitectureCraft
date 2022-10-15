@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
 import com.tridevmc.architecture.client.render.model.impl.ShapeModel;
+import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
@@ -10,15 +11,13 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ShapeBakedModel implements IDynamicBakedModel {
+public class ShapeBakedModel implements IArchitectureBakedModel {
 
     private final EnumShape shape;
     private final ShapeModel model;
@@ -30,7 +29,7 @@ public class ShapeBakedModel implements IDynamicBakedModel {
 
     @NotNull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         var level = extraData.get(ModelProperties.LEVEL);
         var pos = extraData.get(ModelProperties.POS);
 

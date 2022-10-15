@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.client.render.model;
 
+import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -12,7 +13,11 @@ import java.util.List;
 
 public interface IArchitectureModel<T> {
 
-    ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state);
+    default ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state) {
+        return this.getQuads(level, pos, state, Transformation.identity());
+    }
+
+    ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state, Transformation transform);
 
     IQuadMetadataResolver<T> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state);
 

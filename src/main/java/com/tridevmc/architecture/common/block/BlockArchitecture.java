@@ -443,7 +443,6 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         BlockState onBlockPlaced(Block block, Level level, BlockPos pos, Direction side,
                                  double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer);
 
-        //Trans3 localToGlobalTransformation(IBlockReader world, BlockPos pos, IBlockState state);
         Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin);
     }
 
