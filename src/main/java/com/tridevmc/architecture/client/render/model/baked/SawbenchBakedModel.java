@@ -4,8 +4,6 @@ import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
 import com.tridevmc.architecture.common.modeldata.ModelProperties;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -38,8 +36,7 @@ public class SawbenchBakedModel implements IArchitectureBakedModel {
         BlockPos pos = extraData.get(ModelProperties.POS);
 
         var t = state.localToGlobalTransformation(level, pos);
-        var trans = Transformation.identity();
-        ArchitectureModelDataQuads quads = MODEL.getQuads(level, pos, state, t.toTransformation());
+        ArchitectureModelDataQuads quads = MODEL.getQuads(level, pos, state, t.toMCTrans());
         return quads.getQuads(side);
     }
 

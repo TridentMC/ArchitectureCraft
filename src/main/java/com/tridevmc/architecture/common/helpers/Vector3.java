@@ -327,6 +327,9 @@ public class Vector3 {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.x, this.y, this.z);
+        var identity = Double.hashCode(x);
+        identity = 31 * identity + Double.hashCode(y);
+        identity = 31 * identity + Double.hashCode(z);
+        return identity;
     }
 }

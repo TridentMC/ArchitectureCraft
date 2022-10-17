@@ -26,6 +26,7 @@ package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Trans3;
 import com.tridevmc.architecture.common.helpers.Vector3;
@@ -113,11 +114,6 @@ public class BlockShape extends BlockArchitecture {
     }
 
     @Override
-    public int getNumSubtypes() {
-        return 16;
-    }
-
-    @Override
     public IOrientationHandler getOrientationHandler() {
         return BaseOrientation.orient24WaysByTE;
     }
@@ -133,22 +129,6 @@ public class BlockShape extends BlockArchitecture {
         }
         return Shapes.empty();
     }
-
-    //@Override
-    //protected NonNullList<ItemStack> getDropsFromTileEntity(LootContext.Builder context, BlockState state) {
-    //    NonNullList<ItemStack> result = NonNullList.create();
-    //    TileEntity te = context.get(LootParameters.BLOCK_ENTITY);
-    //    if (te instanceof TileShape) {
-    //        TileShape ste = (TileShape) te;
-    //        ItemStack stack = ste.shape.kind.newStack(ste.shape, ste.baseBlockState, 1);
-    //        result.add(stack);
-    //        if (ste.secondaryBlockState != null) {
-    //            stack = ste.shape.kind.newSecondaryMaterialStack(ste.secondaryBlockState);
-    //            result.add(stack);
-    //        }
-    //    }
-    //    return result;
-    //}
 
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
@@ -220,5 +200,17 @@ public class BlockShape extends BlockArchitecture {
     @Override
     public boolean hasBlockEntity(BlockState state) {
         return true;
+    }
+
+    @Override
+    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, Vector3 origin) {
+        var shapeBE = ShapeBlockEntity.get(level, pos);
+        var identity = super.getTransIdentity(state, level, pos, origin);
+        if (shapeBE != null) {
+            identity = 31 * identity + (int) shapeBE.getOffsetX();
+            identity = 31 * identity + shapeBE.getSide();
+            identity = 31 * identity + shapeBE.getTurn();
+        }
+        return identity;
     }
 }

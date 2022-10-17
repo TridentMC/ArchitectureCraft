@@ -28,7 +28,6 @@ import com.google.common.base.MoreObjects;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3d;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -56,9 +55,10 @@ public class Trans3 {
                 sideTurnRotations[side][turn] = new Trans3(Vector3.zero, Matrix3.sideTurnRotations[side][turn]);
     }
 
-    public Vector3 offset;
-    public Matrix3 rotation;
-    public double scaling;
+    public final Vector3 offset;
+    public final Matrix3 rotation;
+    public final double scaling;
+    private Transformation mcTrans;
 
     public Trans3(Vector3 v) {
         this(v, Matrix3.ident);
@@ -99,7 +99,11 @@ public class Trans3 {
     }
 
     public static Trans3 sideTurn(Vector3 v, int side, int turn) {
-        return new Trans3(v, Matrix3.sideTurnRotations[side][turn]);
+        var t = new Trans3(v);
+        return t.translate(Vector3.blockCenter)
+                .rotate(Matrix3.sideTurnRotations[side][turn])
+                .translate(Vector3.blockCenter.x * -1, Vector3.blockCenter.y * -1, Vector3.blockCenter.z * -1);
+        //return new Trans3(v, Matrix3.sideTurnRotations[side][turn]);
     }
 
     public static int turnFor(Entity e, int side) {
@@ -233,28 +237,28 @@ public class Trans3 {
         return boxEnclosing(this.p(box.minX, box.minY, box.minZ), this.p(box.maxX, box.maxY, box.maxZ));
     }
 
-    public Transformation toTransformation() {
-        // Create a Matrix4F from the translation, rotation and scaling.
-        Matrix4f matrix = new Matrix4f(new float[]{
-                (float) this.rotation.m[0][0],
-                (float) this.rotation.m[0][1],
-                (float) this.rotation.m[0][2],
-                (float) this.offset.x,
-                (float) this.rotation.m[1][0],
-                (float) this.rotation.m[1][1],
-                (float) this.rotation.m[1][2],
-                (float) this.offset.y,
-                (float) this.rotation.m[2][0],
-                (float) this.rotation.m[2][1],
-                (float) this.rotation.m[2][2],
-                (float) this.offset.z,
-                0.0f,
-                0.0f,
-                0.0f,
-                1.0f});
+    public Transformation toMCTrans() {
+        if (this.mcTrans == null) {
+            this.mcTrans = new Transformation(new Matrix4f(new float[]{
+                    (float) this.rotation.m[0][0],
+                    (float) this.rotation.m[0][1],
+                    (float) this.rotation.m[0][2],
+                    (float) this.offset.x,
+                    (float) this.rotation.m[1][0],
+                    (float) this.rotation.m[1][1],
+                    (float) this.rotation.m[1][2],
+                    (float) this.offset.y,
+                    (float) this.rotation.m[2][0],
+                    (float) this.rotation.m[2][1],
+                    (float) this.rotation.m[2][2],
+                    (float) this.offset.z,
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    1.0f}));
+        }
 
-
-        return new Transformation(matrix);
+        return this.mcTrans;
     }
 
     public List<AABB> t(List<AABB> boxes) {

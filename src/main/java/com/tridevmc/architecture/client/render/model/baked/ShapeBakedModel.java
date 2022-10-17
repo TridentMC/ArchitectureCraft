@@ -33,7 +33,8 @@ public class ShapeBakedModel implements IArchitectureBakedModel {
         var level = extraData.get(ModelProperties.LEVEL);
         var pos = extraData.get(ModelProperties.POS);
 
-        return this.model.getQuads(level, pos, state).getQuads(side);
+        var t = state.localToGlobalTransformation(level, pos);
+        return this.model.getQuads(level, pos, state, t.toMCTrans()).getQuads(side);
     }
 
     @Override

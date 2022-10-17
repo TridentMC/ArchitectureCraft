@@ -36,38 +36,38 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
 
     @Override
     public boolean orientOnPlacement(Player player, ShapeBlockEntity te,
-                                     BlockPos npos, BlockState nstate, BlockEntity nte, Direction otherFace, Vector3 hit) {
+                                     BlockPos nPos, BlockState nState, BlockEntity nte, Direction otherFace, Vector3 hit) {
         if (!player.isCrouching()) {
-            var nblock = nstate.getBlock();
+            var nBlock = nState.getBlock();
             boolean placedOnStair = false;
             int nside = -1; // Side that the neighbouring block is placed on
             int nturn = -1; // Turn of the neighbouring block
-            if (StairBlock.isStairs(nstate) && (otherFace == UP || otherFace == DOWN)) {
+            if (StairBlock.isStairs(nState) && (otherFace == UP || otherFace == DOWN)) {
                 placedOnStair = true;
-                nside = stairsSide(nstate);
-                nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nstate));
+                nside = stairsSide(nState);
+                nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nState));
                 if (nside == 1 && (nturn & 1) == 0)
                     nturn ^= 2;
-            } else if (nblock instanceof BlockShape) {
-                if (nte instanceof ShapeBlockEntity) {
+            } else if (nBlock instanceof BlockShape) {
+                if (nte instanceof ShapeBlockEntity shapeBE) {
                     placedOnStair = true;
-                    nside = ((ShapeBlockEntity) nte).getSide();
-                    nturn = ((ShapeBlockEntity) nte).getTurn();
+                    nside = shapeBE.getSide();
+                    nturn = shapeBE.getTurn();
                 }
             }
             if (placedOnStair) {
                 int side = otherFace.getOpposite().ordinal();
                 if (side == nside) {
                     Vector3 h = Trans3.sideTurn(side, 0).ip(hit);
-                    double offx = te.getArchitectureShape().offsetXForPlacementHit(side, nturn, hit);
+                    double offX = te.getArchitectureShape().offsetXForPlacementHit(side, nturn, hit);
                     te.setSide(side);
                     te.setTurn(nturn & 3);
-                    te.setOffsetX(offx);
+                    te.setOffsetX(offX);
                     return true;
                 }
             }
         }
-        return super.orientOnPlacement(player, te, npos, nstate, nte, otherFace, hit);
+        return super.orientOnPlacement(player, te, nPos, nState, nte, otherFace, hit);
     }
 
     @Override

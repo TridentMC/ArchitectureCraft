@@ -24,6 +24,7 @@
 
 package com.tridevmc.architecture.common.block.entity;
 
+import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockHelper;
@@ -275,10 +276,6 @@ public class ShapeBlockEntity extends BlockEntity {
 
     public Trans3 localToGlobalRotation() {
         return this.localToGlobalTransformation(Vector3.zero);
-    }
-
-    public Trans3 localToGlobalTransformation() {
-        return this.localToGlobalTransformation(Vector3.blockCenter(this.worldPosition));
     }
 
     public Trans3 localToGlobalTransformation(Vector3 origin) {

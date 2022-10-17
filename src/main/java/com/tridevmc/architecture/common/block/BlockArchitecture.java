@@ -24,9 +24,6 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.client.render.model.objson.OBJSON;
 import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
@@ -37,6 +34,7 @@ import com.tridevmc.architecture.common.render.ITextureConsumer;
 import com.tridevmc.architecture.common.render.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.compound.core.reflect.WrappedField;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
@@ -67,7 +65,6 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -85,11 +82,9 @@ import java.util.function.Predicate;
 public abstract class BlockArchitecture extends BaseEntityBlock implements ITextureConsumer {
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
-    private static final LoadingCache<ShapeContext, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<>() {
-        public VoxelShape load(@NotNull ShapeContext shapeContext) {
-            return shapeContext.state.getBlock().getLocalBounds(shapeContext.level, shapeContext.pos, shapeContext.state, null);
-        }
-    });
+
+    private final Int2ObjectLinkedOpenHashMap<Trans3> transCache = new Int2ObjectLinkedOpenHashMap<>();
+    private final Int2ObjectLinkedOpenHashMap<VoxelShape> shapeCache = new Int2ObjectLinkedOpenHashMap<>();
 
     private static final RandomSource RANDOM = RandomSource.create();
     public static boolean debugState = false;
@@ -186,10 +181,6 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
                     this.getClass().getName(), n));
     }
 
-    public int getNumSubtypes() {
-        return 1;
-    }
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         if (this.stateProperties == null) this.defineProperties();
@@ -251,8 +242,13 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     }
 
     public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
-        IOrientationHandler oh = this.getOrientationHandler();
-        return oh.localToGlobalTransformation(level, pos, state, origin);
+        var transIdentity = this.getTransIdentity(state, level, pos, origin);
+        var trans = this.transCache.get(transIdentity);
+        if (trans == null) {
+            trans = this.getOrientationHandler().localToGlobalTransformation(level, pos, state, origin);
+            this.transCache.put(transIdentity, trans);
+        }
+        return trans;
     }
 
     public Trans3 itemTransformation() {
@@ -261,10 +257,9 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Vec3 hit = context.getClickLocation();
-        BlockState state = this.getOrientationHandler().onBlockPlaced(this, context.getLevel(), context.getClickedPos(), context.getNearestLookingDirection(),
+        var hit = context.getClickLocation();
+        return this.getOrientationHandler().onBlockPlaced(this, context.getLevel(), context.getClickedPos(), context.getNearestLookingDirection(),
                 hit.x(), hit.y(), hit.z(), this.defaultBlockState(), context.getPlayer());
-        return state;
     }
 
     @Override
@@ -350,50 +345,20 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
     // region Bounds and collision boxes
 
-    //@Override TODO: Replace with raytraceshape. We need mesh voxelization...
-    //public RayTraceResult getRayTraceResult(BlockState state, Level level, BlockPos pos, Vector3d start, Vector3d end, RayTraceResult original) {
-    //    boxHit = null;
-    //    BlockRayTraceResult result = null;
-    //    double nearestDistance = 0;
-    //    List<AxisAlignedBB> list = getGlobalCollisionBoxes(level, pos, state, null);
-    //    if (list != null) {
-    //        int n = list.size();
-    //        for (int i = 0; i < n; i++) {
-    //            AxisAlignedBB box = list.get(i);
-    //            BlockRayTraceResult mp = AxisAlignedBB.rayTrace(ImmutableList.of(box), start, end, pos);
-    //            if (mp != null) {
-    //                mp.subHit = i;
-    //                double d = start.squareDistanceTo(mp.getHitVec());
-    //                if (result == null || d < nearestDistance) {
-    //                    result = mp;
-    //                    nearestDistance = d;
-    //                }
-    //            }
-    //        }
-    //    }
-    //    if (result != null) {
-    //        //setBlockBounds(list.get(result.subHit));
-    //        int i = result.subHit;
-    //        boxHit = list.get(i).offset(-pos.getX(), -pos.getY(), -pos.getZ());
-    //        result = new BlockRayTraceResult(result.getHitVec(), result.getFace(), pos, false);
-    //        result.subHit = i;
-    //    }
-    //    return result;
-    //}
-
-    public static VoxelShape getCachedShape(ShapeContext context) {
-        var shape = SHAPE_CACHE.getUnchecked(context);
-        if (shape.isEmpty()) {
-            SHAPE_CACHE.invalidate(context);
-            shape = Shapes.block();
-        }
-        return shape;
-    }
-
     @NotNull
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return getCachedShape(new ShapeContext((BlockStateArchitecture) state, level, pos));
+        var shapeIdentity = getTransIdentity(state, level, pos, Vector3.zero);
+        var shape = this.shapeCache.get(shapeIdentity);
+        if (shape == null) {
+            shape = getLocalBounds(level, pos, state, null);
+            if (shape.isEmpty()) {
+                return Shapes.block();
+            } else {
+                shapeCache.put(shapeIdentity, shape);
+            }
+        }
+        return shape;
     }
 
     @NotNull
@@ -430,6 +395,10 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return holderSet.contains(this.builtInRegistryHolder());
     }
 
+    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, Vector3 origin) {
+        return state.hashCode() * 31 + origin.hashCode();
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -458,32 +427,6 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
         public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
             return new Trans3(origin);
-        }
-
-    }
-
-    public class ShapeContext {
-        private final BlockStateArchitecture state;
-        private final BlockGetter level;
-        private final BlockPos pos;
-
-        public ShapeContext(BlockStateArchitecture state, BlockGetter level, BlockPos pos) {
-            this.state = state;
-            this.level = level;
-            this.pos = pos;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.state.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof ShapeContext) {
-                return ((ShapeContext) obj).state == this.state;
-            }
-            return false;
         }
     }
 

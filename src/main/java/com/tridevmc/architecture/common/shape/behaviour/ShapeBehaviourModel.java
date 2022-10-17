@@ -52,7 +52,7 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
 
     @Override
     protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
-        return this.getOBJSONModel().getVoxelized();
+        return t.t(this.getOBJSONModel().getVoxelized());
     }
 
     @Override

@@ -226,10 +226,9 @@ public enum EnumShape implements StringRepresentable {
 
     public void orientOnPlacement(Player player, ShapeBlockEntity te,
                                   BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, Vector3 hit) {
-        if (te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
-        }
-        else
+        if (!te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
             this.orientFromHitPosition(player, te, face, hit);
+        }
     }
 
     private void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, Vector3 hit) {
@@ -297,7 +296,6 @@ public enum EnumShape implements StringRepresentable {
     public String getLocalizedShapeName() {
         return I18n.get("architecturecraft.shape." + this.translationKey);
     }
-
 
     @Override
     public String getSerializedName() {
