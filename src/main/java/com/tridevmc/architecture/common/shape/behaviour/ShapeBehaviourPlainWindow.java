@@ -1,8 +1,8 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +25,7 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
 
     @Override
     public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction face,
-                                     Vector3 hit) {
+                                     LegacyVector3 hit) {
         if (nte != null && !player.isCrouching()) {
             if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourPlainWindow) {
                 te.setSide(nte.getSide());

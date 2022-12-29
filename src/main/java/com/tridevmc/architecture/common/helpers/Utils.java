@@ -26,6 +26,7 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -56,8 +57,8 @@ public class Utils {
         return (int) floor(player.getYRot() * 4.0 / 360.0 + 0.5) & 3;
     }
 
-    public static int lookTurn(Vector3 look) {
-        double a = atan2(look.x, look.z);
+    public static int lookTurn(LegacyVector3 look) {
+        double a = atan2(look.x(), look.z());
         return (int) round(a * 2 / PI) & 3;
     }
 

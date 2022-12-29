@@ -39,6 +39,7 @@ import com.tridevmc.architecture.common.itemgroup.ArchitectureItemGroup;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.SharedConstants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.DataFixers;

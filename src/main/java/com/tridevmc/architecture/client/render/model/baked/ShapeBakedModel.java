@@ -2,7 +2,7 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import com.tridevmc.architecture.client.render.model.impl.ShapeModel;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.modeldata.ModelProperties;
+import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import net.minecraft.client.renderer.RenderType;

@@ -26,12 +26,12 @@ package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
+import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.BaseOrientation;
 import net.minecraft.core.BlockPos;
@@ -67,6 +67,8 @@ public class BlockShape extends BlockArchitecture {
     public BlockShape(EnumShape architectureShape) {
         super(Material.DIRT);
         this.architectureShape = architectureShape;
+        if(this.architectureShape.behaviour instanceof ShapeBehaviourModel sbm)
+            this.setModelAndTextures(sbm.getModelName());
         SHAPE_BLOCKS.put(architectureShape, this);
     }
 
@@ -124,7 +126,7 @@ public class BlockShape extends BlockArchitecture {
                                         BlockState state, Entity entity) {
         ShapeBlockEntity te = this.getTileEntity(level, pos);
         if (te != null) {
-            Trans3 t = te.localToGlobalTransformation(Vector3.zero);
+            Trans3 t = te.localToGlobalTransformation(LegacyVector3.ZERO);
             return this.getArchitectureShape().behaviour.getBounds(te, level, pos, state, entity, t);
         }
         return Shapes.empty();
@@ -177,7 +179,7 @@ public class BlockShape extends BlockArchitecture {
             if (te != null)
                 return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getArchitectureShape());
+        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, this.getArchitectureShape());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -203,7 +205,7 @@ public class BlockShape extends BlockArchitecture {
     }
 
     @Override
-    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, Vector3 origin) {
+    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, LegacyVector3 origin) {
         var shapeBE = ShapeBlockEntity.get(level, pos);
         var identity = super.getTransIdentity(state, level, pos, origin);
         if (shapeBE != null) {

@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.core.math.Trans3;
 import net.minecraft.core.Direction;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class Profile {
 
-    protected static Map opposites = new HashMap();
+    protected static Map<Object, Object> opposites = new HashMap<>();
 
     public static Object getProfileGlobal(EnumShape shape, int side, int turn, Direction globalFace) {
         Direction localFace = Trans3.sideTurnRotations[side][turn].it(globalFace);
@@ -55,14 +56,14 @@ public class Profile {
     public enum Generic {
         End, LeftEnd, RightEnd, OffsetBottom, OffsetTop;
 
-        public static Generic[] eeStraight = {null, null, null, null, End, End};
-        public static Generic[] lrStraight = {null, null, null, null, RightEnd, LeftEnd};
-        public static Generic[] eeCorner = {null, null, null, End, End, null};
-        public static Generic[] lrCorner = {null, null, null, LeftEnd, RightEnd, null};
-        public static Generic[] rlCorner = {null, null, RightEnd, null, null, LeftEnd};
-        public static Generic[] tOffset = {null, OffsetTop, null, null, null, null};
-        public static Generic[] bOffset = {OffsetBottom, null, null, null, null, null};
-        public static Generic[] tbOffset = {OffsetBottom, OffsetTop, null, null, null, null};
+        public static final Generic[] eeStraight = {null, null, null, null, End, End};
+        public static final Generic[] lrStraight = {null, null, null, null, RightEnd, LeftEnd};
+        public static final Generic[] eeCorner = {null, null, null, End, End, null};
+        public static final Generic[] lrCorner = {null, null, null, LeftEnd, RightEnd, null};
+        public static final Generic[] rlCorner = {null, null, RightEnd, null, null, LeftEnd};
+        public static final Generic[] tOffset = {null, OffsetTop, null, null, null, null};
+        public static final Generic[] bOffset = {OffsetBottom, null, null, null, null, null};
+        public static final Generic[] tbOffset = {OffsetBottom, OffsetTop, null, null, null, null};
 
         static {
             declareOpposite(LeftEnd, RightEnd);

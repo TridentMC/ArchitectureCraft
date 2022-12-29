@@ -42,30 +42,30 @@ public class ArchitectureModelData<T> {
         private final List<IBakedQuadProvider<T>> upQuads = Lists.newArrayList();
         private final List<IBakedQuadProvider<T>> downQuads = Lists.newArrayList();
         private final List<IBakedQuadProvider<T>> generalQuads = Lists.newArrayList();
-        private final ImmutableList<List<IBakedQuadProvider<T>>> allQuads = ImmutableList.of(northQuads, southQuads, eastQuads, westQuads, upQuads, downQuads, generalQuads);
+        private final ImmutableList<List<IBakedQuadProvider<T>>> allQuads = ImmutableList.of(this.northQuads, this.southQuads, this.eastQuads, this.westQuads, this.upQuads, this.downQuads, this.generalQuads);
 
         private List<IBakedQuadProvider<T>> getQuads(@Nullable Direction direction) {
             if (direction == null) {
                 return this.generalQuads;
             }
             return switch (direction) {
-                case NORTH -> northQuads;
-                case SOUTH -> southQuads;
-                case EAST -> eastQuads;
-                case WEST -> westQuads;
-                case UP -> upQuads;
-                case DOWN -> downQuads;
+                case NORTH -> this.northQuads;
+                case SOUTH -> this.southQuads;
+                case EAST -> this.eastQuads;
+                case WEST -> this.westQuads;
+                case UP -> this.upQuads;
+                case DOWN -> this.downQuads;
             };
         }
 
         private Stream<IBakedQuadProvider<T>> getAllQuads() {
-            return Stream.of(northQuads,
-                            southQuads,
-                            eastQuads,
-                            westQuads,
-                            upQuads,
-                            downQuads,
-                            generalQuads)
+            return Stream.of(this.northQuads,
+                            this.southQuads,
+                            this.eastQuads,
+                            this.westQuads,
+                            this.upQuads,
+                            this.downQuads,
+                            this.generalQuads)
                     .flatMap(List::stream);
         }
 
@@ -74,46 +74,46 @@ public class ArchitectureModelData<T> {
                 this.generalQuads.add(quad);
             } else {
                 switch (direction) {
-                    case NORTH -> northQuads.add(quad);
-                    case SOUTH -> southQuads.add(quad);
-                    case EAST -> eastQuads.add(quad);
-                    case WEST -> westQuads.add(quad);
-                    case UP -> upQuads.add(quad);
-                    case DOWN -> downQuads.add(quad);
+                    case NORTH -> this.northQuads.add(quad);
+                    case SOUTH -> this.southQuads.add(quad);
+                    case EAST -> this.eastQuads.add(quad);
+                    case WEST -> this.westQuads.add(quad);
+                    case UP -> this.upQuads.add(quad);
+                    case DOWN -> this.downQuads.add(quad);
                 }
             }
         }
 
         private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
-            var quads = getQuads(direction);
+            var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
                 quads.add(new ArchitectureQuad<>(metadata, direction));
             return quads.get(quads.size() - 1);
         }
 
         private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
-            var quads = getQuads(direction);
+            var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
                 quads.add(new ArchitectureQuad<>(metadata, direction, normals));
             return quads.get(quads.size() - 1);
         }
 
         private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
-            var quads = getQuads(direction);
+            var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
                 quads.add(new ArchitectureTri<>(metadata, direction));
             return quads.get(quads.size() - 1);
         }
 
         private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
-            var quads = getQuads(direction);
+            var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
                 quads.add(new ArchitectureTri<>(metadata, direction, normals));
             return quads.get(quads.size() - 1);
         }
 
         protected int getQuadCount(Direction direction) {
-            return getQuads(direction).size();
+            return this.getQuads(direction).size();
         }
 
         protected int getNorthQuadCount() {
@@ -320,7 +320,7 @@ public class ArchitectureModelData<T> {
     }
 
     protected DirectionalQuads getQuads() {
-        return quads;
+        return this.quads;
     }
 
 }

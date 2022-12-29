@@ -1,20 +1,23 @@
 package com.tridevmc.architecture.client.render.model.objson;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.tridevmc.architecture.common.ArchitectureLog;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fml.loading.progress.StartupMessageManager;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-public class OBJSON {
+public class LegacyOBJSON {
 
     private static final Gson GSON = new Gson();
     private String name;
@@ -24,23 +27,23 @@ public class OBJSON {
     private OBJSONVoxelizer voxelizer;
     private VoxelShape voxelized;
 
-    public static OBJSON fromResource(ResourceLocation location) {
+    public static LegacyOBJSON fromResource(ResourceLocation location) {
         return fromResource(location, Trans3.blockCenter);
     }
 
-    public static OBJSON fromResource(ResourceLocation location, Trans3 trans) {
+    public static LegacyOBJSON fromResource(ResourceLocation location, Trans3 trans) {
         // Can't use resource manager because this needs to work on the server
-        String path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
-        InputStream in = OBJSON.class.getResourceAsStream(path);
-        OBJSON model = GSON.fromJson(new InputStreamReader(in), OBJSON.class);
+        var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
+        var in = LegacyOBJSON.class.getResourceAsStream(path);
+        var model = GSON.fromJson(new InputStreamReader(in), LegacyOBJSON.class);
         model.name = location.toString();
         model.setNormals();
 
         for (int i = 0; i < model.faces.length; i++) {
-            Face face = model.faces[i];
+            var face = model.faces[i];
             face.model = model;
             for (int v = 0; v < model.faces[i].vertices.length; v++) {
-                Vector3 vPos = face.vertices[v].getPos();
+                var vPos = face.vertices[v].getPos();
                 face.vertices[v].pos = trans.p(vPos).toArray();
             }
         }
@@ -59,8 +62,8 @@ public class OBJSON {
      * @param by the vector to offset all of the vertices by.
      * @return the new OBJSON with offset vertices.
      */
-    public OBJSON offset(Vector3 by) {
-        OBJSON out = new OBJSON();
+    public LegacyOBJSON offset(LegacyVector3 by) {
+        LegacyOBJSON out = new LegacyOBJSON();
         out.bounds = this.bounds;
         out.boxes = this.boxes;
         out.faces = new Face[this.faces.length];
@@ -68,7 +71,7 @@ public class OBJSON {
             out.faces[i] = this.faces[i].clone();
             Face face = out.faces[i];
             for (int v = 0; v < out.faces[i].vertices.length; v++) {
-                Vector3 vPos = face.vertices[v].getPos();
+                LegacyVector3 vPos = face.vertices[v].getPos();
                 face.vertices[v].pos = vPos.add(by).toArray();
             }
         }
@@ -79,17 +82,13 @@ public class OBJSON {
         return this.faces;
     }
 
-    //public AxisAlignedBB getBounds() {
-    //    return new AxisAlignedBB(this.bounds[0], this.bounds[1], this.bounds[2], this.bounds[3], this.bounds[4], this.bounds[5]);
-    //}
-
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public VoxelShape getVoxelized() {
         if (this.voxelized == null) {
-            String msg = String.format("Voxelizing '%s'", name);
+            String msg = String.format("Voxelizing '%s'", this.name);
             StartupMessageManager.addModMessage(msg);
             ArchitectureLog.info(msg);
             long t0 = System.nanoTime();
@@ -116,7 +115,7 @@ public class OBJSON {
         for (Face face : this.faces) {
             Vertex[] vertices = face.vertices;
             Triangle tri = face.triangles[0];
-            face.normal = Vector3.unit(vertices[tri.vertices[1]].getPos().sub(vertices[tri.vertices[0]].getPos())
+            face.normal = LegacyVector3.unit(vertices[tri.vertices[1]].getPos().sub(vertices[tri.vertices[0]].getPos())
                     .cross(vertices[tri.vertices[2]].getPos().sub(vertices[tri.vertices[0]].getPos())));
         }
     }
@@ -125,12 +124,33 @@ public class OBJSON {
         return this.voxelizer;
     }
 
+    public List<Edge> calculateOuterEdges() {
+        // Calculate the outer edges of the mesh
+        List<Edge> edges = Lists.newArrayList();
+        for (Face face : this.faces) {
+            Map<Edge, Integer> edgesWithCount = Maps.newHashMap();
+            for (Triangle tri : face.triangles) {
+                var e0 = new Edge(face.vertices[tri.vertices[0]].getPos(), face.vertices[tri.vertices[1]].getPos());
+                var e1 = new Edge(face.vertices[tri.vertices[1]].getPos(), face.vertices[tri.vertices[2]].getPos());
+                var e2 = new Edge(face.vertices[tri.vertices[2]].getPos(), face.vertices[tri.vertices[0]].getPos());
+                edgesWithCount.put(e0, edgesWithCount.getOrDefault(e0, 0) + 1);
+                edgesWithCount.put(e1, edgesWithCount.getOrDefault(e1, 0) + 1);
+                edgesWithCount.put(e2, edgesWithCount.getOrDefault(e2, 0) + 1);
+            }
+            // Remove any repeated edges
+            edges.addAll(edgesWithCount.entrySet().stream().filter(e -> e.getValue() == 1).map(Map.Entry::getKey).toList());
+        }
+
+        return edges.stream().distinct().toList();
+
+    }
+
     public class Face {
-        OBJSON model;
+        LegacyOBJSON model;
         int texture;
         Vertex[] vertices;
         Triangle[] triangles;
-        Vector3 normal;
+        LegacyVector3 normal;
 
         public Face clone() {
             Face out = new Face();
@@ -138,7 +158,7 @@ public class OBJSON {
             out.texture = this.texture;
             out.vertices = new Vertex[this.vertices.length];
             out.triangles = new Triangle[this.triangles.length];
-            out.normal = new Vector3(this.normal);
+            out.normal = new LegacyVector3(this.normal);
 
             for (int i = 0; i < out.vertices.length; i++) {
                 out.vertices[i] = this.vertices[i].clone();
@@ -171,12 +191,12 @@ public class OBJSON {
         double[] normal;
         double[] uv;
 
-        public Vector3 getPos() {
-            return new Vector3(this.pos[0], this.pos[1], this.pos[2]);
+        public LegacyVector3 getPos() {
+            return new LegacyVector3(this.pos[0], this.pos[1], this.pos[2]);
         }
 
-        public Vector3 getNormal() {
-            return new Vector3(this.normal[0], this.normal[1], this.normal[2]);
+        public LegacyVector3 getNormal() {
+            return new LegacyVector3(this.normal[0], this.normal[1], this.normal[2]);
         }
 
         public double getU() {
@@ -196,4 +216,31 @@ public class OBJSON {
         }
     }
 
+    public record Edge(LegacyVector3 a, LegacyVector3 b) {
+
+        public double aX() {
+            return this.a.x();
+        }
+
+        public double aY() {
+            return this.a.y();
+        }
+
+        public double aZ() {
+            return this.a.z();
+        }
+
+        public double bX() {
+            return this.b.x();
+        }
+
+        public double bY() {
+            return this.b.y();
+        }
+
+        public double bZ() {
+            return this.b.z();
+        }
+
+    }
 }

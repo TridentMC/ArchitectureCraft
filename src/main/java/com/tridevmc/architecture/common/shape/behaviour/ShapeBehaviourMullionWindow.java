@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.common.helpers.Trans3;
+import com.tridevmc.architecture.core.math.Trans3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ShapeBehaviourMullionWindow extends ShapeBehaviourPlainWindow {

@@ -18,11 +18,11 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
 
     @Override
     public TextureAtlasSprite getTexture(T metadata) {
-        return textureResolver.getTexture(metadata);
+        return this.textureResolver.getTexture(metadata);
     }
 
     @Override
     public int getColour(T metadata) {
-        return colourResolver.getColour(metadata);
+        return this.colourResolver.getColour(metadata);
     }
 }

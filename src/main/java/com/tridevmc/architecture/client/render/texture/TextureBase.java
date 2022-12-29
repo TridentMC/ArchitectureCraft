@@ -24,7 +24,7 @@
 
 package com.tridevmc.architecture.client.render.texture;
 
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 

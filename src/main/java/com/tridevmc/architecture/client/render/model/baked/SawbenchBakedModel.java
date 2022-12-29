@@ -1,10 +1,9 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.modeldata.ModelProperties;
+import com.tridevmc.architecture.common.model.ModelProperties;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

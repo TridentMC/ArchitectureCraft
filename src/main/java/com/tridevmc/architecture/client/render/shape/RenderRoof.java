@@ -26,8 +26,8 @@ package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.core.Direction;
 
@@ -713,55 +713,55 @@ public class RenderRoof {
     //-------------------------------------------------------------------------------------
 
     protected void beginTopFace() {
-        this.beginOuterFaces(Vector3.unitY);
+        this.beginOuterFaces(LegacyVector3.UNIT_Y);
     }
 
     protected void beginBottomFace() {
-        this.beginOuterFaces(Vector3.unitNY);
+        this.beginOuterFaces(LegacyVector3.UNIT_NY);
     }
 
     protected void beginPosXFace() {
-        this.beginOuterFaces(Vector3.unitX);
+        this.beginOuterFaces(LegacyVector3.UNIT_X);
     }
 
     protected void beginNegXFace() {
-        this.beginOuterFaces(Vector3.unitNX);
+        this.beginOuterFaces(LegacyVector3.UNIT_NX);
     }
 
     protected void beginPosZFace() {
-        this.beginOuterFaces(Vector3.unitZ);
+        this.beginOuterFaces(LegacyVector3.UNIT_Z);
     }
 
     protected void beginNegZFace() {
-        this.beginOuterFaces(Vector3.unitNZ);
+        this.beginOuterFaces(LegacyVector3.UNIT_NZ);
     }
 
     protected void beginPosXSlope() {
-        this.beginInnerFaces(Vector3.unitPXPY);
+        this.beginInnerFaces(LegacyVector3.UNIT_PXPY);
     }
 
     protected void beginNegXSlope() {
-        this.beginInnerFaces(Vector3.unitNXPY);
+        this.beginInnerFaces(LegacyVector3.UNIT_NXPY);
     }
 
     protected void beginPosZSlope() {
-        this.beginInnerFaces(Vector3.unitPYPZ);
+        this.beginInnerFaces(LegacyVector3.UNIT_PYPZ);
     }
 
     protected void beginNegZSlope() {
-        this.beginInnerFaces(Vector3.unitPYNZ);
+        this.beginInnerFaces(LegacyVector3.UNIT_PYNZ);
     }
 
     //-------------------------------------------------------------------------------------
 
-    protected void beginInnerFaces(Vector3 n) {
+    protected void beginInnerFaces(LegacyVector3 n) {
         this.outerFace = false;
         this.normal(n);
         //this.target.setTexture(this.textures[2]);
         //this.target.setColor(this.getSecondaryColourMult());
     }
 
-    protected void beginOuterFaces(Vector3 n) {
+    protected void beginOuterFaces(LegacyVector3 n) {
         this.outerFace = true;
         this.normal(n);
         //this.target.setTexture(this.textures[1]);
@@ -790,7 +790,7 @@ public class RenderRoof {
         //this.target.endFace();
     }
 
-    protected void normal(Vector3 n) {
+    protected void normal(LegacyVector3 n) {
         //Vector3 tn = this.t.v(n);
         //this.face = tn.facing();
         //this.target.setNormal(tn);

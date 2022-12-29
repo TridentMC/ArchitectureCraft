@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common;
+package com.tridevmc.architecture.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

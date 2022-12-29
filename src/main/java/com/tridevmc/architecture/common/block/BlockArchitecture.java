@@ -24,14 +24,14 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.tridevmc.architecture.client.render.model.objson.OBJSON;
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.render.ITextureConsumer;
-import com.tridevmc.architecture.common.render.ModelSpec;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.common.model.ITextureConsumer;
+import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.compound.core.reflect.WrappedField;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
@@ -212,7 +212,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         this.modelSpec = new ModelSpec(modelName, textureNames);
     }
 
-    public void setModelAndTextures(String modelName, Vector3 origin, String... textureNames) {
+    public void setModelAndTextures(String modelName, LegacyVector3 origin, String... textureNames) {
         this.textureNames = textureNames;
         this.modelSpec = new ModelSpec(modelName, origin, textureNames);
     }
@@ -230,7 +230,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     }
 
     public Trans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos, BlockState state) {
-        return this.localToGlobalTransformation(level, pos, state, Vector3.zero);
+        return this.localToGlobalTransformation(level, pos, state, LegacyVector3.ZERO);
     }
 
     public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
@@ -238,10 +238,10 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     }
 
     public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state) {
-        return this.localToGlobalTransformation(level, pos, state, Vector3.zero);
+        return this.localToGlobalTransformation(level, pos, state, LegacyVector3.ZERO);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
+    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
         var transIdentity = this.getTransIdentity(state, level, pos, origin);
         var trans = this.transCache.get(transIdentity);
         if (trans == null) {
@@ -348,14 +348,14 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     @NotNull
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var shapeIdentity = getTransIdentity(state, level, pos, Vector3.zero);
+        var shapeIdentity = this.getTransIdentity(state, level, pos, LegacyVector3.ZERO);
         var shape = this.shapeCache.get(shapeIdentity);
         if (shape == null) {
-            shape = getLocalBounds(level, pos, state, null);
+            shape = this.getLocalBounds(level, pos, state, null);
             if (shape.isEmpty()) {
                 return Shapes.block();
             } else {
-                shapeCache.put(shapeIdentity, shape);
+                this.shapeCache.put(shapeIdentity, shape);
             }
         }
         return shape;
@@ -365,7 +365,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
     protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos, BlockState state, Entity entity) {
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
-            OBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
+            LegacyOBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
             Trans3 t = this.localToGlobalTransformation(level, pos, state);
             var voxelized = model.getVoxelized();
             return t.t(voxelized);
@@ -395,7 +395,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return holderSet.contains(this.builtInRegistryHolder());
     }
 
-    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, Vector3 origin) {
+    public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, LegacyVector3 origin) {
         return state.hashCode() * 31 + origin.hashCode();
     }
 
@@ -412,7 +412,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         BlockState onBlockPlaced(Block block, Level level, BlockPos pos, Direction side,
                                  double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer);
 
-        Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin);
+        Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin);
     }
 
     public static class Orient1Way implements IOrientationHandler {
@@ -425,7 +425,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
             return new Trans3(origin);
         }
     }

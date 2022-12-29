@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.render;
+package com.tridevmc.architecture.common.model;
 
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,13 +32,13 @@ import java.util.Objects;
 public class ModelSpec {
     public String modelName;
     public String[] textureNames;
-    public Vector3 origin;
+    public LegacyVector3 origin;
 
     public ModelSpec(String model, String... textures) {
-        this(model, Vector3.blockCenter, textures);
+        this(model, LegacyVector3.BLOCK_CENTER, textures);
     }
 
-    public ModelSpec(String model, Vector3 origin, String... textures) {
+    public ModelSpec(String model, LegacyVector3 origin, String... textures) {
         this.modelName = model;
         this.textureNames = textures;
         this.origin = origin;

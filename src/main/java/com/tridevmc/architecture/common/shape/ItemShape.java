@@ -29,7 +29,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -103,8 +103,8 @@ public class ItemShape extends BlockItem {
         var hitZ = context.getClickLocation().z();
         if (!world.setBlock(pos, newState, 3))
             return false;
-        var dirVec = Vector3.getDirectionVec(face);
-        var hit = new Vector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
+        var dirVec = LegacyVector3.getDirectionVec(face);
+        var hit = new LegacyVector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
         var tile = ShapeBlockEntity.get(world, pos);
         if (tile != null) {
             var state = getStateFromStack(stack);

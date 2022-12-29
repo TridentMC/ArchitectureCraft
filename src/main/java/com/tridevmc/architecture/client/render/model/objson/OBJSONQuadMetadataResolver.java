@@ -15,11 +15,11 @@ public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQ
 
     @Override
     public TextureAtlasSprite getTexture(OBJSONQuadMetadata metadata) {
-        return textures[Math.min(metadata.texture(), textures.length - 1)];
+        return this.textures[Math.min(metadata.texture(), this.textures.length - 1)];
     }
 
     @Override
     public int getColour(OBJSONQuadMetadata metadata) {
-        return colours[metadata.tintIndex()];
+        return this.colours[metadata.tintIndex()];
     }
 }

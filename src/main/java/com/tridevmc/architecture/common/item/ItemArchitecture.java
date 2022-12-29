@@ -24,8 +24,8 @@
 
 package com.tridevmc.architecture.common.item;
 
-import com.tridevmc.architecture.common.render.ITextureConsumer;
-import com.tridevmc.architecture.common.render.ModelSpec;
+import com.tridevmc.architecture.common.model.ITextureConsumer;
+import com.tridevmc.architecture.common.model.ModelSpec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 

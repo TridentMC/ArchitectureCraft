@@ -2,8 +2,8 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +25,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public Trans3[] frameTrans;
 
     @Override
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction otherFace, LegacyVector3 hit) {
         int turn = -1;
         // If click is on side of a non-window block, orient perpendicular to it
         if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow))) {
@@ -94,7 +94,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
             shape = this.addGlassBoxesToList(r, s, 1 / 32d, e, t, shape);
         if (shape.isEmpty()) {
             // Fallback box in the unlikely case that no box was added.
-            shape = this.addBox(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5), t, shape);
+            shape = this.addBox(new LegacyVector3(-0.5, -0.5, -0.5), new LegacyVector3(0.5, 0.5, 0.5), t, shape);
         }
         return shape.optimize();
     }

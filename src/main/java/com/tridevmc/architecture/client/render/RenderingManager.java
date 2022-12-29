@@ -27,7 +27,7 @@ package com.tridevmc.architecture.client.render;
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.client.render.texture.TextureBase;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.render.ITextureConsumer;
+import com.tridevmc.architecture.common.model.ITextureConsumer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;

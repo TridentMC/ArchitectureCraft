@@ -25,8 +25,8 @@
 package com.tridevmc.architecture.common.proxy;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.objson.OBJSON;
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,9 +37,10 @@ import java.util.Map;
 
 public class CommonProxy {
 
-    private final Map<ResourceLocation, OBJSON> modelCache = Maps.newHashMap();
+    private final Map<ResourceLocation, LegacyOBJSON> modelCache = Maps.newHashMap();
 
     public void setup(FMLCommonSetupEvent e) {
+
     }
 
     public void registerHandlers() {
@@ -49,12 +50,12 @@ public class CommonProxy {
     public void registerCustomRenderers() {
     }
 
-    public OBJSON getCachedOBJSON(String name) {
+    public LegacyOBJSON getCachedOBJSON(String name) {
         ResourceLocation loc = this.modelLocation(name);
-        OBJSON model = this.modelCache.get(loc);
+        LegacyOBJSON model = this.modelCache.get(loc);
         if (model == null) {
             long t0 = System.nanoTime();
-            model = OBJSON.fromResource(loc);
+            model = LegacyOBJSON.fromResource(loc);
             this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
             String msg = String.format("Loaded and cached '%s' in %s nanos.", name, t1 - t0);

@@ -36,7 +36,7 @@ public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
     }
 
     public BakedQuadBuilderVertexConsumer setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-        realConsumer.setHasAmbientOcclusion(hasAmbientOcclusion);
+        this.realConsumer.setHasAmbientOcclusion(hasAmbientOcclusion);
         return this;
     }
 

@@ -27,7 +27,7 @@ package com.tridevmc.architecture.common.block;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.ui.UISawbench;
 import com.tridevmc.architecture.common.block.entity.ContainerSawbench;
-import com.tridevmc.architecture.common.render.ModelSpec;
+import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.common.ui.CreateMenuContext;
 import com.tridevmc.architecture.common.ui.IElementProvider;
@@ -79,7 +79,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
             }
             return InteractionResult.SUCCESS;
         } else {
-            return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getModelSpec(state));
+            return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, this.getModelSpec(state));
         }
     }
 

@@ -24,16 +24,15 @@
 
 package com.tridevmc.architecture.common.block.entity;
 
-import com.tridevmc.architecture.common.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.helpers.Trans3;
+import com.tridevmc.architecture.core.math.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
-import com.tridevmc.architecture.common.modeldata.ModelProperties;
+import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -162,8 +161,8 @@ public class ShapeBlockEntity extends BlockEntity {
         this.getArchitectureShape().behaviour.onHammerUse(this, player, face, this.hitVec(hitX, hitY, hitZ));
     }
 
-    protected Vector3 hitVec(float hitX, float hitY, float hitZ) {
-        return new Vector3(hitX - 0.5, hitY - 0.5, hitZ - 0.5);
+    protected LegacyVector3 hitVec(float hitX, float hitY, float hitZ) {
+        return new LegacyVector3(hitX - 0.5, hitY - 0.5, hitZ - 0.5);
     }
 
     public Direction globalFace(Direction face) {
@@ -275,10 +274,10 @@ public class ShapeBlockEntity extends BlockEntity {
     }
 
     public Trans3 localToGlobalRotation() {
-        return this.localToGlobalTransformation(Vector3.zero);
+        return this.localToGlobalTransformation(LegacyVector3.ZERO);
     }
 
-    public Trans3 localToGlobalTransformation(Vector3 origin) {
+    public Trans3 localToGlobalTransformation(LegacyVector3 origin) {
         BlockState state = this.level.getBlockState(this.worldPosition);
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)

@@ -19,32 +19,30 @@ import net.minecraft.world.phys.AABB;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetadata> {
 
-    private final OBJSON objson;
+    private final LegacyOBJSON objson;
     private final ArchitectureModelData<OBJSONQuadMetadata> convertedModelData;
     private final boolean generateUVs;
     private final boolean generateNormals;
 
-    public OBJSONModel(OBJSON objson, boolean generateUVs, boolean generateNormals) {
+    public OBJSONModel(LegacyOBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson;
         this.convertedModelData = new ArchitectureModelData<>();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
-        List<Tuple<Integer, OBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> new Tuple<>(i, this.objson.getFaces()[i])).collect(Collectors.toList());
+        List<Tuple<Integer, LegacyOBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> new Tuple<>(i, this.objson.getFaces()[i])).collect(Collectors.toList());
         mappedFaces = mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList());
         int minTexture = mappedFaces.get(0).getB().texture;
         mappedFaces.forEach(mF -> mF.getB().texture = mF.getB().texture - minTexture);
 
-        var rand = new Random();
-        for (Tuple<Integer, OBJSON.Face> indexedFace : mappedFaces) {
+        for (Tuple<Integer, LegacyOBJSON.Face> indexedFace : mappedFaces) {
             int faceIndex = indexedFace.getA();
-            OBJSON.Face face = indexedFace.getB();
-            for (OBJSON.Triangle tri : face.triangles) {
+            LegacyOBJSON.Face face = indexedFace.getB();
+            for (LegacyOBJSON.Triangle tri : face.triangles) {
                 this.addTri(this.convertedModelData, faceIndex, face.texture, 0, tri, face.vertices);
             }
         }
@@ -94,19 +92,19 @@ public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetada
         data.addQuadInstruction(meta, Direction.UP, maxX, maxY, minZ);
     }
 
-    private void addTri(ArchitectureModelData modelData, int face, int texture, int colour, OBJSON.Triangle tri, OBJSON.Vertex[] vertices) {
+    private void addTri(ArchitectureModelData modelData, int face, int texture, int colour, LegacyOBJSON.Triangle tri, LegacyOBJSON.Vertex[] vertices) {
         for (int i = 0; i < 3; i++) {
             int vertexIndex = tri.vertices[i];
-            OBJSON.Vertex vertex = vertices[vertexIndex];
+            LegacyOBJSON.Vertex vertex = vertices[vertexIndex];
             var metadata = new OBJSONQuadMetadata(texture, colour);
             if (this.generateUVs && this.generateNormals) {
-                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z);
+                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x(), vertex.getPos().y(), vertex.getPos().z());
             } else if (this.generateUVs) {
-                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getNormal().x, vertex.getNormal().y, vertex.getNormal().z);
+                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x(), vertex.getPos().y(), vertex.getPos().z(), vertex.getNormal().x(), vertex.getNormal().y(), vertex.getNormal().z());
             } else if (this.generateNormals) {
-                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getU() * 16, vertex.getV() * 16);
+                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x(), vertex.getPos().y(), vertex.getPos().z(), vertex.getU() * 16, vertex.getV() * 16);
             } else {
-                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x, vertex.getPos().y, vertex.getPos().z, vertex.getU() * 16, vertex.getV() * 16, vertex.getNormal().x, vertex.getNormal().y, vertex.getNormal().z);
+                modelData.addTriInstruction(metadata, face, null, vertex.getPos().x(), vertex.getPos().y(), vertex.getPos().z(), vertex.getU() * 16, vertex.getV() * 16, vertex.getNormal().x(), vertex.getNormal().y(), vertex.getNormal().z());
             }
         }
     }

@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.client.render.ArchitectureBlockHighlightRenderer;
 import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
@@ -55,59 +56,16 @@ public class ClientProxy extends CommonProxy {
         super.setup(e);
         if (!FMLEnvironment.production)
             MinecraftForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
+        MinecraftForge.EVENT_BUS.register(ArchitectureBlockHighlightRenderer.class);
     }
 
     public void registerDefaultModelLocations() {
         Item itemToRegister;
         ModelResourceLocation modelResourceLocation;
-
-        // Do some general render registrations for Content.
-        //for (int i = 0; i < ArchitectureContent.registeredBlocks.size(); i++) {
-        //    modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN
-        //            + ArchitectureContent.registeredBlocks.keySet().toArray()[i], "inventory");
-        //    Block block = (Block) ArchitectureContent.registeredBlocks.values().toArray()[i];
-        //    Item itemFromBlock = Item.getItemFromBlock(block);
-
-        //    if (RENDERING_MANAGER.blockNeedsCustomRendering(block)) {
-        //        //ModelLoader.setCustomStateMapper(block, RENDERING_MANAGER.getBlockStateMapper());
-        //        for (BlockState state : block.getStateContainer().getValidStates()) {
-        //            //ModelResourceLocation location = RENDERING_MANAGER.getBlockStateMapper().getModelResourceLocation(state);
-        //            //IBakedModel model = RENDERING_MANAGER.getCustomBakedModel(state, location);
-        //            //RENDERING_MANAGER.getBakedModels().add(model);
-        //        }
-
-        //        if (itemFromBlock != Items.AIR) {
-        //            RENDERING_MANAGER.registerModelLocationForItem(itemFromBlock, RENDERING_MANAGER.getItemBakedModel());
-        //        }
-        //    } else {
-        //        this.registerMesh(itemFromBlock, modelResourceLocation);
-        //    }
-        //}
-
-        //for (int i = 0; i < ArchitectureContent.registeredItems.size(); i++) {
-        //    modelResourceLocation = new ModelResourceLocation(ArchitectureMod.RESOURCE_DOMAIN + ArchitectureContent.registeredItems.keySet().toArray()[i], "inventory");
-        //    itemToRegister = (Item) ArchitectureContent.registeredItems.values().toArray()[i];
-        //    if (RENDERING_MANAGER.itemNeedsCustomRendering(itemToRegister)) {
-        //        RENDERING_MANAGER.registerModelLocationForItem(itemToRegister, RENDERING_MANAGER.getItemBakedModel());
-        //    } else {
-        //        registerMesh(itemToRegister, 0, modelResourceLocation);
-        //    }
-        //}
     }
 
     private void registerMesh(Item item, ModelResourceLocation resourceLocation) {
-        //Minecraft mc = Minecraft.getInstance();
-        //if (mc.getItemRenderer() != null && mc.getItemRenderer().getItemModelMesher() != null) {
-        //    mc.getItemRenderer().getItemModelMesher().register(item, resourceLocation);
-        //} else {
-        //    ModelLoader.setCustomModelResourceLocation(item, meta, resourceLocation);
-        //}
     }
-
-    //@SubscribeEvent
-    //public void onModelBakeEvent(ModelBakeEvent e) {
-    //    //RENDERING_MANAGER.getItemBakedModel().install(e);
-    //}
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
@@ -133,11 +91,6 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void registerCustomRenderers() {
-        //RENDERING_MANAGER.addBlockRenderer(ArchitectureMod.CONTENT.blockShape, SHAPE_RENDER_DISPATCHER);
-        //RENDERING_MANAGER.addItemRenderer(ArchitectureMod.CONTENT.itemCladding, new RenderCladding());
-
-        //RenderTypeLookup.setRenderLayer(ArchitectureMod.CONTENT.blockSawbench, RenderType.cutoutMipped());
-        //ArchitectureMod.CONTENT.blockShapes.values().forEach(b -> RenderTypeLookup.setRenderLayer(b, (l) -> true));
     }
 
     private ResourceLocation[] getTextures(String... textureNames) {

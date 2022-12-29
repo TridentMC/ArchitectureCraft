@@ -3,9 +3,9 @@ package com.tridevmc.architecture.common.block.state;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
-import com.tridevmc.architecture.common.render.ModelSpec;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.common.model.ModelSpec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -53,30 +53,30 @@ public class BlockStateArchitecture extends BlockState {
     }
 
     public BlockArchitecture.IOrientationHandler getOrientationHandler() {
-        return getBlock().getOrientationHandler();
+        return this.getBlock().getOrientationHandler();
     }
 
     public RenderShape getRenderShape() {
-        return getBlock().getRenderShape(this);
+        return this.getBlock().getRenderShape(this);
     }
 
     public ModelSpec getModelSpec() {
-        return getBlock().getModelSpec(this);
+        return this.getBlock().getModelSpec(this);
     }
 
     public Trans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
-        return getBlock().localToGlobalRotation(level, pos, this);
+        return this.getBlock().localToGlobalRotation(level, pos, this);
     }
 
     public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
-        return getBlock().localToGlobalTransformation(level, pos, this);
+        return this.getBlock().localToGlobalTransformation(level, pos, this);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, Vector3 origin) {
-        return getBlock().localToGlobalTransformation(level, pos, this, origin);
+    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, LegacyVector3 origin) {
+        return this.getBlock().localToGlobalTransformation(level, pos, this, origin);
     }
 
     public BlockState getParticleState(BlockAndTintGetter level, BlockPos pos) {
-        return getBlock().getParticleState(level, pos);
+        return this.getBlock().getParticleState(level, pos);
     }
 }

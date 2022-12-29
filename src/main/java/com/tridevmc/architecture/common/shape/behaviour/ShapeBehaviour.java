@@ -6,9 +6,9 @@ import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.common.helpers.Trans3;
+import com.tridevmc.architecture.core.math.Trans3;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,14 +48,14 @@ public class ShapeBehaviour {
 
     public boolean orientOnPlacement(Player player, ShapeBlockEntity tile,
                                      BlockPos neighbourPos, BlockState neighbourState, BlockEntity neighbourTile,
-                                     Direction otherFace, Vector3 hit) {
+                                     Direction otherFace, LegacyVector3 hit) {
         if (neighbourTile instanceof ShapeBlockEntity)
             return this.orientOnPlacement(player, tile, (ShapeBlockEntity) neighbourTile, otherFace, hit);
         else
             return this.orientOnPlacement(player, tile, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile, ShapeBlockEntity neighbourTile, Direction otherFace, Vector3 hit) {
+    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile, ShapeBlockEntity neighbourTile, Direction otherFace, LegacyVector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
             EnumShape neighbourShape = neighbourTile.getArchitectureShape();
             Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
@@ -92,7 +92,7 @@ public class ShapeBehaviour {
         return false;
     }
 
-    public void onChiselUse(ShapeBlockEntity te, Player player, Direction face, Vector3 hit) {
+    public void onChiselUse(ShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
         Direction side = this.zoneHit(face, hit);
         if (side != null)
             this.chiselUsedOnSide(te, player, side);
@@ -122,7 +122,7 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public void onHammerUse(ShapeBlockEntity te, Player player, Direction face, Vector3 hit) {
+    public void onHammerUse(ShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
         if (player.isCrouching())
             te.setSide((te.getSide() + 1) % 6);
         else {
@@ -136,14 +136,14 @@ public class ShapeBehaviour {
         }
     }
 
-    public Direction zoneHit(Direction face, Vector3 hit) {
+    public Direction zoneHit(Direction face, LegacyVector3 hit) {
         double r = 0.5 - this.sideZoneSize();
-        if (hit.x <= -r && face != WEST) return WEST;
-        if (hit.x >= r && face != EAST) return EAST;
-        if (hit.y <= -r && face != DOWN) return DOWN;
-        if (hit.y >= r && face != UP) return UP;
-        if (hit.z <= -r && face != NORTH) return NORTH;
-        if (hit.z >= r && face != SOUTH) return SOUTH;
+        if (hit.x() <= -r && face != WEST) return WEST;
+        if (hit.x() >= r && face != EAST) return EAST;
+        if (hit.y() <= -r && face != DOWN) return DOWN;
+        if (hit.y() >= r && face != UP) return UP;
+        if (hit.z() <= -r && face != NORTH) return NORTH;
+        if (hit.z() >= r && face != SOUTH) return SOUTH;
         return null;
     }
 
@@ -187,43 +187,43 @@ public class ShapeBehaviour {
             case 0x000: // 2x2x2 cubelet bitmap
                 for (int i = 0; i < 8; i++)
                     if ((mask & (1 << i)) != 0) {
-                        Vector3 p = new Vector3(
+                        LegacyVector3 p = new LegacyVector3(
                                 (i & 1) != 0 ? 1 : 0,
                                 (i & 4) != 0 ? 1 : 0,
                                 (i & 2) != 0 ? 1 : 0);
-                        shapeOut = this.addBox(Vector3.zero, p, t, shapeOut);
+                        shapeOut = this.addBox(LegacyVector3.ZERO, p, t, shapeOut);
                     }
                 break;
             case 0x100: // Square, full size in Y
                 r = param / 16.0;
-                shapeOut = this.addBox(new Vector3(-r, 0, -r), new Vector3(r, 1, r), t, shapeOut);
+                shapeOut = this.addBox(new LegacyVector3(-r, 0, -r), new LegacyVector3(r, 1, r), t, shapeOut);
                 break;
             case 0x200: // SLAB, full size in X and Y
                 r = param / 32.0;
-                shapeOut = this.addBox(new Vector3(0, 0, -r), new Vector3(1, 1, r), t, shapeOut);
+                shapeOut = this.addBox(new LegacyVector3(0, 0, -r), new LegacyVector3(1, 1, r), t, shapeOut);
                 break;
             case 0x300: // SLAB in back corner
                 r = ((param & 0xf) + 1) / 16.0; // width and length of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
-                shapeOut = this.addBox(new Vector3(0, 0, 1 - r), new Vector3(0 + r, 0 + h, 1), t, shapeOut);
+                shapeOut = this.addBox(new LegacyVector3(0, 0, 1 - r), new LegacyVector3(0 + r, 0 + h, 1), t, shapeOut);
                 break;
             case 0x400: // SLAB at back
             case 0x500: // Slabs at back and right
                 r = ((param & 0xf) + 1) / 16.0; // thickness of slab
                 h = ((param >> 4) + 1) / 16.0; // height of slab from bottom
-                shapeOut = this.addBox(new Vector3(0, 0, 1 - r), new Vector3(1, 0 + h, 1), t, shapeOut);
+                shapeOut = this.addBox(new LegacyVector3(0, 0, 1 - r), new LegacyVector3(1, 0 + h, 1), t, shapeOut);
                 if ((mask & 0x100) != 0)
-                    shapeOut = this.addBox(new Vector3(0, 0, 0), new Vector3(0 + r, 0 + h, 1), t, shapeOut);
+                    shapeOut = this.addBox(new LegacyVector3(0, 0, 0), new LegacyVector3(0 + r, 0 + h, 1), t, shapeOut);
                 break;
             default: // Full cube
-                shapeOut = this.addBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1), t, shapeOut);
+                shapeOut = this.addBox(new LegacyVector3(0, 0, 0), new LegacyVector3(1, 1, 1), t, shapeOut);
         }
         return shapeOut;
     }
 
     @Nonnull
-    protected VoxelShape addBox(Vector3 p0, Vector3 p1, Trans3 t, VoxelShape shape) {
-        return Shapes.or(shape, t.t(Shapes.create(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z)));
+    protected VoxelShape addBox(LegacyVector3 p0, LegacyVector3 p1, Trans3 t, VoxelShape shape) {
+        return Shapes.or(shape, t.t(Shapes.create(p0.x(), p0.y(), p0.z(), p1.x(), p1.y(), p1.z())));
     }
 
     private class BehaviourState {

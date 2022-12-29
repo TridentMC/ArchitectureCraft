@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.render;
+package com.tridevmc.architecture.common.model;
 
 public interface ITextureConsumer {
     String[] getTextureNames();

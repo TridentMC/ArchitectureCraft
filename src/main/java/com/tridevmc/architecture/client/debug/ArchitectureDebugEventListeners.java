@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tridevmc.architecture.client.render.model.objson.OBJSONVoxelizer;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.render.ModelSpec;
+import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import net.minecraft.client.Minecraft;

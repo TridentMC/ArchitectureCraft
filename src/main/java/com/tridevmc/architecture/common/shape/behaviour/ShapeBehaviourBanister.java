@@ -3,8 +3,8 @@ package com.tridevmc.architecture.common.shape.behaviour;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +36,7 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
 
     @Override
     public boolean orientOnPlacement(Player player, ShapeBlockEntity te,
-                                     BlockPos nPos, BlockState nState, BlockEntity nte, Direction otherFace, Vector3 hit) {
+                                     BlockPos nPos, BlockState nState, BlockEntity nte, Direction otherFace, LegacyVector3 hit) {
         if (!player.isCrouching()) {
             var nBlock = nState.getBlock();
             boolean placedOnStair = false;
@@ -58,7 +58,7 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
             if (placedOnStair) {
                 int side = otherFace.getOpposite().ordinal();
                 if (side == nside) {
-                    Vector3 h = Trans3.sideTurn(side, 0).ip(hit);
+                    LegacyVector3 h = Trans3.sideTurn(side, 0).ip(hit);
                     double offX = te.getArchitectureShape().offsetXForPlacementHit(side, nturn, hit);
                     te.setSide(side);
                     te.setTurn(nturn & 3);

@@ -27,8 +27,8 @@ package com.tridevmc.architecture.common.shape;
 import com.google.common.collect.ImmutableMap;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.behaviour.*;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -200,9 +200,9 @@ public enum EnumShape implements StringRepresentable {
         return SHAPES_BY_NAME.getOrDefault(name, ROOF_TILE);
     }
 
-    public static int turnForPlacementHit(int side, Vector3 hit, ShapeSymmetry symmetry) {
-        Vector3 h = Trans3.sideTurn(side, 0).ip(hit);
-        return turnForPlacementHit(symmetry, h.x, h.z);
+    public static int turnForPlacementHit(int side, LegacyVector3 hit, ShapeSymmetry symmetry) {
+        LegacyVector3 h = Trans3.sideTurn(side, 0).ip(hit);
+        return turnForPlacementHit(symmetry, h.x(), h.z());
     }
 
     private static int turnForPlacementHit(ShapeSymmetry symmetry, double x, double z) {
@@ -225,13 +225,13 @@ public enum EnumShape implements StringRepresentable {
     }
 
     public void orientOnPlacement(Player player, ShapeBlockEntity te,
-                                  BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, Vector3 hit) {
+                                  BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, LegacyVector3 hit) {
         if (!te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
             this.orientFromHitPosition(player, te, face, hit);
         }
     }
 
-    private void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, Vector3 hit) {
+    private void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, LegacyVector3 hit) {
         byte side, turn;
         switch (face) {
             case UP:
@@ -246,7 +246,7 @@ public enum EnumShape implements StringRepresentable {
             default:
                 if (player.isCrouching())
                     side = (byte) face.getOpposite().ordinal();
-                else if (hit.y > 0.0 && te.getArchitectureShape().behaviour.canPlaceUpsideDown())
+                else if (hit.y() > 0.0 && te.getArchitectureShape().behaviour.canPlaceUpsideDown())
                     side = (byte) this.upsideDownSide();
                 else
                     side = (byte) this.rightSideUpSide();
@@ -259,9 +259,9 @@ public enum EnumShape implements StringRepresentable {
         }
     }
 
-    public double offsetXForPlacementHit(int side, int turn, Vector3 hit) {
-        Vector3 h = Trans3.sideTurn(side, turn).ip(hit);
-        return this.signedPlacementOffsetX(h.x);
+    public double offsetXForPlacementHit(int side, int turn, LegacyVector3 hit) {
+        LegacyVector3 h = Trans3.sideTurn(side, turn).ip(hit);
+        return this.signedPlacementOffsetX(h.x());
     }
 
     public double signedPlacementOffsetX(double sign) {

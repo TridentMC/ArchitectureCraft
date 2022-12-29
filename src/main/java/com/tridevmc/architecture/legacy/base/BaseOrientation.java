@@ -24,11 +24,11 @@
 
 package com.tridevmc.architecture.legacy.base;
 
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
-import com.tridevmc.architecture.common.helpers.Vector3;
+import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.core.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -86,7 +86,10 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
+            if(1 == 1) {
+                return Trans3.ident;
+            }
             var f = state.getValue(FACING);
             int i = switch (f) {
                 case NORTH -> 0;
@@ -95,7 +98,7 @@ public class BaseOrientation {
                 case EAST -> 3;
                 default -> 0;
             };
-            return new Trans3(origin).turnAround(Vector3.blockCenter, i);
+            return new Trans3(origin).turnAround(LegacyVector3.BLOCK_CENTER, i);
         }
 
     }
@@ -105,7 +108,7 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, Vector3 origin) {
+        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
             var te = level.getBlockEntity(pos);
             if (te instanceof ShapeBlockEntity bte) {
                 return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());

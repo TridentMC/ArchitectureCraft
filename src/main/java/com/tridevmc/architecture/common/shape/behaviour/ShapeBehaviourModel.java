@@ -1,9 +1,9 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.client.render.model.objson.OBJSON;
+import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Trans3;
+import com.tridevmc.architecture.core.math.Trans3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -15,7 +15,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class ShapeBehaviourModel extends ShapeBehaviour {
 
     protected String modelName;
-    private OBJSON model;
+    private LegacyOBJSON model;
 
     public ShapeBehaviourModel(String name) {
         this(name, null);
@@ -31,7 +31,7 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
         return true;
     }
 
-    protected OBJSON getOBJSONModel() {
+    protected LegacyOBJSON getOBJSONModel() {
         if (this.model == null)
             this.model = ArchitectureMod.PROXY.getCachedOBJSON(this.modelName);
         return this.model;
@@ -43,8 +43,8 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
 
     @Override
     public boolean acceptsCladding() {
-        OBJSON model = this.getOBJSONModel();
-        for (OBJSON.Face face : model.getFaces())
+        LegacyOBJSON model = this.getOBJSONModel();
+        for (LegacyOBJSON.Face face : model.getFaces())
             if (face.getTexture() >= 2)
                 return true;
         return false;

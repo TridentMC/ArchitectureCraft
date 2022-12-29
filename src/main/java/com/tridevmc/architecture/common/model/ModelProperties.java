@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.modeldata;
+package com.tridevmc.architecture.common.model;
 
 
 import net.minecraft.core.BlockPos;

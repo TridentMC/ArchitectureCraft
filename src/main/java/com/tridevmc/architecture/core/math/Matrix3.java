@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.helpers;
+package com.tridevmc.architecture.core.math;
 
 import com.google.common.base.MoreObjects;
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.core.ArchitectureLog;
 
 import java.util.Arrays;
 
@@ -92,29 +92,29 @@ public class Matrix3 {
         return r;
     }
 
-    public Vector3 mul(double x, double y, double z) {
-        return new Vector3(
+    public LegacyVector3 mul(double x, double y, double z) {
+        return new LegacyVector3(
                 x * this.m[0][0] + y * this.m[0][1] + z * this.m[0][2],
                 x * this.m[1][0] + y * this.m[1][1] + z * this.m[1][2],
                 x * this.m[2][0] + y * this.m[2][1] + z * this.m[2][2]
         );
     }
 
-    public Vector3 imul(double x, double y, double z) {
+    public LegacyVector3 imul(double x, double y, double z) {
         //  Multiply by inverse, assuming an orthonormal matrix
-        return new Vector3(
+        return new LegacyVector3(
                 x * this.m[0][0] + y * this.m[1][0] + z * this.m[2][0],
                 x * this.m[0][1] + y * this.m[1][1] + z * this.m[2][1],
                 x * this.m[0][2] + y * this.m[1][2] + z * this.m[2][2]
         );
     }
 
-    public Vector3 mul(Vector3 v) {
-        return this.mul(v.x, v.y, v.z);
+    public LegacyVector3 mul(LegacyVector3 v) {
+        return this.mul(v.x(), v.y(), v.z());
     }
 
-    public Vector3 imul(Vector3 v) {
-        return this.imul(v.x, v.y, v.z);
+    public LegacyVector3 imul(LegacyVector3 v) {
+        return this.imul(v.x(), v.y(), v.z());
     }
 
     public void dump() {
@@ -145,7 +145,7 @@ public class Matrix3 {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("m", m)
+                .add("m", this.m)
                 .toString();
     }
 }

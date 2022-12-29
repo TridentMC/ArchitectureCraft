@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.client.render.model.objson;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.common.ArchitectureLog;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.utils.AABBTree;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 /**
  * Reads an OBJSON object and converts it into voxels.
  * <p>
- * Implementation of SAT based off of https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
+ * Implementation of SAT based off of <a href="https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html">...</a>
  */
 public class OBJSONVoxelizer {
 
@@ -33,16 +33,17 @@ public class OBJSONVoxelizer {
     private static final Vec3 yNormal = new Vec3(0, 1, 0);
     private static final Vec3 zNormal = new Vec3(0, 0, 1);
 
-    private final OBJSON objson;
+    private final LegacyOBJSON objson;
     private final Mesh mesh;
     private final int blockResolution;
     private final Vec3i min, max;
+    private List<Edge> edges;
 
-    public OBJSONVoxelizer(OBJSON objson, int blockResolution) {
+    public OBJSONVoxelizer(LegacyOBJSON objson, int blockResolution) {
         this.objson = objson;
         this.blockResolution = blockResolution;
         this.mesh = new Mesh(Arrays.stream(objson.getFaces())
-                .flatMap((Function<OBJSON.Face, Stream<UnpackedTri>>) face -> Arrays.stream(face.triangles)
+                .flatMap((Function<LegacyOBJSON.Face, Stream<UnpackedTri>>) face -> Arrays.stream(face.triangles)
                         .map(t -> new UnpackedTri(face, t, 1D / (blockResolution * 64))))
                 .collect(Collectors.toList()));
 
@@ -63,7 +64,7 @@ public class OBJSONVoxelizer {
     }
 
     public VoxelShape voxelizeShape() {
-        var aabbs = voxelize();
+        var aabbs = this.voxelize();
         return aabbs.stream()
                 .map(Shapes::create)
                 .reduce((a, b) -> Shapes.joinUnoptimized(a, b, BooleanOp.OR))
@@ -77,9 +78,9 @@ public class OBJSONVoxelizer {
         for (int y = this.min.getY(); y < this.max.getY(); y++) {
             for (int x = this.min.getX(); x < this.max.getX(); x++) {
                 for (int z = this.min.getZ(); z < this.max.getZ(); z++) {
-                    var box = getBoxForOffset(x, y, z);
+                    var box = this.getBoxForOffset(x, y, z);
                     futures.add(POOL.submit(() -> {
-                        if (isBoxValidVoxel(box)) {
+                        if (this.isBoxValidVoxel(box)) {
                             return box;
                         }
                         return null;
@@ -101,11 +102,11 @@ public class OBJSONVoxelizer {
     }
 
     public boolean isBoxValidVoxel(AABB box) {
-        return doesBoxIntersect(box) || isPointWithinPolyhedron(box.getCenter());
+        return this.doesBoxIntersect(box) || this.isPointWithinPolyhedron(box.getCenter());
     }
 
     public AABB getBoxForOffset(Vec3i offset) {
-        return getBoxForOffset(offset.getX(), offset.getY(), offset.getZ());
+        return this.getBoxForOffset(offset.getX(), offset.getY(), offset.getZ());
     }
 
     public AABB getBoxForOffset(int x, int y, int z) {
@@ -117,7 +118,7 @@ public class OBJSONVoxelizer {
     }
 
     public boolean doesBoxIntersect(AABB box) {
-        return getIntersectingTris(box.deflate(1D / (blockResolution * 32))).findAny().isPresent();
+        return this.getIntersectingTris(box.deflate(1D / (this.blockResolution * 32))).findAny().isPresent();
     }
 
     public Stream<UnpackedTri> getIntersectingTris(AABB box) {
@@ -149,46 +150,24 @@ public class OBJSONVoxelizer {
         return false;
     }
 
-    public OBJSON getObjson() {
-        return objson;
+    public LegacyOBJSON getObjson() {
+        return this.objson;
     }
 
     public Mesh getMesh() {
-        return mesh;
+        return this.mesh;
     }
 
     public int getBlockResolution() {
-        return blockResolution;
+        return this.blockResolution;
     }
 
     public Vec3i getMin() {
-        return min;
+        return this.min;
     }
 
     public Vec3i getMax() {
-        return max;
-    }
-
-    private static double getFastWindingNumber(Mesh polyhedron, Vec3 point) {
-        return getFastWindingNumber(polyhedron.getRoot(), point);
-    }
-
-    private static double getFastWindingNumber(AABBTree<UnpackedTri>.Node node, Vec3 point) {
-        // Fast Approximation of Winding Number: https://www.dgp.toronto.edu/projects/fast-winding-numbers/fast-winding-numbers-for-soups-and-clouds-siggraph-2018-barill-et-al.pdf
-        // I have no clue how any of this works, I just tried my best to implement it based on the pseudocode in the paper.
-        //var tolerance = 2;
-        //var treeBounds = node.getValue();
-        //var treeP = treeBounds.getCenter();
-        //var treeR = (Math.pow(treeBounds.getXsize(), 2) + Math.pow(treeBounds.getYsize(), 2) + Math.pow(treeBounds.getZsize(), 2)) / 2;
-        //if (point.subtract(treeP).length() > (treeR * tolerance) && treeR != 0) {
-        //    // q is sufficiently far from all elements in tree.
-        //    var dist = treeP.subtract(point).length();
-        //    return treeP.subtract(point).dot(polyhedron.meanNormal) / (4 * Math.PI * dist * dist * dist);
-        //} else {
-        //    var value = 0;
-        //    if()
-        //}
-        return 0;
+        return this.max;
     }
 
     private static boolean testSeparatingAxis(Vec3 v0, Vec3 v1, Vec3 v2, Vec3 axis, Vec3 aabbSize) {
@@ -228,7 +207,7 @@ public class OBJSONVoxelizer {
          * @return a stream of valid hits.
          */
         public Stream<Hit> intersect(Mesh mesh) {
-            return intersectUnfiltered(mesh).filter(Hit::isValidHit);
+            return this.intersectUnfiltered(mesh).filter(Hit::isValidHit);
         }
 
         /**
@@ -238,7 +217,7 @@ public class OBJSONVoxelizer {
          * @return a stream of hits or failed hits.
          */
         public Stream<Hit> intersectUnfiltered(Mesh mesh) {
-            return mesh.search(new AABB(origin, origin.add(direction)))
+            return mesh.search(new AABB(this.origin, this.origin.add(this.direction)))
                     .stream()
                     .map(this::intersect);
         }
@@ -257,7 +236,7 @@ public class OBJSONVoxelizer {
              * @return true if the hit is valid, false otherwise.
              */
             public boolean isValidHit() {
-                return point != null;
+                return this.point != null;
             }
 
             /**
@@ -272,7 +251,7 @@ public class OBJSONVoxelizer {
 
             public Hit rounded() {
                 // Round the hit point to the nearest 256th of a block.
-                return new Hit(ray, new Vec3(Math.round(point.x * 256) / 256D, Math.round(point.y * 256) / 256D, Math.round(point.z * 256) / 256D), tri);
+                return new Hit(this.ray, new Vec3(Math.round(this.point.x * 256) / 256D, Math.round(this.point.y * 256) / 256D, Math.round(this.point.z * 256) / 256D), this.tri);
             }
         }
     }
@@ -283,12 +262,12 @@ public class OBJSONVoxelizer {
         private final double[][] vertices;
         private final Vec3 normal;
 
-        public UnpackedTri(OBJSON.Face face, OBJSON.Triangle triangle, double resolution) {
+        public UnpackedTri(LegacyOBJSON.Face face, LegacyOBJSON.Triangle triangle, double resolution) {
             this.vertices = new double[3][];
             for (int i = 0; i < this.vertices.length; i++) {
                 this.vertices[i] = face.vertices[triangle.vertices[i]].getPos().toArray();
             }
-            this.normal = getV1().subtract(getV0()).cross(getV2().subtract(getV0())).normalize();
+            this.normal = this.getV1().subtract(this.getV0()).cross(this.getV2().subtract(this.getV0())).normalize();
 
             var xEdges = MiscUtils.getEdges(Arrays.stream(this.getXs()));
             var yEdges = MiscUtils.getEdges(Arrays.stream(this.getYs()));
@@ -362,7 +341,7 @@ public class OBJSONVoxelizer {
 
         public boolean isFacing(Vec3 point) {
             // Determine if the triangle is facing towards the given point, the triangle's vertices are stored in a clockwise order
-            return this.normal.dot(point.subtract(getV0())) < 0;
+            return this.normal.dot(point.subtract(this.getV0())) < 0;
         }
 
         private AABB getBox() {
@@ -399,32 +378,26 @@ public class OBJSONVoxelizer {
     public static class Mesh {
         private final List<UnpackedTri> tris;
         private final AABBTree<UnpackedTri> trisTree;
-        //private final Vec3 meanNormal;
 
         public Mesh(List<UnpackedTri> unpackedTris) {
             this.tris = ImmutableList.copyOf(unpackedTris);
             this.trisTree = new AABBTree<UnpackedTri>(unpackedTris, UnpackedTri::getBox);
-
-            //var meanNormal = new Vec3(0, 0, 0);
-            //for (var unpackedTri : this.tris) {
-            //    // Calculate the area of the triangle
-            //    var area = unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).length() / 2;
-            //    meanNormal = meanNormal.add(unpackedTri.getV0().subtract(unpackedTri.getV1()).cross(unpackedTri.getV0().subtract(unpackedTri.getV2())).scale(area));
-            //}
-            //this.meanNormal = meanNormal;
         }
 
         public AABBTree<UnpackedTri>.Node getRoot() {
-            return trisTree.getRoot();
+            return this.trisTree.getRoot();
         }
 
         public AABB getBounds() {
-            return trisTree.getBounds();
+            return this.trisTree.getBounds();
         }
 
         public List<UnpackedTri> search(AABB box) {
-            return trisTree.search(box);
+            return this.trisTree.search(box);
         }
+    }
+
+    public record Edge(Vec3 v0, Vec3 v1) {
     }
 
 }

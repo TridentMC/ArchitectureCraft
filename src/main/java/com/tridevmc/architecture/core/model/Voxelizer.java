@@ -1,0 +1,187 @@
+package com.tridevmc.architecture.core.model;
+
+import com.google.common.collect.Lists;
+import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.Vector3i;
+import com.tridevmc.architecture.core.model.mesh.IMesh;
+import com.tridevmc.architecture.core.model.mesh.IPolygonData;
+import com.tridevmc.architecture.core.physics.AABB;
+import com.tridevmc.architecture.core.physics.Ray;
+import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+/**
+ * Performs a series of collision tests on a given mesh to create a voxelized representation of it.
+ */
+public class Voxelizer {
+
+    private static final ExecutorService POOL = Executors.newWorkStealingPool();
+    private static final LegacyVector3 xNormal = LegacyVector3.UNIT_X;
+    private static final LegacyVector3 yNormal = LegacyVector3.UNIT_Y;
+    private static final LegacyVector3 zNormal = LegacyVector3.UNIT_Z;
+
+    private final IMesh<?, ? extends IPolygonData> mesh;
+    private final int blockResolution;
+    private final double resolution;
+    private final Vector3i min, max;
+    private final boolean[][][] voxels;
+    private List<AABB> simplifiedVoxels;
+
+    /**
+     * Creates a new voxelizer for the given mesh.
+     *
+     * @param mesh            The mesh to voxelize.
+     * @param blockResolution The resolution of the voxel grid, in terms of voxels per 1 unit of length.
+     */
+    public Voxelizer(IMesh<?, ?> mesh, int blockResolution) {
+        this.mesh = mesh;
+        this.blockResolution = blockResolution;
+        this.resolution = 1.0D / blockResolution;
+
+        var minXBounds = this.mesh.getBounds().minX();
+        var minYBounds = this.mesh.getBounds().minY();
+        var minZBounds = this.mesh.getBounds().minZ();
+        var maxXBounds = this.mesh.getBounds().maxX();
+        var maxYBounds = this.mesh.getBounds().maxY();
+        var maxZBounds = this.mesh.getBounds().maxZ();
+
+        var minX = (int) (this.resolution * Math.round(minXBounds / this.resolution) / this.resolution);
+        var minY = (int) (this.resolution * Math.round(minYBounds / this.resolution) / this.resolution);
+        var minZ = (int) (this.resolution * Math.round(minZBounds / this.resolution) / this.resolution);
+        var maxX = (int) (this.resolution * Math.round(maxXBounds / this.resolution) / this.resolution);
+        var maxY = (int) (this.resolution * Math.round(maxYBounds / this.resolution) / this.resolution);
+        var maxZ = (int) (this.resolution * Math.round(maxZBounds / this.resolution) / this.resolution);
+
+        this.min = new Vector3i(minX, minY, minZ);
+        this.max = new Vector3i(maxX, maxY, maxZ);
+
+        this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
+    }
+
+    /**
+     * Performs the voxelization process.
+     *
+     * @return A list of AABBs representing the voxels that were found to be occupied.
+     */
+    public List<AABB> voxelize() {
+        if (this.simplifiedVoxels == null) {
+            // Create a list of all the voxels that are intersected by the mesh, do this with a thread pool to speed up the process.
+            var futures = new ArrayList<Future<AABB>>(this.totalVoxels());
+            for (var x = this.min.x(); x <= this.max.x(); x++) {
+                for (var y = this.min.y(); y <= this.max.y(); y++) {
+                    for (var z = this.min.z(); z <= this.max.z(); z++) {
+                        var box = this.getBoxForOffset(x, y, z);
+                        futures.add(POOL.submit(() -> this.isBoxValidVoxel(box) ? box : null));
+                    }
+                }
+            }
+
+            var resolvedVoxels = futures.stream().map(f -> {
+                try {
+                    return f.get();
+                } catch (Exception e) {
+                    ArchitectureLog.error("Failed to voxelize mesh {}, throwing exception", this.mesh);
+                    throw new RuntimeException("Failed to voxelize mesh " + this.mesh, e);
+                }
+            }).filter(Objects::nonNull).toList();
+
+            // Simplify the list of voxels while still preserving the shape we've created.
+            var simplified = new ArrayList<AABB>();
+            for (var voxel : resolvedVoxels) {
+                var merged = false;
+                for (var i = 0; i < simplified.size(); i++) {
+                    var other = simplified.get(i);
+                    if (voxel.isAdjacent(other)) {
+                        simplified.set(i, voxel.union(other));
+                        merged = true;
+                        break;
+                    }
+                }
+                if (!merged) {
+                    simplified.add(voxel);
+                }
+            }
+
+            this.simplifiedVoxels = simplified;
+        }
+
+        return this.simplifiedVoxels;
+    }
+
+    public AABB getBoxForOffset(int x, int y, int z) {
+        double bX = x * this.resolution;
+        double bY = y * this.resolution;
+        double bZ = z * this.resolution;
+        return new AABB(bX, bY, bZ, bX + this.resolution, bY + this.resolution, bZ + this.resolution);
+    }
+
+    private int totalVoxels() {
+        return this.voxels.length * this.voxels[0].length * this.voxels[0][0].length;
+    }
+
+    private boolean isBoxValidVoxel(AABB box) {
+        return this.doesBoxIntersect(box) || this.isPointInsideMesh(box.center());
+    }
+
+    /**
+     * Checks if the given box intersects with the mesh.
+     *
+     * @param box The box to check.
+     * @return True if the box intersects with the mesh, false otherwise.
+     */
+    private boolean doesBoxIntersect(AABB box) {
+        return this.mesh.searchStream(box.deflate(1D / (this.blockResolution * 32))).anyMatch(p -> p.intersect(box));
+    }
+
+    /**
+     * Checks if the given point is inside the mesh.
+     *
+     * @param point The point to check.
+     * @return True if the point is inside the mesh, false otherwise.
+     */
+    private boolean isPointInsideMesh(LegacyVector3 point) {
+        var meshBounds = this.mesh.getBounds();
+        var fromPoint = new LegacyVector3(meshBounds.minX() - 1, point.y(), point.z());
+        var toPoint = new LegacyVector3(meshBounds.maxX() + 1, point.y(), point.z());
+        var rayDirection = toPoint.sub(fromPoint);
+        var ray = new Ray(fromPoint, rayDirection);
+
+        List<ObjectDoubleImmutablePair<Ray.Hit>> hits = ray.intersect(this.mesh).map(h -> {
+            var hit = h.rounded();
+            return ObjectDoubleImmutablePair.of(hit, hit.distanceTo(point));
+        }).toList();
+
+        if (hits.isEmpty())
+            return false;
+
+        // We have to collect all the closest points, so we can choose an option if there are multiple.
+        // This is a safeguard against any bad geometry that might be present in the mesh.
+        var closestHits = Lists.newArrayList(hits.get(0));
+        for (var i = 1; i < hits.size(); i++) {
+            var hitData = hits.get(i);
+            if (Double.compare(hitData.rightDouble(), closestHits.get(0).rightDouble()) < 0) {
+                closestHits.clear();
+                closestHits.add(hitData);
+            } else if (Double.compare(hitData.rightDouble(), closestHits.get(0).rightDouble()) == 0) {
+                closestHits.add(hitData);
+            }
+        }
+
+        for (var closestHit : closestHits) {
+            if (closestHit.left().poly().isFacing(point)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+}
