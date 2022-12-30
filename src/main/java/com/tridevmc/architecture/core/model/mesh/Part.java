@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.physics.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,7 @@ public record Part<I, D extends IPolygonData>(I id, ImmutableList<IFace<D>> face
     }
 
     @Override
-    public @NotNull IPart<I, D> transform(@NotNull Transform trans, boolean transformUVs) {
+    public @NotNull IPart<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder<I, D>();
         for (var f : this.faces) {
             builder.addFace(f.transform(trans, transformUVs));

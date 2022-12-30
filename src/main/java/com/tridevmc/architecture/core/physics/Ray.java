@@ -1,7 +1,8 @@
 package com.tridevmc.architecture.core.physics;
 
 
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygon;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
  * @param origin    the origin of the ray.
  * @param direction the direction of the ray.
  */
-public record Ray(LegacyVector3 origin, LegacyVector3 direction) {
+public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
     /**
      * Attempts to intersect this ray with the given polygon.
      *
@@ -53,8 +54,10 @@ public record Ray(LegacyVector3 origin, LegacyVector3 direction) {
      * @param t the distance along the ray.
      * @return the point on the ray.
      */
-    public LegacyVector3 getPoint(double t) {
-        return this.origin.add(this.direction.mul(t));
+    public IVector3 getPoint(double t) {
+        // Avoid a bunch of allocations by just doing the math here.
+        var out = this.origin.asMutable();
+        return out.add(this.direction.x() * t, this.direction.y() * t, this.direction.z() * t);
     }
 
     /**
@@ -64,7 +67,7 @@ public record Ray(LegacyVector3 origin, LegacyVector3 direction) {
      * @param point the point of intersection, if any.
      * @param poly  the polygon that was hit, if any.
      */
-    public record Hit(Ray ray, LegacyVector3 point, IPolygon<? extends IPolygonData> poly) {
+    public record Hit(Ray ray, IVector3 point, IPolygon<? extends IPolygonData> poly) {
         /**
          * Determines if the hit is valid, i.e. if the hit point is not null.
          *
@@ -80,13 +83,13 @@ public record Ray(LegacyVector3 origin, LegacyVector3 direction) {
          * @param point the point to calculate the distance to.
          * @return the distance between the hit point and the given point.
          */
-        public double distanceTo(LegacyVector3 point) {
+        public double distanceTo(IVector3 point) {
             return point.distance(this.point);
         }
 
         public Hit rounded() {
             // Round the hit point to the nearest 256th of a block.
-            return new Hit(this.ray, new LegacyVector3(Math.round(this.point.x() * 256) / 256D, Math.round(this.point.y() * 256) / 256D, Math.round(this.point.z() * 256) / 256D), this.poly);
+            return new Hit(this.ray, IVector3.ofImmutable(Math.round(this.point.x() * 256) / 256D, Math.round(this.point.y() * 256) / 256D, Math.round(this.point.z() * 256) / 256D), this.poly);
         }
     }
 }

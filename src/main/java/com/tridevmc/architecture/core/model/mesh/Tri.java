@@ -1,8 +1,9 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.PhysicsHelper;
 import com.tridevmc.architecture.core.physics.Ray;
@@ -16,7 +17,8 @@ import org.jetbrains.annotations.Nullable;
  * @param vertices The vertices that make up this tri.
  */
 public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex> vertices,
-                                          @NotNull LegacyVector3 normal, @NotNull AABB aabb) implements IPolygon<D> {
+                                          @NotNull IVector3Immutable normal,
+                                          @NotNull AABB aabb) implements IPolygon<D> {
 
     private static final double EPSILON = 1e-8;
 
@@ -39,7 +41,7 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
 
     @Override
     @NotNull
-    public LegacyVector3 getNormal() {
+    public IVector3Immutable getNormal() {
         return this.normal;
     }
 
@@ -51,11 +53,11 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
 
     @Override
     @Nullable
-    public LegacyVector3 intersect(Ray ray) {
+    public IVector3 intersect(Ray ray) {
         // Vertices of the triangle
-        var v0 = this.vertices.get(0).getPos();
-        var v1 = this.vertices.get(1).getPos();
-        var v2 = this.vertices.get(2).getPos();
+        var v0 = this.vertices.get(0).getPos().asImmutable();
+        var v1 = this.vertices.get(1).getPos().asImmutable();
+        var v2 = this.vertices.get(2).getPos().asImmutable();
 
         // Compute vectors for two of the triangle's edges
         var e1 = v1.sub(v0);
@@ -100,58 +102,69 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
     @Override
     public boolean intersect(AABB box) {
         // We need to use the separating axis theorem to determine if the box intersects with the triangle.
-        LegacyVector3 v0 = this.vertices.get(0).getPos();
-        LegacyVector3 v1 = this.vertices.get(1).getPos();
-        LegacyVector3 v2 = this.vertices.get(2).getPos();
+        var v0 = this.vertices.get(0).getPos().asMutable();
+        var v1 = this.vertices.get(1).getPos().asMutable();
+        var v2 = this.vertices.get(2).getPos().asMutable();
 
         // Check if any of the triangle's vertices are inside the box, if so we can exit early.
         if (box.contains(v0) || box.contains(v1) || box.contains(v2)) {
             return true;
         }
 
-        LegacyVector3 aabbCenter = box.center();
-        LegacyVector3 aabbSize = box.size().mul(0.5);
+        var aabbCenter = box.center();
+        var aabbSize = box.size().asImmutable().mul(0.5D);
         v0 = v0.sub(aabbCenter);
         v1 = v1.sub(aabbCenter);
         v2 = v2.sub(aabbCenter);
-        LegacyVector3 l0 = v1.sub(v0);
-        LegacyVector3 l1 = v2.sub(v1);
-        LegacyVector3 l2 = v0.sub(v2);
 
-        // Compute the separating axes
-        LegacyVector3[] axes = {
-                LegacyVector3.UNIT_X.cross(l0),
-                LegacyVector3.UNIT_X.cross(l1),
-                LegacyVector3.UNIT_X.cross(l2),
-                LegacyVector3.UNIT_Y.cross(l0),
-                LegacyVector3.UNIT_Y.cross(l1),
-                LegacyVector3.UNIT_Y.cross(l2),
-                LegacyVector3.UNIT_Z.cross(l0),
-                LegacyVector3.UNIT_Z.cross(l1),
-                LegacyVector3.UNIT_Z.cross(l2),
-                LegacyVector3.UNIT_X,
-                LegacyVector3.UNIT_Y,
-                LegacyVector3.UNIT_Z,
-                l0.cross(l1)
-        };
+        // Check against the X, Y, and Z axes first, since they are the most likely to fail.
+        if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, IVector3.UNIT_X, aabbSize) ||
+                PhysicsHelper.testSeparatingAxis(v0, v1, v2, IVector3.UNIT_Y, aabbSize) ||
+                PhysicsHelper.testSeparatingAxis(v0, v1, v2, IVector3.UNIT_Z, aabbSize)) {
+            return false;
+        }
 
-        for (LegacyVector3 axis : axes) {
+        // Should be slightly more efficient than creating a new array with every value calculated.
+        // Plus it saves us a lot of allocations for the vectors.
+        // The previous implementation allocated one array containing 13 vectors, this only allocates the one array and a total of 4 vectors.
+        var edges = new IVector3[]{v1.asMutable().sub(v0), v2.asMutable().sub(v1), v0.asMutable().sub(v2)};
+
+        var axis = IVector3.ofMutable(0, 0, 0);
+        for (var i = 0; i < 3; i++) {
+            axis.set(IVector3.UNIT_X);
+            axis.cross(edges[i]);
             if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, axis, aabbSize)) {
                 return false;
             }
         }
-        return true;
+
+        for (var i = 0; i < 3; i++) {
+            axis.set(IVector3.UNIT_Y);
+            axis.cross(edges[i]);
+            if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, axis, aabbSize)) {
+                return false;
+            }
+        }
+
+        for (var i = 0; i < 3; i++) {
+            axis.set(IVector3.UNIT_Z);
+            axis.cross(edges[i]);
+            if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, axis, aabbSize)) {
+                return false;
+            }
+        }
+
+        return !PhysicsHelper.testSeparatingAxis(v0, v1, v2, edges[0].asMutable().cross(edges[1]), aabbSize);
     }
 
     @Override
-    public @NotNull IPolygon<D> transform(@NotNull Transform trans, boolean transformUVs) {
+    public @NotNull IPolygon<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder<D>();
         for (var v : this.vertices) {
             builder.addVertex(v.transform(trans, transformUVs));
         }
         return builder.build();
     }
-
 
     /**
      * Builder for {@link Tri} instances.
@@ -161,7 +174,6 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
     public static class Builder<D extends IPolygonData> {
         private D data;
         private final IVertex[] vertices = new IVertex[3];
-
         private int nextVertex = 0;
 
         /**
@@ -235,9 +247,9 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
             if (this.vertices[0] == null || this.vertices[1] == null || this.vertices[2] == null) {
                 throw new IllegalStateException("All vertices must be set");
             }
-            var normal = this.vertices[1].getPos().sub(this.vertices[0].getPos())
-                    .cross(this.vertices[2].getPos().sub(this.vertices[0].getPos()))
-                    .normalize();
+            var v1SubV0 = this.vertices[1].getPos().asMutable().sub(this.vertices[0].getPos());
+            var v2SubV0 = this.vertices[2].getPos().asMutable().sub(this.vertices[0].getPos());
+            var normal = v1SubV0.cross(v2SubV0).normalize().asImmutable();
             return new Tri<>(this.data, ImmutableList.copyOf(this.vertices), normal, AABB.fromVertices(this.vertices));
         }
     }

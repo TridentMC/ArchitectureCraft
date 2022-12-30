@@ -28,6 +28,12 @@ public interface IVector3 {
     IVector3Immutable UNIT_PXPY = ofImmutable(0.707, 0.707, 0);
     IVector3Immutable UNIT_PYPZ = ofImmutable(0, 0.707, 0.707);
     IVector3Immutable UNIT_NXPY = ofImmutable(-0.707, 0.707, 0);
+
+    IVector3Immutable[] UNITS = new IVector3Immutable[]{
+            UNIT_X, UNIT_Y, UNIT_Z,
+            UNIT_NX, UNIT_NY, UNIT_NZ,
+            UNIT_PYNZ, UNIT_PXPY, UNIT_PYPZ, UNIT_NXPY
+    };
     IVector3Immutable[][] FACE_BASES = {
             {UNIT_X, UNIT_Z}, // DOWN
             {UNIT_X, UNIT_NZ}, // UP
@@ -44,7 +50,6 @@ public interface IVector3 {
             ofImmutable(-1, 0, 0),
             ofImmutable(1, 0, 0)
     };
-
 
     /**
      * Creates a new immutable vector with the given coordinates.

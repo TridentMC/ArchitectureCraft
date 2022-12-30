@@ -1,7 +1,6 @@
 package com.tridevmc.architecture.core.model.mesh;
 
-import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,50 +11,60 @@ import org.jetbrains.annotations.NotNull;
  * @param u      The U coordinate of the vertex.
  * @param v      The V coordinate of the vertex.
  */
-public record Vertex(@NotNull LegacyVector3 pos,
-                     @NotNull LegacyVector3 normal,
-                     double u, double v) implements IVertex {
+public record Vertex(@NotNull IVector3Immutable pos,
+                     @NotNull IVector3Immutable normal,
+                     @NotNull IVector2Immutable uvs) implements IVertex {
+
+    public Vertex(@NotNull IVector3 pos, @NotNull IVector3 normal, @NotNull IVector2 uvs) {
+        this(pos.asImmutable(), normal.asImmutable(), uvs.asImmutable());
+    }
 
     public Vertex(double x, double y, double z, double nX, double nY, double nZ, double u, double v) {
-        this(new LegacyVector3(x, y, z), new LegacyVector3(nX, nY, nZ), u, v);
+        this(IVector3.ofImmutable(x, y, z), IVector3.ofImmutable(nX, nY, nZ), IVector2.ofImmutable(u, v));
     }
 
     @Override
     @NotNull
-    public LegacyVector3 getPos() {
+    public IVector3 getPos() {
         return this.pos;
     }
 
     @Override
     @NotNull
-    public LegacyVector3 getNormal() {
+    public IVector3 getNormal() {
         return this.normal;
     }
 
     @Override
-    public @NotNull IVertex transform(@NotNull Transform trans, boolean transformUVs) {
+    public @NotNull IVertex transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder();
 
-        return this;
+        trans.transformPos(builder.getPos().set(this.pos));
+        trans.transformNormal(builder.getNormal().set(this.normal));
+        builder.getUV().set(this.uvs);
+        if (transformUVs) {
+            trans.transformUV(builder.getUV());
+        }
+
+        return builder.build();
     }
 
     @Override
     public double getU() {
-        return this.u;
+        return this.uvs.u();
     }
 
     @Override
     public double getV() {
-        return this.v;
+        return this.uvs.v();
     }
 
     /**
      * Builder for {@link Vertex} instances.
      */
     public static class Builder {
-        private double x, y, z;
-        private double nX, nY, nZ;
-        private double u, v;
+        private final IVector3Mutable pos = IVector3.ofMutable(0, 0, 0), normal = IVector3.ofMutable(0, 0, 0);
+        private final IVector2Mutable uvs = IVector2.ofMutable(0, 0);
 
         /**
          * Sets the position of the vertex.
@@ -66,9 +75,7 @@ public record Vertex(@NotNull LegacyVector3 pos,
          * @return This builder.
          */
         public Builder setPos(double x, double y, double z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            this.pos.set(x, y, z);
             return this;
         }
 
@@ -81,9 +88,7 @@ public record Vertex(@NotNull LegacyVector3 pos,
          * @return This builder.
          */
         public Builder setNormal(double nX, double nY, double nZ) {
-            this.nX = nX;
-            this.nY = nY;
-            this.nZ = nZ;
+            this.normal.set(nX, nY, nZ);
             return this;
         }
 
@@ -95,9 +100,41 @@ public record Vertex(@NotNull LegacyVector3 pos,
          * @return This builder.
          */
         public Builder setUV(double u, double v) {
-            this.u = u;
-            this.v = v;
+            this.uvs.set(u, v);
             return this;
+        }
+
+        /**
+         * Gets the mutable position vector of the vertex being built.
+         * <p>
+         * This vector is mutable, and changes to it will be reflected in the vertex being built.
+         *
+         * @return The mutable position vector.
+         */
+        public IVector3Mutable getPos() {
+            return this.pos;
+        }
+
+        /**
+         * Gets the mutable normal vector of the vertex being built.
+         * <p>
+         * This vector is mutable, and changes to it will be reflected in the vertex being built.
+         *
+         * @return The mutable normal vector.
+         */
+        public IVector3Mutable getNormal() {
+            return this.normal;
+        }
+
+        /**
+         * Gets the mutable UV vector of the vertex being built.
+         * <p>
+         * This vector is mutable, and changes to it will be reflected in the vertex being built.
+         *
+         * @return The mutable UV vector.
+         */
+        public IVector2Mutable getUV() {
+            return this.uvs;
         }
 
         /**
@@ -106,7 +143,7 @@ public record Vertex(@NotNull LegacyVector3 pos,
          * @return The new vertex.
          */
         public Vertex build() {
-            return new Vertex(this.x, this.y, this.z, this.nX, this.nY, this.nZ, this.u, this.v);
+            return new Vertex(this.pos, this.normal, this.uvs);
         }
     }
 }

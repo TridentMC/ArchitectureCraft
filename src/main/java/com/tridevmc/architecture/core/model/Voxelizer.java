@@ -2,6 +2,8 @@ package com.tridevmc.architecture.core.model;
 
 import com.google.common.collect.Lists;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.integer.IVector3i;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3i;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
@@ -23,14 +25,14 @@ import java.util.concurrent.Future;
 public class Voxelizer {
 
     private static final ExecutorService POOL = Executors.newWorkStealingPool();
-    private static final LegacyVector3 xNormal = LegacyVector3.UNIT_X;
-    private static final LegacyVector3 yNormal = LegacyVector3.UNIT_Y;
-    private static final LegacyVector3 zNormal = LegacyVector3.UNIT_Z;
+    private static final IVector3 xNormal = IVector3.UNIT_X;
+    private static final IVector3 yNormal = IVector3.UNIT_Y;
+    private static final IVector3 zNormal = IVector3.UNIT_Z;
 
     private final IMesh<?, ? extends IPolygonData> mesh;
     private final int blockResolution;
     private final double resolution;
-    private final LegacyVector3i min, max;
+    private final IVector3i min, max;
     private final boolean[][][] voxels;
     private List<AABB> simplifiedVoxels;
 
@@ -59,8 +61,8 @@ public class Voxelizer {
         var maxY = (int) (this.resolution * Math.round(maxYBounds / this.resolution) / this.resolution);
         var maxZ = (int) (this.resolution * Math.round(maxZBounds / this.resolution) / this.resolution);
 
-        this.min = new LegacyVector3i(minX, minY, minZ);
-        this.max = new LegacyVector3i(maxX, maxY, maxZ);
+        this.min = IVector3i.ofImmutable(minX, minY, minZ);
+        this.max = IVector3i.ofImmutable(maxX, maxY, maxZ);
 
         this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
     }
@@ -146,11 +148,11 @@ public class Voxelizer {
      * @param point The point to check.
      * @return True if the point is inside the mesh, false otherwise.
      */
-    private boolean isPointInsideMesh(LegacyVector3 point) {
+    private boolean isPointInsideMesh(IVector3 point) {
         var meshBounds = this.mesh.getBounds();
-        var fromPoint = new LegacyVector3(meshBounds.minX() - 1, point.y(), point.z());
-        var toPoint = new LegacyVector3(meshBounds.maxX() + 1, point.y(), point.z());
-        var rayDirection = toPoint.sub(fromPoint);
+        var fromPoint = IVector3.ofImmutable(meshBounds.minX() - 1, point.y(), point.z());
+        var toPoint = IVector3.ofImmutable(meshBounds.maxX() + 1, point.y(), point.z());
+        var rayDirection = IVector3.ofImmutable(1, 0, 0);
         var ray = new Ray(fromPoint, rayDirection);
 
         List<ObjectDoubleImmutablePair<Ray.Hit>> hits = ray.intersect(this.mesh).map(h -> {

@@ -1,8 +1,9 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.Ray;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public interface IPolygon<D extends IPolygonData> {
      * @return The normal of this polygon.
      */
     @NotNull
-    LegacyVector3 getNormal();
+    IVector3Immutable getNormal();
 
     /**
      * Gets the axis aligned bounding box of this polygon.
@@ -57,7 +58,7 @@ public interface IPolygon<D extends IPolygonData> {
      * @return the point of intersection, or null if there is no intersection.
      */
     @Nullable
-    LegacyVector3 intersect(Ray ray);
+    IVector3 intersect(Ray ray);
 
     /**
      * Determines if this polygon intersects with the given AABB, returning true if it does and false otherwise.
@@ -75,7 +76,7 @@ public interface IPolygon<D extends IPolygonData> {
      * @return a new polygon with the transformed vertices.
      */
     @NotNull
-    IPolygon<D> transform(@NotNull Transform trans, boolean transformUVs);
+    IPolygon<D> transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this polygon, returning a new polygon with the transformed vertices.
@@ -84,7 +85,7 @@ public interface IPolygon<D extends IPolygonData> {
      * @return a new polygon with the transformed vertices.
      */
     @NotNull
-    default IPolygon<D> transform(@NotNull Transform trans) {
+    default IPolygon<D> transform(@NotNull ITrans3 trans) {
         return this.transform(trans, true);
     }
 
@@ -94,8 +95,11 @@ public interface IPolygon<D extends IPolygonData> {
      * @param point the point to check.
      * @return true if this polygon is facing towards the point, false otherwise.
      */
-    default boolean isFacing(@NotNull LegacyVector3 point) {
-        return this.getNormal().dot(point.sub(this.getVertices().get(0).getPos())) < 0;
+    default boolean isFacing(@NotNull IVector3 point) {
+        // We're opting to calculate the difference between the point and vertex 0 of the polygon here instead
+        // of using the methods on IVector3, this saves us an allocation. Even though it's a bit less pretty.
+        var v0 = this.getVertices().get(0).getPos();
+        return this.getNormal().dot(point.x() - v0.x(), point.y() - v0.y(), point.z() - v0.z()) < 0;
     }
 
     /**

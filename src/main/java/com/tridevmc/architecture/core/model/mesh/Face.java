@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public record Face<D extends IPolygonData>(ImmutableList<IPolygon<D>> polygons) 
     }
 
     @Override
-    public @NotNull IFace<D> transform(@NotNull Transform trans, boolean transformUVs) {
+    public @NotNull IFace<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder<D>();
         for (var p : this.polygons) {
             builder.addPolygon(p.transform(trans, transformUVs));

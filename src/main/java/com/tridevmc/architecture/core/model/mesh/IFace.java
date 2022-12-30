@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
@@ -27,7 +27,7 @@ public interface IFace<D extends IPolygonData> {
      * @return a new face with the transformed polygons.
      */
     @NotNull
-    IFace<D> transform(@NotNull Transform trans, boolean transformUVs);
+    IFace<D> transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this face, returning a new face with the transformed polygons.
@@ -36,7 +36,7 @@ public interface IFace<D extends IPolygonData> {
      * @return a new face with the transformed polygons.
      */
     @NotNull
-    default IFace<D> transform(@NotNull Transform trans) {
+    default IFace<D> transform(@NotNull ITrans3 trans) {
         return this.transform(trans, true);
     }
 

@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.core.physics;
 
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.model.mesh.IVertex;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
  * @param min The minimum point of the box.
  * @param max The maximum point of the box.
  */
-public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
+public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable max) {
 
     public AABB {
         if (min.x() > max.x() || min.y() > max.y() || min.z() > max.z()) {
@@ -23,8 +24,12 @@ public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
         }
     }
 
+    public AABB(@NotNull IVector3 min, @NotNull IVector3 max) {
+        this(min.asImmutable(), max.asImmutable());
+    }
+
     public AABB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        this(new LegacyVector3(minX, minY, minZ), new LegacyVector3(maxX, maxY, maxZ));
+        this(IVector3.ofImmutable(minX, minY, minZ), IVector3.ofImmutable(maxX, maxY, maxZ));
     }
 
     public static AABB fromVertices(IVertex[] vertices) {
@@ -132,7 +137,7 @@ public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
                 this.maxZ() >= other.minZ() && this.minZ() <= other.maxZ();
     }
 
-    public Stream<LegacyVector3> intersects(Ray ray) {
+    public Stream<IVector3> intersects(Ray ray) {
         // We can implement this using the slab method described here: https://tavianator.com/fast-branchless-raybounding-box-intersections/
         var tMin = Double.NEGATIVE_INFINITY;
         var tMax = Double.POSITIVE_INFINITY;
@@ -172,7 +177,7 @@ public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
      * @param point The point to check.
      * @return True if this box contains the point, false otherwise.
      */
-    public boolean contains(LegacyVector3 point) {
+    public boolean contains(IVector3 point) {
         return this.contains(point.x(), point.y(), point.z());
     }
 
@@ -335,8 +340,8 @@ public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
      *
      * @return The center point.
      */
-    public LegacyVector3 center() {
-        return this.min().add(this.max()).div(2);
+    public IVector3 center() {
+        return this.min().asMutable().add(this.max()).div(2);
     }
 
     /**
@@ -344,12 +349,8 @@ public record AABB(@NotNull LegacyVector3 min, @NotNull LegacyVector3 max) {
      *
      * @return The size of the box.
      */
-    public LegacyVector3 size() {
-        return new LegacyVector3(
-                this.getXSize(),
-                this.getYSize(),
-                this.getZSize()
-        );
+    public IVector3 size() {
+        return this.max().sub(this.min());
     }
 
     /**

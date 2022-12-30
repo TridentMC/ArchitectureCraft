@@ -3,7 +3,7 @@ package com.tridevmc.architecture.core.model.mesh;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.physics.AABBTree;
 import com.tridevmc.architecture.core.physics.IAABBTree;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ public class Mesh<I, D extends IPolygonData> implements IMesh<I, D> {
 
     @Override
     @NotNull
-    public IMesh<I, D> transform(@NotNull Transform trans, boolean transformUVs) {
+    public IMesh<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder<I, D>();
         for (var p : this.getParts().values()) {
             builder.addPart(p.transform(trans, transformUVs));

@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
-import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +15,7 @@ public interface IVertex {
      * @return The position of this vertex.
      */
     @NotNull
-    LegacyVector3 getPos();
+    IVector3 getPos();
 
     /**
      * Gets the normal of this vertex.
@@ -23,7 +23,7 @@ public interface IVertex {
      * @return The normal of this vertex.
      */
     @NotNull
-    LegacyVector3 getNormal();
+    IVector3 getNormal();
 
     /**
      * Applies the given transformation to this vertex, returning a new vertex with the transformed position and normal.
@@ -33,7 +33,7 @@ public interface IVertex {
      * @return A new vertex with the transformed position, normal and UVs.
      */
     @NotNull
-    IVertex transform(@NotNull Transform trans, boolean transformUVs);
+    IVertex transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this vertex, returning a new vertex with the transformed position, normal, and UVs.
@@ -42,7 +42,7 @@ public interface IVertex {
      * @return A new vertex with the transformed position, normal, and UVs.
      */
     @NotNull
-    default IVertex transform(@NotNull Transform trans) {
+    default IVertex transform(@NotNull ITrans3 trans) {
         return this.transform(trans, true);
     }
 

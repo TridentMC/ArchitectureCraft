@@ -2,7 +2,7 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.IAABBTree;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +57,7 @@ public interface IMesh<I, D extends IPolygonData> {
      * @return A new mesh with the transformed parts and faces.
      */
     @NotNull
-    IMesh<I, D> transform(@NotNull Transform trans, boolean transformUVs);
+    IMesh<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this mesh, returning a new mesh with the transformed parts and faces.
@@ -66,7 +66,7 @@ public interface IMesh<I, D extends IPolygonData> {
      * @return A new mesh with the transformed parts and faces.
      */
     @NotNull
-    default IMesh<I, D> transform(@NotNull Transform trans) {
+    default IMesh<I, D> transform(@NotNull ITrans3 trans) {
         return this.transform(trans, true);
     }
 

@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.core.math.Transform;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.physics.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ public interface IPart<I, D extends IPolygonData> {
      * @return A new part with the transformed faces.
      */
     @NotNull
-    IPart<I, D> transform(@NotNull Transform trans, boolean transformUVs);
+    IPart<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this part, returning a new part with the transformed faces.
@@ -56,7 +56,7 @@ public interface IPart<I, D extends IPolygonData> {
      * @return A new part with the transformed faces.
      */
     @NotNull
-    default IPart<I, D> transform(@NotNull Transform trans) {
+    default IPart<I, D> transform(@NotNull ITrans3 trans) {
         return this.transform(trans, true);
     }
 
