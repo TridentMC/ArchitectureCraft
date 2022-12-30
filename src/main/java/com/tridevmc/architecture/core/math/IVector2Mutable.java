@@ -352,7 +352,7 @@ public interface IVector2Mutable extends IVector2 {
     }
 
     @Override
-    default IVector2 asImmutable() {
+    default IVector2Immutable asImmutable() {
         return IVector2Immutable.of(this);
     }
 

@@ -22,22 +22,23 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.core.math;
+package com.tridevmc.architecture.legacy.math;
 
 import com.google.common.base.MoreObjects;
 import com.tridevmc.architecture.core.ArchitectureLog;
 
 import java.util.Arrays;
 
-public class Matrix3 {
+@Deprecated
+public class LegacyMatrix3 {
 
-    public static Matrix3 ident = new Matrix3();
+    public static LegacyMatrix3 ident = new LegacyMatrix3();
 
-    public static Matrix3[] turnRotations = {
+    public static LegacyMatrix3[] turnRotations = {
             rotY(0), rotY(90), rotY(180), rotY(270)
     };
 
-    public static Matrix3[] sideRotations = {
+    public static LegacyMatrix3[] sideRotations = {
             /*0, -Y, DOWN */ ident,
             /*1, +Y, UP   */ rotX(180),
             /*2, -Z, NORTH*/ rotX(90),
@@ -46,7 +47,7 @@ public class Matrix3 {
             /*5, +X, EAST */ rotZ(90).mul(rotY(-90))
     };
 
-    public static Matrix3[][] sideTurnRotations = new Matrix3[6][4];
+    public static LegacyMatrix3[][] sideTurnRotations = new LegacyMatrix3[6][4];
 
     static {
         for (int side = 0; side < 6; side++)
@@ -60,23 +61,23 @@ public class Matrix3 {
             {0, 0, 1}
     };
 
-    public static Matrix3 rotX(double deg) {
+    public static LegacyMatrix3 rotX(double deg) {
         return rot(deg, 1, 2);
     }
 
-    public static Matrix3 rotY(double deg) {
+    public static LegacyMatrix3 rotY(double deg) {
         return rot(deg, 2, 0);
     }
 
-    public static Matrix3 rotZ(double deg) {
+    public static LegacyMatrix3 rotZ(double deg) {
         return rot(deg, 0, 1);
     }
 
-    static Matrix3 rot(double deg, int i, int j) {
+    static LegacyMatrix3 rot(double deg, int i, int j) {
         double a = Math.toRadians(deg);
         double s = Math.sin(a);
         double c = Math.cos(a);
-        Matrix3 r = new Matrix3();
+        LegacyMatrix3 r = new LegacyMatrix3();
         r.m[i][i] = c;
         r.m[i][j] = -s;
         r.m[j][i] = s;
@@ -84,8 +85,8 @@ public class Matrix3 {
         return r;
     }
 
-    public Matrix3 mul(Matrix3 n) {
-        Matrix3 r = new Matrix3();
+    public LegacyMatrix3 mul(LegacyMatrix3 n) {
+        LegacyMatrix3 r = new LegacyMatrix3();
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
                 r.m[i][j] = this.m[i][0] * n.m[0][j] + this.m[i][1] * n.m[1][j] + this.m[i][2] * n.m[2][j];
@@ -123,15 +124,15 @@ public class Matrix3 {
     }
 
     public boolean isIdent() {
-        return Arrays.equals(this.m[0], Matrix3.ident.m[0]) &&
-                Arrays.equals(this.m[1], Matrix3.ident.m[1]) &&
-                Arrays.equals(this.m[2], Matrix3.ident.m[2]);
+        return Arrays.equals(this.m[0], LegacyMatrix3.ident.m[0]) &&
+                Arrays.equals(this.m[1], LegacyMatrix3.ident.m[1]) &&
+                Arrays.equals(this.m[2], LegacyMatrix3.ident.m[2]);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Matrix3 matrix3)) return false;
+        if (!(o instanceof LegacyMatrix3 matrix3)) return false;
         return Arrays.equals(this.m[0], matrix3.m[0]) &&
                 Arrays.equals(this.m[1], matrix3.m[1]) &&
                 Arrays.equals(this.m[2], matrix3.m[2]);

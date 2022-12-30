@@ -2,7 +2,7 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.PhysicsHelper;
 import com.tridevmc.architecture.core.physics.Ray;

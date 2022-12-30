@@ -27,8 +27,8 @@ package com.tridevmc.architecture.legacy.base;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,6 +42,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import java.util.Arrays;
 import java.util.Collection;
 
+@Deprecated
 public class BaseOrientation {
 
     public static boolean debugPlacement = false;
@@ -86,9 +87,9 @@ public class BaseOrientation {
         }
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
+        public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
             if(1 == 1) {
-                return Trans3.ident;
+                return LegacyTrans3.ident;
             }
             var f = state.getValue(FACING);
             int i = switch (f) {
@@ -98,7 +99,7 @@ public class BaseOrientation {
                 case EAST -> 3;
                 default -> 0;
             };
-            return new Trans3(origin).turnAround(LegacyVector3.BLOCK_CENTER, i);
+            return new LegacyTrans3(origin).turnAround(LegacyVector3.BLOCK_CENTER, i);
         }
 
     }
@@ -108,10 +109,10 @@ public class BaseOrientation {
     public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
 
         @Override
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
+        public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
             var te = level.getBlockEntity(pos);
             if (te instanceof ShapeBlockEntity bte) {
-                return Trans3.sideTurn(origin, bte.getSide(), bte.getTurn());
+                return LegacyTrans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(level, pos, state, origin);
         }

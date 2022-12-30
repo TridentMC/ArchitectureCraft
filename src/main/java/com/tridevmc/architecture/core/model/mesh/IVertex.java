@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.model.mesh;
 
 import com.tridevmc.architecture.core.math.Transform;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import org.jetbrains.annotations.NotNull;
 
 /**

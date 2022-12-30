@@ -45,7 +45,7 @@ public interface IVector2Immutable extends IVector2 {
     }
 
     @Override
-    default IVector2 asImmutable() {
+    default IVector2Immutable asImmutable() {
         return this;
     }
 

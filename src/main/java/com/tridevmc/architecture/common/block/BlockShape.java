@@ -27,8 +27,8 @@ package com.tridevmc.architecture.common.block;
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
@@ -126,7 +126,7 @@ public class BlockShape extends BlockArchitecture {
                                         BlockState state, Entity entity) {
         ShapeBlockEntity te = this.getTileEntity(level, pos);
         if (te != null) {
-            Trans3 t = te.localToGlobalTransformation(LegacyVector3.ZERO);
+            LegacyTrans3 t = te.localToGlobalTransformation(LegacyVector3.ZERO);
             return this.getArchitectureShape().behaviour.getBounds(te, level, pos, state, entity, t);
         }
         return Shapes.empty();

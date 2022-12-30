@@ -2,8 +2,8 @@ package com.tridevmc.architecture.core.model;
 
 import com.google.common.collect.Lists;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.core.math.LegacyVector3;
-import com.tridevmc.architecture.core.math.Vector3i;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3i;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
@@ -30,7 +30,7 @@ public class Voxelizer {
     private final IMesh<?, ? extends IPolygonData> mesh;
     private final int blockResolution;
     private final double resolution;
-    private final Vector3i min, max;
+    private final LegacyVector3i min, max;
     private final boolean[][][] voxels;
     private List<AABB> simplifiedVoxels;
 
@@ -59,8 +59,8 @@ public class Voxelizer {
         var maxY = (int) (this.resolution * Math.round(maxYBounds / this.resolution) / this.resolution);
         var maxZ = (int) (this.resolution * Math.round(maxZBounds / this.resolution) / this.resolution);
 
-        this.min = new Vector3i(minX, minY, minZ);
-        this.max = new Vector3i(maxX, maxY, maxZ);
+        this.min = new LegacyVector3i(minX, minY, minZ);
+        this.max = new LegacyVector3i(maxX, maxY, maxZ);
 
         this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
     }

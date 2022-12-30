@@ -6,9 +6,9 @@ import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -161,12 +161,12 @@ public class ShapeBehaviour {
 
     @Nonnull
     public final VoxelShape getBounds(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
-                                      Entity entity, Trans3 t) {
+                                      Entity entity, LegacyTrans3 t) {
         return this.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     @Nonnull
-    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         BehaviourState bState = new BehaviourState(this, te, world, pos, state, entity, t);
         VoxelShape out = SHAPE_CACHE.getUnchecked(bState);
         if (out.isEmpty()) {
@@ -178,7 +178,7 @@ public class ShapeBehaviour {
     @Nonnull
     @Deprecated //TODO: Default implementation needs to be nuked. All the old collision code is too janky.
     protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
-                                         Entity entity, Trans3 t) {
+                                         Entity entity, LegacyTrans3 t) {
         VoxelShape shapeOut = Shapes.empty();
         int mask = te.getArchitectureShape().occlusionMask;
         int param = mask & 0xff;
@@ -222,7 +222,7 @@ public class ShapeBehaviour {
     }
 
     @Nonnull
-    protected VoxelShape addBox(LegacyVector3 p0, LegacyVector3 p1, Trans3 t, VoxelShape shape) {
+    protected VoxelShape addBox(LegacyVector3 p0, LegacyVector3 p1, LegacyTrans3 t, VoxelShape shape) {
         return Shapes.or(shape, t.t(Shapes.create(p0.x(), p0.y(), p0.z(), p1.x(), p1.y(), p1.z())));
     }
 
@@ -233,9 +233,9 @@ public class ShapeBehaviour {
         private final BlockPos pos;
         private final BlockState state;
         private final Entity entity;
-        private final Trans3 transform;
+        private final LegacyTrans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 transform) {
+        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;

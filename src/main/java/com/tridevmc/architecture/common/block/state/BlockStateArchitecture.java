@@ -3,8 +3,8 @@ package com.tridevmc.architecture.common.block.state;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.model.ModelSpec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -64,15 +64,15 @@ public class BlockStateArchitecture extends BlockState {
         return this.getBlock().getModelSpec(this);
     }
 
-    public Trans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
+    public LegacyTrans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
         return this.getBlock().localToGlobalRotation(level, pos, this);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
+    public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
         return this.getBlock().localToGlobalTransformation(level, pos, this);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, LegacyVector3 origin) {
+    public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, LegacyVector3 origin) {
         return this.getBlock().localToGlobalTransformation(level, pos, this, origin);
     }
 

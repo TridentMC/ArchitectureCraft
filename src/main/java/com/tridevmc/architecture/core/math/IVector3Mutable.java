@@ -145,6 +145,16 @@ public interface IVector3Mutable extends IVector3 {
     }
 
     /**
+     * Multiplies the X, Y and Z components of this vector by the given scalar value.
+     *
+     * @param scalar The scalar value to multiply this vector by.
+     * @return This vector.
+     */
+    default IVector3Mutable mul(double scalar) {
+        return this.mul(scalar, scalar, scalar);
+    }
+
+    /**
      * Divides the X, Y and Z components of this vector by the given values.
      *
      * @param x The value to divide the X component by.
@@ -164,6 +174,16 @@ public interface IVector3Mutable extends IVector3 {
      */
     default IVector3Mutable div(IVector3 vec) {
         return this.div(vec.x(), vec.y(), vec.z());
+    }
+
+    /**
+     * Divides the X, Y and Z components of this vector by the given scalar value.
+     *
+     * @param scalar The scalar value to divide this vector by.
+     * @return This vector.
+     */
+    default IVector3Mutable div(double scalar) {
+        return this.div(scalar, scalar, scalar);
     }
 
     /**
@@ -266,6 +286,19 @@ public interface IVector3Mutable extends IVector3 {
      */
     default IVector3Mutable round() {
         return this.set(Math.round(this.getX()), Math.round(this.getY()), Math.round(this.getZ()));
+    }
+
+    /**
+     * Normalizes this vector.
+     *
+     * @return This vector.
+     */
+    default IVector3Mutable normalize() {
+        double length = this.length();
+        if (length == 0) {
+            return this;
+        }
+        return this.div(length);
     }
 
     /**

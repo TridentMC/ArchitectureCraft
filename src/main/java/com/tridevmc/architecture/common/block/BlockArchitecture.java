@@ -28,8 +28,8 @@ import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.model.ITextureConsumer;
 import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
@@ -83,7 +83,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
 
-    private final Int2ObjectLinkedOpenHashMap<Trans3> transCache = new Int2ObjectLinkedOpenHashMap<>();
+    private final Int2ObjectLinkedOpenHashMap<LegacyTrans3> transCache = new Int2ObjectLinkedOpenHashMap<>();
     private final Int2ObjectLinkedOpenHashMap<VoxelShape> shapeCache = new Int2ObjectLinkedOpenHashMap<>();
 
     private static final RandomSource RANDOM = RandomSource.create();
@@ -225,23 +225,23 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return this.modelSpec;
     }
 
-    public Trans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
+    public LegacyTrans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
         return this.localToGlobalRotation(level, pos, level.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+    public LegacyTrans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos, BlockState state) {
         return this.localToGlobalTransformation(level, pos, state, LegacyVector3.ZERO);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
+    public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos) {
         return this.localToGlobalTransformation(level, pos, level.getBlockState(pos));
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state) {
+    public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state) {
         return this.localToGlobalTransformation(level, pos, state, LegacyVector3.ZERO);
     }
 
-    public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
+    public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
         var transIdentity = this.getTransIdentity(state, level, pos, origin);
         var trans = this.transCache.get(transIdentity);
         if (trans == null) {
@@ -251,8 +251,8 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         return trans;
     }
 
-    public Trans3 itemTransformation() {
-        return Trans3.ident;
+    public LegacyTrans3 itemTransformation() {
+        return LegacyTrans3.ident;
     }
 
     @Override
@@ -366,7 +366,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         ModelSpec spec = this.getModelSpec(state);
         if (spec != null) {
             LegacyOBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            Trans3 t = this.localToGlobalTransformation(level, pos, state);
+            LegacyTrans3 t = this.localToGlobalTransformation(level, pos, state);
             var voxelized = model.getVoxelized();
             return t.t(voxelized);
         }
@@ -412,7 +412,7 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
         BlockState onBlockPlaced(Block block, Level level, BlockPos pos, Direction side,
                                  double hitX, double hitY, double hitZ, BlockState baseState, LivingEntity placer);
 
-        Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin);
+        LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin);
     }
 
     public static class Orient1Way implements IOrientationHandler {
@@ -425,8 +425,8 @@ public abstract class BlockArchitecture extends BaseEntityBlock implements IText
             return baseState;
         }
 
-        public Trans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
-            return new Trans3(origin);
+        public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
+            return new LegacyTrans3(origin);
         }
     }
 

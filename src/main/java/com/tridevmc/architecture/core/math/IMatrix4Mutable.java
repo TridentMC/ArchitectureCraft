@@ -4,8 +4,8 @@ package com.tridevmc.architecture.core.math;
  * An extension of {@link IMatrix4} that allows for mutation of the matrix.
  * <p>
  * Construct using {@link IMatrix4Mutable#of(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)}.
- *
- * @see IMatrix4
+ * <p>
+ * See also: {@link IMatrix4Immutable}
  */
 public interface IMatrix4Mutable extends IMatrix4 {
 
@@ -922,5 +922,15 @@ public interface IMatrix4Mutable extends IMatrix4 {
     @Override
     default boolean isMutable() {
         return true;
+    }
+
+    @Override
+    default IMatrix4Immutable asImmutable() {
+        return IMatrix4Immutable.of(this);
+    }
+
+    @Override
+    default IMatrix4Mutable asMutable() {
+        return IMatrix4Mutable.of(this);
     }
 }

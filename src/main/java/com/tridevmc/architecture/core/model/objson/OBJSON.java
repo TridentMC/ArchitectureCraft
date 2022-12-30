@@ -1,11 +1,7 @@
 package com.tridevmc.architecture.core.model.objson;
 
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.Transform;
 import com.tridevmc.architecture.core.model.Voxelizer;
 import com.tridevmc.architecture.core.physics.AABB;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 

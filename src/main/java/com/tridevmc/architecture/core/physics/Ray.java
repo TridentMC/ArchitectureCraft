@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.core.physics;
 
 
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygon;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;

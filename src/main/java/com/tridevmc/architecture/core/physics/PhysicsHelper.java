@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.core.physics;
 
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 
 public class PhysicsHelper {
 

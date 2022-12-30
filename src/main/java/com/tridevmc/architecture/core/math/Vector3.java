@@ -1,12 +1,5 @@
 package com.tridevmc.architecture.core.math;
 
-/**
- * An immutable 3D vector, primarily used for positions and normals.
- *
- * @param x The X coordinate of the vector.
- * @param y The Y coordinate of the vector.
- * @param z The Z coordinate of the vector.
- */
 record Vector3(double x, double y, double z) implements IVector3Immutable {
 
     static class Mutable implements IVector3Mutable {

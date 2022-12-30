@@ -28,9 +28,9 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -273,17 +273,17 @@ public class ShapeBlockEntity extends BlockEntity {
         return null;
     }
 
-    public Trans3 localToGlobalRotation() {
+    public LegacyTrans3 localToGlobalRotation() {
         return this.localToGlobalTransformation(LegacyVector3.ZERO);
     }
 
-    public Trans3 localToGlobalTransformation(LegacyVector3 origin) {
+    public LegacyTrans3 localToGlobalTransformation(LegacyVector3 origin) {
         BlockState state = this.level.getBlockState(this.worldPosition);
         Block block = state.getBlock();
         if (block instanceof BlockArchitecture)
             return ((BlockArchitecture) block).localToGlobalTransformation(this.getLevel(), this.getBlockPos(), state, origin).translate(this.getOffsetX(), 0, 0);
         else {
-            return new Trans3(origin).translate(this.getOffsetX(), 0, 0);
+            return new LegacyTrans3(origin).translate(this.getOffsetX(), 0, 0);
         }
     }
 

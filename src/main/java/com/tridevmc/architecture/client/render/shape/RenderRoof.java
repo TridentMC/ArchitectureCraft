@@ -26,8 +26,8 @@ package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.core.Direction;
 
@@ -51,7 +51,7 @@ public class RenderRoof {
     protected boolean outerFace;
     protected boolean renderBase, renderSecondary;
 
-    public RenderRoof(ShapeBlockEntity te, ITexture[] textures, Trans3 t,
+    public RenderRoof(ShapeBlockEntity te, ITexture[] textures, LegacyTrans3 t,
                       boolean renderBase, boolean renderSecondary, int baseColourMult, int secondaryColourMult) {
         this.renderBase = renderBase;
         this.renderSecondary = renderSecondary;

@@ -3,26 +3,28 @@ package com.tridevmc.architecture.core.math;
 /**
  * A 2D vector, primarily used for texture coordinates.
  * <p>
- * Can be instantiated using the {@link IVector2#ofImmutable(double, double, double)} and {@link IVector2#ofMutable(double, double, double)} methods.
+ * Can be instantiated using the {@link IVector2#ofImmutable(double, double)} and {@link IVector2#ofMutable(double, double)} methods.
  * <p>
  * For mutable vectors, see {@link IVector2Mutable}, for immutable vectors, see {@link IVector2Immutable}.
  */
 public interface IVector2 {
 
-    public static final IVector2 ZERO = IVector2.ofImmutable(0, 0);
+    IVector2Immutable ZERO = IVector2.ofImmutable(0, 0);
 
-    public static final IVector2 ONE = IVector2.ofImmutable(1, 1);
+    IVector2Immutable ONE = IVector2.ofImmutable(1, 1);
 
-    public static final IVector2 UNIT_X = IVector2.ofImmutable(1, 0);
+    IVector2Immutable UNIT_X = IVector2.ofImmutable(1, 0);
 
-    public static final IVector2 UNIT_Y = IVector2.ofImmutable(0, 1);
+    IVector2Immutable UNIT_Y = IVector2.ofImmutable(0, 1);
 
-    public static final IVector2 UNIT_NX = IVector2.ofImmutable(-1, 0);
+    IVector2Immutable UNIT_NX = IVector2.ofImmutable(-1, 0);
 
-    public static final IVector2 UNIT_NY = IVector2.ofImmutable(0, -1);
+    IVector2Immutable UNIT_NY = IVector2.ofImmutable(0, -1);
 
     /**
      * Creates a new immutable vector with the given coordinates.
+     * <p>
+     * See {@link IVector2Immutable#of(double, double)} for more information.
      *
      * @param x The X coordinate of the vector.
      * @param y The Y coordinate of the vector.
@@ -49,6 +51,8 @@ public interface IVector2 {
 
     /**
      * Creates a new mutable vector with the given coordinates.
+     * <p>
+     * See: {@link IVector2Mutable#of(double, double)}
      *
      * @param x The X coordinate of the vector.
      * @param y The Y coordinate of the vector.
@@ -105,7 +109,7 @@ public interface IVector2 {
      *
      * @return An immutable copy of this vector.
      */
-    IVector2 asImmutable();
+    IVector2Immutable asImmutable();
 
     /**
      * Creates a mutable copy of this vector, with the same coordinates.

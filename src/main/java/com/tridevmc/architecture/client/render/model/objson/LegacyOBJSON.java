@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -28,10 +28,10 @@ public class LegacyOBJSON {
     private VoxelShape voxelized;
 
     public static LegacyOBJSON fromResource(ResourceLocation location) {
-        return fromResource(location, Trans3.blockCenter);
+        return fromResource(location, LegacyTrans3.blockCenter);
     }
 
-    public static LegacyOBJSON fromResource(ResourceLocation location, Trans3 trans) {
+    public static LegacyOBJSON fromResource(ResourceLocation location, LegacyTrans3 trans) {
         // Can't use resource manager because this needs to work on the server
         var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
         var in = LegacyOBJSON.class.getResourceAsStream(path);
@@ -99,7 +99,7 @@ public class LegacyOBJSON {
         return this.voxelized;
     }
 
-    public VoxelShape getShape(Trans3 t, VoxelShape shape) {
+    public VoxelShape getShape(LegacyTrans3 t, VoxelShape shape) {
         var voxelized = this.getVoxelized();
         if (!voxelized.isEmpty()) {
             for (AABB bb : voxelized.toAabbs()) {

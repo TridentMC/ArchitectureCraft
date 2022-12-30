@@ -26,7 +26,7 @@ package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

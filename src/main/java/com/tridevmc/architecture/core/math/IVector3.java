@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.core.math;
 
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.Direction;
 
 /**
  * A 3D vector, primarily used for positions and normals.
@@ -11,25 +11,24 @@ import net.minecraft.core.Vec3i;
  */
 public interface IVector3 {
 
-    IVector3 ZERO = IVector3.ofImmutable(0, 0, 0);
+    IVector3Immutable ZERO = ofImmutable(0, 0, 0);
+    IVector3Immutable ONE = ofImmutable(1, 1, 1);
+    IVector3Immutable BLOCK_CENTER = ofImmutable(0.5, 0.5, 0.5);
+    IVector3Immutable INV_BLOCK_CENTER = ofImmutable(-0.5, -0.5, -0.5);
 
-    IVector3 ONE = IVector3.ofImmutable(1, 1, 1);
-    IVector3 BLOCK_CENTER = IVector3.ofImmutable(0.5, 0.5, 0.5);
-    IVector3 INV_BLOCK_CENTER = IVector3.ofImmutable(-0.5, -0.5, -0.5);
+    IVector3Immutable UNIT_X = ofImmutable(1, 0, 0);
+    IVector3Immutable UNIT_Y = ofImmutable(0, 1, 0);
+    IVector3Immutable UNIT_Z = ofImmutable(0, 0, 1);
 
-    IVector3 UNIT_X = IVector3.ofImmutable(1, 0, 0);
-    IVector3 UNIT_Y = IVector3.ofImmutable(0, 1, 0);
-    IVector3 UNIT_Z = IVector3.ofImmutable(0, 0, 1);
+    IVector3Immutable UNIT_NX = ofImmutable(-1, 0, 0);
+    IVector3Immutable UNIT_NY = ofImmutable(0, -1, 0);
+    IVector3Immutable UNIT_NZ = ofImmutable(0, 0, -1);
 
-    IVector3 UNIT_NX = IVector3.ofImmutable(-1, 0, 0);
-    IVector3 UNIT_NY = IVector3.ofImmutable(0, -1, 0);
-    IVector3 UNIT_NZ = IVector3.ofImmutable(0, 0, -1);
-
-    IVector3 UNIT_PYNZ = IVector3.ofImmutable(0, 0.707, -0.707);
-    IVector3 UNIT_PXPY = IVector3.ofImmutable(0.707, 0.707, 0);
-    IVector3 UNIT_PYPZ = IVector3.ofImmutable(0, 0.707, 0.707);
-    IVector3 UNIT_NXPY = IVector3.ofImmutable(-0.707, 0.707, 0);
-    IVector3[][] FACE_BASES = {
+    IVector3Immutable UNIT_PYNZ = ofImmutable(0, 0.707, -0.707);
+    IVector3Immutable UNIT_PXPY = ofImmutable(0.707, 0.707, 0);
+    IVector3Immutable UNIT_PYPZ = ofImmutable(0, 0.707, 0.707);
+    IVector3Immutable UNIT_NXPY = ofImmutable(-0.707, 0.707, 0);
+    IVector3Immutable[][] FACE_BASES = {
             {UNIT_X, UNIT_Z}, // DOWN
             {UNIT_X, UNIT_NZ}, // UP
             {UNIT_NX, UNIT_Y}, // NORTH
@@ -37,13 +36,13 @@ public interface IVector3 {
             {UNIT_Z, UNIT_Y}, // WEST
             {UNIT_NZ, UNIT_Y}, // EAST
     };
-    Vec3i[] DIRECTION_VEC = {
-            new Vec3i(0, -1, 0),
-            new Vec3i(0, 1, 0),
-            new Vec3i(0, 0, -1),
-            new Vec3i(0, 0, 1),
-            new Vec3i(-1, 0, 0),
-            new Vec3i(1, 0, 0)
+    IVector3Immutable[] DIRECTION_VEC = {
+            ofImmutable(0, -1, 0),
+            ofImmutable(0, 1, 0),
+            ofImmutable(0, 0, -1),
+            ofImmutable(0, 0, 1),
+            ofImmutable(-1, 0, 0),
+            ofImmutable(1, 0, 0)
     };
 
 
@@ -95,9 +94,29 @@ public interface IVector3 {
      *
      * @param vec The vector to copy.
      * @return The new vector.
-     **/
+     */
     static IVector3Mutable ofMutable(IVector3 vec) {
         return IVector3Mutable.of(vec);
+    }
+
+    /**
+     * Gets the corresponding vector for the given direction.
+     *
+     * @param direction The direction index.
+     * @return The vector.
+     */
+    static IVector3Immutable forDirection(int direction) {
+        return DIRECTION_VEC[direction];
+    }
+
+    /**
+     * Gets the corresponding vector for the given direction.
+     *
+     * @param direction The direction.
+     * @return The vector.
+     */
+    static IVector3Immutable forDirection(Direction direction) {
+        return DIRECTION_VEC[direction.ordinal()];
     }
 
     /**

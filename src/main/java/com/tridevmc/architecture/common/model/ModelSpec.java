@@ -24,7 +24,7 @@
 
 package com.tridevmc.architecture.common.model;
 
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 
 import java.util.Arrays;
 import java.util.Objects;

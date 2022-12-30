@@ -3,7 +3,7 @@ package com.tridevmc.architecture.common.shape.behaviour;
 import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -51,13 +51,13 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         return t.t(this.getOBJSONModel().getVoxelized());
     }
 
     @Override
     public double placementOffsetX() {
-        VoxelShape shape = this.getOBJSONModel().getShape(Trans3.ident, Shapes.empty());
+        VoxelShape shape = this.getOBJSONModel().getShape(LegacyTrans3.ident, Shapes.empty());
         AABB bounds = shape.bounds();
         return 0.5 * (1 - (bounds.maxX - bounds.minX));
     }

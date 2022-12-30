@@ -1,8 +1,8 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -15,11 +15,11 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
         this.frameAlways = new boolean[]{false, false, false, false};
         this.frameTypes = new ShapeBehaviourWindow.FrameType[]{ShapeBehaviourWindow.FrameType.PLAIN, ShapeBehaviourWindow.FrameType.PLAIN, ShapeBehaviourWindow.FrameType.NONE, FrameType.NONE, ShapeBehaviourWindow.FrameType.PLAIN, ShapeBehaviourWindow.FrameType.PLAIN};
         this.frameOrientations = new Direction[]{EAST, EAST, null, null, UP, UP};
-        this.frameTrans = new Trans3[]{
-                Trans3.ident,
-                Trans3.ident.rotZ(90),
-                Trans3.ident.rotZ(180),
-                Trans3.ident.rotZ(270),
+        this.frameTrans = new LegacyTrans3[]{
+                LegacyTrans3.ident,
+                LegacyTrans3.ident.rotZ(90),
+                LegacyTrans3.ident.rotZ(180),
+                LegacyTrans3.ident.rotZ(270),
         };
     }
 

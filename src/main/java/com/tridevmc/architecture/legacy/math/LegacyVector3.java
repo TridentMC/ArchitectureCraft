@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.core.math;
+package com.tridevmc.architecture.legacy.math;
 
 import com.mojang.math.Vector3d;
 import net.minecraft.core.BlockPos;
@@ -35,6 +35,7 @@ import java.util.function.DoubleUnaryOperator;
 
 import static java.lang.Math.abs;
 
+@Deprecated
 public record LegacyVector3(double x, double y, double z) {
 
     public static final LegacyVector3 ZERO = new LegacyVector3(0, 0, 0);

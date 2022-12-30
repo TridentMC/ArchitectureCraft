@@ -27,8 +27,8 @@ package com.tridevmc.architecture.common.shape;
 import com.google.common.collect.ImmutableMap;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.behaviour.*;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -201,7 +201,7 @@ public enum EnumShape implements StringRepresentable {
     }
 
     public static int turnForPlacementHit(int side, LegacyVector3 hit, ShapeSymmetry symmetry) {
-        LegacyVector3 h = Trans3.sideTurn(side, 0).ip(hit);
+        LegacyVector3 h = LegacyTrans3.sideTurn(side, 0).ip(hit);
         return turnForPlacementHit(symmetry, h.x(), h.z());
     }
 
@@ -260,7 +260,7 @@ public enum EnumShape implements StringRepresentable {
     }
 
     public double offsetXForPlacementHit(int side, int turn, LegacyVector3 hit) {
-        LegacyVector3 h = Trans3.sideTurn(side, turn).ip(hit);
+        LegacyVector3 h = LegacyTrans3.sideTurn(side, turn).ip(hit);
         return this.signedPlacementOffsetX(h.x());
     }
 

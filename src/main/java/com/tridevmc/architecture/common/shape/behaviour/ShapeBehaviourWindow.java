@@ -2,8 +2,8 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.block.BlockHelper;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
-import com.tridevmc.architecture.core.math.Trans3;
-import com.tridevmc.architecture.core.math.LegacyVector3;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +22,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public boolean[] frameAlways;
     public FrameType[] frameTypes;
     public Direction[] frameOrientations;
-    public Trans3[] frameTrans;
+    public LegacyTrans3[] frameTrans;
 
     @Override
     public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction otherFace, LegacyVector3 hit) {
@@ -77,7 +77,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, Trans3 t) {
+    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         VoxelShape shape = Shapes.empty();
         final double r = 1 / 8d, s = 3 / 32d;
         double[] e = new double[4];
@@ -85,7 +85,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         for (int i = 0; i <= 3; i++) {
             boolean frame = this.frameAlways[i] || !this.isConnectedGlobal(te, t.t(this.frameSides[i]));
             if (entity == null || frame) {
-                Trans3 ts = t.t(this.frameTrans[i]);
+                LegacyTrans3 ts = t.t(this.frameTrans[i]);
                 shape = this.addFrameBoxesToList(i, r, s, ts, shape);
             }
             e[i] = frame ? 0.5 - r : 0.5;
@@ -99,16 +99,16 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         return shape.optimize();
     }
 
-    protected VoxelShape addCentreBoxesToList(double r, double s, Trans3 t, VoxelShape shape) {
+    protected VoxelShape addCentreBoxesToList(double r, double s, LegacyTrans3 t, VoxelShape shape) {
         return shape;
     }
 
-    protected VoxelShape addFrameBoxesToList(int i, double r, double s, Trans3 ts, VoxelShape shape) {
+    protected VoxelShape addFrameBoxesToList(int i, double r, double s, LegacyTrans3 ts, VoxelShape shape) {
         return ts.addBox(-0.5, -0.5, -s, 0.5, -0.5 + r, s, shape);
 
     }
 
-    protected VoxelShape addGlassBoxesToList(double r, double s, double w, double[] e, Trans3 t, VoxelShape shape) {
+    protected VoxelShape addGlassBoxesToList(double r, double s, double w, double[] e, LegacyTrans3 t, VoxelShape shape) {
         return t.addBox(-e[3], -e[0], -w, e[1], e[2], w, shape);
     }
 
