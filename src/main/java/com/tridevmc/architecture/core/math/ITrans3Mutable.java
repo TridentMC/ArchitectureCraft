@@ -1,5 +1,12 @@
 package com.tridevmc.architecture.core.math;
 
+/**
+ * An extension of {@link ITrans3} that allows for mutable transforms.
+ * <p>
+ * Construct using {@link ITrans3Mutable#of(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)}.
+ * <p>
+ * See also: {@link ITrans3Immutable}
+ */
 public interface ITrans3Mutable extends ITrans3 {
 
     /**

@@ -1,14 +1,201 @@
 package com.tridevmc.architecture.core.math;
 
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * A wrapper around a transformation matrix that provides methods for transforming points and vectors.
+ * <p>
+ * Can be instantiated using the {@link ITrans3#ofImmutable(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)} and {@link ITrans3#ofMutable(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)} methods.
+ * <p>
+ * For mutable transformations, see {@link ITrans3Mutable}, for immutable transformations, see {@link ITrans3Immutable}.
+ */
 public interface ITrans3 {
+
+    static ITrans3Immutable BLOCK_CENTER = ITrans3.ofTranslationImmutable(0.5, 0.5, 0.5);
+
+    /**
+     * Creates a new immutable transformation from the given matrix values.
+     * <p>
+     * See {@link ITrans3Immutable#of(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)} for more information.
+     *
+     * @param m00 The value at row 0, column 0.
+     * @param m01 The value at row 0, column 1.
+     * @param m02 The value at row 0, column 2.
+     * @param m03 The value at row 0, column 3.
+     * @param m10 The value at row 1, column 0.
+     * @param m11 The value at row 1, column 1.
+     * @param m12 The value at row 1, column 2.
+     * @param m13 The value at row 1, column 3.
+     * @param m20 The value at row 2, column 0.
+     * @param m21 The value at row 2, column 1.
+     * @param m22 The value at row 2, column 2.
+     * @param m23 The value at row 2, column 3.
+     * @param m30 The value at row 3, column 0.
+     * @param m31 The value at row 3, column 1.
+     * @param m32 The value at row 3, column 2.
+     * @param m33 The value at row 3, column 3.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Immutable ofImmutable(double m00, double m01, double m02, double m03,
+                                        double m10, double m11, double m12, double m13,
+                                        double m20, double m21, double m22, double m23,
+                                        double m30, double m31, double m32, double m33) {
+        return ITrans3Immutable.of(
+                m00, m01, m02, m03,
+                m10, m11, m12, m13,
+                m20, m21, m22, m23,
+                m30, m31, m32, m33
+        );
+    }
+
+    /**
+     * Creates a new immutable transformation from the values in the given matrix.
+     * <p>
+     * See {@link ITrans3Immutable#of(IMatrix4)} for more information.
+     *
+     * @param matrix The matrix to copy values from.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Immutable ofImmutable(@NotNull IMatrix4 matrix) {
+        return ITrans3Immutable.of(matrix);
+    }
+
+    /**
+     * Creates a new immutable transform that offsets any point in space by the given values.
+     *
+     * @param transX The x offset to apply.
+     * @param transY The y offset to apply.
+     * @param transZ The z offset to apply.
+     * @return the new transform.
+     */
+    @NotNull
+    static ITrans3Immutable ofTranslationImmutable(double transX, double transY, double transZ) {
+        return ITrans3Immutable.ofTranslation(transX, transY, transZ);
+    }
+
+    /**
+     * Creates a new immutable transform that offsets any point in space by the given values.
+     *
+     * @param trans The offset to apply.
+     * @return the new transform.
+     */
+    @NotNull
+    static ITrans3Immutable ofTranslationImmutable(@NotNull IVector3 trans) {
+        return ITrans3Immutable.ofTranslation(trans);
+    }
+
+    /**
+     * Creates a new immutable transform that scales any point in space by the given values.
+     *
+     * @param scaleX The x scale to apply.
+     * @param scaleY The y scale to apply.
+     * @param scaleZ The z scale to apply.
+     * @return the new transform.
+     */
+    @NotNull
+    static ITrans3Immutable ofScaleImmutable(double scaleX, double scaleY, double scaleZ) {
+        return ITrans3Immutable.ofScale(scaleX, scaleY, scaleZ);
+    }
+
+    /**
+     * Creates a new immutable transform that scales any point in space by the given values.
+     *
+     * @param scale The scale to apply.
+     * @return the new transform.
+     */
+    @NotNull
+    static ITrans3Immutable ofScaleImmutable(@NotNull IVector3 scale) {
+        return ITrans3Immutable.ofScale(scale);
+    }
+
+
+    /**
+     * Creates a new immutable transformation from the given transformation.
+     * <p>
+     * Please note that this method will always return a new instance, even if the given transformation is already immutable.
+     * This has performance implications, it's recommended to use {@link ITrans3Immutable#of(ITrans3)} instead.
+     * <p>
+     * See {@link ITrans3Immutable#of(ITrans3)} for more information.
+     *
+     * @param trans The transformation to copy values from.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Immutable ofImmutable(@NotNull ITrans3 trans) {
+        return ITrans3Immutable.of(trans);
+    }
+
+    /**
+     * Creates a new mutable transformation from the given matrix values.
+     * <p>
+     * See {@link ITrans3Mutable#of(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)} for more information.
+     *
+     * @param m00 The value at row 0, column 0.
+     * @param m01 The value at row 0, column 1.
+     * @param m02 The value at row 0, column 2.
+     * @param m03 The value at row 0, column 3.
+     * @param m10 The value at row 1, column 0.
+     * @param m11 The value at row 1, column 1.
+     * @param m12 The value at row 1, column 2.
+     * @param m13 The value at row 1, column 3.
+     * @param m20 The value at row 2, column 0.
+     * @param m21 The value at row 2, column 1.
+     * @param m22 The value at row 2, column 2.
+     * @param m23 The value at row 2, column 3.
+     * @param m30 The value at row 3, column 0.
+     * @param m31 The value at row 3, column 1.
+     * @param m32 The value at row 3, column 2.
+     * @param m33 The value at row 3, column 3.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Mutable ofMutable(double m00, double m01, double m02, double m03,
+                                    double m10, double m11, double m12, double m13,
+                                    double m20, double m21, double m22, double m23,
+                                    double m30, double m31, double m32, double m33) {
+        return ITrans3Mutable.of(
+                m00, m01, m02, m03,
+                m10, m11, m12, m13,
+                m20, m21, m22, m23,
+                m30, m31, m32, m33
+        );
+    }
+
+    /**
+     * Creates a new mutable transformation from the values in the given matrix.
+     * <p>
+     * See {@link ITrans3Mutable#of(IMatrix4)} for more information.
+     *
+     * @param matrix The matrix to copy values from.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Mutable ofMutable(@NotNull IMatrix4 matrix) {
+        return ITrans3Mutable.of(matrix);
+    }
+
+    /**
+     * Creates a new mutable transformation from the given transformation.
+     * <p>
+     * See {@link ITrans3Mutable#of(ITrans3)} for more information.
+     *
+     * @param trans The transformation to copy values from.
+     * @return The new transformation.
+     */
+    @NotNull
+    static ITrans3Mutable ofMutable(@NotNull ITrans3 trans) {
+        return ITrans3Mutable.of(trans);
+    }
 
     /**
      * Gets the underlying matrix of this transform.
      *
      * @return The matrix.
      */
+    @NotNull
     IMatrix4 matrix();
 
     /**
@@ -32,6 +219,7 @@ public interface ITrans3 {
      *
      * @return An immutable copy of this transform.
      */
+    @NotNull
     ITrans3Immutable asImmutable();
 
     /**
@@ -39,6 +227,7 @@ public interface ITrans3 {
      *
      * @return A mutable copy of this transform.
      */
+    @NotNull
     ITrans3Mutable asMutable();
 
 
@@ -47,152 +236,114 @@ public interface ITrans3 {
      *
      * @return The matrix.
      */
+    @NotNull
     default IMatrix4 getMatrix() {
         return this.matrix();
     }
 
     /**
-     * Transforms a point in 3D space and stores the result in an immutable vector.
+     * Transforms the given position vector by this transformation, storing the result in the given vector.
      *
-     * @param x The x coordinate of the point.
-     * @param y The y coordinate of the point.
-     * @param z The z coordinate of the point.
-     * @return The transformed point.
+     * @param position The vector to transform.
+     * @return The given vector.
      */
-    default IVector3Immutable transformPosImmutable(double x, double y, double z) {
-        return IVector3.ofImmutable(
-                x * this.matrix().m00() + y * this.matrix().m10() + z * this.matrix().m20() + this.matrix().m30(),
-                x * this.matrix().m01() + y * this.matrix().m11() + z * this.matrix().m21() + this.matrix().m31(),
-                x * this.matrix().m02() + y * this.matrix().m12() + z * this.matrix().m22() + this.matrix().m32()
+    @NotNull
+    default IVector3Mutable transformPos(@NotNull IVector3Mutable position) {
+        return position.set(
+                this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03(),
+                this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13(),
+                this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23()
         );
     }
 
     /**
-     * Transforms a point in 3D space and stores the result in an immutable vector.
-     * <p>
-     * If multiple transforms are being applied to the same point, it is more efficient to create a mutable vector and use {@link #transformPos(IVector3Mutable)}.
+     * Transforms the given position vector by this transformation, storing the result in a new vector.
      *
-     * @param vec The point.
-     * @return The transformed point.
+     * @param position The vector to transform.
+     * @return The given vector.
      */
-    default IVector3Immutable transformPosImmutable(IVector3Immutable vec) {
-        return this.transformPosImmutable(vec.x(), vec.y(), vec.z());
-    }
-
-    /**
-     * Transforms the given vector representing a point in 3D space.
-     *
-     * @param vec The vector to transform.
-     * @return The transformed point.
-     */
-    default IVector3Mutable transformPos(IVector3Mutable vec) {
-        return vec.set(
-                vec.x() * this.matrix().m00() + vec.y() * this.matrix().m10() + vec.z() * this.matrix().m20() + this.matrix().m30(),
-                vec.x() * this.matrix().m01() + vec.y() * this.matrix().m11() + vec.z() * this.matrix().m21() + this.matrix().m31(),
-                vec.x() * this.matrix().m02() + vec.y() * this.matrix().m12() + vec.z() * this.matrix().m22() + this.matrix().m32()
+    @NotNull
+    default IVector3Immutable transformPosImmutable(@NotNull IVector3 position) {
+        return IVector3Immutable.of(
+                this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03(),
+                this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13(),
+                this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23()
         );
     }
 
     /**
-     * Transforms a set of X, Y, and Z coordinates representing the normals of a vertex or face and stores the result in an immutable vector.
+     * Transforms the given normal vector by this transformation, storing the result in the given vector.
      *
-     * @param x The x coordinate of the normal.
-     * @param y The y coordinate of the normal.
-     * @param z The z coordinate of the normal.
-     * @return The transformed normal.
+     * @param normal The vector to transform.
+     * @return The given vector.
      */
-    default IVector3Immutable transformNormalImmutable(double x, double y, double z) {
-        return IVector3.ofMutable(
-                x * this.matrix().m00() + y * this.matrix().m10() + z * this.matrix().m20(),
-                x * this.matrix().m01() + y * this.matrix().m11() + z * this.matrix().m21(),
-                x * this.matrix().m02() + y * this.matrix().m12() + z * this.matrix().m22()
-        ).normalize().asImmutable();
-    }
-
-    /**
-     * Transforms a vector representing the normals of a vertex or face and stores the result in an immutable vector.
-     * <p>
-     * If multiple transforms are being applied to the same normal, it is more efficient to create a mutable vector and use {@link #transformNormal(IVector3Mutable)}.
-     *
-     * @param vec The normal.
-     * @return The transformed normal.
-     */
-    default IVector3Immutable transformNormalImmutable(IVector3Immutable vec) {
-        return this.transformNormalImmutable(vec.x(), vec.y(), vec.z());
-    }
-
-    /**
-     * Transforms the given vector representing the normals of a vertex or face.
-     *
-     * @param vec The vector to transform.
-     * @return The transformed normal.
-     */
-    default IVector3Mutable transformNormal(IVector3Mutable vec) {
-        return vec.set(
-                vec.x() * this.matrix().m00() + vec.y() * this.matrix().m10() + vec.z() * this.matrix().m20(),
-                vec.x() * this.matrix().m01() + vec.y() * this.matrix().m11() + vec.z() * this.matrix().m21(),
-                vec.x() * this.matrix().m02() + vec.y() * this.matrix().m12() + vec.z() * this.matrix().m22()
+    @NotNull
+    default IVector3Mutable transformNormal(@NotNull IVector3Mutable normal) {
+        return normal.set(
+                this.matrix().m00() * normal.x() + this.matrix().m01() * normal.y() + this.matrix().m02() * normal.z(),
+                this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z(),
+                this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z()
         ).normalize();
     }
 
     /**
-     * Transforms a set of X, and Y coordinates representing texture coordinates and stores the result in an immutable vector.
+     * Transforms the given normal vector by this transformation, storing the result in a new vector.
      *
-     * @param u The u coordinate of the texture.
-     * @param v The v coordinate of the texture.
-     * @return The transformed texture coordinates.
+     * @param normal The vector to transform.
+     * @return The given vector.
      */
-    default IVector2Immutable transformUVImmutable(double u, double v) {
-        return IVector2.ofImmutable(
-                u * this.matrix().m00() + v * this.matrix().m10() + this.matrix().m30(),
-                u * this.matrix().m01() + v * this.matrix().m11() + this.matrix().m31()
+    @NotNull
+    default IVector3Immutable transformNormalImmutable(@NotNull IVector3 normal) {
+        var x = this.matrix().m00() * normal.x() + this.matrix().m01() * normal.y() + this.matrix().m02() * normal.z();
+        var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
+        var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
+        var length = Math.sqrt(x * x + y * y + z * z);
+        return IVector3Immutable.of(x / length, y / length, z / length);
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in the given vector.
+     *
+     * @param uvs The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2Mutable transformUV(@NotNull IVector2Mutable uvs) {
+        return uvs.set(
+                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
+                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
         );
     }
 
     /**
-     * Transforms a vector representing texture coordinates and stores the result in an immutable vector.
-     * <p>
-     * If multiple transforms are being applied to the same texture coordinates, it is more efficient to create a mutable vector and use {@link #transformUV(IVector2Mutable)}.
+     * Transforms the given texture coordinate vector by this transformation, storing the result in a new vector.
      *
-     * @param vec The texture coordinates.
-     * @return The transformed texture coordinates.
+     * @param uvs The vector to transform.
+     * @return The given vector.
      */
-    default IVector2Immutable transformUVImmutable(IVector2Immutable vec) {
-        return this.transformUVImmutable(vec.x(), vec.y());
-    }
-
-    /**
-     * Transforms the given vector representing texture coordinates.
-     *
-     * @param vec The vector to transform.
-     * @return The transformed texture coordinates.
-     */
-    default IVector2Mutable transformUV(IVector2Mutable vec) {
-        return vec.set(
-                vec.x() * this.matrix().m00() + vec.y() * this.matrix().m10() + this.matrix().m30(),
-                vec.x() * this.matrix().m01() + vec.y() * this.matrix().m11() + this.matrix().m31()
+    @NotNull
+    default IVector2Immutable transformUVImmutable(@NotNull IVector2 uvs) {
+        return IVector2Immutable.of(
+                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
+                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
         );
     }
 
     /**
-     * Transforms the given direction.
+     * Transforms the given direction by this transformation, returning the new direction.
      *
      * @param direction The direction to transform.
      * @return The transformed direction.
      */
-    default Direction transformDirection(Direction direction) {
-        // Let's avoid allocating a new vector - we'll just do the math as if we were transforming a vector.
-        // We'll also avoid normalizing the vector, since we know the direction vectors are already normalized.
-        var normal = direction.getNormal();
-        var x = normal.getX() * this.matrix().m00() + normal.getY() * this.matrix().m10() + normal.getZ() * this.matrix().m20();
-        var y = normal.getX() * this.matrix().m01() + normal.getY() * this.matrix().m11() + normal.getZ() * this.matrix().m21();
-        var z = normal.getX() * this.matrix().m02() + normal.getY() * this.matrix().m12() + normal.getZ() * this.matrix().m22();
-        return Direction.fromNormal(
-                Math.round((float) x),
-                Math.round((float) y),
-                Math.round((float) z)
-        );
+    @NotNull
+    default Direction transformDirection(@NotNull Direction direction) {
+        var x = direction.getStepX();
+        var y = direction.getStepY();
+        var z = direction.getStepZ();
+        var x2 = this.matrix().m00() * x + this.matrix().m01() * y + this.matrix().m02() * z;
+        var y2 = this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z;
+        var z2 = this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z;
+        return Direction.getNearest(x2, y2, z2);
     }
-
 
 }

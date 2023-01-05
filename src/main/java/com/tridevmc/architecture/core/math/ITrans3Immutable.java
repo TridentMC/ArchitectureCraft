@@ -1,5 +1,12 @@
 package com.tridevmc.architecture.core.math;
 
+/**
+ * An extension of {@link ITrans3} that prevents modification of the transform.
+ * <p>
+ * Construct using {@link ITrans3Immutable#of(double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double)}.
+ * <p>
+ * See also: {@link ITrans3Mutable}
+ */
 public interface ITrans3Immutable extends ITrans3 {
 
     /**
@@ -51,8 +58,66 @@ public interface ITrans3Immutable extends ITrans3 {
         );
     }
 
+
+    /**
+     * Creates a new immutable transform that offsets any point in space by the given values.
+     *
+     * @param transX The x offset to apply.
+     * @param transY The y offset to apply.
+     * @param transZ The z offset to apply.
+     * @return the new transform.
+     */
+    static ITrans3Immutable ofTranslation(double transX, double transY, double transZ) {
+        return of(
+                1, 0, 0, transX,
+                0, 1, 0, transY,
+                0, 0, 1, transZ,
+                0, 0, 0, 1
+        );
+    }
+
+    /**
+     * Creates a new immutable transform that offsets any point in space by the given values.
+     *
+     * @param transPos The offset to apply.
+     * @return the new transform.
+     */
+    static ITrans3Immutable ofTranslation(IVector3 transPos) {
+        return ofTranslation(transPos.x(), transPos.y(), transPos.z());
+    }
+
+    /**
+     * Creates a new immutable transform that scales any point in space by the given values.
+     *
+     * @param scaleX The x scale to apply.
+     * @param scaleY The y scale to apply.
+     * @param scaleZ The z scale to apply.
+     * @return the new transform.
+     */
+    static ITrans3Immutable ofScale(double scaleX, double scaleY, double scaleZ) {
+        return of(
+                scaleX, 0, 0, 0,
+                0, scaleY, 0, 0,
+                0, 0, scaleZ, 0,
+                0, 0, 0, 1
+        );
+    }
+
+    /**
+     * Creates a new immutable transform that scales any point in space by the given values.
+     *
+     * @param scale The scale to apply.
+     * @return the new transform.
+     */
+    static ITrans3Immutable ofScale(IVector3 scale) {
+        return ofScale(scale.x(), scale.y(), scale.z());
+    }
+
     /**
      * Creates a new immutable transform from the values in the given transform.
+     * <p>
+     * Please note that this method will always return a new instance, even if the given transform is already immutable.
+     * This has performance implications, it's recommended to use {@link ITrans3#asImmutable()} instead.
      *
      * @param trans The transform to copy values from.
      * @return The new transform.

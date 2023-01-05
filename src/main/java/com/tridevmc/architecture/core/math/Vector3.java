@@ -1,6 +1,31 @@
 package com.tridevmc.architecture.core.math;
 
+import com.google.common.base.MoreObjects;
+
+import java.util.Objects;
+
 record Vector3(double x, double y, double z) implements IVector3Immutable {
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("x", this.x())
+                .add("y", this.y())
+                .add("z", this.z())
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IVector3 vec)) return false;
+        return Double.compare(vec.getX(), this.getX()) == 0 && Double.compare(vec.getY(), this.getY()) == 0 && Double.compare(vec.getZ(), this.getZ()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getX(), this.getY(), this.getZ());
+    }
 
     static class Mutable implements IVector3Mutable {
 
@@ -51,6 +76,27 @@ record Vector3(double x, double y, double z) implements IVector3Immutable {
         public IVector3Mutable setZ(double z) {
             this.z = z;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                    .add("x", this.x())
+                    .add("y", this.y())
+                    .add("z", this.z())
+                    .toString();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof IVector3 vec)) return false;
+            return Double.compare(vec.getX(), this.getX()) == 0 && Double.compare(vec.getY(), this.getY()) == 0 && Double.compare(vec.getZ(), this.getZ()) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.getX(), this.getY(), this.getZ());
         }
     }
 

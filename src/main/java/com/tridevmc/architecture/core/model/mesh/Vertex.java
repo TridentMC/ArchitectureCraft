@@ -8,8 +8,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param pos    The position of this vertex.
  * @param normal The normal of this vertex.
- * @param u      The U coordinate of the vertex.
- * @param v      The V coordinate of the vertex.
+ * @param uvs    The UV coordinates of this vertex.
  */
 public record Vertex(@NotNull IVector3Immutable pos,
                      @NotNull IVector3Immutable normal,

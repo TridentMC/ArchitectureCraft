@@ -7,8 +7,7 @@ import com.tridevmc.architecture.core.model.mesh.Mesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import org.jetbrains.annotations.NotNull;
 
-public class OBJSONMesh<I> extends Mesh<I, PolygonData> {
-
+public class OBJSONMesh extends Mesh<String, PolygonData> {
     public OBJSONMesh(@NotNull OBJSONData data) {
         super(ImmutableMap.of(), ImmutableList.of());
     }
