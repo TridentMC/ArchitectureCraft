@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.core.math;
 
+import com.tridevmc.architecture.core.model.mesh.CullFace;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 
@@ -344,6 +345,22 @@ public interface ITrans3 {
         var y2 = this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z;
         var z2 = this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z;
         return Direction.getNearest(x2, y2, z2);
+    }
+
+    /**
+     * Transforms the given cull face by this transformation, returning the new cull face.
+     *
+     * @param face The cull face to transform.
+     * @return The transformed cull face.
+     */
+    @NotNull
+    default CullFace transformCullFace(@NotNull CullFace face) {
+        // Cull faces are effectively the same as directions, just with support for NONE.
+        if (face == CullFace.NONE) {
+            return CullFace.NONE;
+        }
+        //noinspection DataFlowIssue - the only way this can be null is if face is NONE, which we already checked.
+        return CullFace.fromDirection(this.transformDirection(face.toDirection()));
     }
 
 }

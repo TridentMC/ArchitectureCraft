@@ -67,6 +67,4 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
         var in = OBJSONData.class.getResourceAsStream(path);
         return GSON.fromJson(new InputStreamReader(Objects.requireNonNull(in, "Failed to obtain input stream for resource \"%s\"".formatted(path))), OBJSONData.class);
     }
-
-
 }

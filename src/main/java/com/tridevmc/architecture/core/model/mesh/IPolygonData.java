@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.core.model.mesh;
 
+import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Additional data can be added by other implementations.
  */
-public interface IPolygonData {
+public interface IPolygonData<S extends IPolygonData<S>> {
 
     /**
      * Gets the texture index for this polygon.
@@ -32,5 +33,15 @@ public interface IPolygonData {
      */
     @NotNull
     CullFace getCullFace();
+
+    /**
+     * Transforms this polygon data by the given transformation.
+     * <p>
+     * Primarily used for transforming the cull face.
+     *
+     * @param trans The transformation to apply.
+     * @return The transformed polygon data.
+     */
+    S transform(@NotNull ITrans3 trans);
 
 }

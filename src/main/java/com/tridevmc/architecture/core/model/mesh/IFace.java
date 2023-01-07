@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * Common interface used to represent a face and provide access to its polygons.
  */
-public interface IFace<D extends IPolygonData> {
+public interface IFace<D extends IPolygonData<D>> {
 
     /**
      * Gets the polygons of this face.

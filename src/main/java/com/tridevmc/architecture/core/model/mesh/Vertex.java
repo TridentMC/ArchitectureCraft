@@ -22,6 +22,10 @@ public record Vertex(@NotNull IVector3Immutable pos,
         this(IVector3.ofImmutable(x, y, z), IVector3.ofImmutable(nX, nY, nZ), IVector2.ofImmutable(u, v));
     }
 
+    public Vertex(double[] pos, double[] normal, double[] uvs) {
+        this(pos[0], pos[1], pos[2], normal[0], normal[1], normal[2], uvs[0], uvs[1]);
+    }
+
     @Override
     @NotNull
     public IVector3 getPos() {

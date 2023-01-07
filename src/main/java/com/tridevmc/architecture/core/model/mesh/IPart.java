@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * @param <I> The type of data used to identify the part.
  * @param <D> The type of data that is stored on the polygons.
  */
-public interface IPart<I, D extends IPolygonData> {
+public interface IPart<I, D extends IPolygonData<D>> {
 
     /**
      * Gets the identifier of this part.

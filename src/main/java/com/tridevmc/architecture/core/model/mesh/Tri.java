@@ -16,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
  * @param data     The data associated with this tri.
  * @param vertices The vertices that make up this tri.
  */
-public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex> vertices,
-                                          @NotNull IVector3Immutable normal,
-                                          @NotNull AABB aabb) implements IPolygon<D> {
+public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVertex> vertices,
+                                             @NotNull IVector3Immutable normal,
+                                             @NotNull AABB aabb) implements IPolygon<D> {
 
     private static final double EPSILON = 1e-8;
 
@@ -163,7 +163,7 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
         for (var v : this.vertices) {
             builder.addVertex(v.transform(trans, transformUVs));
         }
-        return builder.build();
+        return builder.setData(this.getPolygonData().transform(trans)).build();
     }
 
     /**
@@ -171,7 +171,7 @@ public record Tri<D extends IPolygonData>(@NotNull D data, ImmutableList<IVertex
      *
      * @param <D> The type of data that is stored on the polygons.
      */
-    public static class Builder<D extends IPolygonData> {
+    public static class Builder<D extends IPolygonData<D>> {
         private D data;
         private final IVertex[] vertices = new IVertex[3];
         private int nextVertex = 0;

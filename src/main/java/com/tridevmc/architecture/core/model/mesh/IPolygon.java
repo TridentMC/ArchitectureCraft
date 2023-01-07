@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * <p>
  * Implementations include triangles and quads.
  */
-public interface IPolygon<D extends IPolygonData> {
+public interface IPolygon<D extends IPolygonData<D>> {
 
     /**
      * Gets the polygon data associated with this polygon.

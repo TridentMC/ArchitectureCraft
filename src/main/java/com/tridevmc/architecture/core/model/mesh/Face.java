@@ -13,7 +13,7 @@ import java.util.List;
  * @param polygons The polygons that make up this face.
  * @param <D>      The type of data that is stored on the polygons.
  */
-public record Face<D extends IPolygonData>(ImmutableList<IPolygon<D>> polygons) implements IFace<D> {
+public record Face<D extends IPolygonData<D>>(ImmutableList<IPolygon<D>> polygons) implements IFace<D> {
 
     @Override
     public @NotNull ImmutableList<IPolygon<D>> getPolygons() {
@@ -34,7 +34,7 @@ public record Face<D extends IPolygonData>(ImmutableList<IPolygon<D>> polygons) 
      *
      * @param <D> The type of data that is stored on the polygons.
      */
-    public static class Builder<D extends IPolygonData> {
+    public static class Builder<D extends IPolygonData<D>> {
         private final List<IPolygon<D>> polygons = new ArrayList<>();
 
         /**

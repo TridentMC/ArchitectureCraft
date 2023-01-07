@@ -2,9 +2,9 @@ package com.tridevmc.architecture.core.model.objson;
 
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.Voxelizer;
-import com.tridevmc.architecture.core.model.mesh.IMesh;
-import com.tridevmc.architecture.core.model.mesh.PolygonData;
+import com.tridevmc.architecture.core.model.mesh.*;
 import com.tridevmc.architecture.core.physics.AABB;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
     }
 
     public OBJSON(OBJSONData data, @NotNull ITrans3 trans, int blockResolution) {
-        this(data, new OBJSONMesh(data).transform(trans), blockResolution);
+        this(data, createMesh(data).transform(trans), blockResolution);
     }
 
     public OBJSON(OBJSONData data, @NotNull ITrans3 trans) {
@@ -46,6 +46,38 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
 
     public List<AABB> voxelize() {
         return this.voxelizer.voxelize();
+    }
+
+    private static IMesh<String, PolygonData> createMesh(OBJSONData data) {
+        // OBJSON stores parts and faces in a slightly different way to how our mesh implementation, so we'll need to convert as we build.
+        var builder = new Mesh.Builder<String, PolygonData>();
+
+        for (var partData : data.parts()) {
+            var part = new Part.Builder<String, PolygonData>().setId(partData.name());
+            var faceMap = new Int2ObjectOpenHashMap<Face.Builder<PolygonData>>();
+
+            for (OBJSONData.TriangleData triData : partData.triangles()) {
+                // OBJSON doesn't currently support tinting, so we'll just use the default value of -1.
+                var tri = new Tri.Builder<PolygonData>().setData(new PolygonData(triData.texture(), -1, triData.cullFace()));
+                var faceData = data.faces()[triData.face()];
+                var face = faceMap.computeIfAbsent(triData.face(), i -> new Face.Builder<>());
+
+                for (int vertIndex : triData.vertices()) {
+                    var vertData = faceData.vertices()[vertIndex];
+                    tri.addVertex(new Vertex(vertData.pos(), vertData.normal(), vertData.uv()));
+                }
+
+                face.addPolygon(tri.build());
+            }
+
+            for (var face : faceMap.values()) {
+                part.addFace(face.build());
+            }
+
+            builder.addPart(part.build());
+        }
+
+        return builder.build();
     }
 
 }

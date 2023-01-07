@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public record Part<I, D extends IPolygonData>(I id, ImmutableList<IFace<D>> faces, AABB bounds) implements IPart<I, D> {
+public record Part<I, D extends IPolygonData<D>>(I id, ImmutableList<IFace<D>> faces, AABB bounds) implements IPart<I, D> {
     @Override
     public @NotNull I getId() {
         return this.id;
@@ -39,7 +39,7 @@ public record Part<I, D extends IPolygonData>(I id, ImmutableList<IFace<D>> face
      * @param <I> The type of data used to identify the part.
      * @param <D> The type of data that is stored on the polygons.
      */
-    public static class Builder<I, D extends IPolygonData> {
+    public static class Builder<I, D extends IPolygonData<D>> {
         private I id;
         private final List<IFace<D>> faces = new ArrayList<>();
 

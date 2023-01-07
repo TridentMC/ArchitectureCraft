@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.core.model.mesh;
 
+import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -7,7 +8,7 @@ import java.util.Objects;
 /**
  * Default implementation of {@link IPolygonData}.
  */
-public class PolygonData implements IPolygonData {
+public class PolygonData implements IPolygonData<PolygonData> {
     private final int textureIndex;
     private final int tintIndex;
     private final CullFace cullFace;
@@ -38,6 +39,13 @@ public class PolygonData implements IPolygonData {
     @Override
     public @NotNull CullFace getCullFace() {
         return this.cullFace;
+    }
+
+    @Override
+    public PolygonData transform(@NotNull ITrans3 trans) {
+        // We're just going to transform the cull face then copy the rest of the data to a new instance.
+        var cullFace = trans.transformCullFace(this.getCullFace());
+        return new PolygonData(this.getTextureIndex(), this.getTintIndex(), cullFace);
     }
 
     @Override

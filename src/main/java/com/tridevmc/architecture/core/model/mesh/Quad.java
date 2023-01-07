@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * @param data     The data associated with this quad.
  * @param vertices The vertices that make up this quad.
  */
-public record Quad<D extends IPolygonData>(@NotNull D data, @NotNull ImmutableList<IVertex> vertices,
+public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull ImmutableList<IVertex> vertices,
                                            @NotNull IVector3Immutable normal,
                                            @NotNull AABB aabb) implements IPolygon<D> {
 
@@ -217,7 +217,7 @@ public record Quad<D extends IPolygonData>(@NotNull D data, @NotNull ImmutableLi
         for (var v : this.vertices) {
             builder.addVertex(v.transform(trans, transformUVs));
         }
-        return builder.build();
+        return builder.setData(this.getPolygonData().transform(trans)).build();
     }
 
     /**
@@ -225,7 +225,7 @@ public record Quad<D extends IPolygonData>(@NotNull D data, @NotNull ImmutableLi
      *
      * @param <D> The type of data that is stored on the polygons.
      */
-    public static class Builder<D extends IPolygonData> {
+    public static class Builder<D extends IPolygonData<D>> {
         private D data;
         private final IVertex[] vertices = new IVertex[4];
 

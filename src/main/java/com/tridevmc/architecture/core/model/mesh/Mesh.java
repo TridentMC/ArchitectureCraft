@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Default implementation of {@link IMesh}.
  */
-public class Mesh<I, D extends IPolygonData> implements IMesh<I, D> {
+public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
 
     private final ImmutableMap<I, IPart<I, D>> parts;
     private final ImmutableList<IFace<D>> faces;
@@ -90,7 +90,7 @@ public class Mesh<I, D extends IPolygonData> implements IMesh<I, D> {
      *
      * @param <D> The type of data stored on the polygons of the mesh.
      */
-    public static class Builder<I, D extends IPolygonData> {
+    public static class Builder<I, D extends IPolygonData<D>> {
         private final Map<I, IPart<I, D>> parts = new HashMap<>();
         private final List<IFace<D>> faces = new ArrayList<>();
 
@@ -112,9 +112,8 @@ public class Mesh<I, D extends IPolygonData> implements IMesh<I, D> {
          *
          * @return The new mesh.
          */
-        @SuppressWarnings("unchecked")
         public Mesh<I, D> build() {
-            return new Mesh<I, D>(ImmutableMap.copyOf(this.parts), ImmutableList.copyOf(this.faces));
+            return new Mesh<>(ImmutableMap.copyOf(this.parts), ImmutableList.copyOf(this.faces));
         }
     }
 }

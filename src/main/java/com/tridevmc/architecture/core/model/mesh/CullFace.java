@@ -2,6 +2,7 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,6 +23,26 @@ public enum CullFace {
     WEST(4),
     @SerializedName("5")
     EAST(5);
+
+    private static final CullFace[] FACES_BY_INDEX = new CullFace[6];
+
+    static {
+        for (CullFace face : values()) {
+            FACES_BY_INDEX[face.getIndex()] = face;
+        }
+    }
+
+    /**
+     * Gets the cull face from the index of the given direction.
+     *
+     * @param direction The direction to get the cull face for.
+     * @return The cull face for the given direction.
+     */
+    @NotNull
+    public static CullFace fromDirection(@Nullable Direction direction) {
+        if (direction == null) return NONE;
+        return FACES_BY_INDEX[direction.ordinal()];
+    }
 
     private final int index;
 

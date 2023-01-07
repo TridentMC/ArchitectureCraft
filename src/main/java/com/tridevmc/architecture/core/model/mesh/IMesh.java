@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 /**
  * Common interface used to represent a mesh and provide access to its faces.
  */
-public interface IMesh<I, D extends IPolygonData> {
+public interface IMesh<I, D extends IPolygonData<D>> {
 
     /**
      * Gets the parts of this mesh.
