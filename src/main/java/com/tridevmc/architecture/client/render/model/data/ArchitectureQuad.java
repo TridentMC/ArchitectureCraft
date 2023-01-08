@@ -13,7 +13,9 @@ import net.minecraft.core.Direction;
 import java.util.*;
 
 /**
- * A simple representation of the data required to bake a quad.
+ * An implementation of {@link IBakedQuadProvider} that allows for the creation of quads from the stored quad data.
+ *
+ * @param <T> The type of metadata this provider uses.
  */
 public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
 

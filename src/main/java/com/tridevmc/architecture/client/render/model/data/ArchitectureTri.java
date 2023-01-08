@@ -11,6 +11,11 @@ import net.minecraft.core.Direction;
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * An implementation of {@link IBakedQuadProvider} that allows for the creation of quads from the stored triangle data.
+ *
+ * @param <T> The type of metadata this provider uses.
+ */
 public class ArchitectureTri<T> extends BakedQuadProvider<T> {
 
     private Direction face;
@@ -47,9 +52,9 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
     @Override
     public Vector3f getFaceNormal() {
         if (this.normals == null) {
-            ArchitectureVertex vert0 = this.vertices[2];
-            ArchitectureVertex vert1 = this.vertices[1];
-            ArchitectureVertex vert2 = this.vertices[0];
+            var vert0 = this.vertices[2];
+            var vert1 = this.vertices[1];
+            var vert2 = this.vertices[0];
             Vector3f p0 = vert0.getPosition();
 
             p0.sub(vert1.getPosition());

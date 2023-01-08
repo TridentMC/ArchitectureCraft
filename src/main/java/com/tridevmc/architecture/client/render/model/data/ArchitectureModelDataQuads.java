@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * A class used for storing quads for a given model based on their sides.
+ */
 public class ArchitectureModelDataQuads {
     private final List<BakedQuad> northQuads;
     private final List<BakedQuad> southQuads;
