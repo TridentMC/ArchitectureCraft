@@ -22,7 +22,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @param poly the polygon to intersect with.
      * @return a hit containing the point of intersection and the polygon, or an invalid hit if there is no intersection.
      */
-    public <D extends IPolygonData> Hit intersect(IPolygon<D> poly) {
+    public <D extends IPolygonData<D>> Hit intersect(IPolygon<D> poly) {
         return new Hit(this, poly.intersect(this), poly);
     }
 
@@ -32,7 +32,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @param mesh the mesh to intersect with.
      * @return a stream of valid hits.
      */
-    public <I, D extends IPolygonData> Stream<Hit> intersect(IMesh<I, D> mesh) {
+    public <I, D extends IPolygonData<D>> Stream<Hit> intersect(IMesh<I, D> mesh) {
         return this.intersectUnfiltered(mesh).filter(Hit::isValidHit);
     }
 
@@ -42,7 +42,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @param mesh the mesh to intersect with.
      * @return a stream of hits or failed hits.
      */
-    public <I, D extends IPolygonData> Stream<Hit> intersectUnfiltered(IMesh<I, D> mesh) {
+    public <I, D extends IPolygonData<D>> Stream<Hit> intersectUnfiltered(IMesh<I, D> mesh) {
         return mesh.getAABBTree().search(new AABB(this.origin, this.origin.add(this.direction)))
                 .stream()
                 .map(this::intersect);
@@ -67,7 +67,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @param point the point of intersection, if any.
      * @param poly  the polygon that was hit, if any.
      */
-    public record Hit(Ray ray, IVector3 point, IPolygon<? extends IPolygonData> poly) {
+    public record Hit(Ray ray, IVector3 point, IPolygon<? extends IPolygonData<?>> poly) {
         /**
          * Determines if the hit is valid, i.e. if the hit point is not null.
          *
