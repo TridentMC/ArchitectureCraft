@@ -297,7 +297,7 @@ public enum EnumShape {
     }
 
     public String getLocalizedShapeName(){
-        return I18n.format(this.translationKey);
+        return new TextComponentTranslation(this.translationKey).getUnformattedText();
     }
 
     protected boolean isPlacedUnderneath() {
