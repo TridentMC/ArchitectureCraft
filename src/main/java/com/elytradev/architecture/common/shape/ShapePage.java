@@ -24,7 +24,7 @@
 
 package com.elytradev.architecture.common.shape;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class ShapePage {
 
@@ -47,7 +47,7 @@ public class ShapePage {
     }
 
     public String getLocalizedName() {
-        return I18n.format(this.translationKey);
+        return new TextComponentTranslation(this.translationKey).getUnformattedText()
     }
 
 }
