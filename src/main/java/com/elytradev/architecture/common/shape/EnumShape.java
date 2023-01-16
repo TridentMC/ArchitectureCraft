@@ -30,13 +30,11 @@ import com.elytradev.architecture.common.helpers.Trans3;
 import com.elytradev.architecture.common.helpers.Vector3;
 import com.elytradev.architecture.common.tile.TileShape;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.translation.I18n;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -296,8 +294,8 @@ public enum EnumShape {
             return 1;
     }
 
-    public String getLocalizedShapeName(){
-        return I18n.format(this.translationKey);
+    public String getLocalizedShapeName() {
+        return I18n.translateToLocalFormatted(this.translationKey);
     }
 
     protected boolean isPlacedUnderneath() {
