@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.objson;
+package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -19,7 +19,7 @@ public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQ
     }
 
     @Override
-    public int getColour(OBJSONQuadMetadata metadata) {
+    public int getTintIndex(OBJSONQuadMetadata metadata) {
         return this.colours[metadata.tintIndex()];
     }
 }

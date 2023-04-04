@@ -66,4 +66,5 @@ public class ShapeBakedModel implements IArchitectureBakedModel {
     public ItemOverrides getOverrides() {
         return ItemOverrides.EMPTY;
     }
+
 }

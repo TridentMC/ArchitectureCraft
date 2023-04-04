@@ -1,8 +1,8 @@
 package com.tridevmc.architecture.client.render.model;
 
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -24,4 +24,5 @@ public interface IArchitectureModel<T> {
     TextureAtlasSprite getDefaultSprite();
 
     List<BakedQuad> getDefaultModel();
+
 }

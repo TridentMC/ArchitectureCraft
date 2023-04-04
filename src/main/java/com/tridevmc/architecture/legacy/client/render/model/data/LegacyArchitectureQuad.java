@@ -1,26 +1,26 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
-import com.tridevmc.architecture.client.render.model.baked.BakedQuadRetextured;
 import com.tridevmc.architecture.client.render.model.builder.BakedQuadBuilderVertexConsumer;
+import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import org.joml.Vector3f;
 
 import java.util.*;
 
 /**
- * An implementation of {@link IBakedQuadProvider} that allows for the creation of quads from the stored quad data.
+ * An implementation of {@link IPipedBakedQuad} that allows for the creation of quads from the stored quad data.
  *
  * @param <T> The type of metadata this provider uses.
  */
-public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
+public class LegacyArchitectureQuad<T> extends BakedQuadProvider<T> {
 
     private Direction face;
-    private final ArchitectureVertex[] vertices = new ArchitectureVertex[4];
+    private final LegacyArchitectureVertex[] vertices = new LegacyArchitectureVertex[4];
     private Vector3f normals;
     private final Map<Transformation, PrebuiltData> prebuiltQuads = Maps.newHashMap();
 
@@ -51,12 +51,12 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
         }
     }
 
-    public ArchitectureQuad(T metadata, Direction face) {
+    public LegacyArchitectureQuad(T metadata, Direction face) {
         super(metadata);
         this.face = face;
     }
 
-    public ArchitectureQuad(T metadata, Direction face, Vector3f normals) {
+    public LegacyArchitectureQuad(T metadata, Direction face, Vector3f normals) {
         super(metadata);
         this.face = face;
         this.normals = normals;
@@ -85,7 +85,7 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
                     .setDirection(facing);
             int[] vertexIndices = new int[]{0, 1, 2, 3};
             for (int i = 0; i < 4; i++) {
-                ArchitectureVertex vertex = this.vertices[vertexIndices[i]];
+                LegacyArchitectureVertex vertex = this.vertices[vertexIndices[i]];
                 vertex.pipe(builder, this, Optional.of(transform), sprite, colour);
             }
             PrebuiltData baseQuad = new PrebuiltData(builder.getBakedQuad());
@@ -102,8 +102,8 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
             this.normals = new Vector3f(0, 0, 0);
 
             for (int i = 0; i < this.vertices.length; i++) {
-                ArchitectureVertex currentVertex = this.vertices[i];
-                ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
+                LegacyArchitectureVertex currentVertex = this.vertices[i];
+                LegacyArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
 
                 this.normals.setX(this.normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
                 this.normals.setY(this.normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
@@ -118,12 +118,12 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
     @Override
     public void assignNormals() {
         for (int i = 0; i < this.vertices.length; i++) {
-            ArchitectureVertex currentVertex = this.vertices[i];
+            LegacyArchitectureVertex currentVertex = this.vertices[i];
             if (!currentVertex.assignNormals())
                 continue;
 
             Vector3f normals = currentVertex.getNormals();
-            ArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
+            LegacyArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
             normals.setX(normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ())));
             normals.setY(normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX())));
             normals.setZ(normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY())));
@@ -151,7 +151,7 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
      * @return the default face for this quad.
      */
     @Override
-    public Direction getFace() {
+    public Direction face() {
         return this.face;
     }
 
@@ -165,7 +165,7 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
         for (int i = 0; i < 3; i++) {
             Set<Integer> targetDimensions = dimensions[i];
             int[] targetRange = ranges[i];
-            for (ArchitectureVertex vertex : this.getVertices()) {
+            for (LegacyArchitectureVertex vertex : this.getVertices()) {
                 Vector3f position = vertex.getPosition(transform);
                 float[] positionArray = new float[]{position.x(), position.y(), position.z()};
                 float coord = positionArray[i];
@@ -184,7 +184,7 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
     }
 
     @Override
-    public void setVertex(int index, ArchitectureVertex vertex) {
+    public void setVertex(int index, LegacyArchitectureVertex vertex) {
         this.vertices[index] = vertex;
     }
 
@@ -212,7 +212,7 @@ public class ArchitectureQuad<T> extends BakedQuadProvider<T> {
      *
      * @return an array of all the vertices that make up this quad.
      */
-    public ArchitectureVertex[] getVertices() {
+    public LegacyArchitectureVertex[] getVertices() {
         return this.vertices;
     }
 

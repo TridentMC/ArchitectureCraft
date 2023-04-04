@@ -87,6 +87,11 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
             return point.distance(this.point);
         }
 
+        /**
+         * Creates a copy of this hit with the point rounded to the nearest 256th on each axis.
+         *
+         * @return a copy of this hit with the point rounded to the nearest 256th on each axis.
+         */
         public Hit rounded() {
             // Round the hit point to the nearest 256th of a block.
             return new Hit(this.ray, IVector3.ofImmutable(Math.round(this.point.x() * 256) / 256D, Math.round(this.point.y() * 256) / 256D, Math.round(this.point.z() * 256) / 256D), this.poly);

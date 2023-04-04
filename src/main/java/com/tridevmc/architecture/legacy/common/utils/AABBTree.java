@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.utils;
+package com.tridevmc.architecture.legacy.common.utils;
 
 import com.google.common.collect.Lists;
 import net.minecraft.world.phys.AABB;

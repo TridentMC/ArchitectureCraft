@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RenderingManager {
+
     protected static String[] texturePrefixes = {"blocks/", "textures/"};
     protected Map<ResourceLocation, ITexture> textureCache = new HashMap<ResourceLocation, ITexture>();
 

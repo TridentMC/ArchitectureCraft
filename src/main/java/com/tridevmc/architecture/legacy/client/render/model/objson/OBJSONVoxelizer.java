@@ -1,8 +1,8 @@
-package com.tridevmc.architecture.client.render.model.objson;
+package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.common.utils.AABBTree;
+import com.tridevmc.architecture.legacy.common.utils.AABBTree;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.Vec3i;

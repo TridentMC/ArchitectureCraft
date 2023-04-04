@@ -24,7 +24,7 @@
 
 package com.tridevmc.architecture.common.block;
 
-import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;

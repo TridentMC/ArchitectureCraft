@@ -1,12 +1,13 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -14,14 +15,14 @@ import java.util.Optional;
 /**
  * Stores information about a vertex that can be piped into a vertex consumer, assumes all data provided is valid.
  */
-public class ArchitectureVertex {
+public class LegacyArchitectureVertex {
 
     private final int face;
     private final float[] data;
     private final float[] uvs;
     private float[] normals;
 
-    public ArchitectureVertex(int face, float[] data, float[] uvs, float[] normals) {
+    public LegacyArchitectureVertex(int face, float[] data, float[] uvs, float[] normals) {
         this.face = face;
         this.data = data;
         this.uvs = uvs;
@@ -58,7 +59,7 @@ public class ArchitectureVertex {
         return Direction.getNearest(vec.x(), vec.y(), vec.z());
     }
 
-    public float[] getUVs(IBakedQuadProvider quadProvider, Transformation transform) {
+    public float[] getUVs(IPipedBakedQuad quadProvider, Transformation transform) {
         return this.uvs;
     }
 
@@ -86,10 +87,11 @@ public class ArchitectureVertex {
         return this.getNormals().z();
     }
 
-    public void pipe(VertexConsumer consumer, IBakedQuadProvider<?> bakedQuadProvider,
+    public void pipe(VertexConsumer consumer, IPipedBakedQuad<?> bakedQuadProvider,
                      Optional<Transformation> transform, TextureAtlasSprite sprite,
                      int colour) {
-        Vector4f pos = new Vector4f(this.getPosition());
+        var p = this.getPosition();
+        Vector4f pos = new Vector4f(p.x(), p.y(), p.z(), 1);
         Vector3f normals = this.getNormals();
         float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(Transformation.identity()));
         transform.ifPresent((t) -> {
@@ -112,10 +114,11 @@ public class ArchitectureVertex {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ArchitectureVertex) {
-            return Arrays.equals(((ArchitectureVertex) obj).data, this.data);
+        if (obj instanceof LegacyArchitectureVertex) {
+            return Arrays.equals(((LegacyArchitectureVertex) obj).data, this.data);
         }
 
         return super.equals(obj);
     }
+
 }

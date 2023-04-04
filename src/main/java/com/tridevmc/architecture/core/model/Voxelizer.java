@@ -29,7 +29,7 @@ public class Voxelizer {
     private static final IVector3 yNormal = IVector3.UNIT_Y;
     private static final IVector3 zNormal = IVector3.UNIT_Z;
 
-    private final IMesh<?, ? extends IPolygonData> mesh;
+    private final IMesh<?, ? extends IPolygonData<?>> mesh;
     private final int blockResolution;
     private final double resolution;
     private final IVector3i min, max;

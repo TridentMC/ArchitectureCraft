@@ -1,12 +1,12 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
+import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
+import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -15,6 +15,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,23 +30,22 @@ public class ArchitectureModelData<T> {
 
     private static final Direction[] DIRECTIONS_WITH_NULL = new Direction[]{null, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN};
     private final DirectionalQuads quads = new DirectionalQuads();
-    private final Map<String, ArchitectureVertex> vertexPool = Maps.newHashMap();
-    protected Direction facing = Direction.NORTH;
+    private final Map<String, LegacyArchitectureVertex> vertexPool = Maps.newHashMap();
 
     /**
      * Stores quads for each cardinal direction as well as general quads that don't fit into a specific direction.
      */
     protected class DirectionalQuads {
-        private final List<IBakedQuadProvider<T>> northQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> southQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> eastQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> westQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> upQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> downQuads = Lists.newArrayList();
-        private final List<IBakedQuadProvider<T>> generalQuads = Lists.newArrayList();
-        private final ImmutableList<List<IBakedQuadProvider<T>>> allQuads = ImmutableList.of(this.northQuads, this.southQuads, this.eastQuads, this.westQuads, this.upQuads, this.downQuads, this.generalQuads);
+        private final List<IPipedBakedQuad<T>> northQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> southQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> eastQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> westQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> upQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> downQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<T>> generalQuads = Lists.newArrayList();
+        private final ImmutableList<List<IPipedBakedQuad<T>>> allQuads = ImmutableList.of(this.northQuads, this.southQuads, this.eastQuads, this.westQuads, this.upQuads, this.downQuads, this.generalQuads);
 
-        private List<IBakedQuadProvider<T>> getQuads(@Nullable Direction direction) {
+        private List<IPipedBakedQuad<T>> getQuads(@Nullable Direction direction) {
             if (direction == null) {
                 return this.generalQuads;
             }
@@ -58,7 +59,7 @@ public class ArchitectureModelData<T> {
             };
         }
 
-        private Stream<IBakedQuadProvider<T>> getAllQuads() {
+        private Stream<IPipedBakedQuad<T>> getAllQuads() {
             return Stream.of(this.northQuads,
                             this.southQuads,
                             this.eastQuads,
@@ -69,7 +70,7 @@ public class ArchitectureModelData<T> {
                     .flatMap(List::stream);
         }
 
-        private void addQuad(@Nullable Direction direction, IBakedQuadProvider<T> quad) {
+        private void addQuad(@Nullable Direction direction, IPipedBakedQuad<T> quad) {
             if (direction == null) {
                 this.generalQuads.add(quad);
             } else {
@@ -84,31 +85,31 @@ public class ArchitectureModelData<T> {
             }
         }
 
-        private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
+        private IPipedBakedQuad<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
             var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
-                quads.add(new ArchitectureQuad<>(metadata, direction));
+                quads.add(new LegacyArchitectureQuad<>(metadata, direction));
             return quads.get(quads.size() - 1);
         }
 
-        private IBakedQuadProvider<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
+        private IPipedBakedQuad<T> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
             var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
-                quads.add(new ArchitectureQuad<>(metadata, direction, normals));
+                quads.add(new LegacyArchitectureQuad<>(metadata, direction, normals));
             return quads.get(quads.size() - 1);
         }
 
-        private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
+        private IPipedBakedQuad<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
             var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
-                quads.add(new ArchitectureTri<>(metadata, direction));
+                quads.add(new LegacyArchitectureTri<>(metadata, direction));
             return quads.get(quads.size() - 1);
         }
 
-        private IBakedQuadProvider<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
+        private IPipedBakedQuad<T> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
             var quads = this.getQuads(direction);
             if (quads.isEmpty() || quads.get(quads.size() - 1).isComplete())
-                quads.add(new ArchitectureTri<>(metadata, direction, normals));
+                quads.add(new LegacyArchitectureTri<>(metadata, direction, normals));
             return quads.get(quads.size() - 1);
         }
 
@@ -301,18 +302,18 @@ public class ArchitectureModelData<T> {
         selectedQuad.setVertex(selectedQuad.getNextVertex(), this.getPooledVertex(face, x, y, z, u, v, nX, nY, nZ));
     }
 
-    public ArchitectureVertex getPooledVertex(int face, float... data) {
+    public LegacyArchitectureVertex getPooledVertex(int face, float... data) {
         String vertexIdentity = face + Arrays.toString(data);
-        ArchitectureVertex out = this.vertexPool.getOrDefault(vertexIdentity, null);
+        LegacyArchitectureVertex out = this.vertexPool.getOrDefault(vertexIdentity, null);
         if (out == null) {
             if (data.length == 3) {
-                out = SmartArchitectureVertex.fromPosition(face, data);
+                out = LegacyAutoUVArchitectureVertex.fromPosition(face, data);
             } else if (data.length == 5) {
-                out = SmartArchitectureVertex.fromPositionWithUV(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5));
+                out = LegacyAutoUVArchitectureVertex.fromPositionWithUV(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5));
             } else if (data.length == 6) {
-                out = SmartArchitectureVertex.fromPositionWithNormal(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 6));
+                out = LegacyAutoUVArchitectureVertex.fromPositionWithNormal(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 6));
             } else if (data.length == 8) {
-                out = new ArchitectureVertex(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5), Arrays.copyOfRange(data, 5, 8));
+                out = new LegacyArchitectureVertex(face, Arrays.copyOfRange(data, 0, 3), Arrays.copyOfRange(data, 3, 5), Arrays.copyOfRange(data, 5, 8));
             }
             this.vertexPool.put(vertexIdentity, out);
         }

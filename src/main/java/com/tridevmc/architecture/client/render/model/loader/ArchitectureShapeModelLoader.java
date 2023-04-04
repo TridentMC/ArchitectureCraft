@@ -40,4 +40,5 @@ public class ArchitectureShapeModelLoader implements IGeometryLoader<Architectur
         }
         return geometry;
     }
+
 }

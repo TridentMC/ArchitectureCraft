@@ -75,7 +75,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onStitch(TextureStitchEvent.Pre e) {
+    public void onStitch(TextureStitchEvent e) {
         //RENDERING_MANAGER.clearTextureCache();
         for (Block block : ArchitectureContent.registeredBlocks.values())
             RENDERING_MANAGER.registerSprites(0, e.getAtlas(), block);

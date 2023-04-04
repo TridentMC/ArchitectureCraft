@@ -25,7 +25,6 @@
 package com.tridevmc.architecture.legacy.math;
 
 import com.google.common.base.MoreObjects;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.BlockPos;
@@ -34,6 +33,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
 
 import java.util.List;
 import java.util.Objects;
@@ -495,7 +495,8 @@ public class LegacyTrans3 {
      */
     public Transformation toMCTrans() {
         if (this.mcTrans == null) {
-            this.mcTrans = new Transformation(new Matrix4f(new float[]{
+            // TODO: This might be broken, just assuming that the matrix order is the same as mojang's old one.
+            this.mcTrans = new Transformation(new Matrix4f(
                     (float) this.rotation.m[0][0],
                     (float) this.rotation.m[0][1],
                     (float) this.rotation.m[0][2],
@@ -511,7 +512,7 @@ public class LegacyTrans3 {
                     0.0f,
                     0.0f,
                     0.0f,
-                    1.0f}));
+                    1.0f));
         }
 
         return this.mcTrans;

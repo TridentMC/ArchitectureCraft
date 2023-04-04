@@ -1,10 +1,10 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
-import com.tridevmc.architecture.client.render.model.data.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
-import com.tridevmc.architecture.client.render.model.objson.OBJSONModel;
-import com.tridevmc.architecture.client.render.model.objson.OBJSONQuadMetadata;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.legacy.client.render.model.data.FunctionalQuadMetadataResolver;
+import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONModel;
+import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadata;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

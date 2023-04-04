@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.proxy;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.resources.ResourceLocation;

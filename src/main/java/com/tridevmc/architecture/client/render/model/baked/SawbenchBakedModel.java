@@ -1,9 +1,9 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.tridevmc.architecture.client.render.model.data.ArchitectureModelDataQuads;
 import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
+import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -68,4 +68,5 @@ public class SawbenchBakedModel implements IArchitectureBakedModel {
     public ItemOverrides getOverrides() {
         return ItemOverrides.EMPTY;
     }
+
 }

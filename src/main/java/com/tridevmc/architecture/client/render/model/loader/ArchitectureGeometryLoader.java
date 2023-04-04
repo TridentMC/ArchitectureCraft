@@ -29,4 +29,5 @@ public class ArchitectureGeometryLoader implements IGeometryLoader<ArchitectureM
     public ArchitectureModelGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
         return this.geometry;
     }
+
 }

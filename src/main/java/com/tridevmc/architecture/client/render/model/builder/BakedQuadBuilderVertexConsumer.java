@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
+import org.jetbrains.annotations.NotNull;
 
 public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
 
@@ -41,31 +42,37 @@ public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
     }
 
     @Override
+    @NotNull
     public VertexConsumer vertex(double x, double y, double z) {
         return this.realConsumer.vertex(x, y, z);
     }
 
     @Override
+    @NotNull
     public VertexConsumer color(int r, int g, int b, int a) {
         return this.realConsumer.color(r, g, b, a);
     }
 
     @Override
+    @NotNull
     public VertexConsumer uv(float u, float v) {
         return this.realConsumer.uv(u, v);
     }
 
     @Override
+    @NotNull
     public VertexConsumer overlayCoords(int u, int v) {
         return this.realConsumer.overlayCoords(u, v);
     }
 
     @Override
+    @NotNull
     public VertexConsumer uv2(int u2, int v2) {
         return this.realConsumer.uv2(u2, v2);
     }
 
     @Override
+    @NotNull
     public VertexConsumer normal(float x, float y, float z) {
         return this.realConsumer.normal(x, y, z);
     }
@@ -88,4 +95,5 @@ public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
     public BakedQuad getBakedQuad() {
         return this.out;
     }
+
 }

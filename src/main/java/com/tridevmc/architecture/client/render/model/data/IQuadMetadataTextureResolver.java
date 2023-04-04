@@ -5,15 +5,17 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 /**
  * A functional interface that resolves a quad's metadata to a texture.
  *
- * @param <T> The type of metadata to resolve.
+ * @param <D> The type of metadata to resolve.
  */
 @FunctionalInterface
-public interface IQuadMetadataTextureResolver<T> {
+public interface IQuadMetadataTextureResolver<D> {
+
     /**
      * Resolves the quad's metadata to a texture.
      *
      * @param metadata The metadata to resolve.
      * @return The texture to use.
      */
-    TextureAtlasSprite getTexture(T metadata);
+    TextureAtlasSprite getTexture(D metadata);
+
 }

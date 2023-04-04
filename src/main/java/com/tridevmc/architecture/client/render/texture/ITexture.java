@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ITexture {
+
     ResourceLocation location();
 
     int tintIndex();
@@ -59,4 +60,5 @@ public interface ITexture {
     ITexture emissive();
 
     ITiledTexture tiled(int numRows, int numCols);
+
 }

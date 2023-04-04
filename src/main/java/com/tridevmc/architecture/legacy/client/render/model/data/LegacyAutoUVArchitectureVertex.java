@@ -1,7 +1,8 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 
 import com.mojang.math.Transformation;
+import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
 
 import java.util.stream.IntStream;
 
@@ -10,27 +11,27 @@ import java.util.stream.IntStream;
  * <p>
  * Capable of generating UVs, and allows the parent model data to assign normal values.
  */
-public class SmartArchitectureVertex extends ArchitectureVertex {
+public class LegacyAutoUVArchitectureVertex extends LegacyArchitectureVertex {
 
     private final boolean generateUVs;
     private final boolean assignNormals;
 
-    private SmartArchitectureVertex(int face, float[] data, float[] uvs, float[] normals, boolean generateUVs, boolean assignNormals) {
+    private LegacyAutoUVArchitectureVertex(int face, float[] data, float[] uvs, float[] normals, boolean generateUVs, boolean assignNormals) {
         super(face, data, uvs, normals);
         this.generateUVs = generateUVs;
         this.assignNormals = assignNormals;
     }
 
-    public static SmartArchitectureVertex fromPosition(int face, float[] data) {
-        return new SmartArchitectureVertex(face, data, new float[]{0F, 0F}, new float[]{0F, 0F, 0F}, true, true);
+    public static LegacyAutoUVArchitectureVertex fromPosition(int face, float[] data) {
+        return new LegacyAutoUVArchitectureVertex(face, data, new float[]{0F, 0F}, new float[]{0F, 0F, 0F}, true, true);
     }
 
-    public static SmartArchitectureVertex fromPositionWithUV(int face, float[] data, float[] uvs) {
-        return new SmartArchitectureVertex(face, data, uvs, new float[]{0F, 0F, 0F}, false, true);
+    public static LegacyAutoUVArchitectureVertex fromPositionWithUV(int face, float[] data, float[] uvs) {
+        return new LegacyAutoUVArchitectureVertex(face, data, uvs, new float[]{0F, 0F, 0F}, false, true);
     }
 
-    public static SmartArchitectureVertex fromPositionWithNormal(int face, float[] data, float[] normals) {
-        return new SmartArchitectureVertex(face, data, new float[]{0F, 0F}, normals, true, false);
+    public static LegacyAutoUVArchitectureVertex fromPositionWithNormal(int face, float[] data, float[] normals) {
+        return new LegacyAutoUVArchitectureVertex(face, data, new float[]{0F, 0F}, normals, true, false);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class SmartArchitectureVertex extends ArchitectureVertex {
     }
 
     @Override
-    public float[] getUVs(IBakedQuadProvider bakedQuadProvider, Transformation transform) {
+    public float[] getUVs(IPipedBakedQuad bakedQuadProvider, Transformation transform) {
         if (!this.generateUVs) {
             return super.getUVs(bakedQuadProvider, transform);
         }
@@ -53,7 +54,7 @@ public class SmartArchitectureVertex extends ArchitectureVertex {
         });
         pos.set(posData);
         pos.map((v) -> v > 1 ? v % 1 : v);
-        var face = this.rotate(bakedQuadProvider.getFace(), transform);
+        var face = this.rotate(bakedQuadProvider.face(), transform);
         float u = 0, v = 0;
         switch (face) {
             case DOWN -> {
@@ -83,4 +84,5 @@ public class SmartArchitectureVertex extends ArchitectureVertex {
         }
         return new float[]{u, v};
     }
+
 }

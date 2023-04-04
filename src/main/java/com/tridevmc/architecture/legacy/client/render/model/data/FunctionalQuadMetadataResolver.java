@@ -1,5 +1,8 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
+import com.tridevmc.architecture.client.render.model.data.IQuadMetadataTintIndexResolver;
+import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.data.IQuadMetadataTextureResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 /**
@@ -10,9 +13,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<T> {
 
     private final IQuadMetadataTextureResolver<T> textureResolver;
-    private final IQuadMetadataColourResolver<T> colourResolver;
+    private final IQuadMetadataTintIndexResolver<T> colourResolver;
 
-    private FunctionalQuadMetadataResolver(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataColourResolver<T> colourResolver) {
+    private FunctionalQuadMetadataResolver(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
         this.textureResolver = textureResolver;
         this.colourResolver = colourResolver;
     }
@@ -25,7 +28,7 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
      * @param <T>             The type of the metadata object.
      * @return The new instance.
      */
-    public static <T> FunctionalQuadMetadataResolver<T> of(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataColourResolver<T> colourResolver) {
+    public static <T> FunctionalQuadMetadataResolver<T> of(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
         return new FunctionalQuadMetadataResolver<>(textureResolver, colourResolver);
     }
 
@@ -35,7 +38,7 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
     }
 
     @Override
-    public int getColour(T metadata) {
-        return this.colourResolver.getColour(metadata);
+    public int getTintIndex(T metadata) {
+        return this.colourResolver.getTintIndex(metadata);
     }
 }

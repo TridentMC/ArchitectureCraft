@@ -1,33 +1,34 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
 import com.tridevmc.architecture.client.render.model.builder.BakedQuadBuilderVertexConsumer;
+import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 /**
- * An implementation of {@link IBakedQuadProvider} that allows for the creation of quads from the stored triangle data.
+ * An implementation of {@link IPipedBakedQuad} that allows for the creation of quads from the stored triangle data.
  *
  * @param <T> The type of metadata this provider uses.
  */
-public class ArchitectureTri<T> extends BakedQuadProvider<T> {
+public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
 
     private Direction face;
-    private final ArchitectureVertex[] vertices = new ArchitectureVertex[3];
+    private final LegacyArchitectureVertex[] vertices = new LegacyArchitectureVertex[3];
     private Vector3f normals = null;
 
-    public ArchitectureTri(T metadata, Direction face) {
+    public LegacyArchitectureTri(T metadata, Direction face) {
         super(metadata);
         this.face = face;
     }
 
-    public ArchitectureTri(T metadata, Direction face, Vector3f normals) {
+    public LegacyArchitectureTri(T metadata, Direction face, Vector3f normals) {
         super(metadata);
         this.face = face;
         this.normals = normals;
@@ -35,7 +36,7 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
 
     @Override
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
-        if (facing == null) facing = this.getFace();
+        if (facing == null) facing = this.face();
         var builder = new BakedQuadBuilderVertexConsumer()
                 .setSprite(sprite)
                 .setTintIndex(colour)
@@ -69,7 +70,7 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
     }
 
     @Override
-    public Direction getFace() {
+    public Direction face() {
         if (this.face == null) {
             Vector3f normals = this.getFaceNormal();
             this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
@@ -77,7 +78,7 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
         return this.face;
     }
 
-    public ArchitectureVertex[] getVertices() {
+    public LegacyArchitectureVertex[] getVertices() {
         return this.vertices;
     }
 
@@ -87,7 +88,7 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
     }
 
     @Override
-    public void setVertex(int index, ArchitectureVertex vertex) {
+    public void setVertex(int index, LegacyArchitectureVertex vertex) {
         this.vertices[index] = vertex;
     }
 
@@ -133,7 +134,7 @@ public class ArchitectureTri<T> extends BakedQuadProvider<T> {
         for (int i = 0; i < 3; i++) {
             Set<Integer> targetDimensions = dimensions[i];
             int[] targetRange = ranges[i];
-            for (ArchitectureVertex vertex : this.getVertices()) {
+            for (LegacyArchitectureVertex vertex : this.getVertices()) {
                 Vector3f position = vertex.getPosition(transform);
                 float[] positionArray = new float[]{position.x(), position.y(), position.z()};
                 float coord = positionArray[i];

@@ -5,9 +5,9 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 /**
  * Defines two methods that are used to resolve the texture and tint index for a quad using the quad's metadata.
  *
- * @param <T> The type of the quad metadata.
+ * @param <D> The type of the quad metadata.
  */
-public interface IQuadMetadataResolver<T> {
+public interface IQuadMetadataResolver<D> {
 
     /**
      * Gets the texture to use for the quad.
@@ -15,8 +15,8 @@ public interface IQuadMetadataResolver<T> {
      * @param provider The quad provider containing the metadata.
      * @return The texture to use for the quad.
      */
-    default TextureAtlasSprite getTexture(IBakedQuadProvider<T> provider) {
-        return this.getTexture(provider.getMetadata());
+    default TextureAtlasSprite getTexture(IPipedBakedQuad<?, ?, D> provider) {
+        return this.getTexture(provider.metadata());
     }
 
     /**
@@ -25,7 +25,7 @@ public interface IQuadMetadataResolver<T> {
      * @param metadata The quad metadata.
      * @return The texture to use for the quad.
      */
-    TextureAtlasSprite getTexture(T metadata);
+    TextureAtlasSprite getTexture(D metadata);
 
     /**
      * Gets the tint index to use for the quad.
@@ -33,8 +33,8 @@ public interface IQuadMetadataResolver<T> {
      * @param provider The quad provider containing the metadata.
      * @return The tint index to use for the quad.
      */
-    default int getColour(IBakedQuadProvider<T> provider) {
-        return this.getColour(provider.getMetadata());
+    default int getTintIndex(IPipedBakedQuad<?, ?, D> provider) {
+        return this.getTintIndex(provider.metadata());
     }
 
     /**
@@ -43,6 +43,6 @@ public interface IQuadMetadataResolver<T> {
      * @param metadata The quad metadata.
      * @return The tint index to use for the quad.
      */
-    int getColour(T metadata);
+    int getTintIndex(D metadata);
 
 }

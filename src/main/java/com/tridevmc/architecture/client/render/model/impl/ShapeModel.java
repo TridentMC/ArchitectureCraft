@@ -2,14 +2,14 @@ package com.tridevmc.architecture.client.render.model.impl;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
-import com.tridevmc.architecture.client.render.model.objson.OBJSONModel;
-import com.tridevmc.architecture.client.render.model.objson.OBJSONQuadMetadata;
-import com.tridevmc.architecture.client.render.model.objson.OBJSONQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONModel;
+import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadata;
+import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadataResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

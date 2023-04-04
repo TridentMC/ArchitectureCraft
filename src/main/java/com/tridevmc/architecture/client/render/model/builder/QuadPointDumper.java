@@ -24,6 +24,7 @@ public class QuadPointDumper {
     }
 
     private class DumpingVertexConsumer implements VertexConsumer {
+
         @Override
         public VertexConsumer vertex(double x, double y, double z) {
             QuadPointDumper.this.points.add(new Vec3(x, y, z));
@@ -69,9 +70,11 @@ public class QuadPointDumper {
         @Override
         public void unsetDefaultColor() {
         }
+
     }
 
     public ImmutableList<Vec3> getPoints() {
         return this.immutablePoints;
     }
+
 }

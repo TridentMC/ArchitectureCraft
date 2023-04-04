@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.objson;
+package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

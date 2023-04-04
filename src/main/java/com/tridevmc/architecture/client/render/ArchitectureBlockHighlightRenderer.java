@@ -1,14 +1,15 @@
 package com.tridevmc.architecture.client.render;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugRenderTypes;
-import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ArchitectureBlockHighlightRenderer {
+
     @SubscribeEvent
     public static void onRenderBlockHighlight(RenderHighlightEvent.Block event) {
         if (event.isCanceled() || !event.isCanceled())
@@ -36,4 +37,5 @@ public class ArchitectureBlockHighlightRenderer {
         }
         matrix.popPose();
     }
+
 }

@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.client.render.model.objson.LegacyOBJSON;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;

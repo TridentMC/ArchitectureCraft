@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.google.common.collect.Lists;
 import com.mojang.math.Transformation;

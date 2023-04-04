@@ -24,11 +24,11 @@
 
 package com.tridevmc.architecture.legacy.math;
 
-import com.mojang.math.Vector3d;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3d;
 
 import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
