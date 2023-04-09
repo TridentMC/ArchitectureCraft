@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.legacy.client.render.model.data.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONModel;

@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;

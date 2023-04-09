@@ -1,42 +1,41 @@
-package com.tridevmc.architecture.client.render.model.baked;
+package com.tridevmc.architecture.client.render.model.impl;
 
-import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
+import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
+import com.tridevmc.architecture.client.render.model.impl.ShapeModel;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
-import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
+import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SawbenchBakedModel implements IArchitectureBakedModel {
+public class ShapeBakedModel implements IArchitectureBakedModel {
 
-    private static SawbenchModel MODEL;
+    private final EnumShape shape;
+    private final ShapeModel model;
 
-    public SawbenchBakedModel() {
-        if (MODEL == null) {
-            MODEL = new SawbenchModel();
-        }
+    public ShapeBakedModel(EnumShape shape, boolean generateUVs) {
+        this.shape = shape;
+        this.model = new ShapeModel(this.shape, (ShapeBehaviourModel) this.shape.behaviour, generateUVs);
     }
 
     @NotNull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-        Level level = extraData.get(ModelProperties.LEVEL);
-        BlockPos pos = extraData.get(ModelProperties.POS);
+        var level = extraData.get(ModelProperties.LEVEL);
+        var pos = extraData.get(ModelProperties.POS);
 
         var t = state.localToGlobalTransformation(level, pos);
-        ArchitectureModelDataQuads quads = MODEL.getQuads(level, pos, state, t.toMCTrans());
-        return quads.getQuads(side);
+        return this.model.getQuads(level, pos, state, t.toMCTrans()).getQuads(side);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class SawbenchBakedModel implements IArchitectureBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return MODEL.getDefaultSprite();
+        return this.model.getDefaultSprite();
     }
 
     @Override

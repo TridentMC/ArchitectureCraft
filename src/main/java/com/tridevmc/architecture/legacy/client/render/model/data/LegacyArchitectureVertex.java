@@ -2,7 +2,7 @@ package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
+import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;

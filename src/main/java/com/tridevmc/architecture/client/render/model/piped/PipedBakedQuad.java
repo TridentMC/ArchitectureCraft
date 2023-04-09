@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.piped;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.math.Transformation;

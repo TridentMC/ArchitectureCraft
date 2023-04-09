@@ -3,7 +3,7 @@ package com.tridevmc.architecture.client.render.model.loader;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import com.tridevmc.architecture.client.render.model.baked.ShapeBakedModel;
+import com.tridevmc.architecture.client.render.model.impl.ShapeBakedModel;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import net.minecraft.server.packs.resources.ResourceManager;

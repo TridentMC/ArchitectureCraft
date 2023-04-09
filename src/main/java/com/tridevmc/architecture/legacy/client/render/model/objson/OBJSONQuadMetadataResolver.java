@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public class OBJSONQuadMetadataResolver implements IQuadMetadataResolver<OBJSONQuadMetadata> {

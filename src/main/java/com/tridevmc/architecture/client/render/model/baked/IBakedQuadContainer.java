@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.block.model.BakedQuad;

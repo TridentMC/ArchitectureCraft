@@ -1,9 +1,8 @@
-package com.tridevmc.architecture.client.render.model;
+package com.tridevmc.architecture.client.render.model.resolver;
 
 
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.client.render.model.data.IBakedQuadContainer;
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;

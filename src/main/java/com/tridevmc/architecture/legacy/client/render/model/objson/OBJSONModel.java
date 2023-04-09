@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.client.render.model.IArchitectureModel;
+import com.tridevmc.architecture.legacy.client.render.model.IArchitectureModel;
 import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelData;
 import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,9 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.math.Transformation;
+import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 
 /**

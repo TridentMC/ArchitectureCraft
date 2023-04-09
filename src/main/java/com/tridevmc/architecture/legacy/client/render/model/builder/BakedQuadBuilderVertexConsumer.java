@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.builder;
+package com.tridevmc.architecture.legacy.client.render.model.builder;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;

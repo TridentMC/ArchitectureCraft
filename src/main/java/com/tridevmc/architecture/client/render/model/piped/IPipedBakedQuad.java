@@ -1,8 +1,9 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.piped;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;

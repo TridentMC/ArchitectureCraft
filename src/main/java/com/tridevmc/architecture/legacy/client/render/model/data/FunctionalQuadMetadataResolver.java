@@ -1,8 +1,10 @@
 package com.tridevmc.architecture.legacy.client.render.model.data;
 
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataTintIndexResolver;
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataResolver;
-import com.tridevmc.architecture.client.render.model.data.IQuadMetadataTextureResolver;
+import com.tridevmc.architecture.client.render.model.resolver.HashedQuadMetadataTextureResolver;
+import com.tridevmc.architecture.client.render.model.resolver.HashedQuadMetadataTintIndexResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataTintIndexResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataTextureResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import java.util.Objects;
@@ -14,7 +16,7 @@ import java.util.Objects;
  * <p>
  * If you are creating lambda expressions on the fly then this means that the hash code will be different every time,
  * in which case it would be better to implement your own {@link IQuadMetadataResolver}
- * or use {@link com.tridevmc.architecture.client.render.model.data.HashedQuadMetadataTextureResolver} and {@link com.tridevmc.architecture.client.render.model.data.HashedQuadMetadataTintIndexResolver} instead of the default functional interfaces.
+ * or use {@link HashedQuadMetadataTextureResolver} and {@link HashedQuadMetadataTintIndexResolver} instead of the default functional interfaces.
  *
  * @param <T> The type of the metadata object.
  */

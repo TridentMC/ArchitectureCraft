@@ -1,5 +1,6 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.resolver;
 
+import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 /**

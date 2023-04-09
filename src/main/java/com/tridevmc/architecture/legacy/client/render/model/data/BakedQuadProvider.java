@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.legacy.client.render.model.data;
 
-import com.tridevmc.architecture.client.render.model.data.IPipedBakedQuad;
+import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 
 /**
  * Default implementation of {@link IPipedBakedQuad}.

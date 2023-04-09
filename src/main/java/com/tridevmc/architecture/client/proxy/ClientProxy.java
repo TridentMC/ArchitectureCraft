@@ -27,7 +27,7 @@ package com.tridevmc.architecture.client.proxy;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.ArchitectureBlockHighlightRenderer;
 import com.tridevmc.architecture.client.render.RenderingManager;
-import com.tridevmc.architecture.client.render.model.baked.SawbenchBakedModel;
+import com.tridevmc.architecture.client.render.model.impl.SawbenchBakedModel;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeModelLoader;
 import com.tridevmc.architecture.common.ArchitectureContent;

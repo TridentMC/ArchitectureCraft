@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.resolver;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 

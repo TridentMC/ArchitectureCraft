@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.baked;
+package com.tridevmc.architecture.legacy.client.render.model.baked;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;

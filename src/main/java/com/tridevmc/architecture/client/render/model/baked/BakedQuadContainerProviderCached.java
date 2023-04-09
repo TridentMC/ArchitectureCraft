@@ -1,12 +1,11 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.baked;
 
-import com.google.common.cache.Cache;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 import com.mojang.math.Transformation;
-
-import java.util.HashMap;
+import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 
 /**
  * Extension of {@link BakedQuadContainerProvider} that caches the quad containers for each

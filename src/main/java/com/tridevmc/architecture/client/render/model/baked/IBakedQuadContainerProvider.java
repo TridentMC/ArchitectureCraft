@@ -1,6 +1,7 @@
-package com.tridevmc.architecture.client.render.model.data;
+package com.tridevmc.architecture.client.render.model.baked;
 
 import com.mojang.math.Transformation;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 
 /**
  * Defines an object that can provide a {@link IBakedQuadContainer} from a given metadata resolver and transform.
