@@ -1,8 +1,8 @@
 package com.tridevmc.architecture.client.render.model.resolver;
 
 
-import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
+import com.tridevmc.architecture.core.math.ITrans3;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ public interface IModelResolver<D> {
      * @param transform The transformation to apply to the quads.
      * @return The baked quads.
      */
-    IBakedQuadContainer getQuads(IQuadMetadataResolver<D> resolver, Transformation transform);
+    IBakedQuadContainer getQuads(IQuadMetadataResolver<D> resolver, ITrans3 transform);
 
     /**
      * Gets the default sprite for this model.
@@ -57,7 +57,7 @@ public interface IModelResolver<D> {
      * @return The baked quads.
      */
     default IBakedQuadContainer getQuads(IQuadMetadataResolver<D> resolver) {
-        return this.getQuads(resolver, Transformation.identity());
+        return this.getQuads(resolver, ITrans3.ofIdentity());
     }
 
     /**
@@ -69,7 +69,7 @@ public interface IModelResolver<D> {
      * @param transform The transformation to apply to the quads.
      * @return The baked quads.
      */
-    default IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state, Transformation transform) {
+    default IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state, ITrans3 transform) {
         return this.getQuads(this.getMetadataResolver(level, pos, state), transform);
     }
 
@@ -82,7 +82,7 @@ public interface IModelResolver<D> {
      * @return The baked quads.
      */
     default IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state) {
-        return this.getQuads(level, pos, state, Transformation.identity());
+        return this.getQuads(level, pos, state, ITrans3.ofIdentity());
     }
 
     /**
@@ -92,7 +92,7 @@ public interface IModelResolver<D> {
      * @param transform The transformation to apply to the quads.
      * @return The baked quads.
      */
-    default IBakedQuadContainer getQuads(ItemStack stack, Transformation transform) {
+    default IBakedQuadContainer getQuads(ItemStack stack, ITrans3 transform) {
         return this.getQuads(this.getMetadataResolver(stack), transform);
     }
 
@@ -103,7 +103,7 @@ public interface IModelResolver<D> {
      * @return The baked quads.
      */
     default IBakedQuadContainer getQuads(ItemStack stack) {
-        return this.getQuads(stack, Transformation.identity());
+        return this.getQuads(stack, ITrans3.ofIdentity());
     }
 
 

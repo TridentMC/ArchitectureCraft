@@ -1,9 +1,11 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.model.mesh.IMesh;
+import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 
 /**
@@ -50,8 +52,14 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
 
     }
 
+    public static <I, D extends IPolygonData<D>> BakedQuadContainerProvider<D> fromMesh(IMesh<I, D> mesh) {
+        var builder = new Builder<D>();
+
+        return builder.build();
+    }
+
     @Override
-    public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, Transformation transform, boolean force) {
+    public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean force) {
         var builder = new BakedQuadContainer.Builder();
         var quadBakingVertexConsumer = new QuadBakingVertexConsumer(builder::addQuad);
         for (int i = 0; i < this.quads.size(); i++) {

@@ -8,6 +8,7 @@ import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -151,7 +152,7 @@ public class LegacyArchitectureQuad<T> extends BakedQuadProvider<T> {
      * @return the default face for this quad.
      */
     @Override
-    public Direction face() {
+    public @NotNull Direction facing() {
         return this.face;
     }
 

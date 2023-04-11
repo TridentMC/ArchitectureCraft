@@ -54,7 +54,7 @@ public class LegacyAutoUVArchitectureVertex extends LegacyArchitectureVertex {
         });
         pos.set(posData);
         pos.map((v) -> v > 1 ? v % 1 : v);
-        var face = this.rotate(bakedQuadProvider.face(), transform);
+        var face = this.rotate(bakedQuadProvider.facing(), transform);
         float u = 0, v = 0;
         switch (face) {
             case DOWN -> {

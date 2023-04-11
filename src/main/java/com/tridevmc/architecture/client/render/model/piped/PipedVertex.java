@@ -1,28 +1,28 @@
 package com.tridevmc.architecture.client.render.model.piped;
 
-import com.mojang.math.Transformation;
+import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
 
 public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>(
-        float x, float y, float z,
+        double x, double y, double z,
         float nX, float nY, float nZ,
         float u, float v
 ) implements IPipedVertex<PipedVertex<Q, D>, Q, D> {
 
     @Override
-    public PipedVertex<Q, D> transform(@NotNull Q quadProvider, @NotNull Transformation transformation) {
-        if (transformation.isIdentity()) {
+    public PipedVertex<Q, D> transform(@NotNull Q quadProvider, @NotNull ITrans3 trans) {
+        if (trans.isIdentity()) {
             return this;
         } else {
             var fromFace = quadProvider.face();
-            var toFace = quadProvider.face(transformation);
-            var pos = this.pos(transformation);
-            var normal = this.normal(transformation);
-            var uvs = this.uvs(fromFace, toFace);
+            var toFace = quadProvider.face(trans);
+            var pos = this.pos(trans);
+            var normal = this.normal(trans);
+            var uvs = this.uvs(trans, fromFace, toFace);
             return new PipedVertex<>(
-                    pos.x(), pos.y(), pos.z(),
+                    (float) pos.x(), (float) pos.y(), (float) pos.z(),
                     normal.x(), normal.y(), normal.z(),
-                    uvs[0], uvs[1]
+                    (float) uvs.u(), (float) uvs.v()
             );
         }
     }

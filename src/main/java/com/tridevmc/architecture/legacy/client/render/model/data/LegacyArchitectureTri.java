@@ -7,6 +7,7 @@ import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -36,7 +37,7 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
 
     @Override
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
-        if (facing == null) facing = this.face();
+        if (facing == null) facing = this.facing();
         var builder = new BakedQuadBuilderVertexConsumer()
                 .setSprite(sprite)
                 .setTintIndex(colour)
@@ -70,7 +71,7 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
     }
 
     @Override
-    public Direction face() {
+    public @NotNull Direction facing() {
         if (this.face == null) {
             Vector3f normals = this.getFaceNormal();
             this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());

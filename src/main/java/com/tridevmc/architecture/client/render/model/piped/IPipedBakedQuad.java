@@ -2,14 +2,15 @@ package com.tridevmc.architecture.client.render.model.piped;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Mutable;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines an object that can provide a baked quad with data it already has prepared.
@@ -28,7 +29,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param transform The transformation to apply.
      * @return A new quad piper with the transformation applied.
      */
-    Q transform(Transformation transform);
+    Q transform(ITrans3 transform);
 
     /**
      * Gets an immutable list of all the vertices in this quad.
@@ -63,7 +64,15 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the face of the quad.
      */
+    @NotNull
     Direction face();
+
+    /**
+     * Determines if the quad should be culled on its face.
+     *
+     * @return true if the quad should be culled on its face, false otherwise.
+     */
+    boolean shouldCull();
 
     /**
      * Gets the minimum bounds of the quad on the X axis.
@@ -121,10 +130,11 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param sprite    the sprite to apply to the quad.
      * @param tintIndex the tintIndex to apply to the quad.
      */
-    default void pipe(@NotNull VertexConsumer consumer, @NotNull Transformation transform,
+    default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
                       @NotNull TextureAtlasSprite sprite, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
-            bakingConsumer.setDirection(this.face(transform));
+            //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
+            bakingConsumer.setDirection(this.cullFace(transform));
             bakingConsumer.setSprite(sprite);
             bakingConsumer.setTintIndex(tintIndex);
         }
@@ -148,7 +158,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     default void pipe(@NotNull VertexConsumer consumer,
                       @NotNull TextureAtlasSprite sprite, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
-            bakingConsumer.setDirection(this.face());
+            //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
+            bakingConsumer.setDirection(this.cullFace());
             bakingConsumer.setSprite(sprite);
             bakingConsumer.setTintIndex(tintIndex);
         }
@@ -169,7 +180,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param transform a transformation to apply to the quad.
      * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
      */
-    default void pipe(@NotNull VertexConsumer consumer, @NotNull Transformation transform,
+    default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
                       @NotNull IQuadMetadataResolver<D> resolver) {
         this.pipe(consumer, transform, resolver.getTexture(this), resolver.getTintIndex(this));
     }
@@ -189,8 +200,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the normal of the quad.
      */
-    default Vector3f normal() {
-        return new Vector3f(this.nX(), this.nY(), this.nZ());
+    default IVector3Mutable normal() {
+        return IVector3.ofMutable(this.nX(), this.nY(), this.nZ());
     }
 
     /**
@@ -199,10 +210,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param transform the transformation to apply to the normal.
      * @return the transformed normal.
      */
-    default Vector3f normal(Transformation transform) {
-        var normal = this.normal();
-        transform.transformNormal(normal);
-        return normal;
+    default IVector3 normal(ITrans3 transform) {
+        return transform.transformNormal(this.normal());
     }
 
     /**
@@ -211,8 +220,30 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param transform the transformation to apply to the face.
      * @return the transformed face.
      */
-    default Direction face(Transformation transform) {
-        return transform.rotateTransform(this.face());
+    @NotNull
+    default Direction face(ITrans3 transform) {
+        return transform.transformDirection(this.face());
+    }
+
+    /**
+     * Gets the cull face of the quad, if any.
+     *
+     * @return the cull face of the quad, or null if the quad should not be culled.
+     */
+    @Nullable
+    default Direction cullFace() {
+        return this.shouldCull() ? this.face() : null;
+    }
+
+    /**
+     * Gets the cull face of the quad, if any.
+     *
+     * @param transform the transformation to apply to the face.
+     * @return the cull face of the quad, or null if the quad should not be culled.
+     */
+    @Nullable
+    default Direction cullFace(ITrans3 transform) {
+        return this.shouldCull() ? this.face(transform) : null;
     }
 
     /**
@@ -220,8 +251,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the minimum bound of the quad.
      */
-    default Vector3f min() {
-        return new Vector3f(this.minX(), this.minY(), this.minZ());
+    default IVector3Mutable min() {
+        return IVector3.ofMutable(this.minX(), this.minY(), this.minZ());
     }
 
     /**
@@ -229,8 +260,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the maximum bound of the quad.
      */
-    default Vector3f max() {
-        return new Vector3f(this.maxX(), this.maxY(), this.maxZ());
+    default IVector3Mutable max() {
+        return IVector3.ofMutable(this.maxX(), this.maxY(), this.maxZ());
     }
 
     /**
@@ -238,10 +269,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the minimum bound of the quad.
      */
-    default Vector3f min(Transformation transform) {
-        var min = new Vector4f(this.minX(), this.minY(), this.minZ(), 1);
-        transform.transformPosition(min);
-        return new Vector3f(min.x(), min.y(), min.z());
+    default IVector3 min(ITrans3 transform) {
+        return transform.transformPos(this.min());
     }
 
     /**
@@ -249,10 +278,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @return the maximum bound of the quad.
      */
-    default Vector3f max(Transformation transform) {
-        var max = new Vector4f(this.maxX(), this.maxY(), this.maxZ(), 1);
-        transform.transformPosition(max);
-        return new Vector3f(max.x(), max.y(), max.z());
+    default IVector3 max(ITrans3 transform) {
+        return transform.transformPos(this.max());
     }
 
 }

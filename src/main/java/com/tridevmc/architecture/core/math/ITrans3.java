@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.core.math;
 
+import com.tridevmc.architecture.core.math.floating.*;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,13 @@ import org.jetbrains.annotations.NotNull;
 public interface ITrans3 {
 
     static ITrans3Immutable BLOCK_CENTER = ITrans3.ofTranslationImmutable(0.5, 0.5, 0.5);
+    static ITrans3Immutable BLOCK_CENTER_INVERSE = ITrans3.ofTranslationImmutable(-0.5, -0.5, -0.5);
+    static ITrans3Immutable IDENTITY = ITrans3.ofImmutable(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+    );
 
     /**
      * Creates a new immutable transformation from the given matrix values.
@@ -192,6 +200,16 @@ public interface ITrans3 {
     }
 
     /**
+     * Gets the immutable identity transform (a transform that does nothing).
+     *
+     * @return The identity transform.
+     */
+    @NotNull
+    static ITrans3Immutable ofIdentity() {
+        return IDENTITY;
+    }
+
+    /**
      * Gets the underlying matrix of this transform.
      *
      * @return The matrix.
@@ -231,6 +249,14 @@ public interface ITrans3 {
     @NotNull
     ITrans3Mutable asMutable();
 
+    /**
+     * Determines if this transform is the identity transform.
+     *
+     * @return True if this transform is the identity transform, false otherwise.
+     */
+    default boolean isIdentity() {
+        return this.matrix().isIdentity();
+    }
 
     /**
      * Gets the underlying matrix of this transform.
@@ -273,6 +299,36 @@ public interface ITrans3 {
     }
 
     /**
+     * Transforms the given position vector by this transformation, storing the result in the given vector.
+     *
+     * @param position The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3FMutable transformPos(@NotNull IVector3FMutable position) {
+        return position.set(
+                (float) (this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03()),
+                (float) (this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13()),
+                (float) (this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23())
+        );
+    }
+
+    /**
+     * Transforms the given position vector by this transformation, storing the result in a new vector.
+     *
+     * @param position The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3FImmutable transformPosImmutable(@NotNull IVector3F position) {
+        return IVector3FImmutable.of(
+                (float) (this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03()),
+                (float) (this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13()),
+                (float) (this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23())
+        );
+    }
+
+    /**
      * Transforms the given normal vector by this transformation, storing the result in the given vector.
      *
      * @param normal The vector to transform.
@@ -303,6 +359,36 @@ public interface ITrans3 {
     }
 
     /**
+     * Transforms the given normal vector by this transformation, storing the result in the given vector.
+     *
+     * @param normal The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3FMutable transformNormal(@NotNull IVector3FMutable normal) {
+        return normal.set(
+                (float) (this.matrix().m00() * normal.x() + this.matrix().m01() * normal.y() + this.matrix().m02() * normal.z()),
+                (float) (this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z()),
+                (float) (this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z())
+        ).normalize();
+    }
+
+    /**
+     * Transforms the given normal vector by this transformation, storing the result in a new vector.
+     *
+     * @param normal The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3FImmutable transformNormalImmutable(@NotNull IVector3F normal) {
+        var x = this.matrix().m00() * normal.x() + this.matrix().m01() * normal.y() + this.matrix().m02() * normal.z();
+        var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
+        var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
+        var length = Math.sqrt(x * x + y * y + z * z);
+        return IVector3FImmutable.of((float) (x / length), (float) (y / length), (float) (z / length));
+    }
+
+    /**
      * Transforms the given texture coordinate vector by this transformation, storing the result in the given vector.
      *
      * @param uvs The vector to transform.
@@ -325,6 +411,34 @@ public interface ITrans3 {
     @NotNull
     default IVector2Immutable transformUVImmutable(@NotNull IVector2 uvs) {
         return IVector2Immutable.of(
+                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
+                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+        );
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in the given vector.
+     *
+     * @param uvs The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2FMutable transformUV(@NotNull IVector2FMutable uvs) {
+        return uvs.set(
+                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
+                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+        );
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in a new vector.
+     *
+     * @param uvs The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2FImmutable transformUVImmutable(@NotNull IVector2F uvs) {
+        return IVector2FImmutable.of(
                 this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
                 this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
         );

@@ -1,9 +1,9 @@
 package com.tridevmc.architecture.client.render.model.piped;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.math.Transformation;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
 import net.minecraft.core.Direction;
-import org.joml.Vector3f;
 
 public record PipedBakedQuad<V extends IPipedVertex<V, PipedBakedQuad<V, D>, D>, D>(
         ImmutableList<V> vertices,
@@ -11,16 +11,20 @@ public record PipedBakedQuad<V extends IPipedVertex<V, PipedBakedQuad<V, D>, D>,
         float minX, float minY, float minZ,
         float maxX, float maxY, float maxZ,
         Direction face,
+        boolean shouldCull,
         D metadata
 
 ) implements IPipedBakedQuad<PipedBakedQuad<V, D>, V, D> {
 
-    public PipedBakedQuad(ImmutableList<V> vertices, Vector3f normal, Vector3f min, Vector3f max, Direction face, D metadata) {
-        this(vertices, normal.x(), normal.y(), normal.z(), min.x(), min.y(), min.z(), max.x(), max.y(), max.z(), face, metadata);
+    public PipedBakedQuad(ImmutableList<V> vertices, IVector3 normal, IVector3 min, IVector3 max, Direction face, boolean shouldCull, D metadata) {
+        this(vertices, (float) normal.x(), (float) normal.y(), (float) normal.z(),
+                (float) min.x(), (float) min.y(), (float) min.z(),
+                (float) max.x(), (float) max.y(), (float) max.z(),
+                face, shouldCull, metadata);
     }
 
     @Override
-    public PipedBakedQuad<V, D> transform(Transformation transform) {
+    public PipedBakedQuad<V, D> transform(ITrans3 transform) {
         var normal = this.normal(transform);
         var min = this.min(transform);
         var max = this.max(transform);
@@ -30,7 +34,7 @@ public record PipedBakedQuad<V extends IPipedVertex<V, PipedBakedQuad<V, D>, D>,
                         .stream()
                         .map(v -> v.transform(this, transform))
                         .collect(ImmutableList.toImmutableList()),
-                normal, min, max, face, this.metadata()
+                normal, min, max, face, this.shouldCull(), this.metadata()
         );
     }
 

@@ -4,6 +4,7 @@ import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
+import com.tridevmc.architecture.core.math.ITrans3;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
@@ -48,7 +49,14 @@ public interface IModelResolverBaked<D> extends IArchitectureBakedModel {
         var pos = extraData.get(ModelProperties.POS);
 
         // TODO: Don't use old LegacyTrans3 - migrate BlockStateArchitecture to use new Transformation system.
-        var t = Objects.requireNonNull(state).localToGlobalTransformation(level, pos).toMCTrans();
+        var lT = Objects.requireNonNull(state).localToGlobalTransformation(level, pos).toMCTrans();
+        var m = lT.getMatrix();
+        var t = ITrans3.ofImmutable(
+                m.m00(), m.m01(), m.m02(), m.m03(),
+                m.m10(), m.m11(), m.m12(), m.m13(),
+                m.m20(), m.m21(), m.m22(), m.m23(),
+                m.m30(), m.m31(), m.m32(), m.m33()
+        );
         var modelResolver = this.getModelResolver();
         var metadataResolver = this.getMetadataResolver(level, pos, state);
         return modelResolver.getQuads(metadataResolver, t).quadsFor(side);
