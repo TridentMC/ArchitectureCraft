@@ -11,17 +11,17 @@ import net.minecraft.core.Direction;
  */
 public interface IVector3i {
 
-    static IVector3iImmutable ZERO = ofImmutable(0, 0, 0);
-    static IVector3iImmutable ONE = ofImmutable(1, 1, 1);
-    static IVector3iImmutable UNIT_X = ofImmutable(1, 0, 0);
-    static IVector3iImmutable UNIT_Y = ofImmutable(0, 1, 0);
-    static IVector3iImmutable UNIT_Z = ofImmutable(0, 0, 1);
+    IVector3iImmutable ZERO = ofImmutable(0, 0, 0);
+    IVector3iImmutable ONE = ofImmutable(1, 1, 1);
+    IVector3iImmutable UNIT_X = ofImmutable(1, 0, 0);
+    IVector3iImmutable UNIT_Y = ofImmutable(0, 1, 0);
+    IVector3iImmutable UNIT_Z = ofImmutable(0, 0, 1);
 
-    static IVector3iImmutable UNIT_NX = ofImmutable(-1, 0, 0);
-    static IVector3iImmutable UNIT_NY = ofImmutable(0, -1, 0);
-    static IVector3iImmutable UNIT_NZ = ofImmutable(0, 0, -1);
+    IVector3iImmutable UNIT_NX = ofImmutable(-1, 0, 0);
+    IVector3iImmutable UNIT_NY = ofImmutable(0, -1, 0);
+    IVector3iImmutable UNIT_NZ = ofImmutable(0, 0, -1);
 
-    static IVector3iImmutable[] DIRECTION_VEC = {
+    IVector3iImmutable[] DIRECTION_VEC = {
             ofImmutable(0, -1, 0),
             ofImmutable(0, 1, 0),
             ofImmutable(0, 0, -1),
@@ -269,4 +269,5 @@ public interface IVector3i {
     default int dot(IVector3i other) {
         return this.dot(other.x(), other.y(), other.z());
     }
+
 }

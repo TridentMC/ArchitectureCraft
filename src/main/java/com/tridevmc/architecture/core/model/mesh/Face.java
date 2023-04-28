@@ -2,18 +2,56 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.ITrans3;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Default implementation of {@link IFace}.
- *
- * @param polygons The polygons that make up this face.
- * @param <D>      The type of data that is stored on the polygons.
  */
-public record Face<D extends IPolygonData<D>>(ImmutableList<IPolygon<D>> polygons) implements IFace<D> {
+public final class Face<D extends IPolygonData<D>> implements IFace<D> {
+
+    private final ImmutableList<IVertex> vertices;
+    private final ImmutableList<IPolygon<D>> polygons;
+
+    /**
+     * Creates a new face with the given vertices and polygons.
+     *
+     * @param vertices The vertices of the face.
+     * @param polygons The polygons of the face.
+     */
+    public Face(ImmutableList<IVertex> vertices,
+                ImmutableList<IPolygon<D>> polygons) {
+        this.vertices = vertices;
+        this.polygons = polygons;
+    }
+
+    /**
+     * Creates a new face with the given vertices and polygons.
+     *
+     * @param vertexPool       The vertices of the face.
+     * @param polygonProviders The polygons of the face.
+     */
+    private Face(Object2IntMap<IVertex> vertexPool, List<Function<IFace<D>, IPolygon<D>>> polygonProviders) {
+        this.vertices = ImmutableList.copyOf(vertexPool.keySet());
+        this.polygons = ImmutableList.copyOf(polygonProviders.stream().map(p -> p.apply(this)).iterator());
+    }
+
+    /**
+     * Creates a new face with the given vertices and polygons.
+     *
+     * @param vertices         The vertices of the face.
+     * @param polygonProviders The polygons of the face.
+     */
+    private Face(ImmutableList<IVertex> vertices, List<Function<IFace<D>, IPolygon<D>>> polygonProviders) {
+        this.vertices = vertices;
+        this.polygons = ImmutableList.copyOf(polygonProviders.stream().map(p -> p.apply(this)).iterator());
+    }
 
     @Override
     public @NotNull ImmutableList<IPolygon<D>> getPolygons() {
@@ -21,12 +59,55 @@ public record Face<D extends IPolygonData<D>>(ImmutableList<IPolygon<D>> polygon
     }
 
     @Override
+    public @NotNull ImmutableList<IVertex> getVertices() {
+        return this.vertices;
+    }
+
+    @Override
+    public @NotNull IVertex getVertex(int index) {
+        return this.vertices.get(index);
+    }
+
+    @Override
     public @NotNull IFace<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
-        var builder = new Builder<D>();
-        for (var p : this.polygons) {
-            builder.addPolygon(p.transform(trans, transformUVs));
-        }
-        return builder.build();
+        var transformedVertices = this.vertices()
+                .stream()
+                .map(v -> v.transform(trans, transformUVs))
+                .collect(ImmutableList.toImmutableList());
+        var transformedPolygons = this.polygons()
+                .stream()
+                .map(p -> (Function<IFace<D>, IPolygon<D>>) diFace -> p.transform(diFace, trans, transformUVs))
+                .collect(ImmutableList.toImmutableList());
+        return new Face<>(transformedVertices, transformedPolygons);
+    }
+
+    public ImmutableList<IVertex> vertices() {
+        return this.vertices;
+    }
+
+    public ImmutableList<IPolygon<D>> polygons() {
+        return this.polygons;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Face) obj;
+        return Objects.equals(this.vertices, that.vertices) &&
+                Objects.equals(this.polygons, that.polygons);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.vertices, this.polygons);
+    }
+
+    @Override
+    public String toString() {
+        return "Face[" +
+                "vertices=" + this.vertices + ", " +
+                "polygons=" + this.polygons + ']';
     }
 
     /**
@@ -35,16 +116,48 @@ public record Face<D extends IPolygonData<D>>(ImmutableList<IPolygon<D>> polygon
      * @param <D> The type of data that is stored on the polygons.
      */
     public static class Builder<D extends IPolygonData<D>> {
-        private final List<IPolygon<D>> polygons = new ArrayList<>();
 
-        /**
-         * Adds a polygon to the face.
-         *
-         * @param polygon The polygon to add.
-         * @return This builder.
-         */
-        public Builder<D> addPolygon(IPolygon<D> polygon) {
-            this.polygons.add(polygon);
+        private final Object2IntMap<IVertex> vertexPool = new Object2IntOpenHashMap<IVertex>();
+        private final List<Function<IFace<D>, IPolygon<D>>> polygons = Lists.newArrayList();
+
+        public Builder<D> addVertex(IVertex vertex) {
+            if (!this.vertexPool.containsKey(vertex)) {
+                this.vertexPool.put(vertex, this.vertexPool.size());
+            }
+            return this;
+        }
+
+        public Builder<D> addPolygon(IRawPolygonPayload<?, D> payload) {
+            return this.addPolygon(payload.getProvider(), payload.getData(), payload.getVertices());
+        }
+
+        public Builder<D> addPolygon(@NotNull IPolygonProvider<?, D> provider, @NotNull D data, @NotNull IVertex... vertices) {
+            var indices = new int[vertices.length];
+            for (var i = 0; i < vertices.length; i++) {
+                var vertex = vertices[i];
+                var vertexIndex = this.vertexPool.getOrDefault(vertex, -1);
+                if (vertexIndex == -1) {
+                    vertexIndex = this.vertexPool.size();
+                    this.vertexPool.put(vertex, this.vertexPool.size());
+                }
+                indices[i] = vertexIndex;
+            }
+            this.polygons.add(f -> provider.createPolygon(f, data, indices));
+            return this;
+        }
+
+        public Builder<D> addPolygon(@NotNull IPolygonProvider<?, D> provider, @NotNull D data, @NotNull ImmutableList<IVertex> vertices) {
+            var indices = new int[vertices.size()];
+            for (var i = 0; i < vertices.size(); i++) {
+                var vertex = vertices.get(i);
+                var vertexIndex = this.vertexPool.getOrDefault(vertex, -1);
+                if (vertexIndex == -1) {
+                    vertexIndex = this.vertexPool.size();
+                    this.vertexPool.put(vertex, this.vertexPool.size());
+                }
+                indices[i] = vertexIndex;
+            }
+            this.polygons.add(f -> provider.createPolygon(f, data, indices));
             return this;
         }
 
@@ -53,9 +166,10 @@ public record Face<D extends IPolygonData<D>>(ImmutableList<IPolygon<D>> polygon
          *
          * @return The new face.
          */
-        @SuppressWarnings("unchecked")
         public Face<D> build() {
-            return new Face<>(ImmutableList.copyOf(this.polygons));
+            return new Face<>(this.vertexPool, this.polygons);
         }
+
     }
+
 }

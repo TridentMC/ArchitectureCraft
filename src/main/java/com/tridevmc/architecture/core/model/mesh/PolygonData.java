@@ -9,6 +9,7 @@ import java.util.Objects;
  * Default implementation of {@link IPolygonData}.
  */
 public class PolygonData implements IPolygonData<PolygonData> {
+
     private final int textureIndex;
     private final int tintIndex;
     private final CullFace cullFace;

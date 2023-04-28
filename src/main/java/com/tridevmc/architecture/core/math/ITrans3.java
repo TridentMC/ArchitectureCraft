@@ -2,6 +2,7 @@ package com.tridevmc.architecture.core.math;
 
 import com.tridevmc.architecture.core.math.floating.*;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
+import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ITrans3 {
 
-    static ITrans3Immutable BLOCK_CENTER = ITrans3.ofTranslationImmutable(0.5, 0.5, 0.5);
-    static ITrans3Immutable BLOCK_CENTER_INVERSE = ITrans3.ofTranslationImmutable(-0.5, -0.5, -0.5);
-    static ITrans3Immutable IDENTITY = ITrans3.ofImmutable(
+    ITrans3Immutable BLOCK_CENTER = ITrans3.ofTranslationImmutable(0.5, 0.5, 0.5);
+    ITrans3Immutable BLOCK_CENTER_INVERSE = ITrans3.ofTranslationImmutable(-0.5, -0.5, -0.5);
+    ITrans3Immutable IDENTITY = ITrans3.ofImmutable(
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
@@ -441,6 +442,20 @@ public interface ITrans3 {
         return IVector2FImmutable.of(
                 this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
                 this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+        );
+    }
+
+    /**
+     * Transforms the minimum and maximum points of the given AABB by this transformation, storing the result in a new AABB.
+     *
+     * @param aabb The AABB to transform.
+     * @return The transformed AABB.
+     */
+    @NotNull
+    default AABB transformAABB(@NotNull AABB aabb) {
+        return new AABB(
+                this.transformPosImmutable(aabb.min()),
+                this.transformPosImmutable(aabb.max())
         );
     }
 

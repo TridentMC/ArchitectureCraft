@@ -98,6 +98,7 @@ record Vector3F(float x, float y, float z) implements IVector3FImmutable {
         public int hashCode() {
             return Objects.hash(this.getX(), this.getY(), this.getZ());
         }
+
     }
 
 }

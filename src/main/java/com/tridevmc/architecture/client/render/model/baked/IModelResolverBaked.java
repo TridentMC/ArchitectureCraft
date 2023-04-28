@@ -40,7 +40,9 @@ public interface IModelResolverBaked<D> extends IArchitectureBakedModel {
      * @param state The state.
      * @return The quad metadata resolver for the given data.
      */
-    IQuadMetadataResolver<D> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockStateArchitecture state);
+    default IQuadMetadataResolver<D> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockStateArchitecture state) {
+        return this.getModelResolver().getMetadataResolver(level, pos, state);
+    }
 
     @Override
     @NotNull

@@ -153,4 +153,5 @@ public interface ITrans3Immutable extends ITrans3 {
     default ITrans3Mutable asMutable() {
         return ITrans3Mutable.of(this);
     }
+
 }

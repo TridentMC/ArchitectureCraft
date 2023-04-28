@@ -23,6 +23,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param triangles The triangles of the part.
      */
     record PartData(String name, double[] bounds, double[][] boxes, TriangleData[] triangles) {
+
     }
 
     /**
@@ -32,6 +33,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param normal   The normal of the face.
      */
     record FaceData(VertexData[] vertices, double[] normal) {
+
     }
 
     /**
@@ -42,6 +44,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param uv     The UV coordinates of the vertex.
      */
     record VertexData(double[] pos, double[] normal, double[] uv) {
+
     }
 
     /**
@@ -53,6 +56,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param vertices The vertices of the triangle.
      */
     record TriangleData(int face, CullFace cullFace, int texture, int[] vertices) {
+
     }
 
     /**
@@ -67,4 +71,5 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
         var in = OBJSONData.class.getResourceAsStream(path);
         return GSON.fromJson(new InputStreamReader(Objects.requireNonNull(in, "Failed to obtain input stream for resource \"%s\"".formatted(path))), OBJSONData.class);
     }
+
 }

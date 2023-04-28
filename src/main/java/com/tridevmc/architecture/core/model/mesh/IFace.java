@@ -12,12 +12,30 @@ import java.util.stream.Stream;
 public interface IFace<D extends IPolygonData<D>> {
 
     /**
+     * Gets the vertex at the given index.
+     *
+     * @param index The index of the vertex to get.
+     * @return The vertex at the given index.
+     * @throws IndexOutOfBoundsException if the index is out of bounds.
+     */
+    @NotNull
+    IVertex getVertex(int index);
+
+    /**
      * Gets the polygons of this face.
      *
      * @return The polygons of this face.
      */
     @NotNull
     ImmutableList<IPolygon<D>> getPolygons();
+
+    /**
+     * Gets the vertices of this face, in a set order to be referenced by the polygons.
+     *
+     * @return The vertices of this face.
+     */
+    @NotNull
+    ImmutableList<IVertex> getVertices();
 
     /**
      * Applies the given transformation to this face, returning a new face with the transformed polygons.

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public class AABBTree<T> implements IAABBTree<T> {
 
     public class Node {
+
         private Node left;
         private Node right;
         private AABB value;
@@ -71,6 +72,7 @@ public class AABBTree<T> implements IAABBTree<T> {
             var intersection = this.getValue().union(other);
             return Math.max(0, intersection.getXSize() * intersection.getYSize() * intersection.getZSize());
         }
+
     }
 
     private Node theNode;

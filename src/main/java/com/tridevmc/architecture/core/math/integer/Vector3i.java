@@ -3,6 +3,7 @@ package com.tridevmc.architecture.core.math.integer;
 record Vector3i(int x, int y, int z) implements IVector3iImmutable {
 
     static class Mutable implements IVector3iMutable {
+
         private int x, y, z;
 
         Mutable(int x, int y, int z) {

@@ -98,6 +98,7 @@ record Vector3(double x, double y, double z) implements IVector3Immutable {
         public int hashCode() {
             return Objects.hash(this.getX(), this.getY(), this.getZ());
         }
+
     }
 
 }

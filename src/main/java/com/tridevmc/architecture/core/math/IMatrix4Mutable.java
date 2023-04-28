@@ -1321,4 +1321,5 @@ public interface IMatrix4Mutable extends IMatrix4 {
     default IMatrix4Mutable asMutable() {
         return IMatrix4Mutable.of(this);
     }
+
 }

@@ -287,4 +287,5 @@ public interface IVector3iMutable extends IVector3i {
     default IVector3iMutable asMutable() {
         return IVector3iMutable.of(this);
     }
+
 }

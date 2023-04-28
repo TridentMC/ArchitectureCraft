@@ -122,8 +122,8 @@ public interface IPipedVertex<V extends IPipedVertex<V, Q, D>, Q extends IPipedB
             this.pipe(consumer, quadProvider, sprite, colour);
         } else {
             // Otherwise, we need to transform the vertex.
-            var fromFace = quadProvider.facing();
-            var toFace = quadProvider.facing(transform);
+            var fromFace = quadProvider.face();
+            var toFace = quadProvider.face(transform);
             var pos = this.pos(transform);
             var normal = this.normal(transform);
             var uvs = transform.transformUV(this.uvs(transform, fromFace, toFace));

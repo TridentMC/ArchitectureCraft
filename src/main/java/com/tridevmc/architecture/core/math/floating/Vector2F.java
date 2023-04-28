@@ -3,6 +3,7 @@ package com.tridevmc.architecture.core.math.floating;
 record Vector2F(double x, double y) implements IVector2FImmutable {
 
     static class Mutable implements IVector2FMutable {
+
         private double x, y;
 
         Mutable(double x, double y) {
@@ -38,6 +39,7 @@ record Vector2F(double x, double y) implements IVector2FImmutable {
             this.y = y;
             return this;
         }
+
     }
 
 }

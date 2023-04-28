@@ -294,4 +294,5 @@ public interface IMatrix4Immutable extends IMatrix4 {
     default IMatrix4Mutable asMutable() {
         return IMatrix4Mutable.of(this);
     }
+
 }

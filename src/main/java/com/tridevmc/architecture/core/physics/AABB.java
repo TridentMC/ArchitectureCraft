@@ -32,7 +32,7 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
         this(IVector3.ofImmutable(minX, minY, minZ), IVector3.ofImmutable(maxX, maxY, maxZ));
     }
 
-    public static AABB fromVertices(IVertex[] vertices) {
+    public static AABB fromVertices(IVertex... vertices) {
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY, minZ = Double.POSITIVE_INFINITY;
         double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
 
@@ -63,6 +63,40 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
             maxY = Math.max(maxY, vertex.getY());
             maxZ = Math.max(maxZ, vertex.getZ());
         }
+
+        return new AABB(
+                minX, minY, minZ,
+                maxX, maxY, maxZ
+        );
+    }
+
+    public static AABB fromVertices(IVertex v0, IVertex v1, IVertex v2) {
+        double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY, minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
+
+        minX = Math.min(minX, Math.min(v0.getX(), Math.min(v1.getX(), v2.getX())));
+        minY = Math.min(minY, Math.min(v0.getY(), Math.min(v1.getY(), v2.getY())));
+        minZ = Math.min(minZ, Math.min(v0.getZ(), Math.min(v1.getZ(), v2.getZ())));
+        maxX = Math.max(maxX, Math.max(v0.getX(), Math.max(v1.getX(), v2.getX())));
+        maxY = Math.max(maxY, Math.max(v0.getY(), Math.max(v1.getY(), v2.getY())));
+        maxZ = Math.max(maxZ, Math.max(v0.getZ(), Math.max(v1.getZ(), v2.getZ())));
+
+        return new AABB(
+                minX, minY, minZ,
+                maxX, maxY, maxZ
+        );
+    }
+
+    public static AABB fromVertices(IVertex v0, IVertex v1, IVertex v2, IVertex v3) {
+        double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY, minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY, maxZ = Double.NEGATIVE_INFINITY;
+
+        minX = Math.min(minX, Math.min(v0.getX(), Math.min(v1.getX(), Math.min(v2.getX(), v3.getX()))));
+        minY = Math.min(minY, Math.min(v0.getY(), Math.min(v1.getY(), Math.min(v2.getY(), v3.getY()))));
+        minZ = Math.min(minZ, Math.min(v0.getZ(), Math.min(v1.getZ(), Math.min(v2.getZ(), v3.getZ()))));
+        maxX = Math.max(maxX, Math.max(v0.getX(), Math.max(v1.getX(), Math.max(v2.getX(), v3.getX()))));
+        maxY = Math.max(maxY, Math.max(v0.getY(), Math.max(v1.getY(), Math.max(v2.getY(), v3.getY()))));
+        maxZ = Math.max(maxZ, Math.max(v0.getZ(), Math.max(v1.getZ(), Math.max(v2.getZ(), v3.getZ()))));
 
         return new AABB(
                 minX, minY, minZ,
@@ -430,4 +464,5 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
                 this.max()
         );
     }
+
 }

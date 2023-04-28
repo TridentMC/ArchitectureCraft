@@ -6,6 +6,7 @@ import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.Ray;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,29 @@ public interface IPolygon<D extends IPolygonData<D>> {
      */
     @NotNull
     D getPolygonData();
+
+    /**
+     * Gets the face that this polygon belongs to.
+     *
+     * @return The face that this polygon belongs to.
+     */
+    @NotNull
+    IFace<D> getFace();
+
+    /**
+     * Gets the number of vertices in this polygon.
+     *
+     * @return The number of vertices in this polygon.
+     */
+    int getVertexCount();
+
+    /**
+     * Gets a list of the vertex indices of this polygon, in the order they should be rendered
+     *
+     * @return
+     */
+    @NotNull
+    IntImmutableList getVertexIndices();
 
     /**
      * Gets the vertices of this polygon.
@@ -71,22 +95,24 @@ public interface IPolygon<D extends IPolygonData<D>> {
     /**
      * Applies the given transformation to this polygon, returning a new polygon with the transformed vertices.
      *
+     * @param face         the face the new polygon is associated with.
      * @param trans        the transformation to apply.
      * @param transformUVs whether to transform the UVs of this polygon.
      * @return a new polygon with the transformed vertices.
      */
     @NotNull
-    IPolygon<D> transform(@NotNull ITrans3 trans, boolean transformUVs);
+    IPolygon<D> transform(@NotNull IFace<D> face, @NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this polygon, returning a new polygon with the transformed vertices.
      *
+     * @param face  the face the new polygon is associated with.
      * @param trans the transformation to apply.
      * @return a new polygon with the transformed vertices.
      */
     @NotNull
-    default IPolygon<D> transform(@NotNull ITrans3 trans) {
-        return this.transform(trans, true);
+    default IPolygon<D> transform(@NotNull IFace<D> face, @NotNull ITrans3 trans) {
+        return this.transform(face, trans, true);
     }
 
     /**
@@ -110,6 +136,17 @@ public interface IPolygon<D extends IPolygonData<D>> {
     @NotNull
     default Stream<IVertex> getVertexStream() {
         return this.getVertices().stream();
+    }
+
+    /**
+     * Gets the vertex at the given index.
+     *
+     * @param index the index of the vertex to get.
+     * @return the vertex at the given index.
+     */
+    @NotNull
+    default IVertex getVertex(int index) {
+        return this.getFace().getVertex(this.getVertexIndices().getInt(index));
     }
 
 }

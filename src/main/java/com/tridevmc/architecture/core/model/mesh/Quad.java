@@ -7,23 +7,51 @@ import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.PhysicsHelper;
 import com.tridevmc.architecture.core.physics.Ray;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Default implementation of {@link IPolygon} for quads.
  *
- * @param data     The data associated with this quad.
- * @param vertices The vertices that make up this quad.
+ * @param data The data associated with this quad.
  */
-public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull ImmutableList<IVertex> vertices,
-                                           @NotNull IVector3Immutable normal,
-                                           @NotNull AABB aabb) implements IPolygon<D> {
+public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
+                                              @NotNull D data,
+                                              @NotNull IntImmutableList vertexIndices,
+                                              @NotNull IVector3Immutable normal,
+                                              @NotNull AABB aabb) implements IPolygon<D> {
 
     private static final double EPSILON = 1e-8;
+    @SuppressWarnings("rawtypes")
+    // Type erasure means this doesn't matter. We return the correctly typed version in the below method.
+    private static final IPolygonProvider PROVIDER = (face, data, vertexIndices) -> {
+        var v0 = (IVertex) face.getVertices().get(vertexIndices[0]);
+        var v1 = (IVertex) face.getVertices().get(vertexIndices[1]);
+        var v2 = (IVertex) face.getVertices().get(vertexIndices[2]);
+        var v3 = (IVertex) face.getVertices().get(vertexIndices[3]);
+        return new Quad(
+                face,
+                data,
+                IntImmutableList.of(vertexIndices),
+                MeshHelper.calculateNormal(v0, v1, v2),
+                AABB.fromVertices(v0, v1, v2, v3)
+        );
+    };
+
+    /**
+     * Gets the static quad provider instance, used to create quads from a face, data and vertex indices.
+     *
+     * @param <D> the type of data to be associated with the quad.
+     * @return the static quad provider instance.
+     */
+    public static <D extends IPolygonData<D>> IPolygonProvider<Quad<D>, D> getProvider() {
+        //noinspection unchecked - This method can be ugly because it makes others less ugly :)
+        return PROVIDER;
+    }
 
     public Quad {
-        if (vertices.size() != 4) {
+        if (this.getVertexIndices().size() != 4) {
             throw new IllegalArgumentException("Quads must have 4 vertices");
         }
     }
@@ -35,8 +63,28 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
     }
 
     @Override
+    public @NotNull IFace<D> getFace() {
+        return this.face;
+    }
+
+    @Override
+    public int getVertexCount() {
+        return 4;
+    }
+
+    @Override
+    public @NotNull IntImmutableList getVertexIndices() {
+        return this.vertexIndices;
+    }
+
+    @Override
     public @NotNull ImmutableList<IVertex> getVertices() {
-        return this.vertices;
+        return ImmutableList.of(
+                this.getVertex(0),
+                this.getVertex(1),
+                this.getVertex(2),
+                this.getVertex(3)
+        );
     }
 
     @Override
@@ -54,10 +102,10 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
     @Nullable
     public IVector3 intersect(Ray ray) {
         // Vertices of the quadrilateral
-        var v0 = this.vertices.get(0).getPos().asImmutable();
-        var v1 = this.vertices.get(1).getPos().asImmutable();
-        var v2 = this.vertices.get(2).getPos().asImmutable();
-        var v3 = this.vertices.get(3).getPos().asImmutable();
+        var v0 = this.getVertex(0).getPos().asImmutable();
+        var v1 = this.getVertex(1).getPos().asImmutable();
+        var v2 = this.getVertex(2).getPos().asImmutable();
+        var v3 = this.getVertex(3).getPos().asImmutable();
 
         // Compute vectors for two of the quadrilateral's edges
         var e1 = v1.sub(v0);
@@ -118,16 +166,15 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
     @Override
     public boolean intersect(AABB box) {
         // Check if any of the vertices are inside the box, if so, we intersect.
-        for (var vertex : this.vertices) {
-            if (box.contains(vertex.getPos())) {
-                return true;
-            }
+
+        if (box.contains(this.getVertex(0).getPos()) || box.contains(this.getVertex(1).getPos()) || box.contains(this.getVertex(2).getPos()) || box.contains(this.getVertex(3).getPos())) {
+            return true;
         }
 
         // Check if any of the edges intersect the box, if so, we intersect.
         for (var i = 0; i < 4; i++) {
-            var v1 = this.vertices.get(i).getPos().asImmutable();
-            var v2 = this.vertices.get((i + 1) % 4).getPos().asImmutable();
+            var v1 = this.getVertex(i).getPos().asImmutable();
+            var v2 = this.getVertex((i + 1) % 4).getPos().asImmutable();
             var ray = new Ray(v1, v2.sub(v1));
             if (box.intersects(ray).findAny().isPresent()) {
                 return true;
@@ -136,10 +183,10 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
 
         // We've exhausted all of our quick checks, so we move on to the SAT test.
         // This is similar to what we do with Tris, but we add a few more axes to check against.
-        var v0 = this.vertices.get(0).getPos().asMutable();
-        var v1 = this.vertices.get(1).getPos().asMutable();
-        var v2 = this.vertices.get(2).getPos().asMutable();
-        var v3 = this.vertices.get(3).getPos().asMutable();
+        var v0 = this.getVertex(0).getPos().asMutable();
+        var v1 = this.getVertex(1).getPos().asMutable();
+        var v2 = this.getVertex(2).getPos().asMutable();
+        var v3 = this.getVertex(3).getPos().asMutable();
 
         var aabbCenter = box.center();
         var aabbSize = box.size().asImmutable().mul(0.5);
@@ -150,22 +197,12 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
 
         // Check against the X, Y, and Z axes first, since they're the most likely to fail.
         // Also saves some allocations if the tests fail.
-        if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_X, aabbSize) ||
-                PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_Y, aabbSize) ||
-                PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_Z, aabbSize)) {
+        if (PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_X, aabbSize) || PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_Y, aabbSize) || PhysicsHelper.testSeparatingAxis(v0, v1, v2, v3, IVector3.UNIT_Z, aabbSize)) {
             return false;
         }
 
-        var edges = new IVector3[]{
-                v1.asMutable().sub(v0),
-                v2.asMutable().sub(v1),
-                v3.asMutable().sub(v2),
-                v0.asMutable().sub(v3)
-        };
-        var diagonals = new IVector3[]{
-                v2.asMutable().sub(v0),
-                v3.asMutable().sub(v1)
-        };
+        var edges = new IVector3[]{v1.asMutable().sub(v0), v2.asMutable().sub(v1), v3.asMutable().sub(v2), v0.asMutable().sub(v3)};
+        var diagonals = new IVector3[]{v2.asMutable().sub(v0), v3.asMutable().sub(v1)};
 
         var axis = IVector3.ofMutable(0, 0, 0);
         for (var i = 0; i < 4; i++) {
@@ -212,12 +249,14 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
     }
 
     @Override
-    public @NotNull IPolygon<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
-        var builder = new Builder<D>();
-        for (var v : this.vertices) {
-            builder.addVertex(v.transform(trans, transformUVs));
-        }
-        return builder.setData(this.getPolygonData().transform(trans)).build();
+    public @NotNull IPolygon<D> transform(@NotNull IFace<D> face, @NotNull ITrans3 trans, boolean transformUVs) {
+        return new Quad<D>(
+                face,
+                this.getPolygonData().transform(trans),
+                this.getVertexIndices(),
+                trans.transformNormalImmutable(this.getNormal()),
+                trans.transformAABB(this.getAABB())
+        );
     }
 
     /**
@@ -226,6 +265,7 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
      * @param <D> The type of data that is stored on the polygons.
      */
     public static class Builder<D extends IPolygonData<D>> {
+
         private D data;
         private final IVertex[] vertices = new IVertex[4];
 
@@ -277,17 +317,20 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
         /**
          * Sets the vertices for the quad.
          *
-         * @param vertices The vertices to set.
+         * @param v0 The first vertex.
+         * @param v1 The second vertex.
+         * @param v2 The third vertex.
+         * @param v3 The fourth vertex.
          * @return This builder.
          */
-        public Builder<D> withVertices(IVertex... vertices) {
-            if (vertices.length != 4) {
-                throw new IllegalArgumentException("Quads must have 4 vertices");
+        public Builder<D> withVertices(IVertex v0, IVertex v1, IVertex v2, IVertex v3) {
+            if (v0 == null || v1 == null || v2 == null || v3 == null) {
+                throw new IllegalArgumentException("Vertices cannot be null");
             }
-            this.vertices[0] = vertices[0];
-            this.vertices[1] = vertices[1];
-            this.vertices[2] = vertices[2];
-            this.vertices[3] = vertices[3];
+            this.vertices[0] = v0;
+            this.vertices[1] = v1;
+            this.vertices[2] = v2;
+            this.vertices[3] = v3;
             return this;
         }
 
@@ -296,17 +339,17 @@ public record Quad<D extends IPolygonData<D>>(@NotNull D data, @NotNull Immutabl
          *
          * @return The new quad.
          */
-        public Quad<D> build() {
+        public IRawPolygonPayload<Quad<D>, D> build() {
             if (this.data == null) {
                 throw new IllegalStateException("Polygon data must be set");
             }
-            if (this.vertices[0] == null || this.vertices[1] == null || this.vertices[2] == null || this.vertices[3] == null) {
+            if (this.vertices[0] == null || this.vertices[1] == null
+                    || this.vertices[2] == null || this.vertices[3] == null) {
                 throw new IllegalStateException("All vertices must be set");
             }
-            var v1SubV0 = this.vertices[1].getPos().asMutable().sub(this.vertices[0].getPos());
-            var v2SubV0 = this.vertices[2].getPos().asMutable().sub(this.vertices[0].getPos());
-            var normal = v1SubV0.cross(v2SubV0).normalize().asImmutable();
-            return new Quad<>(this.data, ImmutableList.copyOf(this.vertices), normal, AABB.fromVertices(this.vertices));
+            return IRawPolygonPayload.of(Quad.getProvider(), this.data, ImmutableList.copyOf(this.vertices));
         }
+
     }
+
 }

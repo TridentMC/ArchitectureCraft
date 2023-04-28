@@ -3,6 +3,7 @@ package com.tridevmc.architecture.core.math;
 record Vector2(double x, double y) implements IVector2Immutable {
 
     static class Mutable implements IVector2Mutable {
+
         private double x, y;
 
         Mutable(double x, double y) {
@@ -38,6 +39,7 @@ record Vector2(double x, double y) implements IVector2Immutable {
             this.y = y;
             return this;
         }
+
     }
 
 }

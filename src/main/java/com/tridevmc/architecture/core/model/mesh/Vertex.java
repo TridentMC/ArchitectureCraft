@@ -66,6 +66,7 @@ public record Vertex(@NotNull IVector3Immutable pos,
      * Builder for {@link Vertex} instances.
      */
     public static class Builder {
+
         private final IVector3Mutable pos = IVector3.ofMutable(0, 0, 0), normal = IVector3.ofMutable(0, 0, 0);
         private final IVector2Mutable uvs = IVector2.ofMutable(0, 0);
 
@@ -148,5 +149,7 @@ public record Vertex(@NotNull IVector3Immutable pos,
         public Vertex build() {
             return new Vertex(this.pos, this.normal, this.uvs);
         }
+
     }
+
 }

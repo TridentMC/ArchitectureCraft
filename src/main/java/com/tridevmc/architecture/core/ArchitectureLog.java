@@ -124,4 +124,5 @@ public class ArchitectureLog {
     public static void warn(String message, Object... params) {
         LOG.warn(message, params);
     }
+
 }

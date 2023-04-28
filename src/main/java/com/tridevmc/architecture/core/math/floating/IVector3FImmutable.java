@@ -260,4 +260,5 @@ public interface IVector3FImmutable extends IVector3F {
     default IVector3FMutable asMutable() {
         return IVector3FMutable.of(this);
     }
+
 }

@@ -269,4 +269,5 @@ public interface IVector2 {
             default -> throw new IndexOutOfBoundsException("Index: " + index);
         };
     }
+
 }

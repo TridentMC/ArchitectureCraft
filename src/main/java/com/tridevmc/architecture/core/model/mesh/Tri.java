@@ -7,23 +7,52 @@ import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.PhysicsHelper;
 import com.tridevmc.architecture.core.physics.Ray;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Default implementation of {@link IPolygon} for tris.
  *
- * @param data     The data associated with this tri.
- * @param vertices The vertices that make up this tri.
+ * @param data The data associated with this tri.
  */
-public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVertex> vertices,
+public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
+                                             @NotNull D data,
+                                             @NotNull IntImmutableList vertexIndices,
                                              @NotNull IVector3Immutable normal,
                                              @NotNull AABB aabb) implements IPolygon<D> {
 
     private static final double EPSILON = 1e-8;
 
+    @SuppressWarnings("rawtypes")
+    // Type erasure means this doesn't matter. We return the correctly typed version in the below method.
+    private static final IPolygonProvider PROVIDER = (face, data, vertexIndices) -> {
+        var v0 = (IVertex) face.getVertices().get(vertexIndices[0]);
+        var v1 = (IVertex) face.getVertices().get(vertexIndices[1]);
+        var v2 = (IVertex) face.getVertices().get(vertexIndices[2]);
+        var v3 = (IVertex) face.getVertices().get(vertexIndices[3]);
+        return new Tri(
+                face,
+                data,
+                IntImmutableList.of(vertexIndices),
+                MeshHelper.calculateNormal(v0, v1, v2),
+                AABB.fromVertices(v0, v1, v2, v3)
+        );
+    };
+
+    /**
+     * Gets the static tri provider instance, used to create tris from a face, data and vertex indices.
+     *
+     * @param <D> the type of data to be associated with the tri.
+     * @return the static tri provider instance.
+     */
+    public static <D extends IPolygonData<D>> IPolygonProvider<Tri<D>, D> getProvider() {
+        //noinspection unchecked - This method can be ugly because it makes others less ugly :)
+        return PROVIDER;
+    }
+
     public Tri {
-        if (vertices.size() != 3) {
+        if (this.getVertexIndices().size() != 3) {
             throw new IllegalArgumentException("Tris must have 3 vertices");
         }
     }
@@ -35,8 +64,29 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
     }
 
     @Override
+    @NotNull
+    public IFace<D> getFace() {
+        return this.face;
+    }
+
+    @Override
+    public int getVertexCount() {
+        return 3;
+    }
+
+    @Override
+    @NotNull
+    public IntImmutableList getVertexIndices() {
+        return this.vertexIndices;
+    }
+
+    @Override
     public @NotNull ImmutableList<IVertex> getVertices() {
-        return this.vertices;
+        return ImmutableList.of(
+                this.getVertex(0),
+                this.getVertex(1),
+                this.getVertex(2)
+        );
     }
 
     @Override
@@ -55,9 +105,9 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
     @Nullable
     public IVector3 intersect(Ray ray) {
         // Vertices of the triangle
-        var v0 = this.vertices.get(0).getPos().asImmutable();
-        var v1 = this.vertices.get(1).getPos().asImmutable();
-        var v2 = this.vertices.get(2).getPos().asImmutable();
+        var v0 = this.getVertex(0).getPos().asImmutable();
+        var v1 = this.getVertex(1).getPos().asImmutable();
+        var v2 = this.getVertex(2).getPos().asImmutable();
 
         // Compute vectors for two of the triangle's edges
         var e1 = v1.sub(v0);
@@ -102,9 +152,9 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
     @Override
     public boolean intersect(AABB box) {
         // We need to use the separating axis theorem to determine if the box intersects with the triangle.
-        var v0 = this.vertices.get(0).getPos().asMutable();
-        var v1 = this.vertices.get(1).getPos().asMutable();
-        var v2 = this.vertices.get(2).getPos().asMutable();
+        var v0 = this.getVertex(0).getPos().asMutable();
+        var v1 = this.getVertex(1).getPos().asMutable();
+        var v2 = this.getVertex(2).getPos().asMutable();
 
         // Check if any of the triangle's vertices are inside the box, if so we can exit early.
         if (box.contains(v0) || box.contains(v1) || box.contains(v2)) {
@@ -158,12 +208,14 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
     }
 
     @Override
-    public @NotNull IPolygon<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
-        var builder = new Builder<D>();
-        for (var v : this.vertices) {
-            builder.addVertex(v.transform(trans, transformUVs));
-        }
-        return builder.setData(this.getPolygonData().transform(trans)).build();
+    public @NotNull IPolygon<D> transform(@NotNull IFace<D> face, @NotNull ITrans3 trans, boolean transformUVs) {
+        return new Tri<D>(
+                face,
+                this.getPolygonData().transform(trans),
+                this.getVertexIndices(),
+                trans.transformNormalImmutable(this.getNormal()),
+                trans.transformAABB(this.getAABB())
+        );
     }
 
     /**
@@ -172,6 +224,7 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
      * @param <D> The type of data that is stored on the polygons.
      */
     public static class Builder<D extends IPolygonData<D>> {
+
         private D data;
         private final IVertex[] vertices = new IVertex[3];
         private int nextVertex = 0;
@@ -240,17 +293,16 @@ public record Tri<D extends IPolygonData<D>>(@NotNull D data, ImmutableList<IVer
          *
          * @return The new tri.
          */
-        public Tri<D> build() {
+        public IRawPolygonPayload<Tri<D>, D> build() {
             if (this.data == null) {
                 throw new IllegalStateException("Polygon data must be set");
             }
             if (this.vertices[0] == null || this.vertices[1] == null || this.vertices[2] == null) {
                 throw new IllegalStateException("All vertices must be set");
             }
-            var v1SubV0 = this.vertices[1].getPos().asMutable().sub(this.vertices[0].getPos());
-            var v2SubV0 = this.vertices[2].getPos().asMutable().sub(this.vertices[0].getPos());
-            var normal = v1SubV0.cross(v2SubV0).normalize().asImmutable();
-            return new Tri<>(this.data, ImmutableList.copyOf(this.vertices), normal, AABB.fromVertices(this.vertices));
+            return IRawPolygonPayload.of(Tri.getProvider(), this.data, ImmutableList.copyOf(this.vertices));
         }
+
     }
+
 }

@@ -360,4 +360,5 @@ public interface IVector2Mutable extends IVector2 {
     default IVector2Mutable asMutable() {
         return IVector2Mutable.of(this);
     }
+
 }

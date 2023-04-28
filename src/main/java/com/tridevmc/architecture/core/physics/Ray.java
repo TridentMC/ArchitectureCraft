@@ -16,6 +16,7 @@ import java.util.stream.Stream;
  * @param direction the direction of the ray.
  */
 public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
+
     /**
      * Attempts to intersect this ray with the given polygon.
      *
@@ -68,6 +69,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @param poly  the polygon that was hit, if any.
      */
     public record Hit(Ray ray, IVector3 point, IPolygon<? extends IPolygonData<?>> poly) {
+
         /**
          * Determines if the hit is valid, i.e. if the hit point is not null.
          *
@@ -96,5 +98,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
             // Round the hit point to the nearest 256th of a block.
             return new Hit(this.ray, IVector3.ofImmutable(Math.round(this.point.x() * 256) / 256D, Math.round(this.point.y() * 256) / 256D, Math.round(this.point.z() * 256) / 256D), this.poly);
         }
+
     }
+
 }
