@@ -54,25 +54,6 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
 
     }
 
-    public static <I, D extends IPolygonData<D>> BakedQuadContainerProvider<D> fromMesh(IMesh<I, D> mesh) {
-        var builder = new Builder<D>();
-
-        mesh.getFaceStream().forEach(f -> {
-            f.getPolygonStream().forEach(p -> {
-                var vertices = p.getVertexStream().map(
-                        v -> new PipedVertex<>(
-                                v.getX(), v.getY(), v.getZ(),
-                                (float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ(),
-                                (float) v.getU(), (float) v.getV()
-                        )
-                );
-                builder.addQuad(new PipedBakedQuad<>(vertices));
-            });
-        });
-
-        return builder.build();
-    }
-
     @Override
     public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean force) {
         var builder = new BakedQuadContainer.Builder();

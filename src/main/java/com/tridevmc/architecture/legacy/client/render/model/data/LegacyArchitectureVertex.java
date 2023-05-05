@@ -87,7 +87,7 @@ public class LegacyArchitectureVertex {
         return this.getNormals().z();
     }
 
-    public void pipe(VertexConsumer consumer, IPipedBakedQuad<?> bakedQuadProvider,
+    public void pipe(VertexConsumer consumer, IPipedBakedQuad<?,?,?> bakedQuadProvider,
                      Optional<Transformation> transform, TextureAtlasSprite sprite,
                      int colour) {
         var p = this.getPosition();

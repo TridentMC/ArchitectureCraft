@@ -24,14 +24,6 @@ import org.jetbrains.annotations.Nullable;
 public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends IPipedVertex<V, Q, D>, D> {
 
     /**
-     * Creates a new quad piper by applying the given transformation to this quad piper.
-     *
-     * @param transform The transformation to apply.
-     * @return A new quad piper with the transformation applied.
-     */
-    Q transform(ITrans3 transform);
-
-    /**
      * Gets an immutable list of all the vertices in this quad.
      *
      * @return an immutable list of all the vertices in this quad.

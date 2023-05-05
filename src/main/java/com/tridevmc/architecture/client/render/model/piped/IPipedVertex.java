@@ -23,15 +23,6 @@ import org.jetbrains.annotations.NotNull;
 public interface IPipedVertex<V extends IPipedVertex<V, Q, D>, Q extends IPipedBakedQuad<Q, V, D>, D> {
 
     /**
-     * Creates a new piped vertex by applying the given transformation to this vertex.
-     *
-     * @param quadProvider   the quad provider that this vertex is associated with.
-     * @param transformation the transformation to apply.
-     * @return the transformed piped vertex, or this vertex if the transformation is the identity.
-     */
-    V transform(@NotNull Q quadProvider, @NotNull ITrans3 transformation);
-
-    /**
      * Gets the x position of this vertex.
      *
      * @return the x position of this vertex.

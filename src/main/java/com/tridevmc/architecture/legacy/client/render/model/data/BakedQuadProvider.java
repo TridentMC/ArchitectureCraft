@@ -7,7 +7,7 @@ import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
  *
  * @param <T> The type of metadata this provider uses.
  */
-public abstract class BakedQuadProvider<T> implements IPipedBakedQuad<T> {
+public abstract class BakedQuadProvider<T> implements IPipedBakedQuad {
 
     private final T metadata;
 

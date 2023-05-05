@@ -1,21 +1,36 @@
 package com.tridevmc.architecture.client.render.model.piped;
 
-import com.tridevmc.architecture.core.math.ITrans3;
-import org.jetbrains.annotations.NotNull;
+import java.util.Objects;
 
-public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>(
-        double x, double y, double z,
-        float nX, float nY, float nZ,
-        float u, float v
-) implements IPipedVertex<PipedVertex<Q, D>, Q, D> {
+public class PipedVertex<V extends PipedVertex<V, Q, D>, Q extends IPipedBakedQuad<Q, V, D>, D> implements IPipedVertex<V, Q, D> {
+
+    private final double x, y, z;
+    private final float nX, nY, nZ;
+    private final float u, v;
+
+    public PipedVertex(
+            double x, double y, double z,
+            float nX, float nY, float nZ,
+            float u, float v
+    ) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.nX = nX;
+        this.nY = nY;
+        this.nZ = nZ;
+        this.u = u;
+        this.v = v;
+    }
 
     /**
      * A builder for {@link PipedVertex} instances.
      *
+     * @param <V> The vertex type.
      * @param <Q> The quad type.
      * @param <D> The metadata type.
      */
-    public static class Builder<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D> {
+    public static class Builder<V extends PipedVertex<V, Q, D>, Q extends IPipedBakedQuad<Q, V, D>, D> {
 
         private double x, y, z;
         private float nX, nY, nZ;
@@ -29,7 +44,7 @@ public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>
          * @param z The z coordinate.
          * @return The builder.
          */
-        public Builder<Q, D> pos(double x, double y, double z) {
+        public Builder<V, Q, D> pos(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -44,7 +59,7 @@ public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>
          * @param nZ The z component of the normal.
          * @return The builder.
          */
-        public Builder<Q, D> normal(float nX, float nY, float nZ) {
+        public Builder<V, Q, D> normal(float nX, float nY, float nZ) {
             this.nX = nX;
             this.nY = nY;
             this.nZ = nZ;
@@ -58,7 +73,7 @@ public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>
          * @param v The v coordinate.
          * @return The builder.
          */
-        public Builder<Q, D> uvs(float u, float v) {
+        public Builder<V, Q, D> uvs(float u, float v) {
             this.u = u;
             this.v = v;
             return this;
@@ -69,27 +84,85 @@ public record PipedVertex<Q extends IPipedBakedQuad<Q, PipedVertex<Q, D>, D>, D>
          *
          * @return The vertex.
          */
-        public PipedVertex<Q, D> build() {
+        public PipedVertex<V, Q, D> build() {
             return new PipedVertex<>(this.x, this.y, this.z, this.nX, this.nY, this.nZ, this.u, this.v);
         }
+
+    }
+
+
+    @Override
+    public double x() {
+        return x;
     }
 
     @Override
-    public PipedVertex<Q, D> transform(@NotNull Q quadProvider, @NotNull ITrans3 trans) {
-        if (trans.isIdentity()) {
-            return this;
-        } else {
-            var fromFace = quadProvider.face();
-            var toFace = quadProvider.face(trans);
-            var pos = this.pos(trans);
-            var normal = this.normal(trans);
-            var uvs = this.uvs(trans, fromFace, toFace);
-            return new PipedVertex<>(
-                    (float) pos.x(), (float) pos.y(), (float) pos.z(),
-                    normal.x(), normal.y(), normal.z(),
-                    (float) uvs.u(), (float) uvs.v()
-            );
-        }
+    public double y() {
+        return y;
     }
+
+    @Override
+    public double z() {
+        return z;
+    }
+
+    @Override
+    public float nX() {
+        return nX;
+    }
+
+    @Override
+    public float nY() {
+        return nY;
+    }
+
+    @Override
+    public float nZ() {
+        return nZ;
+    }
+
+    @Override
+    public float u() {
+        return u;
+    }
+
+    @Override
+    public float v() {
+        return v;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (PipedVertex) obj;
+        return Double.doubleToLongBits(this.x) == Double.doubleToLongBits(that.x) &&
+                Double.doubleToLongBits(this.y) == Double.doubleToLongBits(that.y) &&
+                Double.doubleToLongBits(this.z) == Double.doubleToLongBits(that.z) &&
+                Float.floatToIntBits(this.nX) == Float.floatToIntBits(that.nX) &&
+                Float.floatToIntBits(this.nY) == Float.floatToIntBits(that.nY) &&
+                Float.floatToIntBits(this.nZ) == Float.floatToIntBits(that.nZ) &&
+                Float.floatToIntBits(this.u) == Float.floatToIntBits(that.u) &&
+                Float.floatToIntBits(this.v) == Float.floatToIntBits(that.v);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, nX, nY, nZ, u, v);
+    }
+
+    @Override
+    public String toString() {
+        return "PipedVertex[" +
+                "x=" + x + ", " +
+                "y=" + y + ", " +
+                "z=" + z + ", " +
+                "nX=" + nX + ", " +
+                "nY=" + nY + ", " +
+                "nZ=" + nZ + ", " +
+                "u=" + u + ", " +
+                "v=" + v + ']';
+    }
+
 
 }
