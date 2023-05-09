@@ -3,6 +3,7 @@ package com.tridevmc.architecture.client.render.model.baked;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.core.math.ITrans3;
@@ -18,7 +19,7 @@ class BakedQuadContainerProviderCached<D> extends BakedQuadContainerProvider<D> 
     // TODO: Benchmark vs nested HashMap, vs Guava Cache, vs HashMap with custom record for key
     // Record is likely the fastest, but will be more memory intensive - ZGC might make this a non-issue
     // If nested HashMap is faster, then we'll just make a custom class that makes things easier to read
-    private final Table<IQuadMetadataResolver<D>, ITrans3, IBakedQuadContainer> cache = HashBasedTable.create();
+    private final Table<IQuadMetadataResolver<D>, ITrans3, IBakedQuadContainer> cache = Tables.synchronizedTable(HashBasedTable.create());
 
     protected BakedQuadContainerProviderCached(ImmutableList<IPipedBakedQuad<?, ?, D>> quads) {
         super(quads);
