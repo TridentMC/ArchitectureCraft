@@ -34,7 +34,7 @@ import net.minecraft.world.item.context.UseOnContext;
 public class ItemHammer extends Item {
 
     public ItemHammer() {
-        super(new Item.Properties().stacksTo(1).tab(ArchitectureMod.CONTENT.TOOL_TAB));
+        super(new Item.Properties().stacksTo(1));
     }
 
     @Override

@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ItemChisel extends Item {
 
     public ItemChisel() {
-        super(new Item.Properties().stacksTo(1).tab(ArchitectureMod.CONTENT.TOOL_TAB));
+        super(new Item.Properties().stacksTo(1));
     }
 
     @Override

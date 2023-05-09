@@ -5,8 +5,8 @@ item.architecturecraft.sawblade.name=Лезвие циркулярной пил�
 item.architecturecraft.chisel.name=Стамеска архитектора
 item.architecturecraft.hammer.name=Молоток архитектора
 item.architecturecraft.cladding.name=Кровля
-itemGroup.architecture.tool=Инструменты архитектора
-itemGroup.architecture.shape=Блоки архитектора
+item_group.architecture.tool=Инструменты архитектора
+item_group.architecture.shape=Блоки архитектора
 
 architecturecraft.shape.roof_tile=Крыша
 architecturecraft.shape.roof_outer_corner=Внешний угол крыши

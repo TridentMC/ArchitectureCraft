@@ -6,8 +6,8 @@
   "item.architecturecraft.chisel": "Architect's Chisel",
   "item.architecturecraft.hammer": "Architect's Hammer",
   "item.architecturecraft.cladding": "Cladding: %s",
-  "itemGroup.architecture.tool": "Architecture Craft Tools",
-  "itemGroup.architecture.shape": "Architecture Craft Shapes",
+  "item_group.architecture.tool": "Architecture Craft Tools",
+  "item_group.architecture.shape": "Architecture Craft Shapes",
 
   "tooltip.architecturecraft.basematerial": "Base: %s",
   "tooltip.architecturecraft.secondarymaterial": "Secondary: %s"

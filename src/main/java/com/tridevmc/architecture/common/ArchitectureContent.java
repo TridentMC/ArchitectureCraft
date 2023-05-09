@@ -35,24 +35,24 @@ import com.tridevmc.architecture.common.item.ItemArchitecture;
 import com.tridevmc.architecture.common.item.ItemChisel;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.item.ItemHammer;
-import com.tridevmc.architecture.common.itemgroup.ArchitectureItemGroup;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.SharedConstants;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
@@ -68,17 +68,6 @@ import java.util.function.Function;
 import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
-
-    public final CreativeModeTab TOOL_TAB = new ArchitectureItemGroup("architecture.tool", () ->
-            ArchitectureContent.this.itemHammer != null ?
-                    ArchitectureContent.this.itemHammer.getDefaultInstance() :
-                    ItemStack.EMPTY
-    );
-    public final CreativeModeTab SHAPE_TAB = new ArchitectureItemGroup("architecture.shape", () ->
-            ArchitectureContent.this.itemShapes != null ?
-                    ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
-                    ItemStack.EMPTY
-    );
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
@@ -104,6 +93,33 @@ public class ArchitectureContent {
         e.register(ForgeRegistries.Keys.MENU_TYPES, this::onMenuTypeRegister);
     }
 
+    @SubscribeEvent
+    public void onCreativeTabRegisterEvent(CreativeModeTabEvent.Register e) {
+        e.registerCreativeModeTab(new ResourceLocation(MOD_ID, "tools"), b -> {
+            b.title(Component.translatable("item_group.architecture.tool"))
+                    .icon(() -> ArchitectureContent.this.itemHammer != null ?
+                            ArchitectureContent.this.itemHammer.getDefaultInstance() :
+                            ItemStack.EMPTY)
+                    .displayItems((p, o) -> {
+                        o.accept(new ItemStack(this.itemHammer));
+                        o.accept(new ItemStack(this.itemChisel));
+                        o.accept(new ItemStack(this.itemSawblade));
+                        o.accept(new ItemStack(this.itemLargePulley));
+                    });
+        });
+        e.registerCreativeModeTab(new ResourceLocation(MOD_ID, "shapes"), b -> {
+            b.title(Component.translatable("item_group.architecture.shape"))
+                    .icon(() -> ArchitectureContent.this.itemShapes != null ?
+                            ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
+                            ItemStack.EMPTY)
+                    .displayItems((p, o) -> {
+                        for (EnumShape shape : EnumShape.values()) {
+                            o.accept(new ItemStack(this.itemShapes.get(shape)));
+                        }
+                    });
+        });
+    }
+
     public void onBlockEntityRegister(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry) {
         this.tileTypeShape = this.registerBlockEntity(registry, ShapeBlockEntity::new, "shape");
     }
@@ -117,8 +133,8 @@ public class ArchitectureContent {
     }
 
     public void onItemRegister(RegisterEvent.RegisterHelper<Item> registry) {
-        this.itemSawblade = this.registerItem(registry, "sawblade", this.TOOL_TAB);
-        this.itemLargePulley = this.registerItem(registry, "large_pulley", this.TOOL_TAB);
+        this.itemSawblade = this.registerItem(registry, "sawblade");
+        this.itemLargePulley = this.registerItem(registry, "large_pulley");
         this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel());
         this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer());
         this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding());
@@ -139,9 +155,9 @@ public class ArchitectureContent {
         try {
             dataFixerType = DataFixers.getDataFixer().getSchema(
                             DataFixUtils.makeKey(SharedConstants
-                                    .getCurrentVersion()
-                                    .getDataVersion()
-                                    .getVersion()))
+                                                         .getCurrentVersion()
+                                                         .getDataVersion()
+                                                         .getVersion()))
                     .getChoiceType(References.BLOCK_ENTITY, key.toString());
         } catch (IllegalArgumentException e) {
             ArchitectureLog.error("No data fixer was registered for resource id {}", key);
@@ -172,8 +188,8 @@ public class ArchitectureContent {
         return (T) registeredBlocks.get(id);
     }
 
-    private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id, CreativeModeTab itemGroup) {
-        ItemArchitecture item = new ItemArchitecture(new Item.Properties().tab(itemGroup));
+    private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id) {
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties());
         registry.register(new ResourceLocation(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 

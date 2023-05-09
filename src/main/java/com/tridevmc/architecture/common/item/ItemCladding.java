@@ -78,11 +78,6 @@ public class ItemCladding extends ItemArchitecture {
     }
 
     @Override
-    protected boolean allowedIn(CreativeModeTab group) {
-        return false;
-    }
-
-    @Override
     public int getNumSubtypes() {
         return 16;
     }

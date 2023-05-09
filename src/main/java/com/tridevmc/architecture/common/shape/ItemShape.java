@@ -137,18 +137,6 @@ public class ItemShape extends BlockItem {
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (group == ArchitectureMod.CONTENT.SHAPE_TAB) {
-            if (this.shape.isCladding())
-                return;
-
-            items.add(createStack(this.shape, Blocks.OAK_PLANKS.defaultBlockState()));
-        }
-
-        super.fillItemCategory(group, items);
-    }
-
-    @Override
     public ItemStack getDefaultInstance() {
         return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
     }

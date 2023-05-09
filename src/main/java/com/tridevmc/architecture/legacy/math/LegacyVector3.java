@@ -150,7 +150,7 @@ public record LegacyVector3(double x, double y, double z) {
     }
 
     public Vec3i toVec3i() {
-        return new Vec3i(this.x, this.y, this.z);
+        return new Vec3i((int) this.x, (int) this.y, (int) this.z);
     }
 
     public Vec3 toMCVec3() {

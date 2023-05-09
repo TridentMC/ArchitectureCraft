@@ -5,8 +5,8 @@ item.architecturecraft.sawblade.name=Circular Saw Blade
 item.architecturecraft.chisel.name=Architect's Chisel
 item.architecturecraft.hammer.name=Architect's Hammer
 item.architecturecraft.cladding.name=Cladding
-itemGroup.architecture.tool=Architecture Craft Tools
-itemGroup.architecture.shape=Architecture Craft Shapes
+item_group.architecture.tool=Architecture Craft Tools
+item_group.architecture.shape=Architecture Craft Shapes
 
 architecturecraft.shape.roof_tile=Roof Tile
 architecturecraft.shape.roof_outer_corner=Roof Outer Corner
