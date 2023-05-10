@@ -51,7 +51,7 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     }
 
     public Quad {
-        if (this.getVertexIndices().size() != 4) {
+        if (vertexIndices.size() != 4) {
             throw new IllegalArgumentException("Quads must have 4 vertices");
         }
     }

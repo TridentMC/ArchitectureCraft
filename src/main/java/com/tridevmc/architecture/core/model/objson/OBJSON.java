@@ -59,7 +59,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
 
             for (OBJSONData.TriangleData triData : partData.triangles()) {
                 // OBJSON doesn't currently support tinting, so we'll just use the default value of -1.
-                var tri = new Tri.Builder<PolygonData>().setData(new PolygonData(triData.texture(), -1, triData.cullFace()));
+                var tri = new Tri.Builder<PolygonData>().setData(new PolygonData(triData.cullFace(), triData.texture(), -1));
                 var faceData = data.faces()[triData.face()];
                 var face = faceMap.computeIfAbsent(triData.face(), i -> new Face.Builder<>());
 

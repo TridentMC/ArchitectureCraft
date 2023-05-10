@@ -24,11 +24,11 @@ public enum CullFace {
     @SerializedName("5")
     EAST(5);
 
-    private static final CullFace[] FACES_BY_INDEX = new CullFace[6];
+    private static final CullFace[] FACES_BY_INDEX = new CullFace[7];
 
     static {
         for (CullFace face : values()) {
-            FACES_BY_INDEX[face.getIndex()] = face;
+            FACES_BY_INDEX[face.getIndex() + 1] = face;
         }
     }
 
@@ -41,7 +41,7 @@ public enum CullFace {
     @NotNull
     public static CullFace fromDirection(@Nullable Direction direction) {
         if (direction == null) return NONE;
-        return FACES_BY_INDEX[direction.ordinal()];
+        return FACES_BY_INDEX[direction.ordinal() + 1];
     }
 
     private final int index;

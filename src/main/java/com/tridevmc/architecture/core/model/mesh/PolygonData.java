@@ -7,46 +7,19 @@ import java.util.Objects;
 
 /**
  * Default implementation of {@link IPolygonData}.
+ *
+ * @param cullFace     The cull face of this polygon.
+ * @param textureIndex The texture index of the polygon.
+ * @param tintIndex    The tint index of the polygon.
  */
-public class PolygonData implements IPolygonData<PolygonData> {
-
-    private final int textureIndex;
-    private final int tintIndex;
-    private final CullFace cullFace;
-
-    /**
-     * Creates a new polygon data with the given texture index, tint index, and cull face.
-     *
-     * @param textureIndex The texture index of the polygon.
-     * @param tintIndex    The tint index of the polygon.
-     * @param cullFace     The cull face of this polygon.
-     */
-    public PolygonData(int textureIndex, int tintIndex, CullFace cullFace) {
-        this.textureIndex = textureIndex;
-        this.tintIndex = tintIndex;
-        this.cullFace = cullFace;
-    }
-
-    @Override
-    public int getTextureIndex() {
-        return this.textureIndex;
-    }
-
-    @Override
-    public int getTintIndex() {
-        return this.tintIndex;
-    }
-
-    @Override
-    public @NotNull CullFace getCullFace() {
-        return this.cullFace;
-    }
+public record PolygonData(@NotNull CullFace cullFace, int textureIndex,
+                          int tintIndex) implements IPolygonData<PolygonData> {
 
     @Override
     public PolygonData transform(@NotNull ITrans3 trans) {
+        if (this.cullFace() == CullFace.NONE) return this;
         // We're just going to transform the cull face then copy the rest of the data to a new instance.
-        var cullFace = trans.transformCullFace(this.getCullFace());
-        return new PolygonData(this.getTextureIndex(), this.getTintIndex(), cullFace);
+        return new PolygonData(trans.transformCullFace(this.cullFace()), this.textureIndex(), this.tintIndex());
     }
 
     @Override
@@ -57,11 +30,6 @@ public class PolygonData implements IPolygonData<PolygonData> {
         return this.textureIndex == that.textureIndex &&
                 this.tintIndex == that.tintIndex &&
                 Objects.equals(this.cullFace, that.cullFace);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.textureIndex, this.tintIndex, this.cullFace);
     }
 
     @Override

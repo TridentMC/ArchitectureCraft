@@ -30,13 +30,12 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
         var v0 = (IVertex) face.getVertices().get(vertexIndices[0]);
         var v1 = (IVertex) face.getVertices().get(vertexIndices[1]);
         var v2 = (IVertex) face.getVertices().get(vertexIndices[2]);
-        var v3 = (IVertex) face.getVertices().get(vertexIndices[3]);
         return new Tri(
                 face,
                 data,
                 IntImmutableList.of(vertexIndices),
                 MeshHelper.calculateNormal(v0, v1, v2),
-                AABB.fromVertices(v0, v1, v2, v3)
+                AABB.fromVertices(v0, v1, v2)
         );
     };
 
@@ -52,7 +51,7 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     }
 
     public Tri {
-        if (this.getVertexIndices().size() != 3) {
+        if (vertexIndices.size() != 3) {
             throw new IllegalArgumentException("Tris must have 3 vertices");
         }
     }

@@ -1,9 +1,10 @@
 package com.tridevmc.architecture.legacy.client.render.model.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.legacy.client.render.model.builder.BakedQuadBuilderVertexConsumer;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
+import com.tridevmc.architecture.legacy.client.render.model.builder.BakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -35,7 +36,6 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
         this.normals = normals;
     }
 
-    @Override
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         if (facing == null) facing = this.facing();
         var builder = new BakedQuadBuilderVertexConsumer()
@@ -51,7 +51,6 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
         return builder.getBakedQuad();
     }
 
-    @Override
     public Vector3f getFaceNormal() {
         if (this.normals == null) {
             var vert0 = this.vertices[2];
@@ -64,13 +63,12 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
             p1.sub(vert1.getPosition());
             p0.cross(p1);
 
-            this.normals = p0.copy();
+            this.normals = new Vector3f(p0);
             this.normals.normalize();
         }
         return this.normals;
     }
 
-    @Override
     public @NotNull Direction facing() {
         if (this.face == null) {
             Vector3f normals = this.getFaceNormal();
@@ -83,17 +81,14 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
         return this.vertices;
     }
 
-    @Override
     public boolean isComplete() {
         return Arrays.stream(this.vertices).allMatch(Objects::nonNull);
     }
 
-    @Override
     public void setVertex(int index, LegacyArchitectureVertex vertex) {
         this.vertices[index] = vertex;
     }
 
-    @Override
     public void assignNormals() {
         var vert0 = this.vertices[2];
         var vert1 = this.vertices[1];
@@ -107,23 +102,22 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
         p0.cross(p1);
         Vector3f normals;
         if (vert0.assignNormals()) {
-            normals = p0.copy();
+            normals = new Vector3f(p0);
             normals.add(vert0.getNormals());
             vert0.setNormals(normals);
         }
         if (vert1.assignNormals()) {
-            normals = p0.copy();
+            normals = new Vector3f(p0);
             normals.add(vert1.getNormals());
             vert1.setNormals(normals);
         }
         if (vert2.assignNormals()) {
-            normals = p0.copy();
+            normals = new Vector3f(p0);
             normals.add(vert2.getNormals());
             vert2.setNormals(normals);
         }
     }
 
-    @Override
     public int[][] getRanges(Transformation transform) {
         int[][] ranges = new int[3][2];
 
@@ -155,8 +149,68 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
         return ranges;
     }
 
-    @Override
     public int getNextVertex() {
         return IntStream.range(0, 3).filter((i) -> this.vertices[i] == null).min().orElse(-1);
     }
+
+    @Override
+    public ImmutableList vertices() {
+        return null;
+    }
+
+    @Override
+    public float nX() {
+        return 0;
+    }
+
+    @Override
+    public float nY() {
+        return 0;
+    }
+
+    @Override
+    public float nZ() {
+        return 0;
+    }
+
+    @Override
+    public @NotNull Direction face() {
+        return null;
+    }
+
+    @Override
+    public boolean shouldCull() {
+        return false;
+    }
+
+    @Override
+    public float minX() {
+        return 0;
+    }
+
+    @Override
+    public float minY() {
+        return 0;
+    }
+
+    @Override
+    public float minZ() {
+        return 0;
+    }
+
+    @Override
+    public float maxX() {
+        return 0;
+    }
+
+    @Override
+    public float maxY() {
+        return 0;
+    }
+
+    @Override
+    public float maxZ() {
+        return 0;
+    }
+
 }

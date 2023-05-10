@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.core.model.objson;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import net.minecraft.resources.ResourceLocation;
 
@@ -55,7 +56,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param texture  The texture of the triangle.
      * @param vertices The vertices of the triangle.
      */
-    record TriangleData(int face, CullFace cullFace, int texture, int[] vertices) {
+    record TriangleData(int face, @SerializedName("cull_face") CullFace cullFace, int texture, int[] vertices) {
 
     }
 

@@ -7,8 +7,9 @@ import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
-import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONModel;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONModel;
 import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadata;
+
 import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadataResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -20,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
 
-public class ShapeModel extends OBJSONModel {
+public class ShapeModel extends LegacyOBJSONModel {
 
     private static final Map<BlockState, TextureAtlasSprite> SPRITE_CACHE = Maps.newHashMap();
     private final EnumShape shape;

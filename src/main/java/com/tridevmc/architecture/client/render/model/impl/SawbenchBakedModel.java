@@ -1,43 +1,24 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
-import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
-import com.tridevmc.architecture.client.render.model.impl.SawbenchModel;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.model.ModelProperties;
-import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import com.tridevmc.architecture.client.render.model.baked.IModelResolverBaked;
+import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
+import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class SawbenchBakedModel implements IModelResolverBaked<PolygonData> {
 
-public class SawbenchBakedModel implements IArchitectureBakedModel {
-
-    private static SawbenchModel MODEL;
+    private static SawbenchModelResolver RESOLVER;
 
     public SawbenchBakedModel() {
-        if (MODEL == null) {
-            MODEL = new SawbenchModel();
+        if (RESOLVER == null) {
+            RESOLVER = new SawbenchModelResolver();
         }
     }
 
-    @NotNull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-        Level level = extraData.get(ModelProperties.LEVEL);
-        BlockPos pos = extraData.get(ModelProperties.POS);
-
-        var t = state.localToGlobalTransformation(level, pos);
-        ArchitectureModelDataQuads quads = MODEL.getQuads(level, pos, state, t.toMCTrans());
-        return quads.getQuads(side);
+    public IModelResolver<PolygonData> getModelResolver() {
+        return RESOLVER;
     }
 
     @Override
@@ -62,7 +43,7 @@ public class SawbenchBakedModel implements IArchitectureBakedModel {
 
     @Override
     public TextureAtlasSprite getParticleIcon() {
-        return MODEL.getDefaultSprite();
+        return RESOLVER.getDefaultSprite();
     }
 
     @Override

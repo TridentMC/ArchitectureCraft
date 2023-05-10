@@ -105,6 +105,7 @@ public class ArchitectureContent {
                         o.accept(new ItemStack(this.itemChisel));
                         o.accept(new ItemStack(this.itemSawblade));
                         o.accept(new ItemStack(this.itemLargePulley));
+                        o.accept(new ItemStack(this.blockSawbench));
                     });
         });
         e.registerCreativeModeTab(new ResourceLocation(MOD_ID, "shapes"), b -> {

@@ -45,11 +45,14 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
                 var polygonData = polygon.getPolygonData();
                 var texture = metadataResolver.getTexture(polygonData);
                 var tintIndex = metadataResolver.getTintIndex(polygonData);
+                var vertexCount = polygon.getVertexCount();
                 quadBaker.setSprite(texture);
                 quadBaker.setTintIndex(tintIndex);
-                quadBaker.setDirection(polygonData.getCullFace().toDirection());
-                for (int i = 0; i < polygon.getVertexCount(); i++) {
-                    var v = polygon.getVertex(i);
+                quadBaker.setDirection(polygonData.cullFace().toDirection());
+                var iterations = Math.max(vertexCount, 4);
+                for (int i = 0; i < iterations; i++) {
+                    var vertexIndex = i % vertexCount; // Wrap around the vertex index, so we can pipe tris as quads.
+                    var v = polygon.getVertex(vertexIndex);
                     quadBaker.vertex(v.getX(), v.getY(), v.getZ())
                             .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
                             .uv(texture.getU(v.getU()), texture.getV(v.getV()))

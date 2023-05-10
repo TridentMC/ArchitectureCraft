@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.mojang.math.Transformation;
+import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.legacy.client.render.model.IArchitectureModel;
 import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelData;
 import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
@@ -22,14 +23,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class OBJSONModel implements IArchitectureModel<OBJSONQuadMetadata> {
+public abstract class LegacyOBJSONModel implements IArchitectureModel<OBJSONQuadMetadata> {
 
     private final LegacyOBJSON objson;
     private final ArchitectureModelData<OBJSONQuadMetadata> convertedModelData;
     private final boolean generateUVs;
     private final boolean generateNormals;
 
-    public OBJSONModel(LegacyOBJSON objson, boolean generateUVs, boolean generateNormals) {
+    public LegacyOBJSONModel(LegacyOBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson;
         this.convertedModelData = new ArchitectureModelData<>();
         this.generateUVs = generateUVs;

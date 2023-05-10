@@ -45,16 +45,18 @@ public class LegacyAutoUVArchitectureVertex extends LegacyArchitectureVertex {
             return super.getUVs(bakedQuadProvider, transform);
         }
 
-        var ranges = bakedQuadProvider.getRanges(transform);
-
+        //var ranges = bakedQuadProvider.getRanges(transform);
+//
+        //var pos = this.getPosition(transform);
+        //var posData = new float[]{pos.x(), pos.y(), pos.z()};
+        //IntStream.range(0, 3).filter(i -> ranges[i][0] == ranges[i][1]).forEach(i -> {
+        //    posData[i] = posData[i] - ranges[i][1];
+        //});
+        //pos.set(posData);
+        //pos.map((v) -> v > 1 ? v % 1 : v);
+        //var face = this.rotate(bakedQuadProvider.facing(), transform);
         var pos = this.getPosition(transform);
-        var posData = new float[]{pos.x(), pos.y(), pos.z()};
-        IntStream.range(0, 3).filter(i -> ranges[i][0] == ranges[i][1]).forEach(i -> {
-            posData[i] = posData[i] - ranges[i][1];
-        });
-        pos.set(posData);
-        pos.map((v) -> v > 1 ? v % 1 : v);
-        var face = this.rotate(bakedQuadProvider.facing(), transform);
+        var face = bakedQuadProvider.face();
         float u = 0, v = 0;
         switch (face) {
             case DOWN -> {

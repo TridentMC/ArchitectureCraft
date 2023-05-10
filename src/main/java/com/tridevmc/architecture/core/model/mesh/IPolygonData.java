@@ -17,14 +17,14 @@ public interface IPolygonData<S extends IPolygonData<S>> {
      *
      * @return The texture index.
      */
-    int getTextureIndex();
+    int textureIndex();
 
     /**
      * Gets the tint index for this polygon.
      *
      * @return The tint index.
      */
-    int getTintIndex();
+    int tintIndex();
 
     /**
      * Gets the cull face for this polygon.
@@ -32,7 +32,7 @@ public interface IPolygonData<S extends IPolygonData<S>> {
      * @return The cull face.
      */
     @NotNull
-    CullFace getCullFace();
+    CullFace cullFace();
 
     /**
      * Transforms this polygon data by the given transformation.
