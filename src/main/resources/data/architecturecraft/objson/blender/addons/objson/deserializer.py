@@ -56,12 +56,17 @@ def deserialize_objson(objson_path: Path) -> ModelData:
     #         - "normal" is a list of 3 floats
     #         - "uv" is a list of 2 floats
     #     - "normal" is an array of 3 floats
+    #     - "face" is an integer representing the direction the face is facing
     # - "parts" is a list of objects with the following keys: "name", "bounds", and "triangles"
     #     - "name" is a string
     #     - "bounds" is a list of 6 floats
     #     - "triangles" is a list of objects with three keys: "face", "vertices", and "cull_face"
     #         - "face" is an integer
     #         - "vertices" is a list of 3 integers
+    #         - "cull_face" is an integer
+    #     - "quads" is a list of objects with three keys: "face", "vertices", and "cull_face"
+    #         - "face" is an integer
+    #         - "vertices" is a list of 4 integers
     #         - "cull_face" is an integer
 
     # First we need to identify what version of the format we're dealing with, then we can delegate to the appropriate deserializer function.
@@ -99,7 +104,7 @@ def deserialize_objson_v1(objson: dict) -> ModelData:
         normal = Vec3(face["normal"]["x"], face["normal"]["y"], face["normal"]["z"])
 
         # Now we can create the face
-        faces.append(Face(vertices, triangles, normal))
+        faces.append(Face(vertices, triangles, [], normal))
 
     # Now we can create the part with the default name "root" and pass it out within a model data object
     part = Part("root", bounds, faces)
@@ -137,7 +142,7 @@ def deserialize_objson_v2(objson: dict) -> ModelData:
             normal = Vec3(*face["normal"])
 
             # Now we can create the face
-            faces.append(Face(vertices, triangles, normal))
+            faces.append(Face(vertices, triangles, [], normal))
 
         # Now we can create the part
         parts.append(Part(part["name"], part["bounds"], faces))
@@ -184,11 +189,29 @@ def deserialize_objson_v3(objson: dict) -> ModelData:
                     triangle["texture"],
                 )
             )
+        
+        quads_by_face = {}
+        for quad in part["quads"]:
+            if quad["face"] not in quads_by_face:
+                quads_by_face[quad["face"]] = []
+            quads_by_face[quad["face"]].append(
+                Quad(
+                    quad["vertices"][0],
+                    quad["vertices"][1],
+                    quad["vertices"][2],
+                    quad["vertices"][3],
+                    quad["texture"],
+                )
+            )
 
         faces = []
-        for face_index, triangles in triangles_by_face.items():
+        # Merge the triangles and quads into faces
+        indices = set(triangles_by_face.keys()).union(set(quads_by_face.keys()))
+        for face_index in indices:
+            triangles = triangles_by_face.get(face_index, [])
+            quads = quads_by_face.get(face_index, [])
             face = shared_faces[face_index]
-            faces.append(Face(face.vertices, triangles, face.normal))
+            faces.append(Face(face.vertices, triangles, quads, face.normal))
 
         parts.append(Part(part["name"], part["bounds"], faces))
 

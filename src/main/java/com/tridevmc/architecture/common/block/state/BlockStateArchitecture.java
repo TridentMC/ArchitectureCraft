@@ -79,4 +79,16 @@ public class BlockStateArchitecture extends BlockState {
     public BlockState getParticleState(BlockAndTintGetter level, BlockPos pos) {
         return this.getBlock().getParticleState(level, pos);
     }
+
+    @Override
+    public boolean isCollisionShapeFullBlock(BlockGetter p_60839_, BlockPos p_60840_) {
+        // Vanilla is excruciatingly slow at this, so we'll just assume it's a full block for now.
+        return false;
+    }
+
+    @Override
+    public boolean isSolidRender(BlockGetter p_60805_, BlockPos p_60806_) {
+        return false;
+    }
+
 }

@@ -40,6 +40,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
@@ -92,6 +93,11 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     @Override
     public AbstractContainerMenu createMenu(CreateMenuContext context) {
         return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
+    }
+
+    @Override
+    public boolean propagatesSkylightDown(BlockState p_49928_, BlockGetter p_49929_, BlockPos p_49930_) {
+        return false;
     }
 
 }

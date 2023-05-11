@@ -24,7 +24,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param boxes     The boxes of the part.
      * @param triangles The triangles of the part.
      */
-    record PartData(String name, double[] bounds, double[][] boxes, TriangleData[] triangles) {
+    record PartData(String name, double[] bounds, double[][] boxes, TriangleData[] triangles, QuadData[] quads) {
 
     }
 
@@ -59,6 +59,18 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param vertices The vertices of the triangle.
      */
     record TriangleData(int face, @SerializedName("cull_face") CullFace cullFace, int texture, int[] vertices) {
+
+    }
+
+    /**
+     * Represents a quad of the OBJSON model.
+     *
+     * @param face     The face of the quad, used for obtaining the vertices from the root face array.
+     * @param cullFace The cull face of the quad.
+     * @param texture  The texture of the quad.
+     * @param vertices The vertices of the quad.
+     */
+    record QuadData(int face, @SerializedName("cull_face") CullFace cullFace, int texture, int[] vertices) {
 
     }
 

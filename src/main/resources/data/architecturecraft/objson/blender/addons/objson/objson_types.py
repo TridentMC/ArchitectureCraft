@@ -4,6 +4,7 @@ from enum import Enum, IntEnum
 
 from objson.common_types import Vec3
 
+
 class CullFace(IntEnum):
     NONE = -1
     DOWN = 0
@@ -23,8 +24,25 @@ class Direction(Enum):
     DOWN = Vec3(0, -1, 0)
 
 
+class IntDirection(IntEnum):
+    DOWN = 0
+    UP = 1
+    NORTH = 2
+    SOUTH = 3
+    WEST = 4
+    EAST = 5
+
+
 @dataclass
 class OBJSONTriangle:
+    face: int
+    cull_face: CullFace
+    texture: int
+    vertices: List[int]
+
+
+@dataclass
+class OBJSONQuad:
     face: int
     cull_face: CullFace
     texture: int
@@ -42,6 +60,7 @@ class OBJSONVertex:
 class OBJSONFace:
     normal: List[float]
     vertices: List[OBJSONVertex]
+    face: IntDirection
 
 
 @dataclass
@@ -49,6 +68,7 @@ class OBJSONPart:
     name: str
     bounds: List[float]
     triangles: List[OBJSONTriangle]
+    quads: List[OBJSONQuad]
 
 
 @dataclass

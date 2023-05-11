@@ -25,10 +25,18 @@ class Triangle(NamedTuple):
     v2: int
     texture: int
 
+class Quad(NamedTuple):
+    v0: int
+    v1: int
+    v2: int
+    v3: int
+    texture: int
+
 
 class Face(NamedTuple):
     vertices: List[Vertex]
     triangles: List[Triangle]
+    quads: List[Quad]
     normal: Vec3
 
 

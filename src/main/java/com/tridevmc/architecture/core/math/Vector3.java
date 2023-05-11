@@ -24,7 +24,11 @@ record Vector3(double x, double y, double z) implements IVector3Immutable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getX(), this.getY(), this.getZ());
+        var out = 1;
+        out = 31 * out + Double.hashCode(this.getX());
+        out = 31 * out + Double.hashCode(this.getY());
+        out = 31 * out + Double.hashCode(this.getZ());
+        return out;
     }
 
     static class Mutable implements IVector3Mutable {

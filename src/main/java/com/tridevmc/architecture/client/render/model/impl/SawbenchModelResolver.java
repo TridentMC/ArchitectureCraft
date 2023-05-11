@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SawbenchModelResolver implements IModelResolver<PolygonData> {
 
-    private static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/new/sawbench_all.objson"));
+    private static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
     private static final BakedQuadContainerProviderMesh<String, PolygonData> MESH = new BakedQuadContainerProviderMeshCached<>(MODEL.mesh());
     private static TextureAtlasSprite[] textures;
     private static int[] colours;

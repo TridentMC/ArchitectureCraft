@@ -40,6 +40,28 @@ record Vector2F(double x, double y) implements IVector2FImmutable {
             return this;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || this.getClass() != o.getClass()) return false;
+
+            Mutable mutable = (Mutable) o;
+
+            if (Double.compare(mutable.x, this.x) != 0) return false;
+            return Double.compare(mutable.y, this.y) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            temp = Double.doubleToLongBits(this.x);
+            result = (int) (temp ^ (temp >>> 32));
+            temp = Double.doubleToLongBits(this.y);
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
+
     }
 
 }

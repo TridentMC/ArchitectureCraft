@@ -8,6 +8,7 @@ import bmesh
 
 
 class EnhancedJSONEncoder(json.JSONEncoder):
+
     def default(self, o):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
@@ -16,7 +17,8 @@ class EnhancedJSONEncoder(json.JSONEncoder):
 
 def serialize_objson(objson: OBJSON, export_path: Path):
     export_path.parent.mkdir(parents=True, exist_ok=True)
-    export_path.write_text(json.dumps(objson, indent=4, cls=EnhancedJSONEncoder))
+    export_path.write_text(
+        json.dumps(objson, indent=4, cls=EnhancedJSONEncoder))
 
 
 def create_objson_from_object(scene_object: bpy.types.Object) -> OBJSON:
@@ -50,16 +52,19 @@ def create_objson_from_object(scene_object: bpy.types.Object) -> OBJSON:
         # Create the vertices for the face.
         objson_vertices = []
         for vertex in verts:
-            objson_vertices.append(OBJSONVertex(vertex.pos, vertex.normal, vertex.uv))
+            objson_vertices.append(
+                OBJSONVertex(vertex.pos, vertex.normal, vertex.uv))
 
         # Create the face.
-        objson_faces.append(OBJSONFace(normal, objson_vertices))
+        face_dir = get_int_direction_from_normal(normal)
+        objson_faces.append(OBJSONFace(normal, objson_vertices, face_dir))
     face_normals = [normal for (normal, _, _) in faces]
     vertices = [vertices for (_, _, vertices) in faces]
     # Create the parts and triangles pointing to the new face indices
     parts = []
     for part in model_data.parts:
         triangles = []
+        quads = []
         for face in part.faces:
             key = face.normal
             face_index = face_normals.index(key)
@@ -80,9 +85,31 @@ def create_objson_from_object(scene_object: bpy.types.Object) -> OBJSON:
                         cull_face,
                         triangle.texture,
                         [vertex_0, vertex_1, vertex_2],
-                    )
+                    ))
+            for quad in face.quads:
+                vertex_0_data = face.vertices[quad.v0]
+                vertex_1_data = face.vertices[quad.v1]
+                vertex_2_data = face.vertices[quad.v2]
+                vertex_3_data = face.vertices[quad.v3]
+                vertex_0 = vertices[face_index].index(vertex_0_data)
+                vertex_1 = vertices[face_index].index(vertex_1_data)
+                vertex_2 = vertices[face_index].index(vertex_2_data)
+                vertex_3 = vertices[face_index].index(vertex_3_data)
+                cull_face = calculate_cull_face(
+                    [
+                        vertex_0_data.pos, vertex_1_data.pos,
+                        vertex_2_data.pos, vertex_3_data.pos
+                    ],
+                    get_direction_from_normal(face.normal),
                 )
-        parts.append(OBJSONPart(part.name, part.bounds, triangles))
+                quads.append(
+                    OBJSONQuad(
+                        face_index,
+                        cull_face,
+                        quad.texture,
+                        [vertex_0, vertex_1, vertex_2, vertex_3],
+                    ))
+        parts.append(OBJSONPart(part.name, part.bounds, triangles, quads))
 
     # Create the OBJSON object.
     objson = OBJSON(
@@ -116,7 +143,26 @@ def get_direction_from_normal(normal: Vec3) -> Direction:
         return Direction.WEST
 
 
-def calculate_cull_face(vertices: List[Vec3], direction: Direction) -> CullFace:
+def get_int_direction_from_normal(normal: Vec3) -> IntDirection:
+    dir = get_direction_from_normal(normal)
+    if dir == Direction.UP:
+        return IntDirection.UP
+    elif dir == Direction.DOWN:
+        return IntDirection.DOWN
+    elif dir == Direction.SOUTH:
+        return IntDirection.SOUTH
+    elif dir == Direction.NORTH:
+        return IntDirection.NORTH
+    elif dir == Direction.EAST:
+        return IntDirection.EAST
+    elif dir == Direction.WEST:
+        return IntDirection.WEST
+    else:
+        return IntDirection.DOWN  # Default to down
+
+
+def calculate_cull_face(vertices: List[Vec3],
+                        direction: Direction) -> CullFace:
     # Select the coordinates to use based on the direction
     if direction == Direction.UP or direction == Direction.DOWN:
         coords = [vertices[0][1], vertices[1][1], vertices[2][1]]
@@ -129,11 +175,8 @@ def calculate_cull_face(vertices: List[Vec3], direction: Direction) -> CullFace:
 
     if coords[0] != coords[1] or coords[0] != coords[2]:
         return CullFace.NONE
-    if (
-        direction == Direction.NORTH
-        or direction == Direction.WEST
-        or direction == Direction.DOWN
-    ):
+    if (direction == Direction.NORTH or direction == Direction.WEST
+            or direction == Direction.DOWN):
         desired_coord = -0.5
     else:
         desired_coord = 0.5
@@ -159,7 +202,7 @@ def get_model_data(scene_object: bpy.types.Object) -> ModelData:
     # Iterate over each child of the object, and create a part for each one.
     parts = []
     for child in scene_object.children:
-        part_name = child.name[len(scene_object.name) + 1 :]
+        part_name = child.name[len(scene_object.name) + 1:]
 
         # Load the mesh data from the child object into a bmesh.
         mesh = child.to_mesh()
@@ -187,22 +230,30 @@ def get_model_data(scene_object: bpy.types.Object) -> ModelData:
                     round(v.co.z * 2048) / 2048,
                 ]
                 # Round the UVs to the nearest 1/2048th of a block
-                uv = [round(uvs[i].x * 2048) / 2048, round(uvs[i].y * 2048) / 2048]
+                uv = [
+                    round(uvs[i].x * 2048) / 2048,
+                    round(uvs[i].y * 2048) / 2048
+                ]
                 vertices.append(
-                    Vertex(
-                        Vec3(*pos), Vec3(*[v.normal.x, v.normal.y, v.normal.z]), UV(*uv)
-                    )
-                )
+                    Vertex(Vec3(*pos),
+                           Vec3(*[v.normal.x, v.normal.y, v.normal.z]),
+                           UV(*uv)))
 
             texture = 0 if f.material_index == 0 else 1
 
             # Create the triangles for the face.
             triangles = []
-            for i in range(len(f.verts) - 2):
-                triangles.append(Triangle(0, i + 1, i + 2, texture))
+            quads = []
+            if len(f.verts) == 3:
+                triangles.append(Triangle(0, 1, 2, texture))
+            elif len(f.verts) == 4:
+                quads.append(Quad(0, 1, 2, 3, texture))
+            else:
+                raise Exception(
+                    "Face has an invalid number of vertices (must be 3 or 4)")
 
             # Create the face.
-            faces.append(Face(vertices, triangles, Vec3(*f.normal)))
+            faces.append(Face(vertices, triangles, quads, Vec3(*f.normal)))
 
         flat_vertices = [vertex for face in faces for vertex in face.vertices]
 

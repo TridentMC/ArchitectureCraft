@@ -57,10 +57,24 @@ record Matrix4(
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.m00(), this.m01(), this.m02(), this.m03(),
-                            this.m10(), this.m11(), this.m12(), this.m13(),
-                            this.m20(), this.m21(), this.m22(), this.m23(),
-                            this.m30(), this.m31(), this.m32(), this.m33());
+        var out = 1;
+        out = out * 31 + Double.hashCode(this.m00());
+        out = out * 31 + Double.hashCode(this.m01());
+        out = out * 31 + Double.hashCode(this.m02());
+        out = out * 31 + Double.hashCode(this.m03());
+        out = out * 31 + Double.hashCode(this.m10());
+        out = out * 31 + Double.hashCode(this.m11());
+        out = out * 31 + Double.hashCode(this.m12());
+        out = out * 31 + Double.hashCode(this.m13());
+        out = out * 31 + Double.hashCode(this.m20());
+        out = out * 31 + Double.hashCode(this.m21());
+        out = out * 31 + Double.hashCode(this.m22());
+        out = out * 31 + Double.hashCode(this.m23());
+        out = out * 31 + Double.hashCode(this.m30());
+        out = out * 31 + Double.hashCode(this.m31());
+        out = out * 31 + Double.hashCode(this.m32());
+        out = out * 31 + Double.hashCode(this.m33());
+        return out;
     }
 
     static class Mutable implements IMatrix4Mutable {

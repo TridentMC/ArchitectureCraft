@@ -118,6 +118,7 @@ class ImportOBJSON(bpy.types.Operator, ImportHelper):
             faces = part.faces
             vertices = []
             triangles = []
+            quads = []
             for face in faces:
                 for triangle in [t for t in face.triangles]:
                     triangles.append(
@@ -126,6 +127,16 @@ class ImportOBJSON(bpy.types.Operator, ImportHelper):
                             triangle.v1 + len(vertices),
                             triangle.v2 + len(vertices),
                             triangle.texture,
+                        )
+                    )
+                for quad in [q for q in face.quads]:
+                    quads.append(
+                        common_types.Quad(
+                            quad.v0 + len(vertices),
+                            quad.v1 + len(vertices),
+                            quad.v2 + len(vertices),
+                            quad.v3 + len(vertices),
+                            quad.texture,
                         )
                     )
                 for vertex in face.vertices:
@@ -143,7 +154,7 @@ class ImportOBJSON(bpy.types.Operator, ImportHelper):
                     for v in vertices
                 ],
                 [],
-                [t[:3] for t in triangles],
+                [*[t[:3] for t in triangles], *[q[:4] for q in quads]],
             )
 
             # Apply corrections to the mesh

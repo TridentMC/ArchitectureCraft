@@ -73,6 +73,21 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
                 ).build());
             }
 
+            for (OBJSONData.QuadData quadData : partData.quads()) {
+                var quad = new Quad.Builder<PolygonData>();
+                var faceData = data.faces()[quadData.face()];
+                var face = faceMap.computeIfAbsent(quadData.face(), i -> new Face.Builder<>());
+
+                for (int vertIndex : quadData.vertices()) {
+                    var vertData = faceData.vertices()[vertIndex];
+                    quad.addVertex(new Vertex(vertData.pos(), faceData.normal(), vertData.uv()));
+                }
+
+                face.addPolygon(quad.setData(
+                        new PolygonData(quadData.cullFace(), faceData.face(), quadData.texture(), -1)
+                ).build());
+            }
+
             for (var face : faceMap.values()) {
                 part.addFace(face.build());
             }
