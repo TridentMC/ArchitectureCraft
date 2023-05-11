@@ -38,7 +38,10 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
      * @param polygonProviders The polygons of the face.
      */
     private Face(Object2IntMap<IVertex> vertexPool, List<Function<IFace<D>, IPolygon<D>>> polygonProviders) {
-        this.vertices = ImmutableList.copyOf(vertexPool.keySet());
+        // Object2IntMap is not sorted by our indices, so we need to create a new array we can pass further down.
+        var vertexArray = new IVertex[vertexPool.size()];
+        vertexPool.forEach((v, i) -> vertexArray[i] = v);
+        this.vertices = ImmutableList.copyOf(vertexArray);
         this.polygons = ImmutableList.copyOf(polygonProviders.stream().map(p -> p.apply(this)).iterator());
     }
 

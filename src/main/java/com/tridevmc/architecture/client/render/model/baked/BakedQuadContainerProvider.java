@@ -57,7 +57,9 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
     @Override
     public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean force) {
         var builder = new BakedQuadContainer.Builder();
-        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(builder::addQuad);
+        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q->{
+            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
+        });
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
             q.pipe(quadBakingVertexConsumer, transform, metadataResolver);

@@ -12,8 +12,8 @@ ext {
     compoundModules = ['all']
 
     forge = '1.19.4-45.0.57'
-    mappingsChannel = 'parchment'
-    mappingsVersion = '2023.03.12-1.19.3'
+    mappingsChannel = 'official'
+    mappingsVersion = '1.19.4'
 }
 
 if (!ext.early) {

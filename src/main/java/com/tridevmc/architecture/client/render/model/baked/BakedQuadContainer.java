@@ -47,8 +47,12 @@ public record BakedQuadContainer(ImmutableList<BakedQuad> allQuads,
          * @param quad the baked quad to add.
          * @return this builder.
          */
-        public Builder addQuad(BakedQuad quad) {
-            this.addForDirection(quad, quad.getDirection());
+        public Builder addQuad(BakedQuad quad, boolean isCulled) {
+            if(isCulled){
+                this.addForDirection(quad, quad.getDirection());
+            } else {
+                this.addForDirection(quad, null);
+            }
             return this;
         }
 

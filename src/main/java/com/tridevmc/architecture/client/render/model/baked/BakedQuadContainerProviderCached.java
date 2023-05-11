@@ -60,7 +60,7 @@ class BakedQuadContainerProviderCached<D> extends BakedQuadContainerProvider<D> 
     public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean force) {
         // If we're forcing a rebuild, or the cache doesn't contain the data, then rebuild the quad container and cache it.
         if (force || !this.cache.contains(metadataResolver, transform)) {
-            var quadContainer = super.getQuads(metadataResolver, transform, true);
+            var quadContainer = super.getQuads(metadataResolver, transform, force);
             this.cache.put(metadataResolver, transform, quadContainer);
             return quadContainer;
         }

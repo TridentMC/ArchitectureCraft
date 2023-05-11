@@ -3,6 +3,7 @@ package com.tridevmc.architecture.core.model.objson;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
+import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.InputStreamReader;
@@ -31,9 +32,10 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * Represents a face of the OBJSON model.
      *
      * @param vertices The vertices of the face.
+     * @param face     The direction of the face.
      * @param normal   The normal of the face.
      */
-    record FaceData(VertexData[] vertices, double[] normal) {
+    record FaceData(VertexData[] vertices, FaceDirection face, double[] normal) {
 
     }
 

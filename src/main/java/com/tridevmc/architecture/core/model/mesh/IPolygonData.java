@@ -35,6 +35,14 @@ public interface IPolygonData<S extends IPolygonData<S>> {
     CullFace cullFace();
 
     /**
+     * Gets the face direction for this polygon.
+     *
+     * @return The face direction.
+     */
+    @NotNull
+    FaceDirection face();
+
+    /**
      * Transforms this polygon data by the given transformation.
      * <p>
      * Primarily used for transforming the cull face.

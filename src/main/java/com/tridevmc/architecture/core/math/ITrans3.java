@@ -2,6 +2,7 @@ package com.tridevmc.architecture.core.math;
 
 import com.tridevmc.architecture.core.math.floating.*;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
+import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
@@ -490,6 +491,17 @@ public interface ITrans3 {
         }
         //noinspection DataFlowIssue - the only way this can be null is if face is NONE, which we already checked.
         return CullFace.fromDirection(this.transformDirection(face.toDirection()));
+    }
+
+    /**
+     * Transforms the given face direction by this transformation, returning the new face direction.
+     *
+     * @param face The face direction to transform.
+     * @return The transformed face direction.
+     */
+    @NotNull
+    default FaceDirection transformFaceDirection(@NotNull FaceDirection face) {
+        return FaceDirection.fromDirection(this.transformDirection(face.toDirection()));
     }
 
 }

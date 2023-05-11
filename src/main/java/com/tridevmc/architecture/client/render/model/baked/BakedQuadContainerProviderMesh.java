@@ -2,14 +2,17 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
+import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A baked quad container provider that uses a mesh to generate the quads.
@@ -37,25 +40,33 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
     public IBakedQuadContainer getQuads(@Nullable I partId, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         // We ignore forceRebuild here, as we're not actually caching the resulting containers themselves.
         var containerBuilder = new BakedQuadContainer.Builder();
-        var quadBaker = new QuadBakingVertexConsumer(containerBuilder::addQuad);
+        final var isCulled = new AtomicBoolean(false);
+        var quadBaker = new QuadBakingVertexConsumer(bakedQuad -> containerBuilder.addQuad(bakedQuad, isCulled.get()));
         var m = this.getMesh(transform.asImmutable());
         var faces = partId == null ? m.getFaces() : m.getPart(partId).getFaces();
         for (var face : faces) {
             for (var polygon : face.getPolygons()) {
                 var polygonData = polygon.getPolygonData();
+                isCulled.set(polygonData.cullFace() != CullFace.NONE);
                 var texture = metadataResolver.getTexture(polygonData);
                 var tintIndex = metadataResolver.getTintIndex(polygonData);
                 var vertexCount = polygon.getVertexCount();
                 quadBaker.setSprite(texture);
                 quadBaker.setTintIndex(tintIndex);
-                quadBaker.setDirection(polygonData.cullFace().toDirection());
-                var iterations = Math.max(vertexCount, 4);
-                for (int i = 0; i < iterations; i++) {
-                    var vertexIndex = i % vertexCount; // Wrap around the vertex index, so we can pipe tris as quads.
+                quadBaker.setDirection(polygonData.face().toDirection());
+                quadBaker.setShade(true);
+                quadBaker.setHasAmbientOcclusion(true);
+                var startIndex = 0;
+                if (polygon.getVertexCount() == 3) {
+                    startIndex = -1;
+                }
+                for (int i = startIndex; i < vertexCount; i++) {
+                    var vertexIndex = Math.max(0, i);
                     var v = polygon.getVertex(vertexIndex);
                     quadBaker.vertex(v.getX(), v.getY(), v.getZ())
+                            .color(-1)
                             .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
-                            .uv(texture.getU(v.getU()), texture.getV(v.getV()))
+                            .uv(texture.getU((v.getU() - 0.5F)  * 16F), texture.getV((v.getV() - 0.5F) * 16F))
                             .uv2(1, 0)
                             .overlayCoords(1, 0)
                             .endVertex();
