@@ -3,7 +3,7 @@ package com.tridevmc.architecture.client.debug;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONVoxelizer;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONVoxelizer;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -32,7 +32,7 @@ import static com.tridevmc.architecture.client.debug.ArchitectureDebugRenderType
  */
 public class ArchitectureDebugEventListeners {
     public static BlockPos targetPos;
-    public static OBJSONVoxelizer targetVoxelizer;
+    public static LegacyOBJSONVoxelizer targetVoxelizer;
     public static Vec3i currentVoxelizationOffset;
 
     @SubscribeEvent
@@ -55,7 +55,7 @@ public class ArchitectureDebugEventListeners {
         var fromPoint = new Vec3(meshBounds.minX - 1, point.y, point.z);
         var toPoint = new Vec3(meshBounds.maxX + 1, point.y, point.z);
         var rayDirection = toPoint.subtract(fromPoint);
-        var ray = new OBJSONVoxelizer.Ray(fromPoint, rayDirection);
+        var ray = new LegacyOBJSONVoxelizer.Ray(fromPoint, rayDirection);
         var hits = ray.intersectUnfiltered(targetVoxelizer.getMesh())
                 .toList();
         var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_DEBUG_LINE);
@@ -85,7 +85,7 @@ public class ArchitectureDebugEventListeners {
         }
     }
 
-    private static void renderRayHit(PoseStack matrix, VertexConsumer lineBuffer, Vec3 point, OBJSONVoxelizer.Ray.Hit hit) {
+    private static void renderRayHit(PoseStack matrix, VertexConsumer lineBuffer, Vec3 point, LegacyOBJSONVoxelizer.Ray.Hit hit) {
         if (hit.isValidHit()) {
             renderLine(matrix, lineBuffer, hit.ray().origin(), hit.point(), 0, 1F, 0, .8F);
             LevelRenderer.renderLineBox(matrix, lineBuffer, new AABB(hit.point().x, hit.point().y, hit.point().z, hit.point().x, hit.point().y, hit.point().z).inflate(1D / 256D),
@@ -122,7 +122,7 @@ public class ArchitectureDebugEventListeners {
         return onVoxelizedBlockClicked(level, pos, player, hit, ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName).getVoxelizer());
     }
 
-    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, OBJSONVoxelizer voxelizer) {
+    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, LegacyOBJSONVoxelizer voxelizer) {
         if (!Objects.equals(ArchitectureDebugEventListeners.targetPos, pos)) {
             ArchitectureDebugEventListeners.targetPos = pos;
             ArchitectureDebugEventListeners.targetVoxelizer = voxelizer;

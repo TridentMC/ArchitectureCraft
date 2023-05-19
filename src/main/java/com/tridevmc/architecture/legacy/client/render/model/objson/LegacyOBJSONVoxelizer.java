@@ -2,7 +2,7 @@ package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.legacy.common.utils.AABBTree;
+import com.tridevmc.architecture.legacy.common.utils.LegacyAABBTree;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.Vec3i;
@@ -25,7 +25,8 @@ import java.util.stream.Stream;
  * <p>
  * Implementation of SAT based off of <a href="https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html">...</a>
  */
-public class OBJSONVoxelizer {
+@Deprecated
+public class LegacyOBJSONVoxelizer {
 
     private static final ExecutorService POOL = Executors.newWorkStealingPool();
 
@@ -39,7 +40,7 @@ public class OBJSONVoxelizer {
     private final Vec3i min, max;
     private List<Edge> edges;
 
-    public OBJSONVoxelizer(LegacyOBJSON objson, int blockResolution) {
+    public LegacyOBJSONVoxelizer(LegacyOBJSON objson, int blockResolution) {
         this.objson = objson;
         this.blockResolution = blockResolution;
         this.mesh = new Mesh(Arrays.stream(objson.getFaces())
@@ -377,14 +378,14 @@ public class OBJSONVoxelizer {
 
     public static class Mesh {
         private final List<UnpackedTri> tris;
-        private final AABBTree<UnpackedTri> trisTree;
+        private final LegacyAABBTree<UnpackedTri> trisTree;
 
         public Mesh(List<UnpackedTri> unpackedTris) {
             this.tris = ImmutableList.copyOf(unpackedTris);
-            this.trisTree = new AABBTree<UnpackedTri>(unpackedTris, UnpackedTri::getBox);
+            this.trisTree = new LegacyAABBTree<UnpackedTri>(unpackedTris, UnpackedTri::getBox);
         }
 
-        public AABBTree<UnpackedTri>.Node getRoot() {
+        public LegacyAABBTree<UnpackedTri>.Node getRoot() {
             return this.trisTree.getRoot();
         }
 

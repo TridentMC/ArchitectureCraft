@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
  * <p>
  * Capable of generating UVs, and allows the parent model data to assign normal values.
  */
+@Deprecated
 public class LegacyAutoUVArchitectureVertex extends LegacyArchitectureVertex {
 
     private final boolean generateUVs;

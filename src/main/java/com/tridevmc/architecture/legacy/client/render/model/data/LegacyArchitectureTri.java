@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import com.tridevmc.architecture.legacy.client.render.model.builder.BakedQuadBuilderVertexConsumer;
+import com.tridevmc.architecture.legacy.client.render.model.builder.LegacyBakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -19,7 +19,8 @@ import java.util.stream.IntStream;
  *
  * @param <T> The type of metadata this provider uses.
  */
-public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
+@Deprecated
+public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
 
     private Direction face;
     private final LegacyArchitectureVertex[] vertices = new LegacyArchitectureVertex[3];
@@ -38,7 +39,7 @@ public class LegacyArchitectureTri<T> extends BakedQuadProvider<T> {
 
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         if (facing == null) facing = this.facing();
-        var builder = new BakedQuadBuilderVertexConsumer()
+        var builder = new LegacyBakedQuadBuilderVertexConsumer()
                 .setSprite(sprite)
                 .setTintIndex(colour)
                 .setShade(true)

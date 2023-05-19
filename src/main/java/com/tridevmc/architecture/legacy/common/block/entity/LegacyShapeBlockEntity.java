@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.block.entity;
+package com.tridevmc.architecture.legacy.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.block.BlockHelper;
-import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
@@ -52,8 +52,9 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 
 
-public class ShapeBlockEntity extends BlockEntity {
-    private BlockShape block;
+@Deprecated
+public class LegacyShapeBlockEntity extends BlockEntity {
+    private LegacyBlockShape block;
     private BlockState baseBlockState;
     private BlockState secondaryBlockState;
     private int disabledConnections;
@@ -61,23 +62,23 @@ public class ShapeBlockEntity extends BlockEntity {
     private byte side;
     private byte turn;
 
-    public ShapeBlockEntity(BlockPos pos, BlockState state) {
+    public LegacyShapeBlockEntity(BlockPos pos, BlockState state) {
         super(ArchitectureMod.CONTENT.tileTypeShape, pos, state);
         this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 
-    public ShapeBlockEntity(BlockPos pos, BlockState state, BlockShape block) {
+    public LegacyShapeBlockEntity(BlockPos pos, BlockState state, LegacyBlockShape block) {
         this(pos, state);
         this.block = block;
         this.baseBlockState = Blocks.OAK_PLANKS.defaultBlockState();
         this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 
-    public static ShapeBlockEntity get(BlockGetter level, BlockPos pos) {
+    public static LegacyShapeBlockEntity get(BlockGetter level, BlockPos pos) {
         if (level != null) {
             var te = level.getBlockEntity(pos);
-            if (te instanceof ShapeBlockEntity)
-                return (ShapeBlockEntity) te;
+            if (te instanceof LegacyShapeBlockEntity)
+                return (LegacyShapeBlockEntity) te;
         }
         return null;
     }
@@ -105,7 +106,7 @@ public class ShapeBlockEntity extends BlockEntity {
     public void toggleConnectionGlobal(Direction dir) {
         boolean newState = !this.connectionIsEnabledGlobal(dir);
         this.setConnectionEnabledGlobal(dir, newState);
-        ShapeBlockEntity nte = this.getNeighbourGlobal(dir);
+        LegacyShapeBlockEntity nte = this.getNeighbourGlobal(dir);
         if (nte != null)
             nte.setConnectionEnabledGlobal(dir.getOpposite(), newState);
     }
@@ -251,21 +252,21 @@ public class ShapeBlockEntity extends BlockEntity {
     }
 
     public boolean canRenderInLayer(BlockState state, RenderType layer) {
-        if (BlockHelper.blockCanRenderInLayer(this.baseBlockState, layer))
+        if (LegacyBlockHelper.blockCanRenderInLayer(this.baseBlockState, layer))
             return true;
         if (this.secondaryBlockState != null)
-            return BlockHelper.blockCanRenderInLayer(this.secondaryBlockState, layer);
+            return LegacyBlockHelper.blockCanRenderInLayer(this.secondaryBlockState, layer);
         return false;
     }
 
-    public ShapeBlockEntity getNeighbourGlobal(Direction dir) {
-        return ShapeBlockEntity.get(this.getLevel(), this.getBlockPos().relative(dir));
+    public LegacyShapeBlockEntity getNeighbourGlobal(Direction dir) {
+        return LegacyShapeBlockEntity.get(this.getLevel(), this.getBlockPos().relative(dir));
     }
 
-    public ShapeBlockEntity getConnectedNeighbourGlobal(Direction dir) {
+    public LegacyShapeBlockEntity getConnectedNeighbourGlobal(Direction dir) {
         if (this.level != null) {
             if (this.connectionIsEnabledGlobal(dir)) {
-                ShapeBlockEntity nte = this.getNeighbourGlobal(dir);
+                LegacyShapeBlockEntity nte = this.getNeighbourGlobal(dir);
                 if (nte != null && nte.connectionIsEnabledGlobal(dir.getOpposite()))
                     return nte;
             }
@@ -280,8 +281,8 @@ public class ShapeBlockEntity extends BlockEntity {
     public LegacyTrans3 localToGlobalTransformation(LegacyVector3 origin) {
         BlockState state = this.level.getBlockState(this.worldPosition);
         Block block = state.getBlock();
-        if (block instanceof BlockArchitecture)
-            return ((BlockArchitecture) block).localToGlobalTransformation(this.getLevel(), this.getBlockPos(), state, origin).translate(this.getOffsetX(), 0, 0);
+        if (block instanceof LegacyBlockArchitecture)
+            return ((LegacyBlockArchitecture) block).localToGlobalTransformation(this.getLevel(), this.getBlockPos(), state, origin).translate(this.getOffsetX(), 0, 0);
         else {
             return new LegacyTrans3(origin).translate(this.getOffsetX(), 0, 0);
         }
@@ -297,9 +298,9 @@ public class ShapeBlockEntity extends BlockEntity {
         return builder.build();
     }
 
-    public BlockShape getBlock() {
+    public LegacyBlockShape getBlock() {
         if (this.block == null) {
-            this.block = this.level != null ? (BlockShape) this.level.getBlockState(this.worldPosition).getBlock() : null;
+            this.block = this.level != null ? (LegacyBlockShape) this.level.getBlockState(this.worldPosition).getBlock() : null;
         }
         return this.block;
     }

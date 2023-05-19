@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.utils.MiscUtils;
@@ -24,7 +24,7 @@ public class ShapeBehaviourPlainWindow extends ShapeBehaviourWindow {
     }
 
     @Override
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction face,
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te, LegacyShapeBlockEntity nte, Direction face,
                                      LegacyVector3 hit) {
         if (nte != null && !player.isCrouching()) {
             if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourPlainWindow) {

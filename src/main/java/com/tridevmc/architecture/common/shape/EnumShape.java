@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.google.common.collect.ImmutableMap;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
@@ -224,14 +224,14 @@ public enum EnumShape implements StringRepresentable {
         }
     }
 
-    public void orientOnPlacement(Player player, ShapeBlockEntity te,
+    public void orientOnPlacement(Player player, LegacyShapeBlockEntity te,
                                   BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, LegacyVector3 hit) {
         if (!te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
             this.orientFromHitPosition(player, te, face, hit);
         }
     }
 
-    private void orientFromHitPosition(Player player, ShapeBlockEntity te, Direction face, LegacyVector3 hit) {
+    private void orientFromHitPosition(Player player, LegacyShapeBlockEntity te, Direction face, LegacyVector3 hit) {
         byte side, turn;
         switch (face) {
             case UP:

@@ -26,7 +26,8 @@ import java.util.stream.Stream;
 /**
  * Stores quad info that can be modified with given transforms, tintindices, and face sprites.
  */
-public class ArchitectureModelData<T> {
+@Deprecated
+public class LegacyArchitectureModelData<T> {
 
     private static final Direction[] DIRECTIONS_WITH_NULL = new Direction[]{null, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.UP, Direction.DOWN};
     private final DirectionalQuads quads = new DirectionalQuads();
@@ -148,15 +149,15 @@ public class ArchitectureModelData<T> {
 
     }
 
-    public ArchitectureModelData() {
+    public LegacyArchitectureModelData() {
     }
 
-    public ArchitectureModelData(BakedModel sourceData) {
+    public LegacyArchitectureModelData(BakedModel sourceData) {
         this.loadFromBakedModel(sourceData);
     }
 
-    public ArchitectureModelDataQuads getQuadsFor(IQuadMetadataResolver<T> metadataResolver, Transformation transform) {
-        var out = new ArchitectureModelDataQuads(this.quads, transform);
+    public LegacyArchitectureModelDataQuads getQuadsFor(IQuadMetadataResolver<T> metadataResolver, Transformation transform) {
+        var out = new LegacyArchitectureModelDataQuads(this.quads, transform);
         for (var dir : DIRECTIONS_WITH_NULL) {
             dir = dir != null ? transform.rotateTransform(dir) : null;
             var quads = this.quads.getQuads(dir);

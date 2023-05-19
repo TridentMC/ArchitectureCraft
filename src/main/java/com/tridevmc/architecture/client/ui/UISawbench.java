@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.ui;
 
-import com.tridevmc.architecture.common.block.entity.ContainerSawbench;
+import com.tridevmc.architecture.common.block.container.ContainerSawbench;
 import com.tridevmc.compound.ui.Rect2F;
 import com.tridevmc.compound.ui.container.CompoundUIContainer;
 import com.tridevmc.compound.ui.element.ElementBox;

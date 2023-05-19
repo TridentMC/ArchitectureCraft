@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
@@ -15,13 +15,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Extension to {@link IDynamicBakedModel} that delegates to a new method that accepts our own {@link BlockStateArchitecture} object instead of the vanilla {@link BlockState}.
+ * Extension to {@link IDynamicBakedModel} that delegates to a new method that accepts our own {@link LegacyBlockStateArchitecture} object instead of the vanilla {@link BlockState}.
  */
 public interface IArchitectureBakedModel extends IDynamicBakedModel {
 
     @Override
     default @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-        if (state instanceof BlockStateArchitecture stateArchitecture) {
+        if (state instanceof LegacyBlockStateArchitecture stateArchitecture) {
             return this.getQuads(stateArchitecture, side, rand, extraData, renderType);
         } else {
             return Collections.emptyList();
@@ -38,6 +38,6 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
      * @param renderType The render type.
      * @return A list of quads.
      */
-    @NotNull List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
+    @NotNull List<BakedQuad> getQuads(@Nullable LegacyBlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
 
 }

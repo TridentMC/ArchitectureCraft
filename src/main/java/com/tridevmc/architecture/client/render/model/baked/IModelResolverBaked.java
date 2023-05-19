@@ -2,7 +2,7 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.core.math.ITrans3;
 import net.minecraft.client.renderer.RenderType;
@@ -40,13 +40,13 @@ public interface IModelResolverBaked<D> extends IArchitectureBakedModel {
      * @param state The state.
      * @return The quad metadata resolver for the given data.
      */
-    default IQuadMetadataResolver<D> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockStateArchitecture state) {
+    default IQuadMetadataResolver<D> getMetadataResolver(LevelAccessor level, BlockPos pos, LegacyBlockStateArchitecture state) {
         return this.getModelResolver().getMetadataResolver(level, pos, state);
     }
 
     @Override
     @NotNull
-    default List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+    default List<BakedQuad> getQuads(@Nullable LegacyBlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         var level = extraData.get(ModelProperties.LEVEL);
         var pos = extraData.get(ModelProperties.POS);
 

@@ -7,9 +7,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-public class AABBTree<T> {
+@Deprecated
+public class LegacyAABBTree<T> {
 
-    public class Node {
+    @Deprecated
+public class Node {
         private Node left;
         private Node right;
         private AABB value;
@@ -73,18 +75,18 @@ public class AABBTree<T> {
 
     private Node theNode;
 
-    public AABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
+    public LegacyAABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
         items.forEach(t -> {
             var box = boxGetter.apply(t);
-            if (AABBTree.this.theNode == null) {
-                AABBTree.this.theNode = new Node(box, t);
+            if (LegacyAABBTree.this.theNode == null) {
+                LegacyAABBTree.this.theNode = new Node(box, t);
             } else {
-                AABBTree.this.theNode.addNode(box, t);
+                LegacyAABBTree.this.theNode.addNode(box, t);
             }
         });
     }
 
-    public AABBTree(AABB startBox, T item) {
+    public LegacyAABBTree(AABB startBox, T item) {
         this.theNode = new Node(startBox, item);
     }
 

@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.Direction;
@@ -49,7 +49,7 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
     }
 
     @Override
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction face,
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te, LegacyShapeBlockEntity nte, Direction face,
                                      LegacyVector3 hit) {
         if (nte != null && !player.isCrouching()) {
             if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow nsk) {
@@ -72,8 +72,8 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
         return super.orientOnPlacement(player, te, nte, face, hit);
     }
 
-    protected boolean orientFromAdjacentCorner(ShapeBlockEntity te, Direction face, LegacyVector3 hit) {
-        ShapeBlockEntity nte = ShapeBlockEntity.get(te.getLevel(), te.getBlockPos().relative(face.getOpposite()));
+    protected boolean orientFromAdjacentCorner(LegacyShapeBlockEntity te, Direction face, LegacyVector3 hit) {
+        LegacyShapeBlockEntity nte = LegacyShapeBlockEntity.get(te.getLevel(), te.getBlockPos().relative(face.getOpposite()));
         if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow nsk) {
             Direction nlf = nte.localFace(face);
             FrameType nfk = nsk.frameTypeForLocalSide(nlf);

@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.common.helpers.Utils;
@@ -46,16 +46,16 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile,
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity tile,
                                      BlockPos neighbourPos, BlockState neighbourState, BlockEntity neighbourTile,
                                      Direction otherFace, LegacyVector3 hit) {
-        if (neighbourTile instanceof ShapeBlockEntity)
-            return this.orientOnPlacement(player, tile, (ShapeBlockEntity) neighbourTile, otherFace, hit);
+        if (neighbourTile instanceof LegacyShapeBlockEntity)
+            return this.orientOnPlacement(player, tile, (LegacyShapeBlockEntity) neighbourTile, otherFace, hit);
         else
             return this.orientOnPlacement(player, tile, null, otherFace, hit);
     }
 
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity tile, ShapeBlockEntity neighbourTile, Direction otherFace, LegacyVector3 hit) {
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity tile, LegacyShapeBlockEntity neighbourTile, Direction otherFace, LegacyVector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
             EnumShape neighbourShape = neighbourTile.getArchitectureShape();
             Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
@@ -92,7 +92,7 @@ public class ShapeBehaviour {
         return false;
     }
 
-    public void onChiselUse(ShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
+    public void onChiselUse(LegacyShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
         Direction side = this.zoneHit(face, hit);
         if (side != null)
             this.chiselUsedOnSide(te, player, side);
@@ -100,11 +100,11 @@ public class ShapeBehaviour {
             this.chiselUsedOnCentre(te, player);
     }
 
-    public void chiselUsedOnSide(ShapeBlockEntity te, Player player, Direction side) {
+    public void chiselUsedOnSide(LegacyShapeBlockEntity te, Player player, Direction side) {
         te.toggleConnectionGlobal(side);
     }
 
-    public void chiselUsedOnCentre(ShapeBlockEntity te, Player player) {
+    public void chiselUsedOnCentre(LegacyShapeBlockEntity te, Player player) {
         if (te.getSecondaryBlockState() != null) {
             ItemStack stack = this.newSecondaryMaterialStack(te.getSecondaryBlockState());
             if (stack != null) {
@@ -122,7 +122,7 @@ public class ShapeBehaviour {
             return null;
     }
 
-    public void onHammerUse(ShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
+    public void onHammerUse(LegacyShapeBlockEntity te, Player player, Direction face, LegacyVector3 hit) {
         if (player.isCrouching())
             te.setSide((te.getSide() + 1) % 6);
         else {
@@ -160,13 +160,13 @@ public class ShapeBehaviour {
     }
 
     @Nonnull
-    public final VoxelShape getBounds(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
+    public final VoxelShape getBounds(LegacyShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
                                       Entity entity, LegacyTrans3 t) {
         return this.getCollisionBoxCached(te, world, pos, state, entity, t);
     }
 
     @Nonnull
-    public final VoxelShape getCollisionBoxCached(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
+    public final VoxelShape getCollisionBoxCached(LegacyShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         BehaviourState bState = new BehaviourState(this, te, world, pos, state, entity, t);
         VoxelShape out = SHAPE_CACHE.getUnchecked(bState);
         if (out.isEmpty()) {
@@ -177,7 +177,7 @@ public class ShapeBehaviour {
 
     @Nonnull
     @Deprecated //TODO: Default implementation needs to be nuked. All the old collision code is too janky.
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
+    protected VoxelShape getCollisionBox(LegacyShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state,
                                          Entity entity, LegacyTrans3 t) {
         VoxelShape shapeOut = Shapes.empty();
         int mask = te.getArchitectureShape().occlusionMask;
@@ -228,14 +228,14 @@ public class ShapeBehaviour {
 
     private class BehaviourState {
         private final ShapeBehaviour shapeBehaviour;
-        private final ShapeBlockEntity tile;
+        private final LegacyShapeBlockEntity tile;
         private final BlockGetter world;
         private final BlockPos pos;
         private final BlockState state;
         private final Entity entity;
         private final LegacyTrans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, ShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 transform) {
+        private BehaviourState(ShapeBehaviour shapeBehaviour, LegacyShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;

@@ -25,8 +25,8 @@
 package com.tridevmc.architecture.legacy.base;
 
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
@@ -43,12 +43,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @Deprecated
-public class BaseOrientation {
+public class LegacyBaseOrientation {
 
     public static boolean debugPlacement = false;
 
-    public static BlockArchitecture.IOrientationHandler orient4WaysByState = new Orient4WaysByState();
-    public static BlockArchitecture.IOrientationHandler orient24WaysByTE = new Orient24WaysByTE();
+    public static LegacyBlockArchitecture.IOrientationHandler orient4WaysByState = new Orient4WaysByState();
+    public static LegacyBlockArchitecture.IOrientationHandler orient24WaysByTE = new Orient24WaysByTE();
 
     //------------------------------------------------------------------------------------------------
 
@@ -68,12 +68,12 @@ public class BaseOrientation {
 
     //------------------------------------------------------------------------------------------------
 
-    public static class Orient4WaysByState implements BlockArchitecture.IOrientationHandler {
+    public static class Orient4WaysByState implements LegacyBlockArchitecture.IOrientationHandler {
 
         public static Property<Direction> FACING = new PropertyTurn("facing");
 
         @Override
-        public void defineProperties(BlockArchitecture block) {
+        public void defineProperties(LegacyBlockArchitecture block) {
             block.addProperty(FACING);
         }
 
@@ -106,12 +106,12 @@ public class BaseOrientation {
 
 //------------------------------------------------------------------------------------------------
 
-    public static class Orient24WaysByTE extends BlockArchitecture.Orient1Way {
+    public static class Orient24WaysByTE extends LegacyBlockArchitecture.Orient1Way {
 
         @Override
         public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
             var te = level.getBlockEntity(pos);
-            if (te instanceof ShapeBlockEntity bte) {
+            if (te instanceof LegacyShapeBlockEntity bte) {
                 return LegacyTrans3.sideTurn(origin, bte.getSide(), bte.getTurn());
             } else
                 return super.localToGlobalTransformation(level, pos, state, origin);

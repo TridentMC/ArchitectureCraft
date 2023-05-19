@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
@@ -35,7 +35,7 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
     }
 
     @Override
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity te,
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te,
                                      BlockPos nPos, BlockState nState, BlockEntity nte, Direction otherFace, LegacyVector3 hit) {
         if (!player.isCrouching()) {
             var nBlock = nState.getBlock();
@@ -48,8 +48,8 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
                 nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nState));
                 if (nside == 1 && (nturn & 1) == 0)
                     nturn ^= 2;
-            } else if (nBlock instanceof BlockShape) {
-                if (nte instanceof ShapeBlockEntity shapeBE) {
+            } else if (nBlock instanceof LegacyBlockShape) {
+                if (nte instanceof LegacyShapeBlockEntity shapeBE) {
                     placedOnStair = true;
                     nside = shapeBE.getSide();
                     nturn = shapeBE.getTurn();

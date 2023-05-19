@@ -3,14 +3,14 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONModel;
-import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadata;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONQuadMetadata;
 
-import com.tridevmc.architecture.legacy.client.render.model.objson.OBJSONQuadMetadataResolver;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONQuadMetadataResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -37,12 +37,12 @@ public class ShapeModel extends LegacyOBJSONModel {
     }
 
     @Override
-    public IQuadMetadataResolver<OBJSONQuadMetadata> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state) {
-        return new OBJSONQuadMetadataResolver(this.getTextures(level, pos), this.getColours(level, pos));
+    public IQuadMetadataResolver<LegacyOBJSONQuadMetadata> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state) {
+        return new LegacyOBJSONQuadMetadataResolver(this.getTextures(level, pos), this.getColours(level, pos));
     }
 
     public TextureAtlasSprite[] getTextures(LevelAccessor world, BlockPos pos) {
-        ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
+        LegacyShapeBlockEntity shape = LegacyShapeBlockEntity.get(world, pos);
         if (shape != null) {
             TextureAtlasSprite baseSprite = getSpriteForState(shape.getBaseBlockState());
             TextureAtlasSprite secondarySprite = shape.hasSecondaryMaterial() ? getSpriteForState(shape.getSecondaryBlockState()) : baseSprite;
@@ -52,7 +52,7 @@ public class ShapeModel extends LegacyOBJSONModel {
     }
 
     public int[] getColours(LevelAccessor world, BlockPos pos) {
-        ShapeBlockEntity shape = ShapeBlockEntity.get(world, pos);
+        LegacyShapeBlockEntity shape = LegacyShapeBlockEntity.get(world, pos);
         if (shape != null) {
             int baseColour = getColourForState(world, pos, shape.getBaseBlockState());
             int secondaryColour = shape.hasSecondaryMaterial() ? getColourForState(world, pos, shape.getSecondaryBlockState()) : baseColour;

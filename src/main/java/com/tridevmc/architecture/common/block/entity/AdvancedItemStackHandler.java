@@ -169,11 +169,15 @@ public class AdvancedItemStackHandler extends ItemStackHandler {
     }
 
     public interface IContentChangeListener {
+
         void onContentChange(int slot);
+
     }
 
     public interface ISlotLimit {
+
         int slotLimit(int slot);
+
     }
 
 }

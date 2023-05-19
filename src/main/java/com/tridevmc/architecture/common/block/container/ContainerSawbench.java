@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.block.entity;
+package com.tridevmc.architecture.common.block.container;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.compound.ui.container.CompoundContainerMenu;
@@ -6,8 +6,10 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ContainerSawbench extends CompoundContainerMenu {
+
     public final Inventory playerInventory;
 
     public ContainerSawbench(Inventory playerInv, int id) {
@@ -27,12 +29,14 @@ public class ContainerSawbench extends CompoundContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int slot) {
+    @NotNull
+    public ItemStack quickMoveStack(@NotNull Player player, int slot) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return true;
     }
+
 }

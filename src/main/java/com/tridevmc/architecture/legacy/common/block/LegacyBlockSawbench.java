@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.block;
+package com.tridevmc.architecture.legacy.common.block;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.ui.UISawbench;
-import com.tridevmc.architecture.common.block.entity.ContainerSawbench;
+import com.tridevmc.architecture.common.block.container.ContainerSawbench;
 import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.common.ui.CreateMenuContext;
 import com.tridevmc.architecture.common.ui.IElementProvider;
-import com.tridevmc.architecture.legacy.base.BaseOrientation;
+import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,12 +48,13 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
 
-public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
+@Deprecated
+public class LegacyBlockSawbench extends LegacyBlockArchitecture implements IElementProvider<ContainerSawbench> {
 
     static String model = "block/sawbench_all.objson";
     static ModelSpec modelSpec = new ModelSpec(model);
 
-    public BlockSawbench() {
+    public LegacyBlockSawbench() {
         super(Material.WOOD);
     }
 
@@ -64,7 +65,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
 
     @Override
     public IOrientationHandler getOrientationHandler() {
-        return BaseOrientation.orient4WaysByState;
+        return LegacyBaseOrientation.orient4WaysByState;
     }
 
     @Override

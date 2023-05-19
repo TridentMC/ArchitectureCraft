@@ -2,7 +2,7 @@ package com.tridevmc.architecture.common.shape.behaviour;
 
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -51,7 +51,7 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
+    protected VoxelShape getCollisionBox(LegacyShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         return t.t(this.getOBJSONModel().getVoxelized());
     }
 

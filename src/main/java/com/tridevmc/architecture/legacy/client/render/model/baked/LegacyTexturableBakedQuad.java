@@ -13,13 +13,14 @@ import java.util.Arrays;
  * <p>
  * Sorta based off of retextured quads from older versions of Forge.
  */
-public class TexturableBakedQuad extends BakedQuad {
+@Deprecated
+public class LegacyTexturableBakedQuad extends BakedQuad {
 
-    public TexturableBakedQuad(int[] pVertices, int pTintIndex, Direction pDirection, TextureAtlasSprite pSprite, boolean pShade) {
+    public LegacyTexturableBakedQuad(int[] pVertices, int pTintIndex, Direction pDirection, TextureAtlasSprite pSprite, boolean pShade) {
         super(pVertices, pTintIndex, pDirection, pSprite, pShade);
     }
 
-    public TexturableBakedQuad(int[] pVertices, int pTintIndex, Direction pDirection, TextureAtlasSprite pSprite, boolean pShade, boolean hasAmbientOcclusion) {
+    public LegacyTexturableBakedQuad(int[] pVertices, int pTintIndex, Direction pDirection, TextureAtlasSprite pSprite, boolean pShade, boolean hasAmbientOcclusion) {
         super(pVertices, pTintIndex, pDirection, pSprite, pShade, hasAmbientOcclusion);
     }
 
@@ -30,10 +31,10 @@ public class TexturableBakedQuad extends BakedQuad {
      * @param sprite The texture to remap the quad to.
      * @return A copy of the given quad with the uv coordinates remapped to the given texture.
      */
-    public static TexturableBakedQuad retextured(BakedQuad quad, TextureAtlasSprite sprite) {
-        return new TexturableBakedQuad(recalculateVertices(quad.getVertices(), quad.getSprite(), sprite),
-                quad.getTintIndex(), quad.getDirection(),
-                sprite, quad.isShade(), quad.hasAmbientOcclusion());
+    public static LegacyTexturableBakedQuad retextured(BakedQuad quad, TextureAtlasSprite sprite) {
+        return new LegacyTexturableBakedQuad(recalculateVertices(quad.getVertices(), quad.getSprite(), sprite),
+                                             quad.getTintIndex(), quad.getDirection(),
+                                             sprite, quad.isShade(), quad.hasAmbientOcclusion());
     }
 
     /**
@@ -42,8 +43,8 @@ public class TexturableBakedQuad extends BakedQuad {
      * @param texture The texture to remap the quad to.
      * @return A copy of this quad with the uv coordinates remapped to the given texture.
      */
-    public TexturableBakedQuad retextured(TextureAtlasSprite texture) {
-        return new TexturableBakedQuad(
+    public LegacyTexturableBakedQuad retextured(TextureAtlasSprite texture) {
+        return new LegacyTexturableBakedQuad(
                 recalculateVertices(this.getVertices(), this.sprite, texture),
                 this.getTintIndex(),
                 this.getDirection(),

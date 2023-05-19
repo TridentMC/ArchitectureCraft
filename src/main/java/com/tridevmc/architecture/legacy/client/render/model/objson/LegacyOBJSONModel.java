@@ -1,10 +1,9 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.mojang.math.Transformation;
-import com.tridevmc.architecture.core.model.mesh.CullFace;
-import com.tridevmc.architecture.legacy.client.render.model.IArchitectureModel;
-import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelData;
-import com.tridevmc.architecture.legacy.client.render.model.data.ArchitectureModelDataQuads;
+import com.tridevmc.architecture.legacy.client.render.model.LegacyIArchitectureModel;
+import com.tridevmc.architecture.legacy.client.render.model.data.LegacyArchitectureModelData;
+import com.tridevmc.architecture.legacy.client.render.model.data.LegacyArchitectureModelDataQuads;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -23,16 +22,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public abstract class LegacyOBJSONModel implements IArchitectureModel<OBJSONQuadMetadata> {
+@Deprecated
+public abstract class LegacyOBJSONModel implements LegacyIArchitectureModel<LegacyOBJSONQuadMetadata> {
 
     private final LegacyOBJSON objson;
-    private final ArchitectureModelData<OBJSONQuadMetadata> convertedModelData;
+    private final LegacyArchitectureModelData<LegacyOBJSONQuadMetadata> convertedModelData;
     private final boolean generateUVs;
     private final boolean generateNormals;
 
     public LegacyOBJSONModel(LegacyOBJSON objson, boolean generateUVs, boolean generateNormals) {
         this.objson = objson;
-        this.convertedModelData = new ArchitectureModelData<>();
+        this.convertedModelData = new LegacyArchitectureModelData<>();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
         List<Tuple<Integer, LegacyOBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> new Tuple<>(i, this.objson.getFaces()[i])).collect(Collectors.toList());
@@ -53,8 +53,8 @@ public abstract class LegacyOBJSONModel implements IArchitectureModel<OBJSONQuad
         //}
     }
 
-    private void makeCuboid(ArchitectureModelData data, AABB bb) {
-        var meta = new OBJSONQuadMetadata(0, -1);
+    private void makeCuboid(LegacyArchitectureModelData data, AABB bb) {
+        var meta = new LegacyOBJSONQuadMetadata(0, -1);
         float minX = (float) bb.minX;
         float minY = (float) bb.minY;
         float minZ = (float) bb.minZ;
@@ -93,11 +93,11 @@ public abstract class LegacyOBJSONModel implements IArchitectureModel<OBJSONQuad
         data.addQuadInstruction(meta, Direction.UP, maxX, maxY, minZ);
     }
 
-    private void addTri(ArchitectureModelData modelData, int face, int texture, int colour, LegacyOBJSON.Triangle tri, LegacyOBJSON.Vertex[] vertices) {
+    private void addTri(LegacyArchitectureModelData modelData, int face, int texture, int colour, LegacyOBJSON.Triangle tri, LegacyOBJSON.Vertex[] vertices) {
         for (int i = 0; i < 3; i++) {
             int vertexIndex = tri.vertices[i];
             LegacyOBJSON.Vertex vertex = vertices[vertexIndex];
-            var metadata = new OBJSONQuadMetadata(texture, colour);
+            var metadata = new LegacyOBJSONQuadMetadata(texture, colour);
             if (this.generateUVs && this.generateNormals) {
                 modelData.addTriInstruction(metadata, face, null, vertex.getPos().x(), vertex.getPos().y(), vertex.getPos().z());
             } else if (this.generateUVs) {
@@ -111,7 +111,7 @@ public abstract class LegacyOBJSONModel implements IArchitectureModel<OBJSONQuad
     }
 
     @Override
-    public ArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state, Transformation transform) {
+    public LegacyArchitectureModelDataQuads getQuads(LevelAccessor level, BlockPos pos, BlockState state, Transformation transform) {
         return this.convertedModelData.getQuadsFor(this.getMetadataResolver(level, pos, state), transform);
     }
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 /**
  * Stores information about a vertex that can be piped into a vertex consumer, assumes all data provided is valid.
  */
+@Deprecated
 public class LegacyArchitectureVertex {
 
     private final int face;

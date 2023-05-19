@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.common.shape.behaviour;
 
-import com.tridevmc.architecture.common.block.BlockHelper;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
@@ -25,7 +25,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public LegacyTrans3[] frameTrans;
 
     @Override
-    public boolean orientOnPlacement(Player player, ShapeBlockEntity te, ShapeBlockEntity nte, Direction otherFace, LegacyVector3 hit) {
+    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te, LegacyShapeBlockEntity nte, Direction otherFace, LegacyVector3 hit) {
         int turn = -1;
         // If click is on side of a non-window block, orient perpendicular to it
         if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow))) {
@@ -67,7 +67,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
 
     @Override
     public ItemStack newSecondaryMaterialStack(BlockState state) {
-        return BlockHelper.blockStackWithState(state, 1);
+        return LegacyBlockHelper.blockStackWithState(state, 1);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     }
 
     @Override
-    protected VoxelShape getCollisionBox(ShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
+    protected VoxelShape getCollisionBox(LegacyShapeBlockEntity te, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 t) {
         VoxelShape shape = Shapes.empty();
         final double r = 1 / 8d, s = 3 / 32d;
         double[] e = new double[4];
@@ -112,16 +112,16 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         return t.addBox(-e[3], -e[0], -w, e[1], e[2], w, shape);
     }
 
-    protected boolean isConnectedGlobal(ShapeBlockEntity te, Direction globalDir) {
+    protected boolean isConnectedGlobal(LegacyShapeBlockEntity te, Direction globalDir) {
         return this.getConnectedWindowGlobal(te, globalDir) != null;
     }
 
-    public ShapeBlockEntity getConnectedWindowGlobal(ShapeBlockEntity te, Direction globalDir) {
+    public LegacyShapeBlockEntity getConnectedWindowGlobal(LegacyShapeBlockEntity te, Direction globalDir) {
         Direction thisLocalDir = te.localFace(globalDir);
         FrameType thisFrameType = this.frameTypeForLocalSide(thisLocalDir);
         if (thisFrameType != FrameType.NONE) {
             Direction thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
-            ShapeBlockEntity nte = te.getConnectedNeighbourGlobal(globalDir);
+            LegacyShapeBlockEntity nte = te.getConnectedNeighbourGlobal(globalDir);
             if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow otherType) {
                 Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
                 FrameType otherFrameType = otherType.frameTypeForLocalSide(otherLocalDir);

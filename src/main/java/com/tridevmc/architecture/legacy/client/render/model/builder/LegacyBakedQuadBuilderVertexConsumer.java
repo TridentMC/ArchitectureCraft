@@ -7,36 +7,37 @@ import net.minecraft.core.Direction;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
 
-public class BakedQuadBuilderVertexConsumer implements VertexConsumer {
+@Deprecated
+public class LegacyBakedQuadBuilderVertexConsumer implements VertexConsumer {
 
     private final QuadBakingVertexConsumer realConsumer;
     private BakedQuad out = null;
 
-    public BakedQuadBuilderVertexConsumer() {
+    public LegacyBakedQuadBuilderVertexConsumer() {
         this.realConsumer = new QuadBakingVertexConsumer(q -> this.out = q);
     }
 
-    public BakedQuadBuilderVertexConsumer setTintIndex(int tintIndex) {
+    public LegacyBakedQuadBuilderVertexConsumer setTintIndex(int tintIndex) {
         this.realConsumer.setTintIndex(tintIndex);
         return this;
     }
 
-    public BakedQuadBuilderVertexConsumer setDirection(Direction direction) {
+    public LegacyBakedQuadBuilderVertexConsumer setDirection(Direction direction) {
         this.realConsumer.setDirection(direction);
         return this;
     }
 
-    public BakedQuadBuilderVertexConsumer setSprite(TextureAtlasSprite sprite) {
+    public LegacyBakedQuadBuilderVertexConsumer setSprite(TextureAtlasSprite sprite) {
         this.realConsumer.setSprite(sprite);
         return this;
     }
 
-    public BakedQuadBuilderVertexConsumer setShade(boolean shade) {
+    public LegacyBakedQuadBuilderVertexConsumer setShade(boolean shade) {
         this.realConsumer.setShade(shade);
         return this;
     }
 
-    public BakedQuadBuilderVertexConsumer setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
+    public LegacyBakedQuadBuilderVertexConsumer setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
         this.realConsumer.setHasAmbientOcclusion(hasAmbientOcclusion);
         return this;
     }

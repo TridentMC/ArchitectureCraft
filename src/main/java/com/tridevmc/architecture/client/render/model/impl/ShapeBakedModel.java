@@ -1,8 +1,7 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
 import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
-import com.tridevmc.architecture.client.render.model.impl.ShapeModel;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
@@ -30,7 +29,7 @@ public class ShapeBakedModel implements IArchitectureBakedModel {
 
     @NotNull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable LegacyBlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         var level = extraData.get(ModelProperties.LEVEL);
         var pos = extraData.get(ModelProperties.POS);
 

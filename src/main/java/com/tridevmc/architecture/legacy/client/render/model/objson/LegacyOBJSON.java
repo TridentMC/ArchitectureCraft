@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class LegacyOBJSON {
 
     private static final Gson GSON = new Gson();
@@ -24,7 +25,7 @@ public class LegacyOBJSON {
     private double[] bounds;
     private double[][] boxes;
     private Face[] faces;
-    private OBJSONVoxelizer voxelizer;
+    private LegacyOBJSONVoxelizer voxelizer;
     private VoxelShape voxelized;
 
     public static LegacyOBJSON fromResource(ResourceLocation location) {
@@ -52,7 +53,7 @@ public class LegacyOBJSON {
         for (int i = 0; i < model.boxes.length; i++) {
             model.boxes[i] = trans.t(model.boxes[i]);
         }
-        model.voxelizer = new OBJSONVoxelizer(model, 16);
+        model.voxelizer = new LegacyOBJSONVoxelizer(model, 16);
         return model;
     }
 
@@ -120,7 +121,7 @@ public class LegacyOBJSON {
         }
     }
 
-    public OBJSONVoxelizer getVoxelizer() {
+    public LegacyOBJSONVoxelizer getVoxelizer() {
         return this.voxelizer;
     }
 
@@ -145,7 +146,8 @@ public class LegacyOBJSON {
 
     }
 
-    public class Face {
+    @Deprecated
+public class Face {
         LegacyOBJSON model;
         int texture;
         Vertex[] vertices;
@@ -176,7 +178,8 @@ public class LegacyOBJSON {
         }
     }
 
-    public class Triangle {
+    @Deprecated
+public class Triangle {
         int[] vertices;
 
         public Triangle clone() {
@@ -186,7 +189,8 @@ public class LegacyOBJSON {
         }
     }
 
-    public class Vertex {
+    @Deprecated
+public class Vertex {
         double[] pos;
         double[] normal;
         double[] uv;

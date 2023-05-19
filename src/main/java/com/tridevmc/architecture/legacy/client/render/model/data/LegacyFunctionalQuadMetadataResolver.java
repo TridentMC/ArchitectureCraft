@@ -20,26 +20,27 @@ import java.util.Objects;
  *
  * @param <T> The type of the metadata object.
  */
-public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<T> {
+@Deprecated
+public class LegacyFunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<T> {
 
     private final IQuadMetadataTextureResolver<T> textureResolver;
     private final IQuadMetadataTintIndexResolver<T> colourResolver;
 
-    private FunctionalQuadMetadataResolver(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
+    private LegacyFunctionalQuadMetadataResolver(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
         this.textureResolver = textureResolver;
         this.colourResolver = colourResolver;
     }
 
     /**
-     * Creates a new instance of {@link FunctionalQuadMetadataResolver} using the given texture and colour resolvers.
+     * Creates a new instance of {@link LegacyFunctionalQuadMetadataResolver} using the given texture and colour resolvers.
      *
      * @param textureResolver The texture resolver.
      * @param colourResolver  The colour resolver.
      * @param <T>             The type of the metadata object.
      * @return The new instance.
      */
-    public static <T> FunctionalQuadMetadataResolver<T> of(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
-        return new FunctionalQuadMetadataResolver<>(textureResolver, colourResolver);
+    public static <T> LegacyFunctionalQuadMetadataResolver<T> of(IQuadMetadataTextureResolver<T> textureResolver, IQuadMetadataTintIndexResolver<T> colourResolver) {
+        return new LegacyFunctionalQuadMetadataResolver<>(textureResolver, colourResolver);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
-        FunctionalQuadMetadataResolver<?> that = (FunctionalQuadMetadataResolver<?>) o;
+        LegacyFunctionalQuadMetadataResolver<?> that = (LegacyFunctionalQuadMetadataResolver<?>) o;
         return Objects.equals(this.textureResolver, that.textureResolver) && Objects.equals(this.colourResolver, that.colourResolver);
     }
 

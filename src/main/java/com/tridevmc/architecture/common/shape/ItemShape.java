@@ -25,12 +25,10 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
@@ -50,7 +48,7 @@ public class ItemShape extends BlockItem {
     private static final Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
     private final EnumShape shape;
 
-    public ItemShape(BlockShape block, Item.Properties builder) {
+    public ItemShape(LegacyBlockShape block, Item.Properties builder) {
         super(block, builder);
         this.shape = block.getArchitectureShape();
         SHAPE_ITEMS.put(block.getArchitectureShape(), this);
@@ -105,7 +103,7 @@ public class ItemShape extends BlockItem {
             return false;
         var dirVec = LegacyVector3.getDirectionVec(face);
         var hit = new LegacyVector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
-        var tile = ShapeBlockEntity.get(world, pos);
+        var tile = LegacyShapeBlockEntity.get(world, pos);
         if (tile != null) {
             var state = getStateFromStack(stack);
             tile.setBaseBlockState(state);

@@ -2,7 +2,7 @@ package com.tridevmc.architecture.client.render;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugRenderTypes;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderHighlightEvent;
@@ -23,7 +23,7 @@ public class ArchitectureBlockHighlightRenderer {
         var cameraPosition = event.getCamera().getPosition();
         matrix.pushPose();
         matrix.translate(pos.getX() - cameraPosition.x + 0.5, pos.getY() - cameraPosition.y + 0.5, pos.getZ() - cameraPosition.z + 0.5);
-        if (state instanceof BlockStateArchitecture aState) {
+        if (state instanceof LegacyBlockStateArchitecture aState) {
             var objson = ArchitectureMod.PROXY.getCachedOBJSON(aState.getModelSpec().modelName);
             if (objson != null) {
                 var edges = objson.calculateOuterEdges();

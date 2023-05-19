@@ -28,9 +28,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
-import com.tridevmc.architecture.common.block.BlockSawbench;
-import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockSawbench;
+import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.item.ItemArchitecture;
 import com.tridevmc.architecture.common.item.ItemChisel;
 import com.tridevmc.architecture.common.item.ItemCladding;
@@ -74,9 +74,9 @@ public class ArchitectureContent {
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
     private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
 
-    public BlockSawbench blockSawbench;
-    public Map<EnumShape, BlockShape> blockShapes;
-    public BlockEntityType<ShapeBlockEntity> tileTypeShape;
+    public LegacyBlockSawbench blockSawbench;
+    public Map<EnumShape, LegacyBlockShape> blockShapes;
+    public BlockEntityType<LegacyShapeBlockEntity> tileTypeShape;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
@@ -122,14 +122,14 @@ public class ArchitectureContent {
     }
 
     public void onBlockEntityRegister(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry) {
-        this.tileTypeShape = this.registerBlockEntity(registry, ShapeBlockEntity::new, "shape");
+        this.tileTypeShape = this.registerBlockEntity(registry, LegacyShapeBlockEntity::new, "shape");
     }
 
     public void onBlockRegister(RegisterEvent.RegisterHelper<Block> registry) {
-        this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
+        this.blockSawbench = this.registerBlock(registry, "sawbench", new LegacyBlockSawbench());
         this.blockShapes = Maps.newHashMap();
         for (EnumShape shape : EnumShape.values()) {
-            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getSerializedName(), new BlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
+            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getSerializedName(), new LegacyBlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
         }
     }
 

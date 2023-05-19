@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.block;
+package com.tridevmc.architecture.legacy.common.block;
 
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.client.Minecraft;
@@ -44,7 +44,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class BlockHelper {
+@Deprecated
+public class LegacyBlockHelper {
 
     private static final RandomSource RANDOM = RandomSource.create();
 
@@ -52,11 +53,11 @@ public class BlockHelper {
         return ForgeRegistries.BLOCKS.getKey(block).toString();
     }
 
-    /*
-     *   Test whether a block is receiving a redstone signal from a source
-     *   other than itself. For blocks that can both send and receive in
-     *   any direction.
-     */
+    /**
+     * Test whether a block is receiving a redstone signal from a source
+     * other than itself. For blocks that can both send and receive in
+     * any direction.
+     **/
     public static boolean blockIsGettingExternallyPowered(Level level, BlockPos pos) {
         for (Direction side : MiscUtils.facings) {
             if (isPoweringSide(level, pos.relative(side), side))
@@ -71,10 +72,11 @@ public class BlockHelper {
         if (block.getSignal(state, level, pos, side) > 0)
             return true;
         if (block.shouldCheckWeakPower(state, level, pos, side)) {
-            for (Direction side2 : MiscUtils.facings)
+            for (Direction side2 : MiscUtils.facings) {
                 if (side2 != side.getOpposite())
                     if (level.getDirectSignal(pos.relative(side2), side2) > 0)
                         return true;
+            }
         }
         return false;
     }

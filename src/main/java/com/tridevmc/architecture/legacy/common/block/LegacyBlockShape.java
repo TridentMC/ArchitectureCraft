@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.block;
+package com.tridevmc.architecture.legacy.common.block;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.common.block.entity.ShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ItemShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
-import com.tridevmc.architecture.legacy.base.BaseOrientation;
+import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -58,13 +58,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class BlockShape extends BlockArchitecture {
+@Deprecated
+public class LegacyBlockShape extends LegacyBlockArchitecture {
 
-    private static final Map<EnumShape, BlockShape> SHAPE_BLOCKS = Maps.newHashMap();
+    private static final Map<EnumShape, LegacyBlockShape> SHAPE_BLOCKS = Maps.newHashMap();
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     private final EnumShape architectureShape;
 
-    public BlockShape(EnumShape architectureShape) {
+    public LegacyBlockShape(EnumShape architectureShape) {
         super(Material.DIRT);
         this.architectureShape = architectureShape;
         if(this.architectureShape.behaviour instanceof ShapeBehaviourModel sbm)
@@ -117,14 +118,14 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     public IOrientationHandler getOrientationHandler() {
-        return BaseOrientation.orient24WaysByTE;
+        return LegacyBaseOrientation.orient24WaysByTE;
     }
 
     @Override
     @Nonnull
     protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos,
                                         BlockState state, Entity entity) {
-        ShapeBlockEntity te = this.getTileEntity(level, pos);
+        LegacyShapeBlockEntity te = this.getTileEntity(level, pos);
         if (te != null) {
             LegacyTrans3 t = te.localToGlobalTransformation(LegacyVector3.ZERO);
             return this.getArchitectureShape().behaviour.getBounds(te, level, pos, state, entity, t);
@@ -134,7 +135,7 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-        ShapeBlockEntity te = ShapeBlockEntity.get(level, pos);
+        LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(level, pos);
         if (te != null)
             return ItemShape.createStack(this.getArchitectureShape(), te.getBaseBlockState(), 1);
         else
@@ -142,14 +143,14 @@ public class BlockShape extends BlockArchitecture {
     }
 
     public BlockState getBaseBlockState(BlockGetter level, BlockPos pos) {
-        ShapeBlockEntity te = this.getTileEntity(level, pos);
+        LegacyShapeBlockEntity te = this.getTileEntity(level, pos);
         if (te != null)
             return te.getBaseBlockState();
         return null;
     }
 
-    private ShapeBlockEntity getTileEntity(BlockGetter level, BlockPos pos) {
-        return (ShapeBlockEntity) level.getBlockEntity(pos);
+    private LegacyShapeBlockEntity getTileEntity(BlockGetter level, BlockPos pos) {
+        return (LegacyShapeBlockEntity) level.getBlockEntity(pos);
     }
 
     @Override
@@ -175,7 +176,7 @@ public class BlockShape extends BlockArchitecture {
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getUseItem();
         if (!stack.isEmpty()) {
-            ShapeBlockEntity te = ShapeBlockEntity.get(level, pos);
+            LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(level, pos);
             if (te != null)
                 return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
@@ -196,7 +197,7 @@ public class BlockShape extends BlockArchitecture {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ShapeBlockEntity(pos, state, this);
+        return new LegacyShapeBlockEntity(pos, state, this);
     }
 
     @Override
@@ -206,7 +207,7 @@ public class BlockShape extends BlockArchitecture {
 
     @Override
     public int getTransIdentity(BlockState state, BlockGetter level, BlockPos pos, LegacyVector3 origin) {
-        var shapeBE = ShapeBlockEntity.get(level, pos);
+        var shapeBE = LegacyShapeBlockEntity.get(level, pos);
         var identity = super.getTransIdentity(state, level, pos, origin);
         if (shapeBE != null) {
             identity = 31 * identity + (int) shapeBE.getOffsetX();

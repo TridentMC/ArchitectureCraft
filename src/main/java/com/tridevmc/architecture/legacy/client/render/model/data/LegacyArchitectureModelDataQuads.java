@@ -12,7 +12,8 @@ import java.util.stream.Stream;
 /**
  * A class used for storing quads for a given model based on their sides.
  */
-public class ArchitectureModelDataQuads {
+@Deprecated
+public class LegacyArchitectureModelDataQuads {
     private final List<BakedQuad> northQuads;
     private final List<BakedQuad> southQuads;
     private final List<BakedQuad> eastQuads;
@@ -21,7 +22,7 @@ public class ArchitectureModelDataQuads {
     private final List<BakedQuad> downQuads;
     private final List<BakedQuad> generalQuads;
 
-    public ArchitectureModelDataQuads(ArchitectureModelData.DirectionalQuads directionalQuads, Transformation transform) {
+    public LegacyArchitectureModelDataQuads(LegacyArchitectureModelData.DirectionalQuads directionalQuads, Transformation transform) {
         this.northQuads = Lists.newArrayListWithCapacity(directionalQuads.getQuadCount(transform.rotateTransform(Direction.NORTH)));
         this.southQuads = Lists.newArrayListWithCapacity(directionalQuads.getQuadCount(transform.rotateTransform(Direction.SOUTH)));
         this.eastQuads = Lists.newArrayListWithCapacity(directionalQuads.getQuadCount(transform.rotateTransform(Direction.EAST)));
