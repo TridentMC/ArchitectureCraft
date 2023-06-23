@@ -60,8 +60,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -91,7 +90,6 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
-    protected MaterialColor materialColor;
     protected Property[] stateProperties;
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
@@ -104,12 +102,12 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
 
     // --------------------------- Constructors -------------------------------
 
-    public LegacyBlockArchitecture(Material material) {
+    public LegacyBlockArchitecture(MapColor material) {
         this(material, null);
     }
 
-    public LegacyBlockArchitecture(Material material, IOrientationHandler orient) {
-        super(Block.Properties.of(material, material.getColor()).dynamicShape());
+    public LegacyBlockArchitecture(MapColor material, IOrientationHandler orient) {
+        super(Block.Properties.of().mapColor(material).dynamicShape());
         if (orient == null)
             orient = orient1Way;
         this.orientationHandler = orient;

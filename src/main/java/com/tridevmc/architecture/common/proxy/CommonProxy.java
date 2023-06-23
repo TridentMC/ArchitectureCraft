@@ -31,7 +31,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.loading.progress.StartupMessageManager;
+import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
 
 import java.util.Map;
 
@@ -59,7 +59,7 @@ public class CommonProxy {
             this.modelCache.put(loc, model);
             long t1 = System.nanoTime();
             String msg = String.format("Loaded and cached '%s' in %s nanos.", name, t1 - t0);
-            StartupMessageManager.addModMessage(msg);
+            StartupNotificationManager.addModMessage(msg);
             ArchitectureLog.info(msg);
         }
         model.getVoxelized();

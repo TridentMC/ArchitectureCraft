@@ -38,7 +38,7 @@ public class ArchitectureUIHooks {
         return (windowId, inv, data) -> {
             UIType type = UIType.byId(data.readByte());
             CreateMenuContext context = new CreateMenuContext(windowId, inv.player, inv);
-            var world = inv.player.level;
+            var world = inv.player.level();
 
             switch (type) {
                 case TILE:

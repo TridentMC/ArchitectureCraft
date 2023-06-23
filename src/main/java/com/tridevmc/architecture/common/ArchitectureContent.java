@@ -28,18 +28,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import com.tridevmc.architecture.common.item.*;
+import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockSawbench;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.common.item.ItemArchitecture;
-import com.tridevmc.architecture.common.item.ItemChisel;
-import com.tridevmc.architecture.common.item.ItemCladding;
-import com.tridevmc.architecture.common.item.ItemHammer;
-import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.shape.ItemShape;
-import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
-import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.DataFixers;
@@ -47,12 +44,12 @@ import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
@@ -91,34 +88,32 @@ public class ArchitectureContent {
         e.register(ForgeRegistries.Keys.ITEMS, this::onItemRegister);
         e.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, this::onBlockEntityRegister);
         e.register(ForgeRegistries.Keys.MENU_TYPES, this::onMenuTypeRegister);
+        e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
     }
 
-    @SubscribeEvent
-    public void onCreativeTabRegisterEvent(CreativeModeTabEvent.Register e) {
-        e.registerCreativeModeTab(new ResourceLocation(MOD_ID, "tools"), b -> {
-            b.title(Component.translatable("item_group.architecture.tool"))
-                    .icon(() -> ArchitectureContent.this.itemHammer != null ?
-                            ArchitectureContent.this.itemHammer.getDefaultInstance() :
-                            ItemStack.EMPTY)
-                    .displayItems((p, o) -> {
-                        o.accept(new ItemStack(this.itemHammer));
-                        o.accept(new ItemStack(this.itemChisel));
-                        o.accept(new ItemStack(this.itemSawblade));
-                        o.accept(new ItemStack(this.itemLargePulley));
-                        o.accept(new ItemStack(this.blockSawbench));
-                    });
-        });
-        e.registerCreativeModeTab(new ResourceLocation(MOD_ID, "shapes"), b -> {
-            b.title(Component.translatable("item_group.architecture.shape"))
-                    .icon(() -> ArchitectureContent.this.itemShapes != null ?
-                            ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
-                            ItemStack.EMPTY)
-                    .displayItems((p, o) -> {
-                        for (EnumShape shape : EnumShape.values()) {
-                            o.accept(new ItemStack(this.itemShapes.get(shape)));
-                        }
-                    });
-        });
+    public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
+        registry.register(new ResourceLocation(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
+                .icon(() -> ArchitectureContent.this.itemHammer != null ?
+                        ArchitectureContent.this.itemHammer.getDefaultInstance() :
+                        ItemStack.EMPTY)
+                .displayItems((p, o) -> {
+                    o.accept(new ItemStack(this.itemHammer));
+                    o.accept(new ItemStack(this.itemChisel));
+                    o.accept(new ItemStack(this.itemSawblade));
+                    o.accept(new ItemStack(this.itemLargePulley));
+                    o.accept(new ItemStack(this.blockSawbench));
+                }).build()
+        );
+        registry.register(new ResourceLocation(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
+                .icon(() -> ArchitectureContent.this.itemShapes != null ?
+                        ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
+                        ItemStack.EMPTY)
+                .displayItems((p, o) -> {
+                    for (EnumShape shape : EnumShape.values()) {
+                        o.accept(new ItemStack(this.itemShapes.get(shape)));
+                    }
+                }).build()
+        );
     }
 
     public void onBlockEntityRegister(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry) {

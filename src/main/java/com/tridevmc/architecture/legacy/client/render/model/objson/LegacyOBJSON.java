@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fml.loading.progress.StartupMessageManager;
+import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -90,7 +90,7 @@ public class LegacyOBJSON {
     public VoxelShape getVoxelized() {
         if (this.voxelized == null) {
             String msg = String.format("Voxelizing '%s'", this.name);
-            StartupMessageManager.addModMessage(msg);
+            StartupNotificationManager.addModMessage(msg);
             ArchitectureLog.info(msg);
             long t0 = System.nanoTime();
             this.voxelized = this.voxelizer.voxelizeShape();

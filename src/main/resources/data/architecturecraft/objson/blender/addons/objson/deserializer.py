@@ -170,7 +170,7 @@ def deserialize_objson_v3(objson: dict) -> ModelData:
         normal = Vec3(*face["normal"])
 
         # Now we can create the face
-        shared_faces.append(Face(vertices, [], normal))
+        shared_faces.append(Face(vertices, [], [], normal))
 
     # The format we use for representing the model data is a bit different from the actual objson format, so we need to convert it.
     # The main difference is that for compression purposes the objson format stores the faces in the root of the model data, but we store them in each part instead.
@@ -178,7 +178,7 @@ def deserialize_objson_v3(objson: dict) -> ModelData:
     parts = []
     for part in objson["parts"]:
         triangles_by_face = {}
-        for triangle in part["triangles"]:
+        for triangle in part.get("triangles", []):
             if triangle["face"] not in triangles_by_face:
                 triangles_by_face[triangle["face"]] = []
             triangles_by_face[triangle["face"]].append(
@@ -191,7 +191,7 @@ def deserialize_objson_v3(objson: dict) -> ModelData:
             )
         
         quads_by_face = {}
-        for quad in part["quads"]:
+        for quad in part.get("quads", []):
             if quad["face"] not in quads_by_face:
                 quads_by_face[quad["face"]] = []
             quads_by_face[quad["face"]].append(

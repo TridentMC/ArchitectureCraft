@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.shape;
+package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;

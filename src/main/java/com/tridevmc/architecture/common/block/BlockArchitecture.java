@@ -1,5 +1,11 @@
 package com.tridevmc.architecture.common.block;
 
-public class BlockArchitecture {
+import net.minecraft.world.level.block.Block;
+
+public class BlockArchitecture extends Block {
+
+    public BlockArchitecture(Properties properties) {
+        super(properties);
+    }
 
 }

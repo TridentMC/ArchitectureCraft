@@ -43,7 +43,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
@@ -55,7 +55,7 @@ public class LegacyBlockSawbench extends LegacyBlockArchitecture implements IEle
     static ModelSpec modelSpec = new ModelSpec(model);
 
     public LegacyBlockSawbench() {
-        super(Material.WOOD);
+        super(MapColor.WOOD);
     }
 
     @Override

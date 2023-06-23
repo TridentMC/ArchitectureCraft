@@ -30,7 +30,7 @@ import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEnti
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.shape.ItemShape;
+import com.tridevmc.architecture.common.item.ItemShape;
 import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
@@ -46,7 +46,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -66,7 +66,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     private final EnumShape architectureShape;
 
     public LegacyBlockShape(EnumShape architectureShape) {
-        super(Material.DIRT);
+        super(MapColor.DIRT);
         this.architectureShape = architectureShape;
         if(this.architectureShape.behaviour instanceof ShapeBehaviourModel sbm)
             this.setModelAndTextures(sbm.getModelName());
