@@ -1,13 +1,9 @@
+import bmesh
+import bpy
+import math
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
-import math
-from typing import List
-import bpy
-from bpy.types import MeshUVLoopLayer
-import bmesh
-import json
-from decimal import Decimal
 
 
 @dataclass
@@ -66,7 +62,7 @@ def get_selected_direction_from_prop(prop: str) -> SelectedDirection:
 
 
 def get_direction_from_selected_direction(
-    selected_direction: SelectedDirection, normal: Vec3
+        selected_direction: SelectedDirection, normal: Vec3
 ) -> Direction:
     if selected_direction == SelectedDirection.DETECT:
         return get_direction_from_normal(normal)
@@ -106,7 +102,7 @@ def get_direction_from_normal(normal: Vec3) -> Direction:
 
 
 def calculate_uv_at_vertex(
-    direction: Direction, vertex: Vec3, x_oob: OOBType, y_oob: OOBType, z_oob: OOBType
+        direction: Direction, vertex: Vec3, x_oob: OOBType, y_oob: OOBType, z_oob: OOBType
 ) -> UV:
     # Offset the vertex by 0.5 for the calculation so that the corners are at 0, 0, 0, 1, 1, 1
     offset_vertex = Vec3(vertex.x + 0.5, vertex.y + 0.5, vertex.z + 0.5)
@@ -237,7 +233,7 @@ class AutoUVButtonOperator(bpy.types.Operator):
         if mesh_obj.mode != "EDIT":
             print(f"Object {mesh_obj.name} is not in edit mode, skipping")
             return (0, 0)
-        
+
         # Load the bmesh from the passed mesh object
         bm = bmesh.from_edit_mesh(mesh_obj.data)
 

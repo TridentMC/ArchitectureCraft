@@ -250,7 +250,8 @@ def get_model_data(scene_object: bpy.types.Object) -> ModelData:
                 quads.append(Quad(0, 1, 2, 3, texture))
             else:
                 raise Exception(
-                    "Face has an invalid number of vertices (must be 3 or 4)")
+                    f'Face on object {scene_object.name} has {len(f.verts)} vertices, but only 3 or 4 are supported.'
+                )
 
             # Create the face.
             faces.append(Face(vertices, triangles, quads, Vec3(*f.normal)))
@@ -267,6 +268,12 @@ def get_model_data(scene_object: bpy.types.Object) -> ModelData:
             max([v.pos.z for v in flat_vertices]),
         ]
         parts.append(Part(part_name, bounds, faces))
+
+    if len(parts) == 0:
+        # Display an error with the name of the object
+        raise Exception(
+            "Object '{}' has no children, so it cannot be exported.".format(
+                scene_object.name))
 
     # Calculate the bounds and create the model data.
     bounds = [
