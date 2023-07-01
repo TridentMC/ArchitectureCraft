@@ -22,9 +22,10 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.shape;
+package com.tridevmc.architecture.legacy.common.shape;
 
-public class ShapeFlags {
+@Deprecated
+public class LegacyShapeFlags {
 
     // Shape.flags values
     public final static int PLACE_UNDERNEATH = 1; // Reverses the upside down placement option

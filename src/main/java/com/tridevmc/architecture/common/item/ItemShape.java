@@ -25,7 +25,7 @@
 package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
@@ -46,8 +46,8 @@ import java.util.Map;
 
 public class ItemShape extends BlockItem {
 
-    private static final Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
-    private final EnumShape shape;
+    private static final Map<LegacyEnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
+    private final LegacyEnumShape shape;
 
     public ItemShape(LegacyBlockShape block, Item.Properties builder) {
         super(block, builder);
@@ -56,17 +56,17 @@ public class ItemShape extends BlockItem {
     }
 
     @Nullable
-    public static ItemShape getItemFromShape(EnumShape shape) {
+    public static ItemShape getItemFromShape(LegacyEnumShape shape) {
         return SHAPE_ITEMS.getOrDefault(shape, null);
     }
 
     @Nonnull
-    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState) {
+    public static ItemStack createStack(LegacyEnumShape shape, BlockState baseBlockState) {
         return createStack(shape, baseBlockState, 1);
     }
 
     @Nonnull
-    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState, int count) {
+    public static ItemStack createStack(LegacyEnumShape shape, BlockState baseBlockState, int count) {
         var tag = new CompoundTag();
         var stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
         tag.putInt("BaseBlockState", Block.getId(baseBlockState));
@@ -75,7 +75,7 @@ public class ItemShape extends BlockItem {
     }
 
     @Nullable
-    public static EnumShape getShapeFromStack(ItemStack stack) {
+    public static LegacyEnumShape getShapeFromStack(ItemStack stack) {
         var item = stack.getItem();
         if (item instanceof ItemShape) {
             return ((ItemShape) item).shape;
@@ -137,7 +137,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public ItemStack getDefaultInstance() {
-        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
+        return createStack(LegacyEnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     @Override

@@ -1,12 +1,13 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import net.minecraft.core.Direction;
 
-public class ShapeBehaviourRoof extends ShapeBehaviour {
+@Deprecated
+public class LegacyShapeBehaviourRoof extends LegacyShapeBehaviour {
 
-    public static final ShapeBehaviourRoof INSTANCE = new ShapeBehaviourRoof();
+    public static final LegacyShapeBehaviourRoof INSTANCE = new LegacyShapeBehaviourRoof();
 
     static {
         Profile.declareOpposite(RoofProfile.LEFT, RoofProfile.RIGHT);
@@ -23,7 +24,7 @@ public class ShapeBehaviourRoof extends ShapeBehaviour {
     }
 
     @Override
-    public Object profileForLocalFace(EnumShape shape, Direction face) {
+    public Object profileForLocalFace(LegacyEnumShape shape, Direction face) {
         switch (shape) {
             case ROOF_TILE:
             case ROOF_OVERHANG:
@@ -65,4 +66,5 @@ public class ShapeBehaviourRoof extends ShapeBehaviour {
     }
 
     protected enum RoofProfile {NONE, LEFT, RIGHT, RIDGE, VALLEY}
+
 }

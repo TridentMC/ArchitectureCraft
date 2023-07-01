@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
@@ -9,10 +9,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static net.minecraft.core.Direction.*;
 
+@Deprecated
+public class LegacyShapeBehaviourCornerWindow extends LegacyShapeBehaviourWindow {
 
-public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
-
-    public ShapeBehaviourCornerWindow() {
+    public LegacyShapeBehaviourCornerWindow() {
         this.frameSides = new Direction[]{DOWN, SOUTH, UP, WEST};
         this.frameAlways = new boolean[]{false, false, false, false};
         this.frameTypes = new FrameType[]{FrameType.CORNER, FrameType.CORNER, FrameType.NONE, FrameType.PLAIN, FrameType.PLAIN, FrameType.NONE};
@@ -52,7 +52,7 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
     public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te, LegacyShapeBlockEntity nte, Direction face,
                                      LegacyVector3 hit) {
         if (nte != null && !player.isCrouching()) {
-            if (nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow nsk) {
+            if (nte.getArchitectureShape().behaviour instanceof LegacyShapeBehaviourWindow nsk) {
                 Direction nlf = nte.localFace(face);
                 FrameType nfk = nsk.frameTypeForLocalSide(nlf);
                 switch (nfk) {
@@ -74,7 +74,7 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
 
     protected boolean orientFromAdjacentCorner(LegacyShapeBlockEntity te, Direction face, LegacyVector3 hit) {
         LegacyShapeBlockEntity nte = LegacyShapeBlockEntity.get(te.getLevel(), te.getBlockPos().relative(face.getOpposite()));
-        if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow nsk) {
+        if (nte != null && nte.getArchitectureShape().behaviour instanceof LegacyShapeBehaviourWindow nsk) {
             Direction nlf = nte.localFace(face);
             FrameType nfk = nsk.frameTypeForLocalSide(nlf);
             if (nfk == FrameType.CORNER) {
@@ -85,4 +85,5 @@ public class ShapeBehaviourCornerWindow extends ShapeBehaviourWindow {
         }
         return false;
     }
+
 }

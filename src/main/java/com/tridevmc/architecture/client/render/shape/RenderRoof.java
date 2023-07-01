@@ -26,26 +26,26 @@ package com.tridevmc.architecture.client.render.shape;
 
 import com.tridevmc.architecture.client.render.texture.ITexture;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.Direction;
 
 public class RenderRoof {
 
-    protected final static EnumShape[] ridgeShapes = {
-            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE};
+    protected final static LegacyEnumShape[] ridgeShapes = {
+            LegacyEnumShape.ROOF_RIDGE, LegacyEnumShape.ROOF_SMART_RIDGE};
 
-    protected final static EnumShape[] ridgeOrSlopeShapes = {
-            EnumShape.ROOF_RIDGE, EnumShape.ROOF_SMART_RIDGE,
-            EnumShape.ROOF_TILE, EnumShape.ROOF_OUTER_CORNER, EnumShape.ROOF_INNER_CORNER};
+    protected final static LegacyEnumShape[] ridgeOrSlopeShapes = {
+            LegacyEnumShape.ROOF_RIDGE, LegacyEnumShape.ROOF_SMART_RIDGE,
+            LegacyEnumShape.ROOF_TILE, LegacyEnumShape.ROOF_OUTER_CORNER, LegacyEnumShape.ROOF_INNER_CORNER};
 
-    protected final static EnumShape[] valleyShapes = {
-            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY};
+    protected final static LegacyEnumShape[] valleyShapes = {
+            LegacyEnumShape.ROOF_VALLEY, LegacyEnumShape.ROOF_SMART_VALLEY};
 
-    protected final static EnumShape[] valleyOrSlopeShapes = {
-            EnumShape.ROOF_VALLEY, EnumShape.ROOF_SMART_VALLEY,
-            EnumShape.ROOF_TILE, EnumShape.ROOF_INNER_CORNER};
+    protected final static LegacyEnumShape[] valleyOrSlopeShapes = {
+            LegacyEnumShape.ROOF_VALLEY, LegacyEnumShape.ROOF_SMART_VALLEY,
+            LegacyEnumShape.ROOF_TILE, LegacyEnumShape.ROOF_INNER_CORNER};
 
     protected Direction face;
     protected boolean outerFace;
@@ -699,7 +699,7 @@ public class RenderRoof {
         return this.hasNeighbour(dx, dy, dz, valleyOrSlopeShapes);
     }
 
-    protected boolean hasNeighbour(int dx, int dy, int dz, EnumShape[] shapes) {
+    protected boolean hasNeighbour(int dx, int dy, int dz, LegacyEnumShape[] shapes) {
         //Direction dir = this.t.v(dx, dy, dz).facing();
         //TileShape nte = this.te.getConnectedNeighbourGlobal(dir);
         //if (nte != null) {

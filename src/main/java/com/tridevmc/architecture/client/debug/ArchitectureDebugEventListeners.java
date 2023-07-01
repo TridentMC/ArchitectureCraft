@@ -6,8 +6,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONVoxelizer;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.model.ModelSpec;
-import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -107,10 +107,10 @@ public class ArchitectureDebugEventListeners {
         return !FMLEnvironment.production && level.isClientSide && player.isCrouching();
     }
 
-    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, EnumShape shape) {
+    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, LegacyEnumShape shape) {
         if (!shouldAssignVoxelizer(level, player))
             return InteractionResult.PASS;
-        if (shape.behaviour instanceof ShapeBehaviourModel behaviour) {
+        if (shape.behaviour instanceof LegacyShapeBehaviourModel behaviour) {
             return onVoxelizedBlockClicked(level, pos, player, hit, ArchitectureMod.PROXY.getCachedOBJSON(behaviour.getModelName()).getVoxelizer());
         }
         return InteractionResult.PASS;

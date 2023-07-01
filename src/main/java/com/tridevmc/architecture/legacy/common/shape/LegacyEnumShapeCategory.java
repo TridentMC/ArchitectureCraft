@@ -1,6 +1,7 @@
-package com.tridevmc.architecture.common.shape;
+package com.tridevmc.architecture.legacy.common.shape;
 
-public enum EnumShapeCategory {
+@Deprecated
+public enum LegacyEnumShapeCategory {
     ROOFING("architecturecraft.shape.category.roofing"),
     ROUNDED("architecturecraft.shape.category.rounded"),
     CLASSICAL("architecturecraft.shape.category.classical"),
@@ -11,7 +12,7 @@ public enum EnumShapeCategory {
 
     private final String translationKey;
 
-    EnumShapeCategory(String translationKey) {
+    LegacyEnumShapeCategory(String translationKey) {
         this.translationKey = translationKey;
     }
 

@@ -1,15 +1,15 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.common.helpers.Utils;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +27,8 @@ import java.util.Objects;
 
 import static net.minecraft.core.Direction.*;
 
-public class ShapeBehaviour {
+@Deprecated
+public class LegacyShapeBehaviour {
 
     private static final LoadingCache<BehaviourState, VoxelShape> SHAPE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<BehaviourState, VoxelShape>() {
         public VoxelShape load(@Nonnull BehaviourState behaviourState) {
@@ -35,11 +36,11 @@ public class ShapeBehaviour {
         }
     });
 
-    public static ShapeBehaviour DEFAULT = new ShapeBehaviour();
+    public static LegacyShapeBehaviour DEFAULT = new LegacyShapeBehaviour();
 
     public Object[] profiles; // indexed by local face
 
-    public Object profileForLocalFace(EnumShape shape, Direction face) {
+    public Object profileForLocalFace(LegacyEnumShape shape, Direction face) {
         if (this.profiles != null)
             return this.profiles[face.ordinal()];
         else
@@ -57,7 +58,7 @@ public class ShapeBehaviour {
 
     public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity tile, LegacyShapeBlockEntity neighbourTile, Direction otherFace, LegacyVector3 hit) {
         if (neighbourTile != null && !player.isCrouching()) {
-            EnumShape neighbourShape = neighbourTile.getArchitectureShape();
+            LegacyEnumShape neighbourShape = neighbourTile.getArchitectureShape();
             Object otherProfile = Profile.getProfileGlobal(neighbourShape, neighbourTile.getSide(), neighbourTile.getTurn(), otherFace);
             if (otherProfile != null) {
                 Direction thisFace = otherFace.getOpposite();
@@ -185,7 +186,7 @@ public class ShapeBehaviour {
         double r, h;
         switch (mask & 0xff00) {
             case 0x000: // 2x2x2 cubelet bitmap
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 8; i++) {
                     if ((mask & (1 << i)) != 0) {
                         LegacyVector3 p = new LegacyVector3(
                                 (i & 1) != 0 ? 1 : 0,
@@ -193,6 +194,7 @@ public class ShapeBehaviour {
                                 (i & 2) != 0 ? 1 : 0);
                         shapeOut = this.addBox(LegacyVector3.ZERO, p, t, shapeOut);
                     }
+                }
                 break;
             case 0x100: // Square, full size in Y
                 r = param / 16.0;
@@ -227,7 +229,8 @@ public class ShapeBehaviour {
     }
 
     private class BehaviourState {
-        private final ShapeBehaviour shapeBehaviour;
+
+        private final LegacyShapeBehaviour shapeBehaviour;
         private final LegacyShapeBlockEntity tile;
         private final BlockGetter world;
         private final BlockPos pos;
@@ -235,7 +238,7 @@ public class ShapeBehaviour {
         private final Entity entity;
         private final LegacyTrans3 transform;
 
-        private BehaviourState(ShapeBehaviour shapeBehaviour, LegacyShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 transform) {
+        private BehaviourState(LegacyShapeBehaviour shapeBehaviour, LegacyShapeBlockEntity tile, BlockGetter world, BlockPos pos, BlockState state, Entity entity, LegacyTrans3 transform) {
             this.shapeBehaviour = shapeBehaviour;
             this.tile = tile;
             this.world = world;
@@ -260,5 +263,7 @@ public class ShapeBehaviour {
         public int hashCode() {
             return Objects.hash(this.state, this.transform, this.tile.getDisabledConnections(), this.tile.getSide(), this.tile.getTurn());
         }
+
     }
+
 }

@@ -22,10 +22,34 @@
  * SOFTWARE.
  */
 
-package com.tridevmc.architecture.common.shape;
+package com.tridevmc.architecture.legacy.common.shape;
 
-public enum ShapeSymmetry {
-    UNILATERAL,
-    BILATERAL,
-    QUADRILATERAL
+
+import net.minecraft.client.resources.language.I18n;
+
+@Deprecated
+public class LegacyShapePage {
+
+    public String translationKey;
+    public LegacyEnumShape[] shapes;
+
+    public LegacyShapePage(String translationKey, LegacyEnumShape... shapes) {
+        this.translationKey = translationKey;
+        this.shapes = shapes;
+    }
+
+    public int size() {
+        return this.shapes.length;
+    }
+
+    public LegacyEnumShape get(int i) {
+        if (i >= 0 && i < this.shapes.length)
+            return this.shapes[i];
+        return null;
+    }
+
+    public String getLocalizedName() {
+        return I18n.get(this.translationKey);
+    }
+
 }

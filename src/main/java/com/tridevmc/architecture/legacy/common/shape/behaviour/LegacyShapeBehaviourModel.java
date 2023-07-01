@@ -1,7 +1,7 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
-import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import net.minecraft.core.BlockPos;
@@ -12,16 +12,17 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class ShapeBehaviourModel extends ShapeBehaviour {
+@Deprecated
+public class LegacyShapeBehaviourModel extends LegacyShapeBehaviour {
 
     protected String modelName;
     private LegacyOBJSON model;
 
-    public ShapeBehaviourModel(String name) {
+    public LegacyShapeBehaviourModel(String name) {
         this(name, null);
     }
 
-    public ShapeBehaviourModel(String name, Object[] profiles) {
+    public LegacyShapeBehaviourModel(String name, Object[] profiles) {
         this.modelName = "shape/" + name + ".objson";
         this.profiles = profiles;
     }
@@ -44,9 +45,10 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
     @Override
     public boolean acceptsCladding() {
         LegacyOBJSON model = this.getOBJSONModel();
-        for (LegacyOBJSON.Face face : model.getFaces())
+        for (LegacyOBJSON.Face face : model.getFaces()) {
             if (face.getTexture() >= 2)
                 return true;
+        }
         return false;
     }
 
@@ -61,4 +63,5 @@ public class ShapeBehaviourModel extends ShapeBehaviour {
         AABB bounds = shape.bounds();
         return 0.5 * (1 - (bounds.maxX - bounds.minX));
     }
+
 }

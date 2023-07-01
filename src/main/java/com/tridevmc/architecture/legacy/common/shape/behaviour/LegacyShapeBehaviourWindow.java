@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
@@ -16,7 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class ShapeBehaviourWindow extends ShapeBehaviour {
+@Deprecated
+public class LegacyShapeBehaviourWindow extends LegacyShapeBehaviour {
+
     public Direction[] frameSides;
 
     public boolean[] frameAlways;
@@ -28,7 +30,7 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te, LegacyShapeBlockEntity nte, Direction otherFace, LegacyVector3 hit) {
         int turn = -1;
         // If click is on side of a non-window block, orient perpendicular to it
-        if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow))) {
+        if (!player.isCrouching() && (nte == null || !(nte.getArchitectureShape().behaviour instanceof LegacyShapeBehaviourWindow))) {
             switch (otherFace) {
                 case EAST, WEST -> turn = 0;
                 case NORTH, SOUTH -> turn = 1;
@@ -122,13 +124,13 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
         if (thisFrameType != FrameType.NONE) {
             Direction thisOrient = this.frameOrientationForLocalSide(thisLocalDir);
             LegacyShapeBlockEntity nte = te.getConnectedNeighbourGlobal(globalDir);
-            if (nte != null && nte.getArchitectureShape().behaviour instanceof ShapeBehaviourWindow otherType) {
+            if (nte != null && nte.getArchitectureShape().behaviour instanceof LegacyShapeBehaviourWindow otherType) {
                 Direction otherLocalDir = nte.localFace(globalDir.getOpposite());
                 FrameType otherFrameType = otherType.frameTypeForLocalSide(otherLocalDir);
                 if (otherFrameType != FrameType.NONE) {
                     Direction otherOrient = otherType.frameOrientationForLocalSide(otherLocalDir);
                     if (this.framesMatch(thisFrameType, otherFrameType,
-                            te.globalFace(thisOrient), nte.globalFace(otherOrient)))
+                                         te.globalFace(thisOrient), nte.globalFace(otherOrient)))
                         return nte;
                 }
             }
@@ -148,4 +150,5 @@ public class ShapeBehaviourWindow extends ShapeBehaviour {
     }
 
     public enum FrameType {NONE, PLAIN, CORNER}
+
 }

@@ -29,9 +29,9 @@ import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.common.item.ItemShape;
-import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
 import net.minecraft.core.BlockPos;
@@ -61,19 +61,19 @@ import java.util.Map;
 @Deprecated
 public class LegacyBlockShape extends LegacyBlockArchitecture {
 
-    private static final Map<EnumShape, LegacyBlockShape> SHAPE_BLOCKS = Maps.newHashMap();
+    private static final Map<LegacyEnumShape, LegacyBlockShape> SHAPE_BLOCKS = Maps.newHashMap();
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
-    private final EnumShape architectureShape;
+    private final LegacyEnumShape architectureShape;
 
-    public LegacyBlockShape(EnumShape architectureShape) {
+    public LegacyBlockShape(LegacyEnumShape architectureShape) {
         super(MapColor.DIRT);
         this.architectureShape = architectureShape;
-        if(this.architectureShape.behaviour instanceof ShapeBehaviourModel sbm)
+        if(this.architectureShape.behaviour instanceof LegacyShapeBehaviourModel sbm)
             this.setModelAndTextures(sbm.getModelName());
         SHAPE_BLOCKS.put(architectureShape, this);
     }
 
-    public EnumShape getArchitectureShape() {
+    public LegacyEnumShape getArchitectureShape() {
         return this.architectureShape;
     }
 

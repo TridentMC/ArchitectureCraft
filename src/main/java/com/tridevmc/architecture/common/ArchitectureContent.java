@@ -29,7 +29,7 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import com.tridevmc.architecture.common.item.*;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockSawbench;
@@ -72,14 +72,14 @@ public class ArchitectureContent {
     private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
 
     public LegacyBlockSawbench blockSawbench;
-    public Map<EnumShape, LegacyBlockShape> blockShapes;
+    public Map<LegacyEnumShape, LegacyBlockShape> blockShapes;
     public BlockEntityType<LegacyShapeBlockEntity> tileTypeShape;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
-    public Map<EnumShape, ItemShape> itemShapes;
+    public Map<LegacyEnumShape, ItemShape> itemShapes;
     public MenuType<? extends Container> universalMenuType;
 
     @SubscribeEvent
@@ -106,10 +106,10 @@ public class ArchitectureContent {
         );
         registry.register(new ResourceLocation(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
                 .icon(() -> ArchitectureContent.this.itemShapes != null ?
-                        ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
+                        ArchitectureContent.this.itemShapes.get(LegacyEnumShape.ROOF_TILE).getDefaultInstance() :
                         ItemStack.EMPTY)
                 .displayItems((p, o) -> {
-                    for (EnumShape shape : EnumShape.values()) {
+                    for (LegacyEnumShape shape : LegacyEnumShape.values()) {
                         o.accept(new ItemStack(this.itemShapes.get(shape)));
                     }
                 }).build()
@@ -123,7 +123,7 @@ public class ArchitectureContent {
     public void onBlockRegister(RegisterEvent.RegisterHelper<Block> registry) {
         this.blockSawbench = this.registerBlock(registry, "sawbench", new LegacyBlockSawbench());
         this.blockShapes = Maps.newHashMap();
-        for (EnumShape shape : EnumShape.values()) {
+        for (LegacyEnumShape shape : LegacyEnumShape.values()) {
             this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getSerializedName(), new LegacyBlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
         }
     }
@@ -137,7 +137,7 @@ public class ArchitectureContent {
 
         itemBlocksToRegister.forEach(e -> registry.register(e.getLeft(), e.getRight()));
         this.itemShapes = Maps.newHashMap();
-        Arrays.stream(EnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
+        Arrays.stream(LegacyEnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
         ArchitectureMod.PROXY.registerCustomRenderers();
     }
 

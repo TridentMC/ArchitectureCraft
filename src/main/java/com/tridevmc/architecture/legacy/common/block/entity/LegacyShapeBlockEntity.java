@@ -33,7 +33,7 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.model.ModelProperties;
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -177,7 +177,7 @@ public class LegacyShapeBlockEntity extends BlockEntity {
     public boolean applySecondaryMaterial(ItemStack stack, Player player) {
         BlockState materialState = null;
         Item item = stack.getItem();
-        EnumShape architectureShape = this.getArchitectureShape();
+        LegacyEnumShape architectureShape = this.getArchitectureShape();
         if (item instanceof ItemCladding && architectureShape.behaviour.acceptsCladding()) {
             materialState = ((ItemCladding) item).blockStateFromStack(stack);
         } else {
@@ -219,7 +219,7 @@ public class LegacyShapeBlockEntity extends BlockEntity {
         return this.secondaryBlockState;
     }
 
-    public EnumShape getArchitectureShape() {
+    public LegacyEnumShape getArchitectureShape() {
         return this.getBlock().getArchitectureShape();
     }
 

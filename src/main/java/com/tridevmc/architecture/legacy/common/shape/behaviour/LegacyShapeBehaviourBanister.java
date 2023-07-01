@@ -1,11 +1,11 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
+import com.tridevmc.architecture.common.helpers.Profile;
+import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -16,10 +16,10 @@ import net.minecraft.world.level.block.state.properties.Half;
 
 import static net.minecraft.core.Direction.*;
 
+@Deprecated
+public class LegacyShapeBehaviourBanister extends LegacyShapeBehaviourModel {
 
-public class ShapeBehaviourBanister extends ShapeBehaviourModel {
-
-    public ShapeBehaviourBanister(String modelName) {
+    public LegacyShapeBehaviourBanister(String modelName) {
         super(modelName, Profile.Generic.tbOffset);
     }
 
@@ -74,4 +74,5 @@ public class ShapeBehaviourBanister extends ShapeBehaviourModel {
     public double placementOffsetX() {
         return 6 / 16d;
     }
+
 }

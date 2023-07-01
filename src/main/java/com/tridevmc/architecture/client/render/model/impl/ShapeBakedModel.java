@@ -3,8 +3,8 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
 import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import com.tridevmc.architecture.common.model.ModelProperties;
-import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -19,12 +19,12 @@ import java.util.List;
 
 public class ShapeBakedModel implements IArchitectureBakedModel {
 
-    private final EnumShape shape;
+    private final LegacyEnumShape shape;
     private final ShapeModel model;
 
-    public ShapeBakedModel(EnumShape shape, boolean generateUVs) {
+    public ShapeBakedModel(LegacyEnumShape shape, boolean generateUVs) {
         this.shape = shape;
-        this.model = new ShapeModel(this.shape, (ShapeBehaviourModel) this.shape.behaviour, generateUVs);
+        this.model = new ShapeModel(this.shape, (LegacyShapeBehaviourModel) this.shape.behaviour, generateUVs);
     }
 
     @NotNull

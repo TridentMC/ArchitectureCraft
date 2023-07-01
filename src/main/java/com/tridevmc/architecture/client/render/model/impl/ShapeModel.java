@@ -5,8 +5,8 @@ import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResol
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.shape.behaviour.ShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONModel;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSONQuadMetadata;
 
@@ -24,9 +24,9 @@ import java.util.Map;
 public class ShapeModel extends LegacyOBJSONModel {
 
     private static final Map<BlockState, TextureAtlasSprite> SPRITE_CACHE = Maps.newHashMap();
-    private final EnumShape shape;
+    private final LegacyEnumShape shape;
 
-    public ShapeModel(EnumShape shape, ShapeBehaviourModel shapeBehaviour, boolean generateUVs) {
+    public ShapeModel(LegacyEnumShape shape, LegacyShapeBehaviourModel shapeBehaviour, boolean generateUVs) {
         super(ArchitectureMod.PROXY.getCachedOBJSON(shapeBehaviour.getModelName()), false, false);
         this.shape = shape;
     }

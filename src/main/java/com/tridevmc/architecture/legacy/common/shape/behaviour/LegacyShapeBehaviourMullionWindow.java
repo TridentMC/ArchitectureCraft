@@ -1,9 +1,11 @@
-package com.tridevmc.architecture.common.shape.behaviour;
+package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class ShapeBehaviourMullionWindow extends ShapeBehaviourPlainWindow {
+@Deprecated
+public class LegacyShapeBehaviourMullionWindow extends LegacyShapeBehaviourPlainWindow {
+
     @Override
     protected VoxelShape addCentreBoxesToList(double r, double s, LegacyTrans3 t, VoxelShape shape) {
         return t.addBox(-r, -0.5, -s, r, 0.5, s, shape);
@@ -15,4 +17,5 @@ public class ShapeBehaviourMullionWindow extends ShapeBehaviourPlainWindow {
         shape = t.addBox(r, -e[0], -w, e[1], e[2], w, shape);
         return shape;
     }
+
 }

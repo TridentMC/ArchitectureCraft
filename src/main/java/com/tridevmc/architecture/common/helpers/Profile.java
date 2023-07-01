@@ -24,7 +24,7 @@
 
 package com.tridevmc.architecture.common.helpers;
 
-import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import net.minecraft.core.Direction;
 
@@ -35,7 +35,7 @@ public class Profile {
 
     protected static Map<Object, Object> opposites = new HashMap<>();
 
-    public static Object getProfileGlobal(EnumShape shape, int side, int turn, Direction globalFace) {
+    public static Object getProfileGlobal(LegacyEnumShape shape, int side, int turn, Direction globalFace) {
         Direction localFace = LegacyTrans3.sideTurnRotations[side][turn].it(globalFace);
         return shape.behaviour.profileForLocalFace(shape, localFace);
     }
