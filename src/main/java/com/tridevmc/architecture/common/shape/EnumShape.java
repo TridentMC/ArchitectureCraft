@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.common.shape;
 
-import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPointedWithSpin;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
@@ -116,10 +116,10 @@ public enum EnumShape {
 
     private final int id;
     private final String translationKey;
-    private final ShapePlacementLogic placementLogic;
+    private final IShapePlacementLogic placementLogic;
     private final IShapeTransformationResolver transformationResolver;
 
-    EnumShape(int id, String translationKey, ShapePlacementLogic placementLogic,
+    EnumShape(int id, String translationKey, IShapePlacementLogic placementLogic,
               IShapeTransformationResolver transformationResolver) {
         this.id = id;
         this.translationKey = translationKey;

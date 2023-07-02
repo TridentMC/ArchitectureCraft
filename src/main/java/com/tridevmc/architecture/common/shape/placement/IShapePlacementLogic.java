@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Defines a set of rules for placing a shape in the world, returning a {@link com.tridevmc.architecture.common.shape.orientation.ShapeOrientation} for the shape to be placed.
  */
-public abstract class ShapePlacementLogic {
+@FunctionalInterface
+public interface IShapePlacementLogic {
 
     /**
      * Gets the {@link com.tridevmc.architecture.common.shape.orientation.ShapeOrientation} for the shape to be placed at the given position.
@@ -23,7 +24,7 @@ public abstract class ShapePlacementLogic {
      * @return the orientation for the shape to be placed.
      */
     @NotNull
-    public abstract ShapeOrientation getShapeOrientationForPlacement(
+    ShapeOrientation getShapeOrientationForPlacement(
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,

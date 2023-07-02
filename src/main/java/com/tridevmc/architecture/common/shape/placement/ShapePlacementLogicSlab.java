@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An implementation of {@link ShapePlacementLogic} intended to emulate vanilla slab placement logic but providing
+ * An implementation of {@link IShapePlacementLogic} intended to emulate vanilla slab placement logic but providing
  * support for slabs to be placed on walls when the player is crouching.
  */
-public class ShapePlacementLogicSlab extends ShapePlacementLogic {
+public class ShapePlacementLogicSlab implements IShapePlacementLogic {
 
-    public static final ShapePlacementLogic INSTANCE = new ShapePlacementLogicSlab();
+    public static final IShapePlacementLogic INSTANCE = new ShapePlacementLogicSlab();
 
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level,

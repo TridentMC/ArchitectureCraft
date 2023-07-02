@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Implementation of {@link ShapePlacementLogic} that points the shape based on the player's look vector.
+ * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector.
  */
-public class ShapePlacementLogicPointed extends ShapePlacementLogic {
+public class ShapePlacementLogicPointed implements IShapePlacementLogic {
 
     public static final ShapePlacementLogicPointed INSTANCE = new ShapePlacementLogicPointed();
 

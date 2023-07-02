@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Simple implementation of {@link ShapePlacementLogic} that always returns {@link ShapeOrientation#IDENTITY}.
+ * Simple implementation of {@link IShapePlacementLogic} that always returns {@link ShapeOrientation#IDENTITY}.
  * <p>
  * Useful for shapes that wouldn't be impacted by rotation like a sphere.
  */
-public class ShapePlacementLogicStatic extends ShapePlacementLogic {
+public class ShapePlacementLogicStatic implements IShapePlacementLogic {
 
     public static final ShapePlacementLogicStatic INSTANCE = new ShapePlacementLogicStatic();
 

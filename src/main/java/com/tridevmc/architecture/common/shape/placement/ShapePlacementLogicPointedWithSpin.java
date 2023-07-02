@@ -13,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Implementation of {@link ShapePlacementLogic} that points the shape based on the player's look vector, and spins
+ * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector, and spins
  * the shape based on the side of the block the player clicked on during placement.
  */
-public class ShapePlacementLogicPointedWithSpin extends ShapePlacementLogic {
+public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic {
 
     public static final ShapePlacementLogicPointedWithSpin INSTANCE = new ShapePlacementLogicPointedWithSpin();
 
