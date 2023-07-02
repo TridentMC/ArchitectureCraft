@@ -8,6 +8,10 @@ public class ShapeOrientationPropertySpin extends ShapeOrientationProperty<EnumS
         super("spin", EnumSpin.class, EnumSpin.getValues());
     }
 
+    public static ShapeOrientationPropertySpin getInstance() {
+        return INSTANCE;
+    }
+
     public static Value<EnumSpin> of(EnumSpin value) {
         return INSTANCE.findValue(value);
     }

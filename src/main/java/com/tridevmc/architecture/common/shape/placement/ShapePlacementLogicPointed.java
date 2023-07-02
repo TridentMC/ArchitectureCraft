@@ -15,13 +15,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ShapePlacementLogicPointed extends ShapePlacementLogic {
 
+    public static final ShapePlacementLogicPointed INSTANCE = new ShapePlacementLogicPointed();
+
     @Override
     @NotNull
     public ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level, @NotNull BlockPos placementPos, @NotNull Player placer, @Nullable BlockHitResult hitResult) {
         // Pointed can point any direction, and is determined by the player's look vector.
         // If the player is crouching, then the orientation will point towards their look vector instead of at the player.
         Direction nearest = Direction.orderedByNearest(placer)[0].getOpposite();
-        return new ShapeOrientation(
+        return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyFacing.of(placer.isCrouching() ? nearest.getOpposite() : nearest)
         );
     }

@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ShapePlacementLogicPointedWithSpin extends ShapePlacementLogic {
 
+    public static final ShapePlacementLogicPointedWithSpin INSTANCE = new ShapePlacementLogicPointedWithSpin();
+
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level,
                                                                      @NotNull BlockPos placementPos,
@@ -58,7 +60,7 @@ public class ShapePlacementLogicPointedWithSpin extends ShapePlacementLogic {
             case EAST -> EnumSpin.THREE_QUARTER;
         };
 
-        return new ShapeOrientation(
+        return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyFacing.of(facing),
                 ShapeOrientationPropertySpin.of(spin)
         );

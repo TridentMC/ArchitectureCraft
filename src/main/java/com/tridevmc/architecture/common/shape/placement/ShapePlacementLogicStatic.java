@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ShapePlacementLogicStatic extends ShapePlacementLogic {
 
+    public static final ShapePlacementLogicStatic INSTANCE = new ShapePlacementLogicStatic();
+
     @Override
     @NotNull
     public ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level,
