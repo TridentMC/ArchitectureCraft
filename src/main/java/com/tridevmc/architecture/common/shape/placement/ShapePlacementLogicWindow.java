@@ -99,9 +99,9 @@ public class ShapePlacementLogicWindow<T extends BlockArchitecture & INeighbourC
         }
 
         // Now determine the offset, which is based on which third of the block the player clicked on.
-        var hitX = hitResult.getLocation().x - placementPos.getX();
-        var hitY = hitResult.getLocation().y - placementPos.getY();
-        var hitZ = hitResult.getLocation().z - placementPos.getZ();
+        var hitX = hitResult != null ? hitResult.getLocation().x - placementPos.getX() : 0.5;
+        var hitY = hitResult != null ? hitResult.getLocation().y - placementPos.getY() : 0.5;
+        var hitZ = hitResult != null ? hitResult.getLocation().z - placementPos.getZ() : 0.5;
         var offset = switch (axis) {
             case X -> hitX < 1D / 3D
                     ? EnumPlacementOffset.FRONT
