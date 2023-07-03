@@ -54,4 +54,8 @@ public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> e
 
     }
 
+    protected int order() {
+        return this.getName().hashCode();
+    }
+
 }

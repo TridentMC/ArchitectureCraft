@@ -116,10 +116,10 @@ public enum EnumShape {
 
     private final int id;
     private final String translationKey;
-    private final IShapePlacementLogic placementLogic;
+    private final IShapePlacementLogic<?> placementLogic;
     private final IShapeTransformationResolver transformationResolver;
 
-    EnumShape(int id, String translationKey, IShapePlacementLogic placementLogic,
+    EnumShape(int id, String translationKey, IShapePlacementLogic<?> placementLogic,
               IShapeTransformationResolver transformationResolver) {
         this.id = id;
         this.translationKey = translationKey;

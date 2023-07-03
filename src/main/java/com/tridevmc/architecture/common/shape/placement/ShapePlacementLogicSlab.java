@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
 import net.minecraft.core.BlockPos;
@@ -14,15 +15,17 @@ import org.jetbrains.annotations.Nullable;
  * An implementation of {@link IShapePlacementLogic} intended to emulate vanilla slab placement logic but providing
  * support for slabs to be placed on walls when the player is crouching.
  */
-public class ShapePlacementLogicSlab implements IShapePlacementLogic {
+public class ShapePlacementLogicSlab implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final IShapePlacementLogic INSTANCE = new ShapePlacementLogicSlab();
 
     @Override
-    public @NotNull ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level,
-                                                                     @NotNull BlockPos placementPos,
-                                                                     @NotNull Player placer,
-                                                                     @Nullable BlockHitResult hitResult) {
+    public @NotNull ShapeOrientation getShapeOrientationForPlacement(
+            @NotNull BlockArchitecture beingPlaced,
+            @NotNull Level level,
+            @NotNull BlockPos placementPos,
+            @NotNull Player placer,
+            @Nullable BlockHitResult hitResult) {
         // If the player isn't crouching then we're just doing normal slab placement
         if (!placer.isCrouching()) {
             var faceClicked = hitResult.getDirection();

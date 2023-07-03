@@ -17,9 +17,9 @@ public class ShapeTransformationResolverPointedWithSpin implements IShapeTransfo
     @Override
     public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
         // Assumes the object is facing NORTH, so rotate accordingly
-        var facingValue = orientation.getValue(ShapeOrientationPropertyFacing.getInstance());
+        var facingValue = orientation.getValue(ShapeOrientationPropertyFacing.INSTANCE);
         var facing = facingValue != null ? facingValue.value() : Direction.NORTH;
-        var spinValue = orientation.getValue(ShapeOrientationPropertySpin.getInstance());
+        var spinValue = orientation.getValue(ShapeOrientationPropertySpin.INSTANCE);
         var spin = spinValue != null ? spinValue.value() : EnumSpin.NONE;
 
         // Because the translation rotation function applies in the XYZ order we can just pass everything in at once.

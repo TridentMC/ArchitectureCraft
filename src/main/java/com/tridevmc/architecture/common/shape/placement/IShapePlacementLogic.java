@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -12,11 +13,12 @@ import org.jetbrains.annotations.Nullable;
  * Defines a set of rules for placing a shape in the world, returning a {@link com.tridevmc.architecture.common.shape.orientation.ShapeOrientation} for the shape to be placed.
  */
 @FunctionalInterface
-public interface IShapePlacementLogic {
+public interface IShapePlacementLogic<T extends BlockArchitecture> {
 
     /**
      * Gets the {@link com.tridevmc.architecture.common.shape.orientation.ShapeOrientation} for the shape to be placed at the given position.
      *
+     * @param beingPlaced  the shape being placed, usually a reference to the block.
      * @param level        the level the shape is being placed in.
      * @param placementPos the position the shape is being placed at.
      * @param placer       the player placing the shape.
@@ -25,6 +27,7 @@ public interface IShapePlacementLogic {
      */
     @NotNull
     ShapeOrientation getShapeOrientationForPlacement(
+            @NotNull T beingPlaced,
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,

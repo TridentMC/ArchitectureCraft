@@ -7,16 +7,11 @@ import java.util.Collection;
 
 public class ShapeOrientationPropertyFacing extends ShapeOrientationProperty<Direction> {
 
-    private static final ShapeOrientationPropertyFacing INSTANCE = new ShapeOrientationPropertyFacing();
+    public static final ShapeOrientationPropertyFacing INSTANCE = new ShapeOrientationPropertyFacing();
 
-    private static final Collection<Direction> ALL_DIRECTIONS = Arrays.asList(Direction.values());
 
     protected ShapeOrientationPropertyFacing() {
-        super("spin", Direction.class, ALL_DIRECTIONS);
-    }
-
-    public static ShapeOrientationPropertyFacing getInstance() {
-        return INSTANCE;
+        super("facing", Direction.class, Arrays.asList(Direction.values()));
     }
 
     public static Value<Direction> of(Direction value) {

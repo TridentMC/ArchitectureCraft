@@ -18,7 +18,7 @@ public class ShapeTransformationResolverSlab implements IShapeTransformationReso
 
     @Override
     public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
-        ShapeOrientationProperty.Value<Direction> facingValue = orientation.getValue(ShapeOrientationPropertyFacing.getInstance());
+        ShapeOrientationProperty.Value<Direction> facingValue = orientation.getValue(ShapeOrientationPropertyFacing.INSTANCE);
         Direction facing = facingValue != null ? facingValue.value() : Direction.NORTH;
 
         // Slabs are on the bottom half of the block by default. If the block is facing up, we need to move it up by half a block.

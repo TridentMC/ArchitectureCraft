@@ -24,8 +24,11 @@
 
 package com.tridevmc.architecture.common;
 
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.proxy.ClientProxy;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
 import com.tridevmc.compound.network.core.CompoundNetwork;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
@@ -55,6 +58,8 @@ public class ArchitectureMod {
         loadingContext.getModEventBus().register(PROXY);
         MinecraftForge.EVENT_BUS.register(CONTENT);
         MinecraftForge.EVENT_BUS.register(PROXY);
+        ImmutableList<ShapeOrientation> cache = ShapePlacementLogicWindow.CACHE;
+        System.out.println(cache);
     }
 
     public void onSetup(FMLCommonSetupEvent e) {

@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
@@ -16,15 +17,17 @@ import org.jetbrains.annotations.Nullable;
  * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector, and spins
  * the shape based on the side of the block the player clicked on during placement.
  */
-public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic {
+public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final ShapePlacementLogicPointedWithSpin INSTANCE = new ShapePlacementLogicPointedWithSpin();
 
     @Override
-    public @NotNull ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level,
-                                                                     @NotNull BlockPos placementPos,
-                                                                     @NotNull Player placer,
-                                                                     @Nullable BlockHitResult hitResult) {
+    public @NotNull ShapeOrientation getShapeOrientationForPlacement(
+            @NotNull BlockArchitecture beingPlaced,
+            @NotNull Level level,
+            @NotNull BlockPos placementPos,
+            @NotNull Player placer,
+            @Nullable BlockHitResult hitResult) {
         // Pointed can point any direction, and is determined by the player's look vector.
         // If the player is crouching, then the orientation will point towards their look vector instead of at the player.
         // The spin is determined by the side of the block the player clicked on, again this is reversed if the player is crouching.

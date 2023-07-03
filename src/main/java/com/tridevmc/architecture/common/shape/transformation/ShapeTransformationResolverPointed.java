@@ -19,7 +19,7 @@ public class ShapeTransformationResolverPointed implements IShapeTransformationR
     @Override
     public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
         // Assumes the object is facing NORTH, so rotate accordingly
-        ShapeOrientationProperty.Value<Direction> facingValue = orientation.getValue(ShapeOrientationPropertyFacing.getInstance());
+        ShapeOrientationProperty.Value<Direction> facingValue = orientation.getValue(ShapeOrientationPropertyFacing.INSTANCE);
         Direction facing = facingValue != null ? facingValue.value() : Direction.NORTH;
 
         return switch (facing) {

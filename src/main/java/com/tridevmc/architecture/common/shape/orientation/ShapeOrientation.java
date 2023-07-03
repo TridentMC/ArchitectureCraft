@@ -40,7 +40,7 @@ public record ShapeOrientation(
 
         public ShapeOrientation get(ShapeOrientationProperty.Value<?>... properties) {
             var node = this.root;
-            for (ShapeOrientationProperty.Value<?> property : Arrays.stream(properties).sorted(Comparator.comparingInt(p -> p.property().hashCode())).toList()) {
+            for (ShapeOrientationProperty.Value<?> property : Arrays.stream(properties).sorted(Comparator.comparingInt(p -> p.property().order())).toList()) {
                 node = node.get(property);
             }
             return node.orientation;
@@ -54,8 +54,8 @@ public record ShapeOrientation(
 
         public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2) {
             var node = this.root;
-            var prop1 = property1.property().hashCode();
-            var prop2 = property2.property().hashCode();
+            var prop1 = property1.property().order();
+            var prop2 = property2.property().order();
             node = node.get(prop1 < prop2 ? property1 : property2);
             node = node.get(prop1 < prop2 ? property2 : property1);
             return node.orientation;
@@ -63,9 +63,9 @@ public record ShapeOrientation(
 
         public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2, ShapeOrientationProperty.Value<?> property3) {
             var node = this.root;
-            var prop1 = property1.property().hashCode();
-            var prop2 = property2.property().hashCode();
-            var prop3 = property3.property().hashCode();
+            var prop1 = property1.property().order();
+            var prop2 = property2.property().order();
+            var prop3 = property3.property().order();
             // My brain hurts.
             node = node.get(prop1 < prop2 ? (prop1 < prop3 ? property1 : property3) : (prop2 < prop3 ? property2 : property3));
             node = node.get(prop1 < prop2 ? (prop2 < prop3 ? property2 : property3) : (prop1 < prop3 ? property1 : property3));

@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
 import net.minecraft.core.BlockPos;
@@ -13,13 +14,18 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector.
  */
-public class ShapePlacementLogicPointed implements IShapePlacementLogic {
+public class ShapePlacementLogicPointed implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final ShapePlacementLogicPointed INSTANCE = new ShapePlacementLogicPointed();
 
     @Override
     @NotNull
-    public ShapeOrientation getShapeOrientationForPlacement(@NotNull Level level, @NotNull BlockPos placementPos, @NotNull Player placer, @Nullable BlockHitResult hitResult) {
+    public ShapeOrientation getShapeOrientationForPlacement(
+            @NotNull BlockArchitecture beingPlaced,
+            @NotNull Level level,
+            @NotNull BlockPos placementPos,
+            @NotNull Player placer,
+            @Nullable BlockHitResult hitResult) {
         // Pointed can point any direction, and is determined by the player's look vector.
         // If the player is crouching, then the orientation will point towards their look vector instead of at the player.
         Direction nearest = Direction.orderedByNearest(placer)[0].getOpposite();
