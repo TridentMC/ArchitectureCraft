@@ -90,6 +90,8 @@ public class ShapePlacementLogicWindow<T extends BlockArchitecture & INeighbourC
         var nearestDirections = Direction.orderedByNearest(placer);
         var axis = nearestDirections[0].getAxis();
         if (placer.isCrouching() && axis == Direction.Axis.Y) {
+            // We're trying to avoid allocations, so just loop with an index and not a for-each
+            //noinspection ForLoopReplaceableByForEach
             for (int i = 0; i < nearestDirections.length; i++) {
                 if (nearestDirections[i].getAxis() != Direction.Axis.Y) {
                     axis = nearestDirections[i].getAxis();
