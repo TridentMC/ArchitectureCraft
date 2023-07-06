@@ -49,6 +49,7 @@ public enum EnumShape {
     WINDOW_CORNER("window_corner", null, null),
     WINDOW_MULLION("window_mullion", null, null),
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
+    WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
 
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
     SPHERE_HALF("sphere_half", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
@@ -74,14 +75,14 @@ public enum EnumShape {
 
     CLADDING_SHEET("cladding_sheet", null, null),
 
-    ARCH_D_1("arch_d_1", null, null),
-    ARCH_D_2("arch_d_2", null, null),
-    ARCH_D_3_A("arch_d_3_a", null, null),
-    ARCH_D_3_B("arch_d_3_b", null, null),
-    ARCH_D_3_C("arch_d_3_c", null, null),
-    ARCH_D_4_A("arch_d_4_a", null, null),
-    ARCH_D_4_B("arch_d_4_b", null, null),
-    ARCH_D_4_C("arch_d_4_c", null, null),
+    ARCH_D_1("arch_d_1", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_2("arch_d_2", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_3_A("arch_d_3_a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_3_B("arch_d_3_b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_3_C("arch_d_3_c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_4_A("arch_d_4_a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_4_B("arch_d_4_b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D_4_C("arch_d_4_c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
     BANISTER_PLAIN("banister_plain", null, null),
