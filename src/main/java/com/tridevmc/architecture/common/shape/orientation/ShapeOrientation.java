@@ -1,5 +1,7 @@
 package com.tridevmc.architecture.common.shape.orientation;
 
+import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
+import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -97,6 +99,7 @@ public record ShapeOrientation(
 
     /**
      * Gets an orientation with the given properties, creating one if a cached entry cannot be found.
+     *
      * @param property1 the first property to get an orientation for.
      * @param property2 the second property to get an orientation for.
      * @return the orientation with the given properties.
@@ -107,6 +110,7 @@ public record ShapeOrientation(
 
     /**
      * Gets an orientation with the given properties, creating one if a cached entry cannot be found.
+     *
      * @param property1 the first property to get an orientation for.
      * @param property2 the second property to get an orientation for.
      * @param property3 the third property to get an orientation for.
@@ -114,6 +118,23 @@ public record ShapeOrientation(
      */
     public static ShapeOrientation forProperties(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2, ShapeOrientationProperty.Value<?> property3) {
         return CACHE.get(property1, property2, property3);
+    }
+
+    /**
+     * Gets an orientation for the given block state, creating one if a cached entry cannot be found.
+     *
+     * @param state the state to get an orientation for.
+     * @return the orientation for the given state.
+     */
+    public static ShapeOrientation forState(BlockStateShape state) {
+        // Iterate over all properties and find any that are instances of ShapeOrientationProperty.
+        var properties = state.getProperties()
+                .stream()
+                .filter(p -> p instanceof ShapeOrientationProperty<?>)
+                .map(p -> (ShapeOrientationProperty<?>) p)
+                .map(p -> p.findValue(state.getValue(p)))
+                .toArray(ShapeOrientationProperty.Value<?>[]::new);
+        return forProperties(properties);
     }
 
     /**
@@ -150,7 +171,7 @@ public record ShapeOrientation(
         }
     }
 
-    public  <V extends Enum<V> & StringRepresentable> ShapeOrientationProperty.Value<V> getValue(ShapeOrientationProperty<V> property) {
+    public <V extends Enum<V> & StringRepresentable> ShapeOrientationProperty.Value<V> getValue(ShapeOrientationProperty<V> property) {
         for (ShapeOrientationProperty.Value<?> prop : this.properties) {
             if (prop.property() == property) {
                 return (ShapeOrientationProperty.Value<V>) prop;

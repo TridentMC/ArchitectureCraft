@@ -1,11 +1,9 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.EnumRelativeDirection;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyAxis;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
+import com.tridevmc.architecture.common.shape.orientation.*;
 import com.tridevmc.architecture.common.shape.rule.INeighbourConnectionRule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -61,6 +59,14 @@ public class ShapePlacementLogicWindowFrame<T extends BlockArchitecture & INeigh
         CACHE = ImmutableList.copyOf(orientations);
     }
 
+    private final ImmutableList<ShapeOrientationProperty<?>> properties = ImmutableList.of(
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.BOTTOM),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.TOP),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.RIGHT),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.LEFT),
+            ShapeOrientationPropertyAxis.INSTANCE
+    );
+
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
             @NotNull T beingPlaced,
@@ -102,5 +108,11 @@ public class ShapePlacementLogicWindowFrame<T extends BlockArchitecture & INeigh
         var neighbourPos = placementPos.relative(neigbourDirection);
         var neighbourState = level.getBlockState(neighbourPos);
         return beingPlaced.connectsToOnSide(neighbourState, neigbourDirection);
+    }
+
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return this.properties;
     }
 }

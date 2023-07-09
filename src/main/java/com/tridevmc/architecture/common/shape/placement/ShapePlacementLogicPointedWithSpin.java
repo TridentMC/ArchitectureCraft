@@ -1,10 +1,9 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
-import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
+import com.tridevmc.architecture.common.shape.orientation.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +19,10 @@ import org.jetbrains.annotations.Nullable;
 public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final ShapePlacementLogicPointedWithSpin INSTANCE = new ShapePlacementLogicPointedWithSpin();
+    private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
+            ShapeOrientationPropertyFacing.INSTANCE,
+            ShapeOrientationPropertySpin.INSTANCE
+    );
 
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
@@ -67,6 +70,12 @@ public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<
                 ShapeOrientationPropertyFacing.of(facing),
                 ShapeOrientationPropertySpin.of(spin)
         );
+    }
+
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return this.properties;
     }
 
 }

@@ -1,11 +1,13 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyAxis;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyConnection;
 import com.tridevmc.architecture.common.shape.rule.INeighbourConnectionRule;
-import com.tridevmc.architecture.core.ArchitectureLog;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -13,8 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
 
 /**
  * An implementation of {@link IShapePlacementLogic} that places blocks in a window-like fashion.
@@ -70,6 +70,16 @@ public class ShapePlacementLogicWindow<T extends BlockArchitecture & INeighbourC
         CACHE = ImmutableList.copyOf(orientations);
     }
 
+    private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
+            ShapeOrientationPropertyAxis.INSTANCE,
+            ShapeOrientationPropertyConnection.DOWN,
+            ShapeOrientationPropertyConnection.UP,
+            ShapeOrientationPropertyConnection.NORTH,
+            ShapeOrientationPropertyConnection.SOUTH,
+            ShapeOrientationPropertyConnection.WEST,
+            ShapeOrientationPropertyConnection.EAST
+    );
+
     @Override
     @NotNull
     public ShapeOrientation getShapeOrientationForPlacement(
@@ -104,5 +114,11 @@ public class ShapePlacementLogicWindow<T extends BlockArchitecture & INeighbourC
         lookup |= axis.ordinal() << 6;
 
         return CACHE.get(lookup);
+    }
+
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return this.properties;
     }
 }

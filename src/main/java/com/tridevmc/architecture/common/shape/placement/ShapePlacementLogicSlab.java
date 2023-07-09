@@ -1,7 +1,10 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +20,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ShapePlacementLogicSlab implements IShapePlacementLogic<BlockArchitecture> {
 
-    public static final IShapePlacementLogic INSTANCE = new ShapePlacementLogicSlab();
+    public static final ShapePlacementLogicSlab INSTANCE = new ShapePlacementLogicSlab();
+    private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
+            ShapeOrientationPropertyFacing.INSTANCE
+    );
 
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
@@ -43,4 +49,9 @@ public class ShapePlacementLogicSlab implements IShapePlacementLogic<BlockArchit
         }
     }
 
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return this.properties;
+    }
 }

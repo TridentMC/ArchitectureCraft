@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.*;
@@ -56,6 +57,15 @@ public class ShapePlacementLogicWindowCorner<T extends BlockArchitecture & INeig
         CACHE = ImmutableList.copyOf(orientations);
     }
 
+    private final ImmutableList<ShapeOrientationProperty<?>> properties = ImmutableList.of(
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.BOTTOM),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.TOP),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.RIGHT),
+            ShapeOrientationPropertyRelativeConnection.forRelativeDirection(EnumRelativeDirection.LEFT),
+            ShapeOrientationPropertyFacing.INSTANCE,
+            ShapeOrientationPropertyAxis.INSTANCE
+    );
+
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
             @NotNull T beingPlaced,
@@ -106,5 +116,11 @@ public class ShapePlacementLogicWindowCorner<T extends BlockArchitecture & INeig
         var neighbourPos = placementPos.relative(neigbourDirection);
         var neighbourState = level.getBlockState(neighbourPos);
         return beingPlaced.connectsToOnSide(neighbourState, neigbourDirection);
+    }
+
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return this.properties;
     }
 }

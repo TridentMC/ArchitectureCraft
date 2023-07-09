@@ -1,7 +1,10 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -27,6 +30,12 @@ public class ShapePlacementLogicStatic implements IShapePlacementLogic<BlockArch
             @NotNull Player placer,
             @Nullable BlockHitResult hitResult) {
         return ShapeOrientation.IDENTITY;
+    }
+
+    @Override
+    @NotNull
+    public ImmutableCollection<ShapeOrientationProperty<?>> getProperties() {
+        return ImmutableList.of();
     }
 
 }
