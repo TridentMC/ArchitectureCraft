@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Simple implementation of {@link IShapePlacementLogic} that always returns {@link ShapeOrientation#IDENTITY}.
@@ -28,7 +27,7 @@ public class ShapePlacementLogicStatic implements IShapePlacementLogic<BlockArch
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         return ShapeOrientation.IDENTITY;
     }
 

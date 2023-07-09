@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines a set of rules for placing a shape in the world, returning a {@link com.tridevmc.architecture.common.shape.orientation.ShapeOrientation} for the shape to be placed.
@@ -32,7 +31,7 @@ public interface IShapePlacementLogic<T extends BlockArchitecture> {
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult
+            @NotNull BlockHitResult hitResult
     );
 
     @NotNull ImmutableCollection<ShapeOrientationProperty<?>> getProperties();

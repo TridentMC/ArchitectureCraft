@@ -10,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector, and spins
@@ -30,7 +29,7 @@ public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         // Pointed can point any direction, and is determined by the player's look vector.
         // If the player is crouching, then the orientation will point towards their look vector instead of at the player.
         // The spin is determined by the side of the block the player clicked on, again this is reversed if the player is crouching.
@@ -45,7 +44,7 @@ public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<
         // if player clicked on the north side of block then EnumSpin.HALF
         // if player clicked on the south side of block then EnumSpin.NONE
         // All of these rules are rotated based on the facing of the block.
-        var hitSide = hitResult != null ? hitResult.getDirection() : Direction.UP;
+        var hitSide = hitResult.getDirection();
         hitSide = placer.isCrouching() ? hitSide.getOpposite() : hitSide;
         var spin = EnumSpin.NONE;
         // Rotate the hit side to match the facing of the block.

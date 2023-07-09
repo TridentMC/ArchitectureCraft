@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.placement.*;
 import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverOnAxis;
@@ -128,5 +129,23 @@ public enum EnumShape {
         this.translationKey = name;
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
+    }
+
+    public ResourceLocation getId() {
+        return this.id;
+    }
+
+    public String getTranslationKey() {
+        return this.translationKey;
+    }
+
+    public <T extends BlockArchitecture> IShapePlacementLogic<T> getPlacementLogic() {
+        // We're just using the minimum bounds of the interface so this is perfectly safe
+        // noinspection unchecked
+        return (IShapePlacementLogic<T>) this.placementLogic;
+    }
+
+    public IShapeTransformationResolver getTransformationResolver() {
+        return this.transformationResolver;
     }
 }

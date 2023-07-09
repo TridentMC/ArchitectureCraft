@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An implementation of {@link IShapePlacementLogic} intended to emulate vanilla slab placement logic but providing
@@ -31,7 +30,7 @@ public class ShapePlacementLogicSlab implements IShapePlacementLogic<BlockArchit
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         // If the player isn't crouching then we're just doing normal slab placement
         if (!placer.isCrouching()) {
             var faceClicked = hitResult.getDirection();

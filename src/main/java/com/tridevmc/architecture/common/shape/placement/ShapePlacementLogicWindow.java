@@ -14,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An implementation of {@link IShapePlacementLogic} that places blocks in a window-like fashion.
@@ -87,7 +86,7 @@ public class ShapePlacementLogicWindow<T extends BlockArchitecture & INeighbourC
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         // First we'll determine the axis of the window, which is the direction the player is looking excluding up and down unless crouching.
         var nearestDirections = Direction.orderedByNearest(placer);
         var axis = nearestDirections[0].getAxis();

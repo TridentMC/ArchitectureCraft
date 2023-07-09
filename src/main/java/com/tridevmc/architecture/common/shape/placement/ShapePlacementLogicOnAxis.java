@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implementation of {@link IShapePlacementLogic} that sets the axis of the shape based on the side of the block clicked.
@@ -30,9 +29,9 @@ public class ShapePlacementLogicOnAxis implements IShapePlacementLogic<BlockArch
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         // The axis is just the same as the axis of the side clicked.
-        var axis = hitResult != null ? hitResult.getDirection().getAxis() : Direction.Axis.Y;
+        var axis = hitResult.getDirection().getAxis();
         return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyAxis.of(axis)
         );

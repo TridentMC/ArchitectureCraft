@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ShapePlacementLogicWindowCorner<T extends BlockArchitecture & INeighbourConnectionRule> implements IShapePlacementLogic<T> {
 
@@ -72,7 +71,7 @@ public class ShapePlacementLogicWindowCorner<T extends BlockArchitecture & INeig
             @NotNull Level level,
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
-            @Nullable BlockHitResult hitResult) {
+            @NotNull BlockHitResult hitResult) {
         // Determine the axis from the player's look direction, only using the Y axis if the player is crouching
         var nearestDirections = Direction.orderedByNearest(placer);
         var nearest = nearestDirections[0].getOpposite();
