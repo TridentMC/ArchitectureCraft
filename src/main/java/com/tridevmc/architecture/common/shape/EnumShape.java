@@ -8,6 +8,9 @@ import com.tridevmc.architecture.common.shape.transformation.ShapeTransformation
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
 import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.model.Voxelizer;
+import com.tridevmc.architecture.core.model.mesh.IMesh;
+import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.resources.ResourceLocation;
 
 public enum EnumShape {
@@ -135,6 +138,10 @@ public enum EnumShape {
         return this.id;
     }
 
+    public ResourceLocation getAssetLocation() {
+        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shapes/%s.objson", this.translationKey));
+    }
+
     public String getTranslationKey() {
         return this.translationKey;
     }
@@ -147,5 +154,13 @@ public enum EnumShape {
 
     public IShapeTransformationResolver getTransformationResolver() {
         return this.transformationResolver;
+    }
+
+    public IMesh<String, PolygonData> getMesh() {
+        return ShapeMeshes.getMesh(this);
+    }
+
+    public Voxelizer getVoxelizer() {
+        return ShapeMeshes.getVoxelizer(this);
     }
 }

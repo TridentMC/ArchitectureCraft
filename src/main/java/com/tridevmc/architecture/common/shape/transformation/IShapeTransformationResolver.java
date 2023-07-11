@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape.transformation;
 
+import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.core.math.ITrans3;
 import org.jetbrains.annotations.NotNull;
@@ -21,5 +22,16 @@ public interface IShapeTransformationResolver {
     @NotNull
     ITrans3 resolve(@NotNull ShapeOrientation orientation);
 
+
+    /**
+     * Resolves the given BlockStateShape into a Trans3 that can be used to transform a shape for collision or rendering.
+     *
+     * @param state the state to resolve.
+     * @return the resolved transformation.
+     */
+    @NotNull
+    default ITrans3 resolve(@NotNull BlockStateShape state) {
+        return this.resolve(state.getOrientation());
+    }
 
 }
