@@ -17,31 +17,34 @@ import net.minecraft.world.level.block.state.BlockState;
 public interface IModelResolver<D> {
 
     /**
-     * Gets the quad metadata resolver for the given ItemStack.
+     * Gets the quad metadata resolver for the model, additional context is provided to the resolver itself.
      *
-     * @param stack The ItemStack to get the resolver for.
      * @return The quad metadata resolver.
      */
-    IQuadMetadataResolver<D> getMetadataResolver(ItemStack stack);
-
-    /**
-     * Gets the quad metadata resolver for the given LevelAccessor, BlockPos and BlockState.
-     *
-     * @param level The LevelAccessor to get the resolver for.
-     * @param pos   The BlockPos to get the resolver for.
-     * @param state The BlockState to get the resolver for.
-     * @return The quad metadata resolver.
-     */
-    IQuadMetadataResolver<D> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state);
+    IQuadMetadataResolver<D> getMetadataResolver();
 
     /**
      * Gets the baked quads for the given quad metadata resolver and transformation.
      *
+     * @param level     The LevelAccessor to get quads for.
+     * @param pos       The BlockPos to get quads for.
+     * @param state     The BlockState to get quads for.
      * @param resolver  The quad metadata resolver to use.
      * @param transform The transformation to apply to the quads.
      * @return The baked quads.
      */
-    IBakedQuadContainer getQuads(IQuadMetadataResolver<D> resolver, ITrans3 transform);
+    IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state,
+                                 IQuadMetadataResolver<D> resolver, ITrans3 transform);
+
+    /**
+     * Gets the baked quads for the given quad metadata resolver and transformation.
+     *
+     * @param stack     The ItemStack to get quads for.
+     * @param resolver  The quad metadata resolver to use.
+     * @param transform The transformation to apply to the quads.
+     * @return The baked quads.
+     */
+    IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<D> resolver, ITrans3 transform);
 
     /**
      * Gets the default sprite for this model.
@@ -49,16 +52,6 @@ public interface IModelResolver<D> {
      * @return The default sprite.
      */
     TextureAtlasSprite getDefaultSprite();
-
-    /**
-     * Gets the baked quads for the given quad metadata resolver.
-     *
-     * @param resolver The quad metadata resolver to use.
-     * @return The baked quads.
-     */
-    default IBakedQuadContainer getQuads(IQuadMetadataResolver<D> resolver) {
-        return this.getQuads(resolver, ITrans3.ofIdentity());
-    }
 
     /**
      * Gets the baked quads for the given LevelAccessor, BlockPos and BlockState and transformation.
@@ -70,7 +63,7 @@ public interface IModelResolver<D> {
      * @return The baked quads.
      */
     default IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state, ITrans3 transform) {
-        return this.getQuads(this.getMetadataResolver(level, pos, state), transform);
+        return this.getQuads(level, pos, state, this.getMetadataResolver(), transform);
     }
 
     /**
@@ -93,7 +86,7 @@ public interface IModelResolver<D> {
      * @return The baked quads.
      */
     default IBakedQuadContainer getQuads(ItemStack stack, ITrans3 transform) {
-        return this.getQuads(this.getMetadataResolver(stack), transform);
+        return this.getQuads(stack, this.getMetadataResolver(), transform);
     }
 
     /**

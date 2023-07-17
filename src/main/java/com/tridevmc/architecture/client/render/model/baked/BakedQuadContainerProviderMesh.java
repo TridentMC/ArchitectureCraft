@@ -2,12 +2,15 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
-import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +40,21 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
     }
 
     @Override
+    public IBakedQuadContainer getQuads(@Nullable I partId, LevelAccessor level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+        return this.getQuadsTakesAll(partId, level, pos, state, null, metadataResolver, transform, forceRebuild);
+    }
+
+    @Override
+    public IBakedQuadContainer getQuads(@Nullable I partId, ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+        return this.getQuadsTakesAll(partId, null, null, null, stack, metadataResolver, transform, forceRebuild);
+    }
+
+    @Override
     public IBakedQuadContainer getQuads(@Nullable I partId, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+        return this.getQuadsTakesAll(partId, null, null, null, null, metadataResolver, transform, forceRebuild);
+    }
+
+    private final IBakedQuadContainer getQuadsTakesAll(@Nullable I partId, @Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         // We ignore forceRebuild here, as we're not actually caching the resulting containers themselves.
         var containerBuilder = new BakedQuadContainer.Builder();
         final var isCulled = new AtomicBoolean(false);
@@ -48,8 +65,8 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
             for (var polygon : face.getPolygons()) {
                 var polygonData = polygon.getPolygonData();
                 isCulled.set(polygonData.cullFace() != CullFace.NONE);
-                var texture = metadataResolver.getTexture(polygonData);
-                var tintIndex = metadataResolver.getTintIndex(polygonData);
+                var texture = metadataResolver.getTexture(level, pos, state, stack, polygonData);
+                var tintIndex = metadataResolver.getTintIndex(level, pos, state, stack, polygonData);
                 var vertexCount = polygon.getVertexCount();
                 quadBaker.setSprite(texture);
                 quadBaker.setTintIndex(tintIndex);
@@ -66,7 +83,7 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
                     quadBaker.vertex(v.getX(), v.getY(), v.getZ())
                             .color(-1)
                             .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
-                            .uv(texture.getU((v.getU() - 0.5F)  * 16F), texture.getV((v.getV() - 0.5F) * 16F))
+                            .uv(texture.getU((v.getU() - 0.5F) * 16F), texture.getV((v.getV() - 0.5F) * 16F))
                             .uv2(1, 0)
                             .overlayCoords(1, 0)
                             .endVertex();

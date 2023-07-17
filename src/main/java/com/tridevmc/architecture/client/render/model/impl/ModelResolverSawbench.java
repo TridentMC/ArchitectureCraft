@@ -3,13 +3,13 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMesh;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMeshCached;
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
+import com.tridevmc.architecture.client.render.model.resolver.functional.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
-import com.tridevmc.architecture.legacy.client.render.model.data.LegacyFunctionalQuadMetadataResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -19,13 +19,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class SawbenchModelResolver implements IModelResolver<PolygonData> {
+public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
     private static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
     private static final BakedQuadContainerProviderMesh<String, PolygonData> MESH = new BakedQuadContainerProviderMeshCached<>(MODEL.mesh());
     private static TextureAtlasSprite[] textures;
     private static int[] colours;
-    private static final IQuadMetadataResolver<PolygonData> resolver = LegacyFunctionalQuadMetadataResolver.of(
+    private static final IQuadMetadataResolver<PolygonData> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
                 return textures[Math.min(m.textureIndex(), textures.length - 1)];
@@ -50,17 +50,18 @@ public class SawbenchModelResolver implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public IQuadMetadataResolver<PolygonData> getMetadataResolver(ItemStack stack) {
+    public IQuadMetadataResolver<PolygonData> getMetadataResolver() {
         return resolver;
     }
 
     @Override
-    public IQuadMetadataResolver<PolygonData> getMetadataResolver(LevelAccessor level, BlockPos pos, BlockState state) {
-        return resolver;
+    public IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state,
+                                        IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
+        return MESH.getQuads("root", resolver, transform);
     }
 
     @Override
-    public IBakedQuadContainer getQuads(IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
+    public IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
         return MESH.getQuads("root", resolver, transform);
     }
 

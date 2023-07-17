@@ -7,7 +7,11 @@ import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.IVector3Mutable;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -118,6 +122,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
+     * @param consumer  the consumer to pipe the quad to.
      * @param transform a transform to apply to the quad while baking.
      * @param sprite    the sprite to apply to the quad.
      * @param tintIndex the tintIndex to apply to the quad.
@@ -144,6 +149,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
+     * @param consumer  the consumer to pipe the quad to.
      * @param sprite    the sprite to apply to the quad.
      * @param tintIndex the tintIndex to apply to the quad.
      */
@@ -169,7 +175,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
-     * @param transform a transformation to apply to the quad.
+     * @param consumer  the consumer to pipe the quad into.
+     * @param transform a transform to apply to the quad while baking.
      * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
@@ -180,11 +187,70 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
+     * @param consumer the consumer to pipe the quad into.
      * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
                       @NotNull IQuadMetadataResolver<D> resolver) {
         this.pipe(consumer, resolver.getTexture(this), resolver.getTintIndex(this));
+    }
+
+    /**
+     * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
+     *
+     * @param consumer  the consumer to pipe the quad into.
+     * @param transform a transform to apply to the quad while baking.
+     * @param level     the level the quad is being baked in.
+     * @param pos       the position the quad is being baked at.
+     * @param state     the state the quad is being baked for.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     */
+    default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
+                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull IQuadMetadataResolver<D> resolver) {
+        this.pipe(consumer, transform, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
+    }
+
+    /**
+     * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
+     *
+     * @param consumer the consumer to pipe the quad into.
+     * @param level    the level the quad is being baked in.
+     * @param pos      the position the quad is being baked at.
+     * @param state    the state the quad is being baked for.
+     * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     */
+    default void pipe(@NotNull VertexConsumer consumer,
+                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull IQuadMetadataResolver<D> resolver) {
+        this.pipe(consumer, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
+    }
+
+    /**
+     * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
+     *
+     * @param consumer  the consumer to pipe the quad into.
+     * @param transform a transform to apply to the quad while baking.
+     * @param stack     the item stack the quad is being baked for.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     */
+    default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
+                      @NotNull ItemStack stack,
+                      @NotNull IQuadMetadataResolver<D> resolver) {
+        this.pipe(consumer, transform, resolver.getTexture(stack, this), resolver.getTintIndex(stack, this));
+    }
+
+    /**
+     * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
+     *
+     * @param consumer the consumer to pipe the quad into.
+     * @param stack    the item stack the quad is being baked for.
+     * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     */
+    default void pipe(@NotNull VertexConsumer consumer,
+                      @NotNull ItemStack stack,
+                      @NotNull IQuadMetadataResolver<D> resolver) {
+        this.pipe(consumer, resolver.getTexture(stack, this), resolver.getTintIndex(stack, this));
     }
 
     /**

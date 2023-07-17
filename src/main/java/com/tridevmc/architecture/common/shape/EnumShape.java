@@ -13,6 +13,12 @@ import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 public enum EnumShape {
 
     ROOF_TILE("roof_tile", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
@@ -121,17 +127,51 @@ public enum EnumShape {
     STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_SMART("stairs_smart", null, null);
 
+
+    private static final Map<String, EnumShape> NAME_LOOKUP = Arrays.stream(values())
+            .collect(Collectors.toMap(EnumShape::getName, Function.identity()));
+    private static final Map<ResourceLocation, EnumShape> ID_LOOKUP = Arrays.stream(values())
+            .collect(Collectors.toMap(EnumShape::getId, Function.identity()));
+
+    /**
+     * Gets the EnumShape with the given name.
+     *
+     * @param name The name of the EnumShape.
+     * @return The EnumShape with the given name.
+     * @throws NullPointerException if there is no EnumShape with the given name.
+     */
+    public static EnumShape byName(String name) {
+        var shape = NAME_LOOKUP.get(name);
+        return Objects.requireNonNull(shape, "No shape with name " + name);
+    }
+
+    /**
+     * Gets the EnumShape with the given id.
+     *
+     * @param id The id of the EnumShape.
+     * @return The EnumShape with the given id.
+     * @throws NullPointerException if there is no EnumShape with the given id.
+     */
+    public static EnumShape byId(ResourceLocation id) {
+        var shape = ID_LOOKUP.get(id);
+        return Objects.requireNonNull(shape, "No shape with id " + id);
+    }
+
+    private final String name;
     private final ResourceLocation id;
-    private final String translationKey;
     private final IShapePlacementLogic<?> placementLogic;
     private final IShapeTransformationResolver transformationResolver;
 
     EnumShape(String name, IShapePlacementLogic<?> placementLogic,
               IShapeTransformationResolver transformationResolver) {
+        this.name = name;
         this.id = new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
-        this.translationKey = name;
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public ResourceLocation getId() {
@@ -139,11 +179,7 @@ public enum EnumShape {
     }
 
     public ResourceLocation getAssetLocation() {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shapes/%s.objson", this.translationKey));
-    }
-
-    public String getTranslationKey() {
-        return this.translationKey;
+        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shapes/%s.objson", this.name));
     }
 
     public <T extends BlockArchitecture> IShapePlacementLogic<T> getPlacementLogic() {

@@ -1,4 +1,4 @@
-package com.tridevmc.architecture.client.render.model.resolver;
+package com.tridevmc.architecture.client.render.model.resolver.functional;
 
 /**
  * A functional interface that resolves a quad's metadata to a colour.

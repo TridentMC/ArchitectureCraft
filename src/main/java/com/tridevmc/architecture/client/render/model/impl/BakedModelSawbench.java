@@ -6,13 +6,13 @@ import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-public class SawbenchBakedModel implements IModelResolverBaked<PolygonData> {
+public class BakedModelSawbench implements IModelResolverBaked<PolygonData> {
 
-    private static SawbenchModelResolver RESOLVER;
+    private static ModelResolverSawbench RESOLVER;
 
-    public SawbenchBakedModel() {
+    public BakedModelSawbench() {
         if (RESOLVER == null) {
-            RESOLVER = new SawbenchModelResolver();
+            RESOLVER = new ModelResolverSawbench();
         }
     }
 

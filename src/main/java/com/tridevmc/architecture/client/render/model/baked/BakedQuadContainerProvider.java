@@ -8,7 +8,12 @@ import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResol
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Default implementation of {@link IBakedQuadContainerProvider}, no caching is performed.
@@ -63,6 +68,33 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
             q.pipe(quadBakingVertexConsumer, transform, metadataResolver);
+        }
+        return builder.build();
+    }
+
+
+    @Override
+    public IBakedQuadContainer getQuads(@Nullable Void partId, LevelAccessor level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+        var builder = new BakedQuadContainer.Builder();
+        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q->{
+            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
+        });
+        for (int i = 0; i < this.quads.size(); i++) {
+            var q = this.quads.get(i);
+            q.pipe(quadBakingVertexConsumer, transform, level, pos, state, metadataResolver);
+        }
+        return builder.build();
+    }
+
+    @Override
+    public IBakedQuadContainer getQuads(@Nullable Void partId, ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+        var builder = new BakedQuadContainer.Builder();
+        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q->{
+            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
+        });
+        for (int i = 0; i < this.quads.size(); i++) {
+            var q = this.quads.get(i);
+            q.pipe(quadBakingVertexConsumer, transform, stack, metadataResolver);
         }
         return builder.build();
     }

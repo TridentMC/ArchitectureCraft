@@ -27,7 +27,7 @@ package com.tridevmc.architecture.client.proxy;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.ArchitectureBlockHighlightRenderer;
 import com.tridevmc.architecture.client.render.RenderingManager;
-import com.tridevmc.architecture.client.render.model.impl.SawbenchBakedModel;
+import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeModelLoader;
 import com.tridevmc.architecture.common.ArchitectureContent;
@@ -45,7 +45,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ClientProxy extends CommonProxy {
 
@@ -69,14 +68,13 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
-        e.register("sawbench_loader", new ArchitectureGeometryLoader(new SawbenchBakedModel(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
+        e.register("sawbench_loader", new ArchitectureGeometryLoader(new BakedModelSawbench(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
         e.register("shape_loader", new ArchitectureShapeModelLoader());
         this.registerDefaultModelLocations();
     }
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent e) {
-        //RENDERING_MANAGER.clearTextureCache();
         for (Block block : ArchitectureContent.registeredBlocks.values())
             RENDERING_MANAGER.registerSprites(0, e.getAtlas(), block);
 
@@ -95,6 +93,6 @@ public class ClientProxy extends CommonProxy {
 
     private ResourceLocation[] getTextures(String... textureNames) {
         ResourceLocation[] out = new ResourceLocation[textureNames.length];
-        return Arrays.stream(textureNames).map(t -> t.contains(":") ? new ResourceLocation(t) : new ResourceLocation(ArchitectureMod.MOD_ID, t)).collect(Collectors.toList()).toArray(out);
+        return Arrays.stream(textureNames).map(t -> t.contains(":") ? new ResourceLocation(t) : new ResourceLocation(ArchitectureMod.MOD_ID, t)).toList().toArray(out);
     }
 }
