@@ -28,11 +28,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.common.item.*;
 import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.legacy.common.block.LegacyBlockSawbench;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import net.minecraft.SharedConstants;
@@ -71,7 +71,7 @@ public class ArchitectureContent {
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
     private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
 
-    public LegacyBlockSawbench blockSawbench;
+    public BlockSawbench blockSawbench;
     public Map<LegacyEnumShape, LegacyBlockShape> blockShapes;
     public BlockEntityType<LegacyShapeBlockEntity> tileTypeShape;
     public Item itemSawblade;
@@ -121,7 +121,7 @@ public class ArchitectureContent {
     }
 
     public void onBlockRegister(RegisterEvent.RegisterHelper<Block> registry) {
-        this.blockSawbench = this.registerBlock(registry, "sawbench", new LegacyBlockSawbench());
+        this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
         this.blockShapes = Maps.newHashMap();
         for (LegacyEnumShape shape : LegacyEnumShape.values()) {
             this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getSerializedName(), new LegacyBlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));

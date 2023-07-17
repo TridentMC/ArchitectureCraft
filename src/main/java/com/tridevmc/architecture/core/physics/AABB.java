@@ -20,7 +20,7 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
 
     public AABB {
         if (min.x() > max.x() || min.y() > max.y() || min.z() > max.z()) {
-            throw new IllegalArgumentException("Min must be less than max!");
+            throw new IllegalArgumentException(String.format("Invalid AABB, min point (%s) is greater than max point (%s)", min, max));
         }
     }
 

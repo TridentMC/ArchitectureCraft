@@ -454,9 +454,21 @@ public interface ITrans3 {
      */
     @NotNull
     default AABB transformAABB(@NotNull AABB aabb) {
+        var tMin = this.transformPosImmutable(aabb.min());
+        var tMax = this.transformPosImmutable(aabb.max());
+        // Select the minimum and maximum coordinates from the transformed points.
+        var min = IVector3Immutable.of(
+                Math.min(tMin.x(), tMax.x()),
+                Math.min(tMin.y(), tMax.y()),
+                Math.min(tMin.z(), tMax.z())
+        );
+        var max = IVector3Immutable.of(
+                Math.max(tMin.x(), tMax.x()),
+                Math.max(tMin.y(), tMax.y()),
+                Math.max(tMin.z(), tMax.z())
+        );
         return new AABB(
-                this.transformPosImmutable(aabb.min()),
-                this.transformPosImmutable(aabb.max())
+                min, max
         );
     }
 
