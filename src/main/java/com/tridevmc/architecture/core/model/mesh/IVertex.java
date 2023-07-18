@@ -28,22 +28,24 @@ public interface IVertex {
     /**
      * Applies the given transformation to this vertex, returning a new vertex with the transformed position and normal.
      *
+     * @param face         The face this vertex is a part of.
      * @param trans        The transformation to apply.
      * @param transformUVs Whether to transform the UVs of this vertex.
      * @return A new vertex with the transformed position, normal and UVs.
      */
     @NotNull
-    IVertex transform(@NotNull ITrans3 trans, boolean transformUVs);
+    IVertex transform(@NotNull IFace<?> face, @NotNull ITrans3 trans, boolean transformUVs);
 
     /**
      * Applies the given transformation to this vertex, returning a new vertex with the transformed position, normal, and UVs.
      *
+     * @param face  The face this vertex is a part of.
      * @param trans The transformation to apply.
      * @return A new vertex with the transformed position, normal, and UVs.
      */
     @NotNull
-    default IVertex transform(@NotNull ITrans3 trans) {
-        return this.transform(trans, true);
+    default IVertex transform(@NotNull IFace<?> face, @NotNull ITrans3 trans) {
+        return this.transform(face, trans, true);
     }
 
     /**

@@ -2,6 +2,9 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
+import com.tridevmc.architecture.core.math.IVector3Mutable;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.compress.utils.Lists;
@@ -18,17 +21,24 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
 
     private final ImmutableList<IVertex> vertices;
     private final ImmutableList<IPolygon<D>> polygons;
+    private final IVector3Immutable normal;
 
     /**
      * Creates a new face with the given vertices and polygons.
      *
      * @param vertices The vertices of the face.
      * @param polygons The polygons of the face.
+     * @param normal   The normal of the face.
      */
     public Face(ImmutableList<IVertex> vertices,
-                ImmutableList<IPolygon<D>> polygons) {
+                ImmutableList<IPolygon<D>> polygons,
+                IVector3Immutable normal) {
+        if(normal == null){
+            throw new NullPointerException("Normal cannot be null");
+        }
         this.vertices = vertices;
         this.polygons = polygons;
+        this.normal = normal;
     }
 
     /**
@@ -36,13 +46,18 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
      *
      * @param vertexPool       The vertices of the face.
      * @param polygonProviders The polygons of the face.
+     * @param normal           The normal of the face.
      */
-    private Face(Object2IntMap<IVertex> vertexPool, List<Function<IFace<D>, IPolygon<D>>> polygonProviders) {
+    private Face(Object2IntMap<IVertex> vertexPool, List<Function<IFace<D>, IPolygon<D>>> polygonProviders, IVector3Immutable normal) {
+        if(normal == null){
+            throw new NullPointerException("Normal cannot be null");
+        }
         // Object2IntMap is not sorted by our indices, so we need to create a new array we can pass further down.
         var vertexArray = new IVertex[vertexPool.size()];
         vertexPool.forEach((v, i) -> vertexArray[i] = v);
         this.vertices = ImmutableList.copyOf(vertexArray);
         this.polygons = ImmutableList.copyOf(polygonProviders.stream().map(p -> p.apply(this)).iterator());
+        this.normal = normal;
     }
 
     /**
@@ -50,10 +65,15 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
      *
      * @param vertices         The vertices of the face.
      * @param polygonProviders The polygons of the face.
+     * @param normal           The normal of the face.
      */
-    private Face(ImmutableList<IVertex> vertices, List<Function<IFace<D>, IPolygon<D>>> polygonProviders) {
+    private Face(ImmutableList<IVertex> vertices, List<Function<IFace<D>, IPolygon<D>>> polygonProviders, IVector3Immutable normal) {
+        if(normal == null){
+            throw new NullPointerException("Normal cannot be null");
+        }
         this.vertices = vertices;
         this.polygons = ImmutableList.copyOf(polygonProviders.stream().map(p -> p.apply(this)).iterator());
+        this.normal = normal;
     }
 
     @Override
@@ -67,6 +87,11 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
     }
 
     @Override
+    public @NotNull IVector3Immutable getNormal() {
+        return this.normal;
+    }
+
+    @Override
     public @NotNull IVertex getVertex(int index) {
         return this.vertices.get(index);
     }
@@ -75,13 +100,13 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
     public @NotNull IFace<D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
         var transformedVertices = this.vertices()
                 .stream()
-                .map(v -> v.transform(trans, transformUVs))
+                .map(v -> v.transform(this, trans, transformUVs))
                 .collect(ImmutableList.toImmutableList());
         var transformedPolygons = this.polygons()
                 .stream()
                 .map(p -> (Function<IFace<D>, IPolygon<D>>) diFace -> p.transform(diFace, trans, transformUVs))
                 .collect(ImmutableList.toImmutableList());
-        return new Face<>(transformedVertices, transformedPolygons);
+        return new Face<>(transformedVertices, transformedPolygons, trans.transformNormalImmutable(this.normal));
     }
 
     public ImmutableList<IVertex> vertices() {
@@ -122,6 +147,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
 
         private final Object2IntMap<IVertex> vertexPool = new Object2IntOpenHashMap<IVertex>();
         private final List<Function<IFace<D>, IPolygon<D>>> polygons = Lists.newArrayList();
+        private final IVector3Mutable normal = IVector3.ofMutable(0,0,0);
 
         public Builder<D> addVertex(IVertex vertex) {
             if (!this.vertexPool.containsKey(vertex)) {
@@ -160,6 +186,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
                 }
                 indices[i] = vertexIndex;
             }
+            this.normal.add(MeshHelper.calculateNormal(vertices.get(0), vertices.get(1), vertices.get(2)));
             this.polygons.add(f -> provider.createPolygon(f, data, indices));
             return this;
         }
@@ -170,7 +197,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
          * @return The new face.
          */
         public Face<D> build() {
-            return new Face<>(this.vertexPool, this.polygons);
+            return new Face<>(this.vertexPool, this.polygons, this.normal.normalize().asImmutable());
         }
 
     }

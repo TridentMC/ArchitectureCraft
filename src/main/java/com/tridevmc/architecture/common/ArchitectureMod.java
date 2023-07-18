@@ -58,9 +58,6 @@ public class ArchitectureMod {
         loadingContext.getModEventBus().register(PROXY);
         MinecraftForge.EVENT_BUS.register(CONTENT);
         MinecraftForge.EVENT_BUS.register(PROXY);
-
-        ImmutableList<ShapeOrientation> cache = ShapePlacementLogicWindowCorner.CACHE;
-        System.out.println(cache);
     }
 
     public void onSetup(FMLCommonSetupEvent e) {

@@ -2,6 +2,7 @@ package com.tridevmc.architecture.core.model.mesh;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
@@ -36,6 +37,14 @@ public interface IFace<D extends IPolygonData<D>> {
      */
     @NotNull
     ImmutableList<IVertex> getVertices();
+
+    /**
+     * Gets the normal of this face.
+     *
+     * @return The normal of this face.
+     */
+    @NotNull
+    IVector3Immutable getNormal();
 
     /**
      * Applies the given transformation to this face, returning a new face with the transformed polygons.

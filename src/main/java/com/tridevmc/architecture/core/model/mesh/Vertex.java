@@ -39,15 +39,16 @@ public record Vertex(@NotNull IVector3Immutable pos,
     }
 
     @Override
-    public @NotNull IVertex transform(@NotNull ITrans3 trans, boolean transformUVs) {
+    public @NotNull IVertex transform(@NotNull IFace<?> face, @NotNull ITrans3 trans, boolean transformUVs) {
         var builder = new Builder();
 
         trans.transformPos(builder.getPos().set(this.pos));
         trans.transformNormal(builder.getNormal().set(this.normal));
         builder.getUV().set(this.uvs);
-        if (transformUVs) {
+        if(transformUVs){
             trans.transformUV(builder.getUV());
         }
+
 
         return builder.build();
     }

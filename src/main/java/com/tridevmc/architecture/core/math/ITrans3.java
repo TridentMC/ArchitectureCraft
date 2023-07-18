@@ -1,10 +1,12 @@
 package com.tridevmc.architecture.core.math;
 
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.floating.*;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -398,9 +400,17 @@ public interface ITrans3 {
      */
     @NotNull
     default IVector2Mutable transformUV(@NotNull IVector2Mutable uvs) {
+        if (!this.translatesBlockCenter()) {
+            ArchitectureLog.warn("Transforming UVs by a matrix that does not translate the origin, this is not supported and will result in incorrect UVs.");
+            return uvs;
+        }
+
+        // Transform the UVs by the matrix, this should only be for matrices that translate and scale, no rotation
+        // This even applies if the matrix was translated then rotated and translated back.
+        // This is because the UVs are not affected by the rotation, only the translation and scale.
         return uvs.set(
-                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
-                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+                this.matrix().m00() * uvs.u() + this.matrix().m01() * uvs.v() + this.matrix().m03(),
+                this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
         );
     }
 
@@ -413,8 +423,8 @@ public interface ITrans3 {
     @NotNull
     default IVector2Immutable transformUVImmutable(@NotNull IVector2 uvs) {
         return IVector2Immutable.of(
-                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
-                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+                this.matrix().m00() * uvs.u() + this.matrix().m01() * uvs.v() + this.matrix().m03(),
+                this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
         );
     }
 
@@ -427,8 +437,8 @@ public interface ITrans3 {
     @NotNull
     default IVector2FMutable transformUV(@NotNull IVector2FMutable uvs) {
         return uvs.set(
-                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
-                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+                this.matrix().m00() * uvs.u() + this.matrix().m01() * uvs.v() + this.matrix().m03(),
+                this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
         );
     }
 
@@ -441,8 +451,8 @@ public interface ITrans3 {
     @NotNull
     default IVector2FImmutable transformUVImmutable(@NotNull IVector2F uvs) {
         return IVector2FImmutable.of(
-                this.matrix().m00() * uvs.x() + this.matrix().m01() * uvs.y() + this.matrix().m03(),
-                this.matrix().m10() * uvs.x() + this.matrix().m11() * uvs.y() + this.matrix().m13()
+                this.matrix().m00() * uvs.u() + this.matrix().m01() * uvs.v() + this.matrix().m03(),
+                this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
         );
     }
 
@@ -514,6 +524,25 @@ public interface ITrans3 {
     @NotNull
     default FaceDirection transformFaceDirection(@NotNull FaceDirection face) {
         return FaceDirection.fromDirection(this.transformDirection(face.toDirection()));
+    }
+
+    @ApiStatus.Internal
+    default boolean translatesBlockCenter() {
+        // Determines if the transformation translates the center point of a block (0.5, 0.5, 0.5) to a new position.
+        // This is used to determine if the transformation can be used to transform UVs.
+
+        // This is very much a hack and only works because our rotations always rotate around the center of the block.
+        // It will very likely come back to bite us in the future. But I'm not in the future, so future me can deal with it.
+
+        var oX = 0.5D;
+        var oY = 0.5D;
+        var oZ = 0.5D;
+
+        var x = this.matrix().m00() * oX + this.matrix().m01() * oY + this.matrix().m02() * oZ + this.matrix().m03();
+        var y = this.matrix().m10() * oX + this.matrix().m11() * oY + this.matrix().m12() * oZ + this.matrix().m13();
+        var z = this.matrix().m20() * oX + this.matrix().m21() * oY + this.matrix().m22() * oZ + this.matrix().m23();
+        var eps = 1e-6;
+        return Math.abs(x - oX) > eps || Math.abs(y - oY) > eps || Math.abs(z - oZ) > eps;
     }
 
 }
