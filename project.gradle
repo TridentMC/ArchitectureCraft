@@ -8,7 +8,7 @@ ext {
     useElytraVersionFormat = true
     version = '4'
 
-    compoundVersion = '1.10.0-SNAPSHOT'
+    compoundVersion = '1.10.1-SNAPSHOT'
     compoundModules = ['all']
 
     forge = "1.20.1-47.1.28"

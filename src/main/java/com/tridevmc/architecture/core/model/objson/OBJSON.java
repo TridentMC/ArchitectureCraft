@@ -21,7 +21,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
     }
 
     public OBJSON(OBJSONData data, @NotNull ITrans3 trans, int blockResolution) {
-        this(data, createMesh(data).transform(trans), blockResolution);
+        this(data, createMesh(data).transform(trans, false), blockResolution);
     }
 
     public OBJSON(OBJSONData data, @NotNull ITrans3 trans) {

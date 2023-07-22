@@ -1,12 +1,11 @@
 package com.tridevmc.architecture.core.math;
 
-import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.floating.*;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
+import com.tridevmc.architecture.core.model.mesh.MeshHelper;
 import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.Direction;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -400,14 +399,6 @@ public interface ITrans3 {
      */
     @NotNull
     default IVector2Mutable transformUV(@NotNull IVector2Mutable uvs) {
-        if (!this.translatesBlockCenter()) {
-            ArchitectureLog.warn("Transforming UVs by a matrix that does not translate the origin, this is not supported and will result in incorrect UVs.");
-            return uvs;
-        }
-
-        // Transform the UVs by the matrix, this should only be for matrices that translate and scale, no rotation
-        // This even applies if the matrix was translated then rotated and translated back.
-        // This is because the UVs are not affected by the rotation, only the translation and scale.
         return uvs.set(
                 this.matrix().m00() * uvs.u() + this.matrix().m01() * uvs.v() + this.matrix().m03(),
                 this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
@@ -455,6 +446,189 @@ public interface ITrans3 {
                 this.matrix().m10() * uvs.u() + this.matrix().m11() * uvs.v() + this.matrix().m13()
         );
     }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in the given vector.
+     * <p>
+     * This method uses the given face normal to determine the direction of the face, and then transforms the
+     * texture coordinate vector accordingly.
+     *
+     * @param faceNormal The normal of the face.
+     * @param uvs        The texture coordinate vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2Mutable transformNormalizedUV(@NotNull IVector3 faceNormal, IVector2Mutable uvs) {
+        // Get the direction of the face from the normal.
+        var fromDirection = Direction.getNearestStable(
+                (float) faceNormal.x(),
+                (float) faceNormal.y(),
+                (float) faceNormal.z()
+        );
+        var toDirection = this.transformDirection(fromDirection);
+
+        var x = 0.0D;
+        var y = 0.0D;
+        var z = 0.0D;
+
+        switch (fromDirection) {
+            case UP -> {
+                x = uvs.u();
+                y = 1.0D;
+                z = uvs.v();
+            }
+            case DOWN -> {
+                x = uvs.u();
+                y = 0.0D;
+                z = 1.0D - uvs.v();
+            }
+            case NORTH -> {
+                x = 1.0D - uvs.u();
+                y = 1.0D - uvs.v();
+                z = 0.0D;
+            }
+            case SOUTH -> {
+                x = uvs.u();
+                y = 1.0D - uvs.v();
+                z = 1.0D;
+            }
+            case WEST -> {
+                x = 0.0D;
+                y = 1.0D - uvs.v();
+                z = uvs.u();
+            }
+            case EAST -> {
+                x = 1.0D;
+                y = 1.0D - uvs.v();
+                z = 1.0D - uvs.u();
+            }
+        }
+
+        // Transform the x, y, z as world coordinates without an allocated vector.
+        var tX = (this.matrix().m00() * x + this.matrix().m01() * y + this.matrix().m02() * z + this.matrix().m03());
+        var tY = (this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z + this.matrix().m13());
+        var tZ = (this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z + this.matrix().m23());
+
+        switch (toDirection) {
+            case UP -> uvs.set(tX, tZ);
+            case DOWN -> uvs.set(tX, (tZ - 1.0D) * -1.0D);
+            case NORTH -> uvs.set((tX - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
+            case SOUTH -> uvs.set(tX, (tY - 1.0D) * -1.0D);
+            case WEST -> uvs.set(tZ, (tY - 1.0D) * -1.0D);
+            case EAST -> uvs.set((tZ - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
+        }
+
+        return MeshHelper.wrapUVs(uvs);
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in a new vector.
+     * <p>
+     * This method uses the given face normal to determine the direction of the face, and then transforms the
+     * texture coordinate vector accordingly.
+     *
+     * @param faceNormal The normal of the face.
+     * @param uvs        The texture coordinate vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2Immutable transformNormalizedUVImmutable(@NotNull IVector3 faceNormal, IVector2 uvs) {
+        // Most methods we reimplement things to avoid allocations, but this one is a bit more complicated so this is
+        // honestly preferable. If we're using immutables then the allocations are already happening anyway.
+        return this.transformNormalizedUV(faceNormal, IVector2Mutable.of(uvs)).asImmutable();
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in the given vector.
+     * <p>
+     * This method uses the given face normal to determine the direction of the face, and then transforms the
+     * texture coordinate vector accordingly.
+     *
+     * @param faceNormal The normal of the face.
+     * @param uvs        The texture coordinate vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2FMutable transformNormalizedUV(@NotNull IVector3 faceNormal, IVector2FMutable uvs) {
+        // Get the direction of the face from the normal.
+        var fromDirection = Direction.getNearestStable(
+                (float) faceNormal.x(),
+                (float) faceNormal.y(),
+                (float) faceNormal.z()
+        );
+        var toDirection = this.transformDirection(fromDirection);
+
+        var x = 0.0D;
+        var y = 0.0D;
+        var z = 0.0D;
+
+        switch (fromDirection) {
+            case UP -> {
+                x = uvs.u();
+                y = 1.0D;
+                z = uvs.v();
+            }
+            case DOWN -> {
+                x = uvs.u();
+                y = 0.0D;
+                z = 1.0D - uvs.v();
+            }
+            case NORTH -> {
+                x = 1.0D - uvs.u();
+                y = 1.0D - uvs.v();
+                z = 0.0D;
+            }
+            case SOUTH -> {
+                x = uvs.u();
+                y = 1.0D - uvs.v();
+                z = 1.0D;
+            }
+            case WEST -> {
+                x = 0.0D;
+                y = 1.0D - uvs.v();
+                z = uvs.u();
+            }
+            case EAST -> {
+                x = 1.0D;
+                y = 1.0D - uvs.v();
+                z = 1.0D - uvs.u();
+            }
+        }
+
+        // Transform the x, y, z as world coordinates without an allocated vector.
+        var tX = (this.matrix().m00() * x + this.matrix().m01() * y + this.matrix().m02() * z + this.matrix().m03());
+        var tY = (this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z + this.matrix().m13());
+        var tZ = (this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z + this.matrix().m23());
+
+        switch (toDirection) {
+            case UP -> uvs.set(tX, tZ);
+            case DOWN -> uvs.set(tX, (tZ - 1.0D) * -1.0D);
+            case NORTH -> uvs.set((tX - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
+            case SOUTH -> uvs.set(tX, (tY - 1.0D) * -1.0D);
+            case WEST -> uvs.set(tZ, (tY - 1.0D) * -1.0D);
+            case EAST -> uvs.set((tZ - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
+        }
+
+        return MeshHelper.wrapUVs(uvs);
+    }
+
+    /**
+     * Transforms the given texture coordinate vector by this transformation, storing the result in a new vector.
+     * <p>
+     * This method uses the given face normal to determine the direction of the face, and then transforms the
+     * texture coordinate vector accordingly.
+     *
+     * @param faceNormal The normal of the face.
+     * @param uvs        The texture coordinate vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector2FImmutable transformNormalizedUVImmutable(@NotNull IVector3 faceNormal, IVector2F uvs) {
+        // Most methods we reimplement things to avoid allocations, but this one is a bit more complicated so this is
+        // honestly preferable. If we're using immutables then the allocations are already happening anyway.
+        return this.transformNormalizedUV(faceNormal, IVector2FMutable.of(uvs)).asImmutable();
+    }
+
 
     /**
      * Transforms the minimum and maximum points of the given AABB by this transformation, storing the result in a new AABB.
@@ -524,25 +698,6 @@ public interface ITrans3 {
     @NotNull
     default FaceDirection transformFaceDirection(@NotNull FaceDirection face) {
         return FaceDirection.fromDirection(this.transformDirection(face.toDirection()));
-    }
-
-    @ApiStatus.Internal
-    default boolean translatesBlockCenter() {
-        // Determines if the transformation translates the center point of a block (0.5, 0.5, 0.5) to a new position.
-        // This is used to determine if the transformation can be used to transform UVs.
-
-        // This is very much a hack and only works because our rotations always rotate around the center of the block.
-        // It will very likely come back to bite us in the future. But I'm not in the future, so future me can deal with it.
-
-        var oX = 0.5D;
-        var oY = 0.5D;
-        var oZ = 0.5D;
-
-        var x = this.matrix().m00() * oX + this.matrix().m01() * oY + this.matrix().m02() * oZ + this.matrix().m03();
-        var y = this.matrix().m10() * oX + this.matrix().m11() * oY + this.matrix().m12() * oZ + this.matrix().m13();
-        var z = this.matrix().m20() * oX + this.matrix().m21() * oY + this.matrix().m22() * oZ + this.matrix().m23();
-        var eps = 1e-6;
-        return Math.abs(x - oX) > eps || Math.abs(y - oY) > eps || Math.abs(z - oZ) > eps;
     }
 
 }

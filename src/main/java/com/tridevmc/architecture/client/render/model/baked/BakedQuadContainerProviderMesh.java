@@ -83,7 +83,7 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
                     quadBaker.vertex(v.getX(), v.getY(), v.getZ())
                             .color(-1)
                             .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
-                            .uv(texture.getU((v.getU() - 0.5F) * 16F), texture.getV((v.getV() - 0.5F) * 16F))
+                            .uv(texture.getU((v.getU()) * 16F), texture.getV((v.getV()) * 16F))
                             .uv2(1, 0)
                             .overlayCoords(1, 0)
                             .endVertex();
