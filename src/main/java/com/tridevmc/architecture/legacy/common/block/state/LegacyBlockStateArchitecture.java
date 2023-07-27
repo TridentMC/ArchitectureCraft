@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.common.model.ModelSpec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -59,10 +58,6 @@ public class LegacyBlockStateArchitecture extends BlockState {
 
     public RenderShape getRenderShape() {
         return this.getBlock().getRenderShape(this);
-    }
-
-    public ModelSpec getModelSpec() {
-        return this.getBlock().getModelSpec(this);
     }
 
     public LegacyTrans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {

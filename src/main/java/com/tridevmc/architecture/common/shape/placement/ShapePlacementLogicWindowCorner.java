@@ -101,10 +101,10 @@ public class ShapePlacementLogicWindowCorner<T extends BlockArchitecture & INeig
 
         // We connect on the TOP, BOTTOM, LEFT, and RIGHT faces.
         var lookupIndex = 0;
-        lookupIndex |= isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.BOTTOM, rotationForConnections) ? 1 : 0;
-        lookupIndex |= isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.TOP, rotationForConnections) ? 2 : 0;
-        lookupIndex |= isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.RIGHT, rotationForConnections) ? 4 : 0;
-        lookupIndex |= isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.LEFT, rotationForConnections) ? 8 : 0;
+        lookupIndex |= this.isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.BOTTOM, rotationForConnections) ? 1 : 0;
+        lookupIndex |= this.isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.TOP, rotationForConnections) ? 2 : 0;
+        lookupIndex |= this.isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.RIGHT, rotationForConnections) ? 4 : 0;
+        lookupIndex |= this.isConnectedOnRelative(beingPlaced, level, placementPos, EnumRelativeDirection.LEFT, rotationForConnections) ? 8 : 0;
         lookupIndex |= (((facing.ordinal() - 2) * 3) + axis.ordinal()) << 4;
 
         return CACHE.get(lookupIndex);

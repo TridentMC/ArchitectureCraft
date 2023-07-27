@@ -9,20 +9,6 @@ import net.minecraft.client.renderer.RenderType;
 import java.util.OptionalDouble;
 
 public class ArchitectureDebugRenderTypes extends RenderStateShard {
-    public ArchitectureDebugRenderTypes(String pName, Runnable pSetupState, Runnable pClearState) {
-        super(pName, pSetupState, pClearState);
-    }
-
-    private static class DisableDepthTest extends RenderStateShard.DepthTestStateShard {
-        public DisableDepthTest(String name) {
-            super("disable_depth_test", 519);
-            this.setupState = () -> {
-                RenderSystem.disableDepthTest();
-            };
-
-        }
-    }
-
     public static RenderType ARCHITECTURE_DEBUG_LINE = RenderType.create(
             "architecture_line_type",
             DefaultVertexFormat.POSITION_COLOR,
@@ -41,6 +27,20 @@ public class ArchitectureDebugRenderTypes extends RenderStateShard {
                     .setOutputState(PARTICLES_TARGET)
                     .createCompositeState(false)
     );
+
+    public ArchitectureDebugRenderTypes(String pName, Runnable pSetupState, Runnable pClearState) {
+        super(pName, pSetupState, pClearState);
+    }
+
+    private static class DisableDepthTest extends RenderStateShard.DepthTestStateShard {
+        public DisableDepthTest(String name) {
+            super("disable_depth_test", 519);
+            this.setupState = () -> {
+                RenderSystem.disableDepthTest();
+            };
+
+        }
+    }
 
 
 }

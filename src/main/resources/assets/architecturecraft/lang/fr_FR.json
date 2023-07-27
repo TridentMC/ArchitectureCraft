@@ -1,9 +1,9 @@
 {
-  "block.architecturecraft.sawbench": "Table de sciage de l'architeque",
-  "block.architecturecraft.shape": "Bloc architectural",
-  "item.architecturecraft.large_pulley": "Grande poulie",
-  "item.architecturecraft.sawblade": "Lame de scie circulaire",
-  "item.architecturecraft.chisel": "Ciseau d'architecte",
-  "item.architecturecraft.hammer": "Marteau d'architecte",
-  "item.architecturecraft.cladding": "Revêtement"
+    "block.architecturecraft.sawbench": "Table de sciage de l'architeque",
+    "block.architecturecraft.shape": "Bloc architectural",
+    "item.architecturecraft.large_pulley": "Grande poulie",
+    "item.architecturecraft.sawblade": "Lame de scie circulaire",
+    "item.architecturecraft.chisel": "Ciseau d'architecte",
+    "item.architecturecraft.hammer": "Marteau d'architecte",
+    "item.architecturecraft.cladding": "Revêtement"
 }

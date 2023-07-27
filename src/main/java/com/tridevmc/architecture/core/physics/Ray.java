@@ -44,8 +44,7 @@ public record Ray(IVector3Immutable origin, IVector3Immutable direction) {
      * @return a stream of hits or failed hits.
      */
     public <I, D extends IPolygonData<D>> Stream<Hit> intersectUnfiltered(IMesh<I, D> mesh) {
-        return mesh.getAABBTree().search(new AABB(this.origin, this.origin.add(this.direction)))
-                .stream()
+        return mesh.getAABBTree().searchStream(new AABB(this.origin, this.origin.add(this.direction.mul(1000D))))
                 .map(this::intersect);
     }
 

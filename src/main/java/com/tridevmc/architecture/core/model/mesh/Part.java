@@ -43,8 +43,8 @@ public record Part<I, D extends IPolygonData<D>>(I id, ImmutableList<IFace<D>> f
      */
     public static class Builder<I, D extends IPolygonData<D>> {
 
-        private I id;
         private final List<IFace<D>> faces = new ArrayList<>();
+        private I id;
 
         /**
          * Sets the identifier of the part.

@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.core.model.mesh;
 
-import com.tridevmc.architecture.core.math.IVector2;
 import com.tridevmc.architecture.core.math.IVector2Mutable;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.IVector3Immutable;

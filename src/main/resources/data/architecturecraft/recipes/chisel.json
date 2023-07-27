@@ -1,21 +1,21 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "I ",
-    "d/"
-  ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
+    "type": "crafting_shaped",
+    "pattern": [
+        "I ",
+        "d/"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "/": {
+            "tag": "forge:rods/wooden"
+        },
+        "d": {
+            "tag": "forge:dyes/orange"
+        }
     },
-    "/": {
-      "tag": "forge:rods/wooden"
-    },
-    "d": {
-      "tag": "forge:dyes/orange"
+    "result": {
+        "item": "architecturecraft:chisel"
     }
-  },
-  "result": {
-    "item": "architecturecraft:chisel"
-  }
 }

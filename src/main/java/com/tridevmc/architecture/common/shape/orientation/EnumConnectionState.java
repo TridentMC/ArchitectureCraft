@@ -17,6 +17,13 @@ public enum EnumConnectionState implements StringRepresentable {
     private static final ImmutableCollection<EnumConnectionState> VALUES_COLLECTION = ImmutableSet.copyOf(
             VALUES
     );
+    private final int id;
+    private final String name;
+
+    EnumConnectionState(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     /**
      * Gets the EnumConnectionState with the given index.
@@ -35,14 +42,6 @@ public enum EnumConnectionState implements StringRepresentable {
      */
     public static Collection<EnumConnectionState> getValues() {
         return VALUES_COLLECTION;
-    }
-
-    private final int id;
-    private final String name;
-
-    EnumConnectionState(int id, String name) {
-        this.id = id;
-        this.name = name;
     }
 
     /**

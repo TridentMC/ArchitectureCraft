@@ -24,7 +24,6 @@
 
 package com.tridevmc.architecture.legacy.math;
 
-import com.google.common.base.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -348,8 +347,8 @@ public record LegacyVector3(double x, double y, double z) {
 
     public LegacyVector3 apply(DoubleUnaryOperator operator) {
         return new LegacyVector3(operator.applyAsDouble(this.x),
-                                 operator.applyAsDouble(this.y),
-                                 operator.applyAsDouble(this.z));
+                operator.applyAsDouble(this.y),
+                operator.applyAsDouble(this.z));
     }
 
     public double[] toArray() {
@@ -358,11 +357,11 @@ public record LegacyVector3(double x, double y, double z) {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) return true;
-        if (o instanceof LegacyVector3 v){
+        if (this == o) return true;
+        if (o instanceof LegacyVector3 v) {
             return Double.compare(v.x, this.x) == 0 &&
-                   Double.compare(v.y, this.y) == 0 &&
-                   Double.compare(v.z, this.z) == 0;
+                    Double.compare(v.y, this.y) == 0 &&
+                    Double.compare(v.z, this.z) == 0;
         }
         return false;
     }

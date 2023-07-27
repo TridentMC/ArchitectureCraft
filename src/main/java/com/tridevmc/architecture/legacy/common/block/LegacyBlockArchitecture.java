@@ -24,12 +24,8 @@
 
 package com.tridevmc.architecture.legacy.common.block;
 
-import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.model.ITextureConsumer;
-import com.tridevmc.architecture.common.model.ModelSpec;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import com.tridevmc.architecture.legacy.common.block.state.LegacyBlockStateArchitecture;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
@@ -79,17 +75,15 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Deprecated
-public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements ITextureConsumer {
+public abstract class LegacyBlockArchitecture extends BaseEntityBlock {
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_CONTAINER = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
-
-    private final Int2ObjectLinkedOpenHashMap<LegacyTrans3> transCache = new Int2ObjectLinkedOpenHashMap<>();
-    private final Int2ObjectLinkedOpenHashMap<VoxelShape> shapeCache = new Int2ObjectLinkedOpenHashMap<>();
-
     private static final RandomSource RANDOM = RandomSource.create();
     public static boolean debugState = false;
     // --------------------------- Orientation -------------------------------
     public static IOrientationHandler orient1Way = new Orient1Way();
+    private final Int2ObjectLinkedOpenHashMap<LegacyTrans3> transCache = new Int2ObjectLinkedOpenHashMap<>();
+    private final Int2ObjectLinkedOpenHashMap<VoxelShape> shapeCache = new Int2ObjectLinkedOpenHashMap<>();
     protected Property[] stateProperties;
     // --------------------------- Members -------------------------------
     protected Object[][] propertyValues;
@@ -97,7 +91,6 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
     protected RenderShape renderID = RenderShape.MODEL;
     protected IOrientationHandler orientationHandler = orient1Way;
     protected String[] textureNames;
-    protected ModelSpec modelSpec;
 
 
     // --------------------------- Constructors -------------------------------
@@ -154,10 +147,10 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
             this.propertyValues[i] = values;
         } else
             throw new IllegalStateException("Block " + this.getClass().getName() +
-                                                    " has too many properties");
+                    " has too many properties");
         if (debugState)
             ArchitectureLog.info("BaseBlock.addProperty: %s now has %s properties\n",
-                                 this.getClass().getName(), this.numProperties);
+                    this.getClass().getName(), this.numProperties);
     }
 
     private void dumpProperties() {
@@ -210,20 +203,14 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
 
     public void setModelAndTextures(String modelName, String... textureNames) {
         this.textureNames = textureNames;
-        this.modelSpec = new ModelSpec(modelName, textureNames);
     }
 
     public void setModelAndTextures(String modelName, LegacyVector3 origin, String... textureNames) {
         this.textureNames = textureNames;
-        this.modelSpec = new ModelSpec(modelName, origin, textureNames);
     }
 
     public String[] getTextureNames() {
         return this.textureNames;
-    }
-
-    public ModelSpec getModelSpec(BlockState state) {
-        return this.modelSpec;
     }
 
     public LegacyTrans3 localToGlobalRotation(BlockAndTintGetter level, BlockPos pos) {
@@ -260,7 +247,7 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         var hit = context.getClickLocation();
         return this.getOrientationHandler().onBlockPlaced(this, context.getLevel(), context.getClickedPos(), context.getNearestLookingDirection(),
-                                                          hit.x(), hit.y(), hit.z(), this.defaultBlockState(), context.getPlayer());
+                hit.x(), hit.y(), hit.z(), this.defaultBlockState(), context.getPlayer());
     }
 
     @Override
@@ -268,7 +255,7 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
                                      BlockState iblockstate, LivingEntity entity, int numParticles) {
         BlockState particleState = this.getParticleState(level, pos);
         level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, particleState).setPos(pos), entity.getX(), entity.getY(), entity.getZ(),
-                            numParticles, 0.0D, 0.0D, 0.0D, 0.15D);
+                numParticles, 0.0D, 0.0D, 0.0D, 0.15D);
         return true;
     }
 
@@ -297,8 +284,8 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
         }
 
         pm.add(new TerrainParticle(clientLevel, particleX, particleY, particleZ,
-                                   0.0D, 0.0D, 0.0D, particleState, pos)
-                       .updateSprite(particleState, pos).setPower(0.2F).scale(0.6F));
+                0.0D, 0.0D, 0.0D, particleState, pos)
+                .updateSprite(particleState, pos).setPower(0.2F).scale(0.6F));
         return true;
     }
 
@@ -327,9 +314,9 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
                         double d8 = d5 * d2 + p_172274_;
                         double d9 = d6 * d3 + p_172275_;
                         pm.add(new TerrainParticle(clientLevel,
-                                                   (double) pos.getX() + d7, (double) pos.getY() + d8, (double) pos.getZ() + d9,
-                                                   d4 - 0.5D, d5 - 0.5D, d6 - 0.5D,
-                                                   particleState, pos).updateSprite(particleState, pos)
+                                (double) pos.getX() + d7, (double) pos.getY() + d8, (double) pos.getZ() + d9,
+                                d4 - 0.5D, d5 - 0.5D, d6 - 0.5D,
+                                particleState, pos).updateSprite(particleState, pos)
                         );
                     }
                 }
@@ -364,13 +351,6 @@ public abstract class LegacyBlockArchitecture extends BaseEntityBlock implements
 
     @NotNull
     protected VoxelShape getLocalBounds(BlockGetter level, BlockPos pos, BlockState state, Entity entity) {
-        ModelSpec spec = this.getModelSpec(state);
-        if (spec != null) {
-            LegacyOBJSON model = ArchitectureMod.PROXY.getCachedOBJSON(spec.modelName);
-            LegacyTrans3 t = this.localToGlobalTransformation(level, pos, state);
-            var voxelized = model.getVoxelized();
-            return t.t(voxelized);
-        }
         return Shapes.empty();
     }
 

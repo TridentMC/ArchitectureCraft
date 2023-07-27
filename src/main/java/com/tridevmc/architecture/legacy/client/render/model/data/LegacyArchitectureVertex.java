@@ -34,12 +34,12 @@ public class LegacyArchitectureVertex {
         return false;
     }
 
-    public void setNormals(Vector3f normals) {
-        this.normals = new float[]{normals.x(), normals.y(), normals.z()};
-    }
-
     public Vector3f getNormals() {
         return new Vector3f(this.normals);
+    }
+
+    public void setNormals(Vector3f normals) {
+        this.normals = new float[]{normals.x(), normals.y(), normals.z()};
     }
 
     public Vector3f getPosition() {
@@ -88,7 +88,7 @@ public class LegacyArchitectureVertex {
         return this.getNormals().z();
     }
 
-    public void pipe(VertexConsumer consumer, IPipedBakedQuad<?,?,?> bakedQuadProvider,
+    public void pipe(VertexConsumer consumer, IPipedBakedQuad<?, ?, ?> bakedQuadProvider,
                      Optional<Transformation> transform, TextureAtlasSprite sprite,
                      int colour) {
         var p = this.getPosition();

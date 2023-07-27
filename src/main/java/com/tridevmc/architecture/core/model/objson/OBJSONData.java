@@ -17,6 +17,19 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
     private static final Gson GSON = new Gson();
 
     /**
+     * Loads an OBJSON model from the given resource location.
+     *
+     * @param location The resource location of the model.
+     * @return The loaded model.
+     * @throws NullPointerException If no input stream could be found for the given resource location.
+     */
+    public static OBJSONData fromResource(ResourceLocation location) {
+        var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
+        var in = OBJSONData.class.getResourceAsStream(path);
+        return GSON.fromJson(new InputStreamReader(Objects.requireNonNull(in, "Failed to obtain input stream for resource \"%s\"".formatted(path))), OBJSONData.class);
+    }
+
+    /**
      * Represents a part of the OBJSON model, used for grouping faces together.
      *
      * @param name      The name of the part.
@@ -72,19 +85,6 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      */
     record QuadData(int face, @SerializedName("cull_face") CullFace cullFace, int texture, int[] vertices) {
 
-    }
-
-    /**
-     * Loads an OBJSON model from the given resource location.
-     *
-     * @param location The resource location of the model.
-     * @return The loaded model.
-     * @throws NullPointerException If no input stream could be found for the given resource location.
-     */
-    public static OBJSONData fromResource(ResourceLocation location) {
-        var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
-        var in = OBJSONData.class.getResourceAsStream(path);
-        return GSON.fromJson(new InputStreamReader(Objects.requireNonNull(in, "Failed to obtain input stream for resource \"%s\"".formatted(path))), OBJSONData.class);
     }
 
 }

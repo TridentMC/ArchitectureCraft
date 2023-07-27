@@ -39,6 +39,12 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
         );
     };
 
+    public Tri {
+        if (vertexIndices.size() != 3) {
+            throw new IllegalArgumentException("Tris must have 3 vertices");
+        }
+    }
+
     /**
      * Gets the static tri provider instance, used to create tris from a face, data and vertex indices.
      *
@@ -48,12 +54,6 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     public static <D extends IPolygonData<D>> IPolygonProvider<Tri<D>, D> getProvider() {
         //noinspection unchecked - This method can be ugly because it makes others less ugly :)
         return PROVIDER;
-    }
-
-    public Tri {
-        if (vertexIndices.size() != 3) {
-            throw new IllegalArgumentException("Tris must have 3 vertices");
-        }
     }
 
     @Override
@@ -217,6 +217,16 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
         );
     }
 
+    @Override
+    public String toString() {
+        return "Tri{" +
+                "data=" + this.data +
+                ", vertexIndices=" + this.vertexIndices +
+                ", normal=" + this.normal +
+                ", aabb=" + this.aabb +
+                '}';
+    }
+
     /**
      * Builder for {@link Tri} instances.
      *
@@ -224,8 +234,8 @@ public record Tri<D extends IPolygonData<D>>(@NotNull IFace<D> face,
      */
     public static class Builder<D extends IPolygonData<D>> {
 
-        private D data;
         private final IVertex[] vertices = new IVertex[3];
+        private D data;
         private int nextVertex = 0;
 
         /**

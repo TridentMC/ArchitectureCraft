@@ -48,7 +48,7 @@ public record BakedQuadContainer(ImmutableList<BakedQuad> allQuads,
          * @return this builder.
          */
         public Builder addQuad(BakedQuad quad, boolean isCulled) {
-            if(isCulled){
+            if (isCulled) {
                 this.addForDirection(quad, quad.getDirection());
             } else {
                 this.addForDirection(quad, null);

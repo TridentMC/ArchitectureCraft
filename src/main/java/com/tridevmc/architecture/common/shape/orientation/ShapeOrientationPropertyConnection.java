@@ -1,10 +1,7 @@
 package com.tridevmc.architecture.common.shape.orientation;
 
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.core.Direction;
-
-import java.util.stream.Stream;
 
 public class ShapeOrientationPropertyConnection extends ShapeOrientationProperty<EnumConnectionState> {
 

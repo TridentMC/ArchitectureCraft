@@ -3,13 +3,12 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMesh;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMeshCached;
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
-import com.tridevmc.architecture.client.render.model.resolver.functional.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
-import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.client.render.model.resolver.functional.FunctionalQuadMetadataResolver;
+import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-import com.tridevmc.architecture.core.model.objson.OBJSON;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -21,10 +20,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
-    private static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
-    private static final BakedQuadContainerProviderMesh<String, PolygonData> MESH = new BakedQuadContainerProviderMeshCached<>(MODEL.mesh());
+    private static final BakedQuadContainerProviderMesh<String, PolygonData> MESH = new BakedQuadContainerProviderMeshCached<>(BlockSawbench.MODEL.mesh());
     private static TextureAtlasSprite[] textures;
     private static int[] colours;
+    private static boolean needsInit = true;
     private static final IQuadMetadataResolver<PolygonData> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
@@ -35,7 +34,6 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
                 return colours[Math.max(Math.min(m.tintIndex(), colours.length - 1), 0)];
             }
     );
-    private static boolean needsInit = true;
 
     private static void doInit() {
         if (needsInit) {

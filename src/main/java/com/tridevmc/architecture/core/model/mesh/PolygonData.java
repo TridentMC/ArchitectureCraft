@@ -18,9 +18,9 @@ public record PolygonData(@NotNull CullFace cullFace, @NotNull FaceDirection fac
         if (this.cullFace() == CullFace.NONE) return this;
         // We're just going to transform the cull face then copy the rest of the data to a new instance.
         return new PolygonData(trans.transformCullFace(this.cullFace()),
-                               trans.transformFaceDirection(this.face()),
-                               this.textureIndex(),
-                               this.tintIndex());
+                trans.transformFaceDirection(this.face()),
+                this.textureIndex(),
+                this.tintIndex());
     }
 
 }

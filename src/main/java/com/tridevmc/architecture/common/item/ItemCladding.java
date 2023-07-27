@@ -27,7 +27,6 @@ package com.tridevmc.architecture.common.item;
 import com.tridevmc.architecture.common.helpers.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -76,12 +75,6 @@ public class ItemCladding extends ItemArchitecture {
                 lines.add(Component.literal(Utils.displayNameOnlyOfBlock(state.getBlock())));
         }
     }
-
-    @Override
-    public int getNumSubtypes() {
-        return 16;
-    }
-
 
     @Override
     public Component getName(ItemStack stack) {

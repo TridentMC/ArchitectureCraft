@@ -1,6 +1,9 @@
 package com.tridevmc.architecture.common.shape.transformation;
 
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
 import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.ITrans3;
 import net.minecraft.core.Direction;
@@ -13,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class ShapeTransformationResolverPointedWithSpin implements IShapeTransformationResolver {
 
     public static final ShapeTransformationResolverPointedWithSpin INSTANCE = new ShapeTransformationResolverPointedWithSpin();
-    
+
     @Override
     public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
         // Assumes the object is facing NORTH, so rotate accordingly

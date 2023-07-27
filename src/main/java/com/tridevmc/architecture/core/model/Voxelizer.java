@@ -93,23 +93,23 @@ public class Voxelizer {
             }).filter(Objects::nonNull).toList();
 
             // Simplify the list of voxels while still preserving the shape we've created.
-            var simplified = new ArrayList<AABB>();
-            for (var voxel : resolvedVoxels) {
-                var merged = false;
-                for (var i = 0; i < simplified.size(); i++) {
-                    var other = simplified.get(i);
-                    if (voxel.isAdjacent(other)) {
-                        simplified.set(i, voxel.union(other));
-                        merged = true;
-                        break;
-                    }
-                }
-                if (!merged) {
-                    simplified.add(voxel);
-                }
-            }
+            //var simplified = new ArrayList<AABB>();
+            //for (var voxel : resolvedVoxels) {
+            //    var merged = false;
+            //    for (var i = 0; i < simplified.size(); i++) {
+            //        var other = simplified.get(i);
+            //        if (voxel.isAdjacent(other)) {
+            //            simplified.set(i, voxel.union(other));
+            //            merged = true;
+            //            break;
+            //        }
+            //    }
+            //    if (!merged) {
+            //        simplified.add(voxel);
+            //    }
+            //}
 
-            this.simplifiedVoxels = simplified;
+            this.simplifiedVoxels = resolvedVoxels;
         }
 
         return this.simplifiedVoxels;
@@ -126,7 +126,7 @@ public class Voxelizer {
         return this.voxels.length * this.voxels[0].length * this.voxels[0][0].length;
     }
 
-    private boolean isBoxValidVoxel(AABB box) {
+    public boolean isBoxValidVoxel(AABB box) {
         return this.doesBoxIntersect(box) || this.isPointInsideMesh(box.center());
     }
 
@@ -136,8 +136,9 @@ public class Voxelizer {
      * @param box The box to check.
      * @return True if the box intersects with the mesh, false otherwise.
      */
-    private boolean doesBoxIntersect(AABB box) {
-        return this.mesh.searchStream(box.deflate(1D / (this.blockResolution * 32))).anyMatch(p -> p.intersect(box));
+    public boolean doesBoxIntersect(AABB box) {
+        var out = this.mesh.searchStream(box.deflate(1D / (this.blockResolution * 32))).anyMatch(p -> p.intersect(box));
+        return out;
     }
 
     /**
@@ -149,7 +150,6 @@ public class Voxelizer {
     private boolean isPointInsideMesh(IVector3 point) {
         var meshBounds = this.mesh.getBounds();
         var fromPoint = IVector3.ofImmutable(meshBounds.minX() - 1, point.y(), point.z());
-        var toPoint = IVector3.ofImmutable(meshBounds.maxX() + 1, point.y(), point.z());
         var rayDirection = IVector3.ofImmutable(1, 0, 0);
         var ray = new Ray(fromPoint, rayDirection);
 
@@ -158,9 +158,9 @@ public class Voxelizer {
             return ObjectDoubleImmutablePair.of(hit, hit.distanceTo(point));
         }).toList();
 
-        if (hits.isEmpty())
+        if (hits.isEmpty()) {
             return false;
-
+        }
         // We have to collect all the closest points, so we can choose an option if there are multiple.
         // This is a safeguard against any bad geometry that might be present in the mesh.
         var closestHits = Lists.newArrayList(hits.get(0));
@@ -183,5 +183,23 @@ public class Voxelizer {
         return false;
     }
 
+    public IMesh<?, ? extends IPolygonData<?>> mesh() {
+        return this.mesh;
+    }
 
+    public int blockResolution() {
+        return this.blockResolution;
+    }
+
+    public double resolution() {
+        return this.resolution;
+    }
+
+    public IVector3i min() {
+        return this.min;
+    }
+
+    public IVector3i max() {
+        return this.max;
+    }
 }

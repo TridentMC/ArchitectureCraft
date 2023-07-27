@@ -39,6 +39,12 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
         );
     };
 
+    public Quad {
+        if (vertexIndices.size() != 4) {
+            throw new IllegalArgumentException("Quads must have 4 vertices");
+        }
+    }
+
     /**
      * Gets the static quad provider instance, used to create quads from a face, data and vertex indices.
      *
@@ -48,12 +54,6 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     public static <D extends IPolygonData<D>> IPolygonProvider<Quad<D>, D> getProvider() {
         //noinspection unchecked - This method can be ugly because it makes others less ugly :)
         return PROVIDER;
-    }
-
-    public Quad {
-        if (vertexIndices.size() != 4) {
-            throw new IllegalArgumentException("Quads must have 4 vertices");
-        }
     }
 
     @Override
@@ -101,66 +101,57 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     @Override
     @Nullable
     public IVector3 intersect(Ray ray) {
-        // Vertices of the quadrilateral
-        var v0 = this.getVertex(0).getPos().asImmutable();
-        var v1 = this.getVertex(1).getPos().asImmutable();
-        var v2 = this.getVertex(2).getPos().asImmutable();
-        var v3 = this.getVertex(3).getPos().asImmutable();
+        // We treat the ray as if it starts at the set origin and continues infinitely in the set direction.
+        // We then find the point of intersection between the ray and the plane of the quad, and return it.
+        // This method ignores the direction of the quad, so a hit can be found from either side.
 
-        // Compute vectors for two of the quadrilateral's edges
-        var e1 = v1.sub(v0);
-        var e2 = v2.sub(v0);
-        var e3 = v3.sub(v0);
+        var eps = EPSILON;
+        var rayOrigin = ray.origin();
+        var rayDirection = ray.direction();
+        var planeNormal = this.normal;
+        var planePoint = this.getVertex(0).getPos();
 
-        // Compute the cross product of the ray direction and edge 2
-        var p = ray.direction().asMutable().cross(e2);
-
-        // Compute the determinant
-        var det = e1.dot(p);
-        if (det > -EPSILON && det < EPSILON) {
-            // Ray is parallel to the quadrilateral
-            return null;
-        }
-
-        var invDet = 1 / det;
-        var t = ray.origin().asMutable().sub(v0).mul(invDet);
-        var q = t.asMutable().cross(e1);
-
-        // Compute the barycentric coordinates
-        var u = t.dot(p);
-        if (u < 0 || u > 1) {
-            return null;
-        }
-        var v = ray.direction().dot(q);
-        if (v < 0 || u + v > 1) {
-            // Check for intersection with the second triangle of the quad
-            p.set(ray.direction()).cross(e3);
-            det = e1.dot(p);
-            if (det > -EPSILON && det < EPSILON) {
-                return null;
-            }
-            invDet = 1 / det;
-            t.set(ray.origin()).sub(v0).mul(invDet);
-            q.set(t).cross(e1);
-            u = t.dot(p);
-            if (u < 0 || u > 1) {
-                return null;
-            }
-            v = ray.direction().dot(q);
-            if (v < 0 || u + v > 1) {
-                return null;
+        var denom = planeNormal.dot(rayDirection);
+        // Check if the ray intersects the plane at all.
+        if (Math.abs(denom) > eps) {
+            // Find the point of intersection, then confirm it's within the quad.
+            var t = planePoint.asMutable().sub(rayOrigin).dot(planeNormal) / denom;
+            if (t >= 0) {
+                var hitPoint = rayOrigin.asMutable().add(rayDirection.mul(t));
+                if (this.containsPoint(hitPoint)) {
+                    return hitPoint.asImmutable();
+                }
             }
         }
 
-        // Compute the distance from the ray origin to the quadrilateral
-        var t2 = e2.dot(q);
-        if (t2 > EPSILON) {
-            // Ray intersects the quadrilateral
-            return ray.getPoint(t2);
-        }
-
-        // Ray does not intersect the quadrilateral
         return null;
+    }
+
+    private boolean containsPoint(IVector3 point) {
+        // Checks if the given point is within the quad, assuming it's on the same plane as the quad.
+        var eps = EPSILON;
+
+        var p0 = this.getVertex(0).getPos();
+        var p1 = this.getVertex(1).getPos();
+        var p2 = this.getVertex(2).getPos();
+        var p3 = this.getVertex(3).getPos();
+
+        var e0 = p1.asMutable().sub(p0);
+        var e1 = p2.asMutable().sub(p1);
+        var e2 = p3.asMutable().sub(p2);
+        var e3 = p0.asMutable().sub(p3);
+        var v0 = point.asMutable().sub(p0);
+        var v1 = point.asMutable().sub(p1);
+        var v2 = point.asMutable().sub(p2);
+        var v3 = point.asMutable().sub(p3);
+
+        var c0 = e0.cross(v0);
+        var c1 = e1.cross(v1);
+        var c2 = e2.cross(v2);
+        var c3 = e3.cross(v3);
+
+        return c0.dot(c1) > -eps && c1.dot(c2) > -eps && c2.dot(c3) > -eps && c3.dot(c0) > -eps;
+
     }
 
     @Override
@@ -259,6 +250,16 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
         );
     }
 
+    @Override
+    public String toString() {
+        return "Quad{" +
+                "data=" + this.data +
+                ", vertexIndices=" + this.vertexIndices +
+                ", normal=" + this.normal +
+                ", aabb=" + this.aabb +
+                '}';
+    }
+
     /**
      * Builder for {@link Quad} instances.
      *
@@ -266,9 +267,8 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
      */
     public static class Builder<D extends IPolygonData<D>> {
 
-        private D data;
         private final IVertex[] vertices = new IVertex[4];
-
+        private D data;
         private int nextVertex = 0;
 
         /**

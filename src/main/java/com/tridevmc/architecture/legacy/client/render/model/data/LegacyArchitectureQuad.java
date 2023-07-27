@@ -22,10 +22,21 @@ import java.util.*;
 @Deprecated
 public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
 
-    private Direction face;
     private final LegacyArchitectureVertex[] vertices = new LegacyArchitectureVertex[4];
-    private Vector3f normals;
     private final Map<Transformation, PrebuiltData> prebuiltQuads = Maps.newHashMap();
+    private Direction face;
+    private Vector3f normals;
+
+    public LegacyArchitectureQuad(T metadata, Direction face) {
+        super(metadata);
+        this.face = face;
+    }
+
+    public LegacyArchitectureQuad(T metadata, Direction face, Vector3f normals) {
+        super(metadata);
+        this.face = face;
+        this.normals = normals;
+    }
 
     @Override
     public ImmutableList vertices() {
@@ -87,46 +98,6 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
         return 0;
     }
 
-    private static class PrebuiltData {
-
-        BakedQuad baseQuad;
-        Map<TextureAtlasSprite, BakedQuad> quadsForSprite = Maps.newHashMap();
-
-        private PrebuiltData(BakedQuad baseQuad) {
-            this.baseQuad = baseQuad;
-            this.quadsForSprite.put(baseQuad.getSprite(), baseQuad);
-        }
-
-        private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
-            BakedQuad quadOut = this.quadsForSprite.get(sprite);
-            if (quadOut == null) {
-                //quadOut = new BakedQuadRetextured(this.baseQuad, sprite);
-                this.quadsForSprite.put(sprite, quadOut);
-            }
-            if (tint != -1) {
-                quadOut = this.reTintQuad(quadOut, tint);
-            }
-            return quadOut;
-        }
-
-        private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
-            return new BakedQuad(quad.getVertices(), newTint, quad.getDirection(), quad.getSprite(),
-                                 quad.isShade());
-        }
-
-    }
-
-    public LegacyArchitectureQuad(T metadata, Direction face) {
-        super(metadata);
-        this.face = face;
-    }
-
-    public LegacyArchitectureQuad(T metadata, Direction face, Vector3f normals) {
-        super(metadata);
-        this.face = face;
-        this.normals = normals;
-    }
-
     /**
      * Converts the quad into a baked quad with the given data then caches it for later use.
      *
@@ -169,8 +140,8 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
                 LegacyArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
 
                 this.normals.set((this.normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ()))),
-                                 (this.normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX()))),
-                                 (this.normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY()))));
+                        (this.normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX()))),
+                        (this.normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY()))));
             }
 
             this.normals.normalize();
@@ -187,8 +158,8 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
             Vector3f normals = currentVertex.getNormals();
             LegacyArchitectureVertex neighbourVertex = this.vertices[(i + 1) % this.vertices.length];
             normals.set((normals.x() + ((currentVertex.getY() - neighbourVertex.getY()) * (currentVertex.getZ() + neighbourVertex.getZ()))),
-                        (normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX()))),
-                        (normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY()))));
+                    (normals.y() + ((currentVertex.getZ() - neighbourVertex.getZ()) * (currentVertex.getX() + neighbourVertex.getX()))),
+                    (normals.z() + ((currentVertex.getX() - neighbourVertex.getX()) * (currentVertex.getY() + neighbourVertex.getY()))));
         }
     }
 
@@ -282,6 +253,35 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
         Vector3f normals = this.getFaceNormal();
         this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
         return this.face;
+    }
+
+    private static class PrebuiltData {
+
+        BakedQuad baseQuad;
+        Map<TextureAtlasSprite, BakedQuad> quadsForSprite = Maps.newHashMap();
+
+        private PrebuiltData(BakedQuad baseQuad) {
+            this.baseQuad = baseQuad;
+            this.quadsForSprite.put(baseQuad.getSprite(), baseQuad);
+        }
+
+        private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
+            BakedQuad quadOut = this.quadsForSprite.get(sprite);
+            if (quadOut == null) {
+                //quadOut = new BakedQuadRetextured(this.baseQuad, sprite);
+                this.quadsForSprite.put(sprite, quadOut);
+            }
+            if (tint != -1) {
+                quadOut = this.reTintQuad(quadOut, tint);
+            }
+            return quadOut;
+        }
+
+        private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
+            return new BakedQuad(quad.getVertices(), newTint, quad.getDirection(), quad.getSprite(),
+                    quad.isShade());
+        }
+
     }
 
 }

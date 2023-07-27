@@ -29,26 +29,6 @@ public class CreateMenuContext {
         this.playerInventory = playerInventory;
     }
 
-    public CreateMenuContext setPos(@Nullable BlockPos pos) {
-        this.pos = pos;
-        return this;
-    }
-
-    public CreateMenuContext setBlockState(@Nullable BlockState blockState) {
-        this.blockState = blockState;
-        return this;
-    }
-
-    public CreateMenuContext setBlockEntity(@Nullable BlockEntity blockEntity) {
-        this.blockEntity = blockEntity;
-        return this;
-    }
-
-    public CreateMenuContext setEntity(@Nullable Entity entity) {
-        this.entity = entity;
-        return this;
-    }
-
     public int getWindowId() {
         return this.windowId;
     }
@@ -68,9 +48,19 @@ public class CreateMenuContext {
         return this.pos;
     }
 
+    public CreateMenuContext setPos(@Nullable BlockPos pos) {
+        this.pos = pos;
+        return this;
+    }
+
     @Nullable
     public BlockState getBlockState() {
         return this.blockState;
+    }
+
+    public CreateMenuContext setBlockState(@Nullable BlockState blockState) {
+        this.blockState = blockState;
+        return this;
     }
 
     @Nullable
@@ -78,9 +68,19 @@ public class CreateMenuContext {
         return this.blockEntity;
     }
 
+    public CreateMenuContext setBlockEntity(@Nullable BlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
+        return this;
+    }
+
     @Nullable
     public Entity getEntity() {
         return this.entity;
+    }
+
+    public CreateMenuContext setEntity(@Nullable Entity entity) {
+        this.entity = entity;
+        return this;
     }
 
     public boolean hasPos() {

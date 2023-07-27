@@ -42,9 +42,9 @@ public class PipedBakedQuad<Q extends PipedBakedQuad<Q, V, D>, V extends IPipedV
 
     public PipedBakedQuad(ImmutableList<V> vertices, IVector3 normal, IVector3 min, IVector3 max, Direction face, boolean shouldCull, D metadata) {
         this(vertices, (float) normal.x(), (float) normal.y(), (float) normal.z(),
-             (float) min.x(), (float) min.y(), (float) min.z(),
-             (float) max.x(), (float) max.y(), (float) max.z(),
-             face, shouldCull, metadata);
+                (float) min.x(), (float) min.y(), (float) min.z(),
+                (float) max.x(), (float) max.y(), (float) max.z(),
+                face, shouldCull, metadata);
     }
 
     @Override

@@ -169,7 +169,16 @@ class ImportOBJSON(bpy.types.Operator, ImportHelper):
                     loop[uv_layer].uv = vertices[loop.vert.index].uv
 
             for face in bm.faces:
-                if triangles[face.index].texture == 0:
+                # Some faces might only have a single triangle or quad, so we need to account for that by falling back on quads if no triangles exist
+                texture_for_index = 0
+                try:
+                    texture_for_index = triangles[face.index].texture
+                except IndexError:
+                    try:
+                        texture_for_index = quads[face.index - len(triangles)].texture
+                    except IndexError:
+                        print(f"Face {face.index} has no triangles or quads, using texture 0")
+                if texture_for_index == 0:
                     face.material_index = 0
                 else:
                     face.material_index = 1

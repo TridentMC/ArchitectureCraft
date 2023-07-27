@@ -33,7 +33,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
     public Face(ImmutableList<IVertex> vertices,
                 ImmutableList<IPolygon<D>> polygons,
                 IVector3Immutable normal) {
-        if(normal == null){
+        if (normal == null) {
             throw new NullPointerException("Normal cannot be null");
         }
         this.vertices = vertices;
@@ -49,7 +49,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
      * @param normal           The normal of the face.
      */
     private Face(Object2IntMap<IVertex> vertexPool, List<Function<IFace<D>, IPolygon<D>>> polygonProviders, IVector3Immutable normal) {
-        if(normal == null){
+        if (normal == null) {
             throw new NullPointerException("Normal cannot be null");
         }
         // Object2IntMap is not sorted by our indices, so we need to create a new array we can pass further down.
@@ -68,7 +68,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
      * @param normal           The normal of the face.
      */
     private Face(ImmutableList<IVertex> vertices, List<Function<IFace<D>, IPolygon<D>>> polygonProviders, IVector3Immutable normal) {
-        if(normal == null){
+        if (normal == null) {
             throw new NullPointerException("Normal cannot be null");
         }
         this.vertices = vertices;
@@ -147,7 +147,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
 
         private final Object2IntMap<IVertex> vertexPool = new Object2IntOpenHashMap<IVertex>();
         private final List<Function<IFace<D>, IPolygon<D>>> polygons = Lists.newArrayList();
-        private final IVector3Mutable normal = IVector3.ofMutable(0,0,0);
+        private final IVector3Mutable normal = IVector3.ofMutable(0, 0, 0);
 
         public Builder<D> addVertex(IVertex vertex) {
             if (!this.vertexPool.containsKey(vertex)) {

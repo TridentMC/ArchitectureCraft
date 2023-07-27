@@ -25,14 +25,17 @@
 package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.common.helpers.Utils;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;

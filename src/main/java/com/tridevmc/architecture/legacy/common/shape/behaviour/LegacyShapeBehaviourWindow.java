@@ -130,7 +130,7 @@ public class LegacyShapeBehaviourWindow extends LegacyShapeBehaviour {
                 if (otherFrameType != FrameType.NONE) {
                     Direction otherOrient = otherType.frameOrientationForLocalSide(otherLocalDir);
                     if (this.framesMatch(thisFrameType, otherFrameType,
-                                         te.globalFace(thisOrient), nte.globalFace(otherOrient)))
+                            te.globalFace(thisOrient), nte.globalFace(otherOrient)))
                         return nte;
                 }
             }

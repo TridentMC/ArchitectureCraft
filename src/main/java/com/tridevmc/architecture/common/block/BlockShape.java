@@ -1,5 +1,7 @@
 package com.tridevmc.architecture.common.block;
 
+import com.google.common.collect.ImmutableList;
+import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
@@ -10,20 +12,14 @@ import com.tridevmc.architecture.core.model.mesh.IPart;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -33,7 +29,6 @@ import java.util.function.Function;
  */
 public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
 
-    private final EnumShape shape;
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_DEFINITION = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
 
     static {
@@ -41,6 +36,8 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
             ArchitectureLog.error("Failed to find field 'stateDefinition' in Block, this is a critical error and will cause crashes.");
         }
     }
+
+    private final EnumShape shape;
 
     public BlockShape(EnumShape shape, Properties properties) {
         this(shape, properties, ShapeOrientation::forState);
@@ -128,9 +125,15 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
      * @param state the state to get the boxes for.
      * @return the boxes for the given state.
      */
-    public List<AABB> getBoxesForState(BlockStateShape state) {
-        var transform = this.getShape().getTransformationResolver().resolve(state);
-        return this.shape.getVoxelizer().voxelize().stream().map(transform::transformAABB).toList();
+    @Override
+    public ImmutableList<AABB> getBoxesForState(BlockStateArchitecture state) {
+        var shapeState = this.asShapeState(state);
+        if (shapeState == null) {
+            ArchitectureLog.error("BlockShape#getBoxesForState called with a non-shape state, this should not happen.");
+            return DEFAULT_BOX;
+        }
+        var transform = this.getShape().getTransformationResolver().resolve(shapeState);
+        return this.shape.getVoxelizer().voxelize().stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList());
     }
 
     @Nullable
@@ -153,19 +156,6 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
                         context.isInside()
                 )
         ).applyToState(this.defaultBlockState());
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    @NotNull
-    public VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
-        // Defer to our state implementation as it caches this value for us.
-        var state = this.asShapeState(pState);
-        if (state != null) {
-            return state.getShape();
-        } else {
-            return super.getShape(pState, pLevel, pPos, pContext);
-        }
     }
 
     @Override

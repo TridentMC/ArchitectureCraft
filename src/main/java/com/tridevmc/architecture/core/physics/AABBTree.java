@@ -3,13 +3,70 @@ package com.tridevmc.architecture.core.physics;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class AABBTree<T> implements IAABBTree<T> {
+
+    private Node theNode;
+
+    public AABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
+        items.forEach(t -> {
+            var box = boxGetter.apply(t);
+            if (AABBTree.this.theNode == null) {
+                AABBTree.this.theNode = new Node(box, t);
+            } else {
+                AABBTree.this.theNode.addNode(box, t);
+            }
+        });
+    }
+
+    public AABBTree(AABB startBox, T item) {
+        this.theNode = new Node(startBox, item);
+    }
+
+    public Node getRoot() {
+        return this.theNode;
+    }
+
+    public void add(AABB box, T item) {
+        this.theNode.addNode(box, item);
+    }
+
+    @Override
+    @NotNull
+    public Stream<T> searchStream(@NotNull AABB box) {
+        List<Node> queue = Lists.newArrayList(this.theNode);
+        var iter = new Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return !queue.isEmpty();
+            }
+
+            @Override
+            public T next() {
+                var node = queue.remove(0);
+                if (box.intersects(node.getValue())) {
+                    if (node.item == null) {
+                        queue.add(node.left);
+                        queue.add(node.right);
+                    } else {
+                        return node.item;
+                    }
+                }
+                return null;
+            }
+        };
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED), false)
+                .filter(Objects::nonNull);
+    }
+
+    @NotNull
+    public AABB getBounds() {
+        return this.theNode.getValue();
+    }
 
     public class Node {
 
@@ -73,54 +130,6 @@ public class AABBTree<T> implements IAABBTree<T> {
             return Math.max(0, intersection.getXSize() * intersection.getYSize() * intersection.getZSize());
         }
 
-    }
-
-    private Node theNode;
-
-    public AABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
-        items.forEach(t -> {
-            var box = boxGetter.apply(t);
-            if (AABBTree.this.theNode == null) {
-                AABBTree.this.theNode = new Node(box, t);
-            } else {
-                AABBTree.this.theNode.addNode(box, t);
-            }
-        });
-    }
-
-    public AABBTree(AABB startBox, T item) {
-        this.theNode = new Node(startBox, item);
-    }
-
-    public Node getRoot() {
-        return this.theNode;
-    }
-
-    public void add(AABB box, T item) {
-        this.theNode.addNode(box, item);
-    }
-
-    @Override
-    @NotNull
-    public Stream<T> searchStream(@NotNull AABB box) {
-        List<Node> queue = Lists.newArrayList(this.theNode);
-        return Stream.generate(() -> {
-            Node node = queue.remove(0);
-            if (box.intersects(node.getValue())) {
-                if (node.item == null) {
-                    queue.add(node.left);
-                    queue.add(node.right);
-                } else {
-                    return node.item;
-                }
-            }
-            return null;
-        }).filter(Objects::nonNull);
-    }
-
-    @NotNull
-    public AABB getBounds() {
-        return this.theNode.getValue();
     }
 
 }

@@ -22,6 +22,13 @@ public enum EnumSpin implements StringRepresentable {
     private static final ImmutableCollection<EnumSpin> VALUES_COLLECTION = ImmutableSet.copyOf(
             VALUES
     );
+    private final String name;
+    private final int quarterTurns;
+
+    EnumSpin(String name, int quarterTurns) {
+        this.name = name;
+        this.quarterTurns = quarterTurns;
+    }
 
     /**
      * Gets the EnumSpin with the given index.
@@ -40,14 +47,6 @@ public enum EnumSpin implements StringRepresentable {
      */
     public static Collection<EnumSpin> getValues() {
         return VALUES_COLLECTION;
-    }
-
-    private final String name;
-    private final int quarterTurns;
-
-    EnumSpin(String name, int quarterTurns) {
-        this.name = name;
-        this.quarterTurns = quarterTurns;
     }
 
     /**

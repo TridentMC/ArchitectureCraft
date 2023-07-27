@@ -7,7 +7,6 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyAxis;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;

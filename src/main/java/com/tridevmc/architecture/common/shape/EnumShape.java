@@ -132,6 +132,18 @@ public enum EnumShape {
             .collect(Collectors.toMap(EnumShape::getName, Function.identity()));
     private static final Map<ResourceLocation, EnumShape> ID_LOOKUP = Arrays.stream(values())
             .collect(Collectors.toMap(EnumShape::getId, Function.identity()));
+    private final String name;
+    private final ResourceLocation id;
+    private final IShapePlacementLogic<?> placementLogic;
+    private final IShapeTransformationResolver transformationResolver;
+
+    EnumShape(String name, IShapePlacementLogic<?> placementLogic,
+              IShapeTransformationResolver transformationResolver) {
+        this.name = name;
+        this.id = new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
+        this.placementLogic = placementLogic;
+        this.transformationResolver = transformationResolver;
+    }
 
     /**
      * Gets the EnumShape with the given name.
@@ -155,19 +167,6 @@ public enum EnumShape {
     public static EnumShape byId(ResourceLocation id) {
         var shape = ID_LOOKUP.get(id);
         return Objects.requireNonNull(shape, "No shape with id " + id);
-    }
-
-    private final String name;
-    private final ResourceLocation id;
-    private final IShapePlacementLogic<?> placementLogic;
-    private final IShapeTransformationResolver transformationResolver;
-
-    EnumShape(String name, IShapePlacementLogic<?> placementLogic,
-              IShapeTransformationResolver transformationResolver) {
-        this.name = name;
-        this.id = new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
-        this.placementLogic = placementLogic;
-        this.transformationResolver = transformationResolver;
     }
 
     public String getName() {

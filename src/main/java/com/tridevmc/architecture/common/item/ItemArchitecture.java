@@ -24,28 +24,12 @@
 
 package com.tridevmc.architecture.common.item;
 
-import com.tridevmc.architecture.common.model.ITextureConsumer;
-import com.tridevmc.architecture.common.model.ModelSpec;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
-public class ItemArchitecture extends Item implements ITextureConsumer {
+public class ItemArchitecture extends Item {
 
     public ItemArchitecture(Item.Properties properties) {
         super(properties);
-    }
-
-    @Override
-    public String[] getTextureNames() {
-        return null;
-    }
-
-    public ModelSpec getModelSpec(ItemStack stack) {
-        return null;
-    }
-
-    public int getNumSubtypes() {
-        return 1;
     }
 
 }

@@ -40,14 +40,6 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
         return new OBJSON(OBJSONData.fromResource(location), trans, blockResolution);
     }
 
-    public String name() {
-        return this.data.name();
-    }
-
-    public List<AABB> voxelize() {
-        return this.voxelizer.voxelize();
-    }
-
     private static IMesh<String, PolygonData> createMesh(OBJSONData data) {
         // TODO: Might be able to simplify this now that our faces pool vertices for faster transforms just like OBJSON does?
         // OBJSON stores parts and faces in a slightly different way to how our mesh implementation, so we'll need to convert as we build.
@@ -96,6 +88,14 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
         }
 
         return builder.build();
+    }
+
+    public String name() {
+        return this.data.name();
+    }
+
+    public List<AABB> voxelize() {
+        return this.voxelizer.voxelize();
     }
 
 }

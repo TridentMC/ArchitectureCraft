@@ -25,15 +25,14 @@
 package com.tridevmc.architecture.legacy.common.block;
 
 import com.google.common.collect.Maps;
-import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.legacy.math.LegacyTrans3;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.common.item.ItemShape;
-import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -68,13 +67,9 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     public LegacyBlockShape(LegacyEnumShape architectureShape) {
         super(MapColor.DIRT);
         this.architectureShape = architectureShape;
-        if(this.architectureShape.behaviour instanceof LegacyShapeBehaviourModel sbm)
+        if (this.architectureShape.behaviour instanceof LegacyShapeBehaviourModel sbm)
             this.setModelAndTextures(sbm.getModelName());
         SHAPE_BLOCKS.put(architectureShape, this);
-    }
-
-    public LegacyEnumShape getArchitectureShape() {
-        return this.architectureShape;
     }
 
     public static float acBlockStrength(BlockState state, Player player, BlockGetter level, BlockPos pos) {
@@ -108,6 +103,10 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
         //else
         //    return toolLevel >= block.getHarvestLevel(state);
         return true;
+    }
+
+    public LegacyEnumShape getArchitectureShape() {
+        return this.architectureShape;
     }
 
     @Override
@@ -180,7 +179,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
             if (te != null)
                 return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, this.getArchitectureShape());
+        return super.use(state, level, pos, player, hand, hit);
     }
 
     @OnlyIn(Dist.CLIENT)

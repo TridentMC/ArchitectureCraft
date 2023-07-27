@@ -45,7 +45,7 @@ public record Vertex(@NotNull IVector3Immutable pos,
         trans.transformPos(builder.getPos().set(this.pos));
         trans.transformNormal(builder.getNormal().set(this.normal));
         builder.getUV().set(this.uvs);
-        if(transformUVs){
+        if (transformUVs) {
             trans.transformNormalizedUV(face.getNormal(), builder.getUV());
         }
 

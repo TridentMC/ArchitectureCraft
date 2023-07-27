@@ -30,11 +30,11 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.common.item.*;
-import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -67,10 +67,9 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 public class ArchitectureContent {
 
     private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
+    private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
-    private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
-
     public BlockSawbench blockSawbench;
     public Map<LegacyEnumShape, LegacyBlockShape> blockShapes;
     public BlockEntityType<LegacyShapeBlockEntity> tileTypeShape;
@@ -151,9 +150,9 @@ public class ArchitectureContent {
         try {
             dataFixerType = DataFixers.getDataFixer().getSchema(
                             DataFixUtils.makeKey(SharedConstants
-                                                         .getCurrentVersion()
-                                                         .getDataVersion()
-                                                         .getVersion()))
+                                    .getCurrentVersion()
+                                    .getDataVersion()
+                                    .getVersion()))
                     .getChoiceType(References.BLOCK_ENTITY, key.toString());
         } catch (IllegalArgumentException e) {
             ArchitectureLog.error("No data fixer was registered for resource id {}", key);

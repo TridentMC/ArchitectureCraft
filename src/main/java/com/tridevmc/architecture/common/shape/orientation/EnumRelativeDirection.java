@@ -19,18 +19,10 @@ public enum EnumRelativeDirection {
     private final String name;
     private final Direction identityDirection;
 
-    private EnumRelativeDirection(int index, String name, Direction value) {
+    EnumRelativeDirection(int index, String name, Direction value) {
         this.index = index;
         this.name = name;
         this.identityDirection = value;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     public static EnumRelativeDirection fromIndex(int index) {
@@ -44,6 +36,14 @@ public enum EnumRelativeDirection {
             }
         }
         return null;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     /**

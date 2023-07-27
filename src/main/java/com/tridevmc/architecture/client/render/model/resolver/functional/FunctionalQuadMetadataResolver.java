@@ -129,6 +129,36 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
         return new Builder<>();
     }
 
+    @Override
+    public TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
+        return this.blockTextureResolver.getTexture(level, pos, state, metadata);
+    }
+
+    @Override
+    public TextureAtlasSprite getTexture(ItemStack stack, T metadata) {
+        return this.itemTextureResolver.getTexture(stack, metadata);
+    }
+
+    @Override
+    public TextureAtlasSprite getTexture(T metadata) {
+        return this.textureResolver.getTexture(metadata);
+    }
+
+    @Override
+    public int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
+        return this.blockTintIndexResolver.getTintIndex(level, pos, state, metadata);
+    }
+
+    @Override
+    public int getTintIndex(ItemStack stack, T metadata) {
+        return this.itemTintIndexResolver.getTintIndex(stack, metadata);
+    }
+
+    @Override
+    public int getTintIndex(T metadata) {
+        return this.tintIndexResolver.getTintIndex(metadata);
+    }
+
     public static class Builder<T> {
         private IQuadMetadataTextureResolver<T> textureResolver;
         private IQuadMetadataTextureResolverWithBlockContext<T> blockTextureResolver;
@@ -242,35 +272,5 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
                     this.itemTintIndexResolver
             );
         }
-    }
-
-    @Override
-    public TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
-        return this.blockTextureResolver.getTexture(level, pos, state, metadata);
-    }
-
-    @Override
-    public TextureAtlasSprite getTexture(ItemStack stack, T metadata) {
-        return this.itemTextureResolver.getTexture(stack, metadata);
-    }
-
-    @Override
-    public TextureAtlasSprite getTexture(T metadata) {
-        return this.textureResolver.getTexture(metadata);
-    }
-
-    @Override
-    public int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
-        return this.blockTintIndexResolver.getTintIndex(level, pos, state, metadata);
-    }
-
-    @Override
-    public int getTintIndex(ItemStack stack, T metadata) {
-        return this.itemTintIndexResolver.getTintIndex(stack, metadata);
-    }
-
-    @Override
-    public int getTintIndex(T metadata) {
-        return this.tintIndexResolver.getTintIndex(metadata);
     }
 }

@@ -30,6 +30,10 @@ public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> e
         return this.values.stream().filter(v -> v.value == value).findFirst().orElse(null);
     }
 
+    protected int order() {
+        return this.getName().hashCode();
+    }
+
     /**
      * Represents a possible value for a {@link ShapeOrientationProperty}.
      *
@@ -52,10 +56,6 @@ public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> e
             return state.setValue(this.property, this.value);
         }
 
-    }
-
-    protected int order() {
-        return this.getName().hashCode();
     }
 
 }

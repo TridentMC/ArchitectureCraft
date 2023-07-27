@@ -1,8 +1,6 @@
 package com.tridevmc.architecture.common.shape.orientation;
 
 
-import net.minecraft.core.Direction;
-
 public class ShapeOrientationPropertyRelativeConnection extends ShapeOrientationProperty<EnumConnectionState> {
 
     // We assume all these values are from the perspective of looking at the shape from the north side, eyes facing south.

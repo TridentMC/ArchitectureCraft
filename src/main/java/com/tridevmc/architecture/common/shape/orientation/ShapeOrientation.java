@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.common.shape.orientation;
 
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,63 +18,6 @@ public record ShapeOrientation(
 
     public static final ShapeOrientation IDENTITY = new ShapeOrientation();
     private static final ShapeOrientationCache CACHE = new ShapeOrientationCache();
-
-    private static class ShapeOrientationCache {
-
-        private static class Node {
-
-            private final ShapeOrientation orientation;
-            private final Map<ShapeOrientationProperty.Value<?>, Node> children = new HashMap<>();
-
-            public Node(ShapeOrientation orientation) {
-                this.orientation = orientation;
-            }
-
-            public Node get(ShapeOrientationProperty.Value<?> property) {
-                // Get or create a node for the given property.
-                return this.children.computeIfAbsent(property, (p) -> new Node(this.orientation.withProperty(p)));
-            }
-
-        }
-
-        private final Node root = new Node(ShapeOrientation.IDENTITY);
-
-        public ShapeOrientation get(ShapeOrientationProperty.Value<?>... properties) {
-            var node = this.root;
-            for (ShapeOrientationProperty.Value<?> property : Arrays.stream(properties).sorted(Comparator.comparingInt(p -> p.property().order())).toList()) {
-                node = node.get(property);
-            }
-            return node.orientation;
-        }
-
-        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property) {
-            var node = this.root;
-            node = node.get(property);
-            return node.orientation;
-        }
-
-        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2) {
-            var node = this.root;
-            var prop1 = property1.property().order();
-            var prop2 = property2.property().order();
-            node = node.get(prop1 < prop2 ? property1 : property2);
-            node = node.get(prop1 < prop2 ? property2 : property1);
-            return node.orientation;
-        }
-
-        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2, ShapeOrientationProperty.Value<?> property3) {
-            var node = this.root;
-            var prop1 = property1.property().order();
-            var prop2 = property2.property().order();
-            var prop3 = property3.property().order();
-            // My brain hurts.
-            node = node.get(prop1 < prop2 ? (prop1 < prop3 ? property1 : property3) : (prop2 < prop3 ? property2 : property3));
-            node = node.get(prop1 < prop2 ? (prop2 < prop3 ? property2 : property3) : (prop1 < prop3 ? property1 : property3));
-            node = node.get(prop1 < prop2 ? (prop1 < prop3 ? property3 : property1) : (prop2 < prop3 ? property3 : property2));
-            return node.orientation;
-        }
-
-    }
 
     /**
      * Gets an orientation with the given properties, creating one if a cached entry cannot be found.
@@ -178,6 +120,63 @@ public record ShapeOrientation(
             }
         }
         return null;
+    }
+
+    private static class ShapeOrientationCache {
+
+        private final Node root = new Node(ShapeOrientation.IDENTITY);
+
+        public ShapeOrientation get(ShapeOrientationProperty.Value<?>... properties) {
+            var node = this.root;
+            for (ShapeOrientationProperty.Value<?> property : Arrays.stream(properties).sorted(Comparator.comparingInt(p -> p.property().order())).toList()) {
+                node = node.get(property);
+            }
+            return node.orientation;
+        }
+
+        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property) {
+            var node = this.root;
+            node = node.get(property);
+            return node.orientation;
+        }
+
+        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2) {
+            var node = this.root;
+            var prop1 = property1.property().order();
+            var prop2 = property2.property().order();
+            node = node.get(prop1 < prop2 ? property1 : property2);
+            node = node.get(prop1 < prop2 ? property2 : property1);
+            return node.orientation;
+        }
+
+        public ShapeOrientation get(ShapeOrientationProperty.Value<?> property1, ShapeOrientationProperty.Value<?> property2, ShapeOrientationProperty.Value<?> property3) {
+            var node = this.root;
+            var prop1 = property1.property().order();
+            var prop2 = property2.property().order();
+            var prop3 = property3.property().order();
+            // My brain hurts.
+            node = node.get(prop1 < prop2 ? (prop1 < prop3 ? property1 : property3) : (prop2 < prop3 ? property2 : property3));
+            node = node.get(prop1 < prop2 ? (prop2 < prop3 ? property2 : property3) : (prop1 < prop3 ? property1 : property3));
+            node = node.get(prop1 < prop2 ? (prop1 < prop3 ? property3 : property1) : (prop2 < prop3 ? property3 : property2));
+            return node.orientation;
+        }
+
+        private static class Node {
+
+            private final ShapeOrientation orientation;
+            private final Map<ShapeOrientationProperty.Value<?>, Node> children = new HashMap<>();
+
+            public Node(ShapeOrientation orientation) {
+                this.orientation = orientation;
+            }
+
+            public Node get(ShapeOrientationProperty.Value<?> property) {
+                // Get or create a node for the given property.
+                return this.children.computeIfAbsent(property, (p) -> new Node(this.orientation.withProperty(p)));
+            }
+
+        }
+
     }
 
 }

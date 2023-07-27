@@ -1,16 +1,24 @@
 package com.tridevmc.architecture.common.block;
 
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
+import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockArchitecture extends Block {
+
+    static final ImmutableList<AABB> DEFAULT_BOX = ImmutableList.of(AABB.BLOCK_FULL);
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_DEFINITION = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
 
@@ -44,4 +52,38 @@ public class BlockArchitecture extends Block {
     public ITrans3Immutable getTransformForState(BlockStateArchitecture state) {
         return ITrans3.ofIdentity();
     }
+
+    /**
+     * Gets the boxes for the given state, with transformations applied.
+     * <p>
+     * The result of this method is cached within the state, it should not be called directly.
+     *
+     * @param state the state to get the boxes for.
+     * @return the boxes for the given state.
+     */
+    public ImmutableList<AABB> getBoxesForState(BlockStateArchitecture state) {
+        return DEFAULT_BOX;
+    }
+
+    private BlockStateArchitecture asArchitectureState(BlockState state) {
+        if (state instanceof BlockStateArchitecture) {
+            return (BlockStateArchitecture) state;
+        } else {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    @NotNull
+    public VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
+        // Defer to our state implementation as it caches this value for us.
+        var state = this.asArchitectureState(pState);
+        if (state != null) {
+            return state.getShape();
+        } else {
+            return super.getShape(pState, pLevel, pPos, pContext);
+        }
+    }
+
 }

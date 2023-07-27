@@ -122,10 +122,8 @@ public interface IPolygon<D extends IPolygonData<D>> {
      * @return true if this polygon is facing towards the point, false otherwise.
      */
     default boolean isFacing(@NotNull IVector3 point) {
-        // We're opting to calculate the difference between the point and vertex 0 of the polygon here instead
-        // of using the methods on IVector3, this saves us an allocation. Even though it's a bit less pretty.
-        var v0 = this.getVertices().get(0).getPos();
-        return this.getNormal().dot(point.x() - v0.x(), point.y() - v0.y(), point.z() - v0.z()) < 0;
+        var center = this.getAABB().center();
+        return this.getNormal().dot(point.x() - center.x(), point.y() - center.y(), point.z() - center.z()) < 0;
     }
 
     /**

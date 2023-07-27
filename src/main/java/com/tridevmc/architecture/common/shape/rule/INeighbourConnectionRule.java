@@ -1,9 +1,6 @@
 package com.tridevmc.architecture.common.shape.rule;
 
-import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**

@@ -25,15 +25,15 @@
 package com.tridevmc.architecture.legacy.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.helpers.Utils;
+import com.tridevmc.architecture.common.item.ItemCladding;
+import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
-import com.tridevmc.architecture.legacy.math.LegacyTrans3;
-import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.common.item.ItemCladding;
-import com.tridevmc.architecture.common.model.ModelProperties;
 import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
+import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -199,10 +199,6 @@ public class LegacyShapeBlockEntity extends BlockEntity {
         }
     }
 
-    public void setBaseBlockState(BlockState state) {
-        this.baseBlockState = state;
-    }
-
     public void setSecondaryMaterial(BlockState state) {
         this.secondaryBlockState = state;
     }
@@ -213,6 +209,10 @@ public class LegacyShapeBlockEntity extends BlockEntity {
 
     public BlockState getBaseBlockState() {
         return this.baseBlockState;
+    }
+
+    public void setBaseBlockState(BlockState state) {
+        this.baseBlockState = state;
     }
 
     public BlockState getSecondaryBlockState() {
@@ -231,16 +231,16 @@ public class LegacyShapeBlockEntity extends BlockEntity {
         return this.side;
     }
 
-    public int getTurn() {
-        return this.turn;
-    }
-
     public void setSide(int side) {
         this.setSide((byte) side);
     }
 
     public void setSide(byte side) {
         this.side = side;
+    }
+
+    public int getTurn() {
+        return this.turn;
     }
 
     public void setTurn(int turn) {

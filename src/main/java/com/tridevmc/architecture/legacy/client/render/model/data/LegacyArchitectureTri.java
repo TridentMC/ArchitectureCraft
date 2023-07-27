@@ -22,8 +22,8 @@ import java.util.stream.IntStream;
 @Deprecated
 public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
 
-    private Direction face;
     private final LegacyArchitectureVertex[] vertices = new LegacyArchitectureVertex[3];
+    private Direction face;
     private Vector3f normals = null;
 
     public LegacyArchitectureTri(T metadata, Direction face) {

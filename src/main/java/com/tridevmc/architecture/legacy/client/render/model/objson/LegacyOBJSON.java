@@ -146,8 +146,36 @@ public class LegacyOBJSON {
 
     }
 
+    public record Edge(LegacyVector3 a, LegacyVector3 b) {
+
+        public double aX() {
+            return this.a.x();
+        }
+
+        public double aY() {
+            return this.a.y();
+        }
+
+        public double aZ() {
+            return this.a.z();
+        }
+
+        public double bX() {
+            return this.b.x();
+        }
+
+        public double bY() {
+            return this.b.y();
+        }
+
+        public double bZ() {
+            return this.b.z();
+        }
+
+    }
+
     @Deprecated
-public class Face {
+    public class Face {
         LegacyOBJSON model;
         int texture;
         Vertex[] vertices;
@@ -179,7 +207,7 @@ public class Face {
     }
 
     @Deprecated
-public class Triangle {
+    public class Triangle {
         int[] vertices;
 
         public Triangle clone() {
@@ -190,7 +218,7 @@ public class Triangle {
     }
 
     @Deprecated
-public class Vertex {
+    public class Vertex {
         double[] pos;
         double[] normal;
         double[] uv;
@@ -218,33 +246,5 @@ public class Vertex {
             out.uv = Arrays.copyOf(this.uv, this.uv.length);
             return out;
         }
-    }
-
-    public record Edge(LegacyVector3 a, LegacyVector3 b) {
-
-        public double aX() {
-            return this.a.x();
-        }
-
-        public double aY() {
-            return this.a.y();
-        }
-
-        public double aZ() {
-            return this.a.z();
-        }
-
-        public double bX() {
-            return this.b.x();
-        }
-
-        public double bY() {
-            return this.b.y();
-        }
-
-        public double bZ() {
-            return this.b.z();
-        }
-
     }
 }

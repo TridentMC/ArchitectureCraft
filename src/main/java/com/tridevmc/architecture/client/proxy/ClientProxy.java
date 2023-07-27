@@ -25,18 +25,14 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.client.render.ArchitectureBlockHighlightRenderer;
-import com.tridevmc.architecture.client.render.RenderingManager;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeModelLoader;
-import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,14 +44,11 @@ import java.util.Arrays;
 
 public class ClientProxy extends CommonProxy {
 
-    public static final RenderingManager RENDERING_MANAGER = new RenderingManager();
-
     @Override
     public void setup(FMLCommonSetupEvent e) {
         super.setup(e);
         if (!FMLEnvironment.production)
             MinecraftForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
-        MinecraftForge.EVENT_BUS.register(ArchitectureBlockHighlightRenderer.class);
     }
 
     public void registerDefaultModelLocations() {
@@ -75,11 +68,6 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent e) {
-        for (Block block : ArchitectureContent.registeredBlocks.values())
-            RENDERING_MANAGER.registerSprites(0, e.getAtlas(), block);
-
-        for (Item item : ArchitectureContent.registeredItems.values())
-            RENDERING_MANAGER.registerSprites(1, e.getAtlas(), item);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.google.common.collect.ImmutableList;
+import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.common.utils.LegacyAABBTree;
-import com.tridevmc.architecture.common.utils.MiscUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
@@ -62,6 +62,19 @@ public class LegacyOBJSONVoxelizer {
 
         this.min = new Vec3i(minX, minY, minZ);
         this.max = new Vec3i(maxX, maxY, maxZ);
+    }
+
+    private static boolean testSeparatingAxis(Vec3 v0, Vec3 v1, Vec3 v2, Vec3 axis, Vec3 aabbSize) {
+        double v0Projection = v0.dot(axis);
+        double v1Projection = v1.dot(axis);
+        double v2Projection = v2.dot(axis);
+
+        double r = aabbSize.x * Math.abs(xNormal.dot(axis)) +
+                aabbSize.y * Math.abs(yNormal.dot(axis)) +
+                aabbSize.z * Math.abs(zNormal.dot(axis));
+
+        double[] projections = new double[]{v0Projection, v1Projection, v2Projection};
+        return Math.max(-Arrays.stream(projections).max().getAsDouble(), Arrays.stream(projections).min().getAsDouble()) > r;
     }
 
     public VoxelShape voxelizeShape() {
@@ -169,19 +182,6 @@ public class LegacyOBJSONVoxelizer {
 
     public Vec3i getMax() {
         return this.max;
-    }
-
-    private static boolean testSeparatingAxis(Vec3 v0, Vec3 v1, Vec3 v2, Vec3 axis, Vec3 aabbSize) {
-        double v0Projection = v0.dot(axis);
-        double v1Projection = v1.dot(axis);
-        double v2Projection = v2.dot(axis);
-
-        double r = aabbSize.x * Math.abs(xNormal.dot(axis)) +
-                aabbSize.y * Math.abs(yNormal.dot(axis)) +
-                aabbSize.z * Math.abs(zNormal.dot(axis));
-
-        double[] projections = new double[]{v0Projection, v1Projection, v2Projection};
-        return Math.max(-Arrays.stream(projections).max().getAsDouble(), Arrays.stream(projections).min().getAsDouble()) > r;
     }
 
     /**

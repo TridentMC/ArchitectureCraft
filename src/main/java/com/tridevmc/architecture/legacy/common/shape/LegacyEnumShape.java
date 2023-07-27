@@ -25,11 +25,11 @@
 package com.tridevmc.architecture.legacy.common.shape;
 
 import com.google.common.collect.ImmutableMap;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.common.helpers.Profile;
+import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.*;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import com.tridevmc.architecture.legacy.common.shape.behaviour.*;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

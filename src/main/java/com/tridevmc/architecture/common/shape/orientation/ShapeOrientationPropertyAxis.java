@@ -3,7 +3,6 @@ package com.tridevmc.architecture.common.shape.orientation;
 import net.minecraft.core.Direction;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 public class ShapeOrientationPropertyAxis extends ShapeOrientationProperty<Direction.Axis> {
 

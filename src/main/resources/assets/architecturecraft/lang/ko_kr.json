@@ -1,14 +1,13 @@
 {
-  "block.architecturecraft.sawbench": "건축가의 톱대",
-  "block.architecturecraft.shape": "건축적인 블럭",
-  "item.architecturecraft.large_pulley": "큰 도르래",
-  "item.architecturecraft.sawblade": "원형 톱날",
-  "item.architecturecraft.chisel": "건축가의 끌",
-  "item.architecturecraft.hammer": "건축가의 망치",
-  "item.architecturecraft.cladding": "피복",
-  "item_group.architecture.tool": "Architecture Craft Tools",
-  "item_group.architecture.shape": "Architecture Craft Shapes",
-
-  "tooltip.architecturecraft.base_material": "재료: %s",
-  "tooltip.architecturecraft.secondary_material": "부재료: %s"
+    "block.architecturecraft.sawbench": "건축가의 톱대",
+    "block.architecturecraft.shape": "건축적인 블럭",
+    "item.architecturecraft.large_pulley": "큰 도르래",
+    "item.architecturecraft.sawblade": "원형 톱날",
+    "item.architecturecraft.chisel": "건축가의 끌",
+    "item.architecturecraft.hammer": "건축가의 망치",
+    "item.architecturecraft.cladding": "피복",
+    "item_group.architecture.tool": "Architecture Craft Tools",
+    "item_group.architecture.shape": "Architecture Craft Shapes",
+    "tooltip.architecturecraft.base_material": "재료: %s",
+    "tooltip.architecturecraft.secondary_material": "부재료: %s"
 }

@@ -1,28 +1,28 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "I*I",
-    "/0/",
-    "/_/"
-  ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/iron"
+    "type": "crafting_shaped",
+    "pattern": [
+        "I*I",
+        "/0/",
+        "/_/"
+    ],
+    "key": {
+        "I": {
+            "tag": "forge:ingots/iron"
+        },
+        "*": {
+            "item": "architecturecraft:sawblade"
+        },
+        "/": {
+            "tag": "forge:rods/wooden"
+        },
+        "_": {
+            "tag": "minecraft:wooden_pressure_plates"
+        },
+        "0": {
+            "item": "architecturecraft:large_pulley"
+        }
     },
-    "*": {
-      "item": "architecturecraft:sawblade"
-    },
-    "/": {
-      "tag": "forge:rods/wooden"
-    },
-    "_": {
-      "tag": "minecraft:wooden_pressure_plates"
-    },
-    "0": {
-      "item": "architecturecraft:large_pulley"
+    "result": {
+        "item": "architecturecraft:sawbench"
     }
-  },
-  "result": {
-    "item": "architecturecraft:sawbench"
-  }
 }

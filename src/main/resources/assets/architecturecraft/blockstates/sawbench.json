@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "architecturecraft:block/sawbench"
+    "variants": {
+        "": {
+            "model": "architecturecraft:block/sawbench"
+        }
     }
-  }
 }

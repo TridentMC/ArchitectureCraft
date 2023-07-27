@@ -1,19 +1,19 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    " W ",
-    "W/W",
-    " W "
-  ],
-  "key": {
-    "W": {
-      "tag": "minecraft:planks"
+    "type": "crafting_shaped",
+    "pattern": [
+        " W ",
+        "W/W",
+        " W "
+    ],
+    "key": {
+        "W": {
+            "tag": "minecraft:planks"
+        },
+        "/": {
+            "tag": "forge:rods/wooden"
+        }
     },
-    "/": {
-      "tag": "forge:rods/wooden"
+    "result": {
+        "item": "architecturecraft:large_pulley"
     }
-  },
-  "result": {
-    "item": "architecturecraft:large_pulley"
-  }
 }

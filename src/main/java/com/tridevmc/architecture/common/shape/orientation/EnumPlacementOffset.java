@@ -18,6 +18,15 @@ public enum EnumPlacementOffset implements StringRepresentable {
     private static final ImmutableCollection<EnumPlacementOffset> VALUES_COLLECTION = ImmutableSet.copyOf(
             VALUES
     );
+    private final int id;
+    private final String name;
+    private final double offset;
+
+    EnumPlacementOffset(int id, String name, double offset) {
+        this.id = id;
+        this.name = name;
+        this.offset = offset;
+    }
 
     /**
      * Gets the EnumPlacementOffset with the given index.
@@ -36,16 +45,6 @@ public enum EnumPlacementOffset implements StringRepresentable {
      */
     public static Collection<EnumPlacementOffset> getValues() {
         return VALUES_COLLECTION;
-    }
-
-    private final int id;
-    private final String name;
-    private final double offset;
-
-    EnumPlacementOffset(int id, String name, double offset) {
-        this.id = id;
-        this.name = name;
-        this.offset = offset;
     }
 
     /**

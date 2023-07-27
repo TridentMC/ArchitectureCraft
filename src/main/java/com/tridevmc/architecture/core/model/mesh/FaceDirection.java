@@ -30,6 +30,12 @@ public enum FaceDirection {
         }
     }
 
+    private final int index;
+
+    FaceDirection(int index) {
+        this.index = index;
+    }
+
     /**
      * Gets the cull face from the index of the given direction.
      *
@@ -40,12 +46,6 @@ public enum FaceDirection {
     public static FaceDirection fromDirection(@Nullable Direction direction) {
         if (direction == null) return null;
         return FACES_BY_INDEX[direction.ordinal()];
-    }
-
-    private final int index;
-
-    FaceDirection(int index) {
-        this.index = index;
     }
 
     public int getIndex() {

@@ -88,7 +88,7 @@ public class LegacyBaseOrientation {
 
         @Override
         public LegacyTrans3 localToGlobalTransformation(BlockGetter level, BlockPos pos, BlockState state, LegacyVector3 origin) {
-            if(1 == 1) {
+            if (1 == 1) {
                 return LegacyTrans3.ident;
             }
             var f = state.getValue(FACING);

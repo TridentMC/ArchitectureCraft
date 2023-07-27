@@ -10,8 +10,55 @@ import java.util.function.Function;
 @Deprecated
 public class LegacyAABBTree<T> {
 
+    private Node theNode;
+
+    public LegacyAABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
+        items.forEach(t -> {
+            var box = boxGetter.apply(t);
+            if (LegacyAABBTree.this.theNode == null) {
+                LegacyAABBTree.this.theNode = new Node(box, t);
+            } else {
+                LegacyAABBTree.this.theNode.addNode(box, t);
+            }
+        });
+    }
+
+    public LegacyAABBTree(AABB startBox, T item) {
+        this.theNode = new Node(startBox, item);
+    }
+
+    public Node getRoot() {
+        return this.theNode;
+    }
+
+    public void add(AABB box, T item) {
+        this.theNode.addNode(box, item);
+    }
+
+    public AABB getBounds() {
+        return this.theNode.getValue();
+    }
+
+    public List<T> search(AABB box) {
+        List<T> out = Lists.newArrayList();
+        List<Node> queue = Lists.newArrayList(this.theNode);
+
+        while (!queue.isEmpty()) {
+            Node node = queue.remove(0);
+            if (box.intersects(node.getValue())) {
+                if (node.item == null) {
+                    queue.add(node.left);
+                    queue.add(node.right);
+                } else {
+                    out.add(node.item);
+                }
+            }
+        }
+        return out;
+    }
+
     @Deprecated
-public class Node {
+    public class Node {
         private Node left;
         private Node right;
         private AABB value;
@@ -71,53 +118,6 @@ public class Node {
             var intersection = this.getValue().minmax(other);
             return Math.max(0, intersection.getXsize() * intersection.getYsize() * intersection.getZsize());
         }
-    }
-
-    private Node theNode;
-
-    public LegacyAABBTree(Collection<T> items, Function<T, AABB> boxGetter) {
-        items.forEach(t -> {
-            var box = boxGetter.apply(t);
-            if (LegacyAABBTree.this.theNode == null) {
-                LegacyAABBTree.this.theNode = new Node(box, t);
-            } else {
-                LegacyAABBTree.this.theNode.addNode(box, t);
-            }
-        });
-    }
-
-    public LegacyAABBTree(AABB startBox, T item) {
-        this.theNode = new Node(startBox, item);
-    }
-
-    public Node getRoot() {
-        return this.theNode;
-    }
-
-    public void add(AABB box, T item) {
-        this.theNode.addNode(box, item);
-    }
-
-    public AABB getBounds() {
-        return this.theNode.getValue();
-    }
-
-    public List<T> search(AABB box) {
-        List<T> out = Lists.newArrayList();
-        List<Node> queue = Lists.newArrayList(this.theNode);
-
-        while (!queue.isEmpty()) {
-            Node node = queue.remove(0);
-            if (box.intersects(node.getValue())) {
-                if (node.item == null) {
-                    queue.add(node.left);
-                    queue.add(node.right);
-                } else {
-                    out.add(node.item);
-                }
-            }
-        }
-        return out;
     }
 
 }

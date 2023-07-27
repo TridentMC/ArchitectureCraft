@@ -33,122 +33,6 @@ public class LegacyArchitectureModelData<T> {
     private final DirectionalQuads quads = new DirectionalQuads();
     private final Map<String, LegacyArchitectureVertex> vertexPool = Maps.newHashMap();
 
-    /**
-     * Stores quads for each cardinal direction as well as general quads that don't fit into a specific direction.
-     */
-    protected class DirectionalQuads {
-
-        private final List<IPipedBakedQuad<?, ?, ?>> northQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> southQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> eastQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> westQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> upQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> downQuads = Lists.newArrayList();
-        private final List<IPipedBakedQuad<?, ?, ?>> generalQuads = Lists.newArrayList();
-        private final ImmutableList<List<IPipedBakedQuad<?, ?, ?>>> allQuads = ImmutableList.of(this.northQuads, this.southQuads, this.eastQuads, this.westQuads, this.upQuads, this.downQuads, this.generalQuads);
-
-        private List<IPipedBakedQuad<?, ?, ?>> getQuads(@Nullable Direction direction) {
-            if (direction == null) {
-                return this.generalQuads;
-            }
-            return switch (direction) {
-                case NORTH -> this.northQuads;
-                case SOUTH -> this.southQuads;
-                case EAST -> this.eastQuads;
-                case WEST -> this.westQuads;
-                case UP -> this.upQuads;
-                case DOWN -> this.downQuads;
-            };
-        }
-
-        private Stream<IPipedBakedQuad<?, ?, ?>> getAllQuads() {
-            return Stream.of(this.northQuads,
-                             this.southQuads,
-                             this.eastQuads,
-                             this.westQuads,
-                             this.upQuads,
-                             this.downQuads,
-                             this.generalQuads)
-                    .flatMap(List::stream);
-        }
-
-        private void addQuad(@Nullable Direction direction, IPipedBakedQuad<?, ?, ?> quad) {
-            if (direction == null) {
-                this.generalQuads.add(quad);
-            } else {
-                switch (direction) {
-                    case NORTH -> this.northQuads.add(quad);
-                    case SOUTH -> this.southQuads.add(quad);
-                    case EAST -> this.eastQuads.add(quad);
-                    case WEST -> this.westQuads.add(quad);
-                    case UP -> this.upQuads.add(quad);
-                    case DOWN -> this.downQuads.add(quad);
-                }
-            }
-        }
-
-        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
-            var quads = this.getQuads(direction);
-            if (quads.isEmpty())
-                quads.add(new LegacyArchitectureQuad<>(metadata, direction));
-            return quads.get(quads.size() - 1);
-        }
-
-        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
-            var quads = this.getQuads(direction);
-            if (quads.isEmpty())
-                quads.add(new LegacyArchitectureQuad<>(metadata, direction, normals));
-            return quads.get(quads.size() - 1);
-        }
-
-        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
-            var quads = this.getQuads(direction);
-            if (quads.isEmpty())
-                quads.add(new LegacyArchitectureTri<>(metadata, direction));
-            return quads.get(quads.size() - 1);
-        }
-
-        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
-            var quads = this.getQuads(direction);
-            if (quads.isEmpty())
-                quads.add(new LegacyArchitectureTri<>(metadata, direction, normals));
-            return quads.get(quads.size() - 1);
-        }
-
-        protected int getQuadCount(Direction direction) {
-            return this.getQuads(direction).size();
-        }
-
-        protected int getNorthQuadCount() {
-            return this.northQuads.size();
-        }
-
-        protected int getSouthQuadCount() {
-            return this.southQuads.size();
-        }
-
-        protected int getEastQuadCount() {
-            return this.eastQuads.size();
-        }
-
-        protected int getWestQuadCount() {
-            return this.westQuads.size();
-        }
-
-        protected int getUpQuadCount() {
-            return this.upQuads.size();
-        }
-
-        protected int getDownQuadCount() {
-            return this.downQuads.size();
-        }
-
-        protected int getGeneralQuadCount() {
-            return this.generalQuads.size();
-        }
-
-    }
-
     public LegacyArchitectureModelData() {
     }
 
@@ -189,10 +73,10 @@ public class LegacyArchitectureModelData<T> {
                 var points = new QuadPointDumper(quad).getPoints();
                 for (Vec3 point : points) {
                     this.addQuadInstruction(null,
-                                            quad.getDirection(),
-                                            (float) point.x(),
-                                            (float) point.y(),
-                                            (float) point.z());
+                            quad.getDirection(),
+                            (float) point.x(),
+                            (float) point.y(),
+                            (float) point.z());
                 }
             }
         }
@@ -325,6 +209,122 @@ public class LegacyArchitectureModelData<T> {
 
     protected DirectionalQuads getQuads() {
         return this.quads;
+    }
+
+    /**
+     * Stores quads for each cardinal direction as well as general quads that don't fit into a specific direction.
+     */
+    protected class DirectionalQuads {
+
+        private final List<IPipedBakedQuad<?, ?, ?>> northQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> southQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> eastQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> westQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> upQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> downQuads = Lists.newArrayList();
+        private final List<IPipedBakedQuad<?, ?, ?>> generalQuads = Lists.newArrayList();
+        private final ImmutableList<List<IPipedBakedQuad<?, ?, ?>>> allQuads = ImmutableList.of(this.northQuads, this.southQuads, this.eastQuads, this.westQuads, this.upQuads, this.downQuads, this.generalQuads);
+
+        private List<IPipedBakedQuad<?, ?, ?>> getQuads(@Nullable Direction direction) {
+            if (direction == null) {
+                return this.generalQuads;
+            }
+            return switch (direction) {
+                case NORTH -> this.northQuads;
+                case SOUTH -> this.southQuads;
+                case EAST -> this.eastQuads;
+                case WEST -> this.westQuads;
+                case UP -> this.upQuads;
+                case DOWN -> this.downQuads;
+            };
+        }
+
+        private Stream<IPipedBakedQuad<?, ?, ?>> getAllQuads() {
+            return Stream.of(this.northQuads,
+                            this.southQuads,
+                            this.eastQuads,
+                            this.westQuads,
+                            this.upQuads,
+                            this.downQuads,
+                            this.generalQuads)
+                    .flatMap(List::stream);
+        }
+
+        private void addQuad(@Nullable Direction direction, IPipedBakedQuad<?, ?, ?> quad) {
+            if (direction == null) {
+                this.generalQuads.add(quad);
+            } else {
+                switch (direction) {
+                    case NORTH -> this.northQuads.add(quad);
+                    case SOUTH -> this.southQuads.add(quad);
+                    case EAST -> this.eastQuads.add(quad);
+                    case WEST -> this.westQuads.add(quad);
+                    case UP -> this.upQuads.add(quad);
+                    case DOWN -> this.downQuads.add(quad);
+                }
+            }
+        }
+
+        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction) {
+            var quads = this.getQuads(direction);
+            if (quads.isEmpty())
+                quads.add(new LegacyArchitectureQuad<>(metadata, direction));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingQuad(T metadata, @Nullable Direction direction, Vector3f normals) {
+            var quads = this.getQuads(direction);
+            if (quads.isEmpty())
+                quads.add(new LegacyArchitectureQuad<>(metadata, direction, normals));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction) {
+            var quads = this.getQuads(direction);
+            if (quads.isEmpty())
+                quads.add(new LegacyArchitectureTri<>(metadata, direction));
+            return quads.get(quads.size() - 1);
+        }
+
+        private IPipedBakedQuad<?, ?, ?> getCurrentlyBuildingTri(T metadata, @Nullable Direction direction, Vector3f normals) {
+            var quads = this.getQuads(direction);
+            if (quads.isEmpty())
+                quads.add(new LegacyArchitectureTri<>(metadata, direction, normals));
+            return quads.get(quads.size() - 1);
+        }
+
+        protected int getQuadCount(Direction direction) {
+            return this.getQuads(direction).size();
+        }
+
+        protected int getNorthQuadCount() {
+            return this.northQuads.size();
+        }
+
+        protected int getSouthQuadCount() {
+            return this.southQuads.size();
+        }
+
+        protected int getEastQuadCount() {
+            return this.eastQuads.size();
+        }
+
+        protected int getWestQuadCount() {
+            return this.westQuads.size();
+        }
+
+        protected int getUpQuadCount() {
+            return this.upQuads.size();
+        }
+
+        protected int getDownQuadCount() {
+            return this.downQuads.size();
+        }
+
+        protected int getGeneralQuadCount() {
+            return this.generalQuads.size();
+        }
+
     }
 
 }

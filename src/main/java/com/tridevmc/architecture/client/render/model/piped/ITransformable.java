@@ -24,7 +24,7 @@ public interface ITransformable<S extends ITransformable<S>> {
     /**
      * Creates a new object by applying the given transformation to this object.
      *
-     * @param trans    The transformation to apply.
+     * @param trans        The transformation to apply.
      * @param transformUVs Whether the UVs coordinates should be transformed.
      * @return A new object with the transformation applied.
      */
@@ -35,7 +35,7 @@ public interface ITransformable<S extends ITransformable<S>> {
     /**
      * Creates a new object by applying the given transformation to this object.
      *
-     * @param trans    The transformation to apply.
+     * @param trans        The transformation to apply.
      * @param fromFace     The face of the vertex before the transformation is applied.
      * @param toFace       The face of the vertex after the transformation is applied.
      * @param transformUVs Whether the UVs coordinates should be transformed.

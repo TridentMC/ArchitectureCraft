@@ -18,6 +18,8 @@ import java.util.stream.Stream;
  */
 public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable max) {
 
+    public static final AABB BLOCK_FULL = new AABB(0, 0, 0, 1, 1, 1);
+
     public AABB {
         if (min.x() > max.x() || min.y() > max.y() || min.z() > max.z()) {
             throw new IllegalArgumentException(String.format("Invalid AABB, min point (%s) is greater than max point (%s)", min, max));
