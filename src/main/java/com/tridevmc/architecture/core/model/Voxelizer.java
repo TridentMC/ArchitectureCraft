@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -22,7 +23,7 @@ import java.util.concurrent.Future;
  */
 public class Voxelizer {
 
-    private static final ExecutorService POOL = Executors.newWorkStealingPool();
+    private static final ExecutorService POOL = Executors.newCachedThreadPool();
     private static final IVector3 xNormal = IVector3.UNIT_X;
     private static final IVector3 yNormal = IVector3.UNIT_Y;
     private static final IVector3 zNormal = IVector3.UNIT_Z;
@@ -32,7 +33,7 @@ public class Voxelizer {
     private final double resolution;
     private final IVector3i min, max;
     private final boolean[][][] voxels;
-    private List<AABB> simplifiedVoxels;
+    private CompletableFuture<List<AABB>> simplifiedVoxelsFuture;
 
     /**
      * Creates a new voxelizer for the given mesh.
@@ -65,54 +66,58 @@ public class Voxelizer {
         this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
     }
 
+    private List<AABB> getSimplifiedVoxelsResultSafely() {
+        Objects.requireNonNull(this.simplifiedVoxelsFuture, "Voxelization has not been started yet, call voxelize() first.");
+        try {
+            return this.simplifiedVoxelsFuture.get();
+        } catch (Exception e) {
+            ArchitectureLog.error("Failed to voxelize mesh {}, throwing exception", this.mesh);
+            throw new RuntimeException("Failed to voxelize mesh " + this.mesh, e);
+        }
+    }
+
     /**
-     * Performs the voxelization process.
+     * Performs the voxelization process, blocking until completion.
      *
      * @return A list of AABBs representing the voxels that were found to be occupied.
      */
-    public List<AABB> voxelize() {
-        if (this.simplifiedVoxels == null) {
-            // Create a list of all the voxels that are intersected by the mesh, do this with a thread pool to speed up the process.
-            var futures = new ArrayList<Future<AABB>>(this.totalVoxels());
-            for (var x = this.min.x(); x <= this.max.x(); x++) {
-                for (var y = this.min.y(); y <= this.max.y(); y++) {
-                    for (var z = this.min.z(); z <= this.max.z(); z++) {
-                        var box = this.getBoxForOffset(x, y, z);
-                        futures.add(POOL.submit(() -> this.isBoxValidVoxel(box) ? box : null));
-                    }
-                }
-            }
-
-            var resolvedVoxels = futures.stream().map(f -> {
-                try {
-                    return f.get();
-                } catch (Exception e) {
-                    ArchitectureLog.error("Failed to voxelize mesh {}, throwing exception", this.mesh);
-                    throw new RuntimeException("Failed to voxelize mesh " + this.mesh, e);
-                }
-            }).filter(Objects::nonNull).toList();
-
-            // Simplify the list of voxels while still preserving the shape we've created.
-            //var simplified = new ArrayList<AABB>();
-            //for (var voxel : resolvedVoxels) {
-            //    var merged = false;
-            //    for (var i = 0; i < simplified.size(); i++) {
-            //        var other = simplified.get(i);
-            //        if (voxel.isAdjacent(other)) {
-            //            simplified.set(i, voxel.union(other));
-            //            merged = true;
-            //            break;
-            //        }
-            //    }
-            //    if (!merged) {
-            //        simplified.add(voxel);
-            //    }
-            //}
-
-            this.simplifiedVoxels = resolvedVoxels;
+    public List<AABB> voxelizeNow() {
+        if (this.simplifiedVoxelsFuture == null) {
+            this.voxelize();
         }
 
-        return this.simplifiedVoxels;
+        return this.getSimplifiedVoxelsResultSafely();
+    }
+
+    /**
+     * Performs the voxelization process asynchronously.
+     *
+     * @return A future that will complete with a list of AABBs representing the voxels that were found to be occupied.
+     */
+    public CompletableFuture<List<AABB>> voxelize() {
+
+        // Create a list of all the voxels that are intersected by the mesh, do this with a thread pool to speed up the process.
+        var futures = new ArrayList<Future<AABB>>(this.totalVoxels());
+        for (var x = this.min.x(); x <= this.max.x(); x++) {
+            for (var y = this.min.y(); y <= this.max.y(); y++) {
+                for (var z = this.min.z(); z <= this.max.z(); z++) {
+                    var box = this.getBoxForOffset(x, y, z);
+                    futures.add(POOL.submit(() -> this.isBoxValidVoxel(box) ? box : null));
+                }
+            }
+        }
+
+        // The resulting future should be complete once all the voxels have been checked, so we can simplify the list.
+        this.simplifiedVoxelsFuture = CompletableFuture.supplyAsync(() -> futures.stream().map(f -> {
+            try {
+                return f.get();
+            } catch (Exception e) {
+                ArchitectureLog.error("Failed to voxelize mesh {}, throwing exception", this.mesh);
+                throw new RuntimeException("Failed to voxelize mesh " + this.mesh, e);
+            }
+        }).filter(Objects::nonNull).toList());
+
+        return this.simplifiedVoxelsFuture;
     }
 
     public AABB getBoxForOffset(int x, int y, int z) {

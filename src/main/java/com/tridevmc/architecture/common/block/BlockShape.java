@@ -126,14 +126,14 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
      * @return the boxes for the given state.
      */
     @Override
-    public ImmutableList<AABB> getBoxesForState(BlockStateArchitecture state) {
+    public ImmutableList<AABB> getBoxesForStateNow(BlockStateArchitecture state) {
         var shapeState = this.asShapeState(state);
         if (shapeState == null) {
             ArchitectureLog.error("BlockShape#getBoxesForState called with a non-shape state, this should not happen.");
             return DEFAULT_BOX;
         }
         var transform = this.getShape().getTransformationResolver().resolve(shapeState);
-        return this.shape.getVoxelizer().voxelize().stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList());
+        return this.shape.getVoxelizer().voxelizeNow().stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList());
     }
 
     @Nullable

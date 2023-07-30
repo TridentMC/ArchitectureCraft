@@ -16,6 +16,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class BlockArchitecture extends Block {
 
     static final ImmutableList<AABB> DEFAULT_BOX = ImmutableList.of(AABB.BLOCK_FULL);
@@ -61,8 +64,25 @@ public class BlockArchitecture extends Block {
      * @param state the state to get the boxes for.
      * @return the boxes for the given state.
      */
-    public ImmutableList<AABB> getBoxesForState(BlockStateArchitecture state) {
+    public ImmutableList<AABB> getBoxesForStateNow(BlockStateArchitecture state) {
+        try {
+            return this.getBoxesForState(state).get();
+        } catch (InterruptedException | ExecutionException e) {
+            ArchitectureLog.fatal("Failed to get boxes for state, this is a critical error and will cause crashes.", e);
+        }
         return DEFAULT_BOX;
+    }
+
+    /**
+     * Gets the boxes for the given state, with transformations applied.
+     * <p>
+     * The result of this method is cached within the state, it should not be called directly.
+     *
+     * @param state the state to get the boxes for.
+     * @return the boxes for the given state.
+     */
+    public CompletableFuture<ImmutableList<AABB>> getBoxesForState(BlockStateArchitecture state) {
+        return CompletableFuture.completedFuture(DEFAULT_BOX);
     }
 
     private BlockStateArchitecture asArchitectureState(BlockState state) {

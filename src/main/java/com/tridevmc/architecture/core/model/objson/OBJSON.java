@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer voxelizer) {
 
@@ -94,8 +95,12 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
         return this.data.name();
     }
 
-    public List<AABB> voxelize() {
+    public CompletableFuture<List<AABB>> voxelize() {
         return this.voxelizer.voxelize();
+    }
+
+    public List<AABB> voxelizeNow() {
+        return this.voxelizer.voxelizeNow();
     }
 
 }

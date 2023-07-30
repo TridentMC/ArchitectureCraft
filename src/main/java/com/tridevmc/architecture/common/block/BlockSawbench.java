@@ -33,6 +33,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
+
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
     public static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
@@ -62,10 +64,10 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     }
 
     @Override
-    public ImmutableList<AABB> getBoxesForState(BlockStateArchitecture state) {
+    public CompletableFuture<ImmutableList<AABB>> getBoxesForState(BlockStateArchitecture state) {
         // The results of this are cached on the state object, so don't worry too much about performance.
         var transform = this.getTransformForState(state);
-        return MODEL.voxelizer().voxelize().stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList());
+        return MODEL.voxelizer().voxelize().thenApply(v -> v.stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList()));
     }
 
     @Nullable
