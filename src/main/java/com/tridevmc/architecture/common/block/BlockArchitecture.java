@@ -27,7 +27,8 @@ public class BlockArchitecture extends Block {
 
     static {
         if (STATE_DEFINITION == null) {
-            ArchitectureLog.error("Failed to find field 'stateDefinition' in Block, this is a critical error and will cause crashes.");
+            ArchitectureLog.fatal("Failed to find field 'stateDefinition' in Block, this is a critical error and will cause crashes.");
+            throw new RuntimeException("Failed to find field 'stateDefinition' in Block, this is a critical error and will cause crashes.");
         }
     }
 
