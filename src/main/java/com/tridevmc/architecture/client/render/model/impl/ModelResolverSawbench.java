@@ -55,12 +55,12 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
     @Override
     public IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return MESH.getQuads("root", resolver, transform);
+        return MESH.getQuads("root", level, pos, state, resolver, transform);
     }
 
     @Override
     public IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return MESH.getQuads("root", resolver, transform);
+        return MESH.getQuads("root", stack, resolver, transform);
     }
 
     @Override

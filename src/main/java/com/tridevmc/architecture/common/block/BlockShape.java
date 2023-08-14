@@ -14,6 +14,7 @@ import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
@@ -39,6 +40,10 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
 
     private final EnumShape shape;
 
+    public BlockShape(EnumShape shape) {
+        this(shape, BlockBehaviour.Properties.of());
+    }
+
     public BlockShape(EnumShape shape, Properties properties) {
         this(shape, properties, ShapeOrientation::forState);
     }
@@ -52,7 +57,10 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
         this.shape = shape;
         // We use a custom BlockState implementation, so we have to use reflection to force the state definition to use it.
         var builder = new StateDefinition.Builder<Block, BlockState>(this);
-        this.shape.getPlacementLogic().getProperties().forEach(builder::add);
+        var placementLogic = this.shape.getPlacementLogic();
+        // TODO: These shouldn't be null in the future, we just want to compile for now.
+        if (placementLogic != null)
+            placementLogic.getProperties().forEach(builder::add);
         this.createBlockStateDefinition(builder);
         //noinspection DataFlowIssue -- We know this is not null, we check for it in the static block.
         STATE_DEFINITION.set(this,

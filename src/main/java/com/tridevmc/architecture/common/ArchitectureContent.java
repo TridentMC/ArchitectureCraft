@@ -29,12 +29,12 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import com.tridevmc.architecture.common.block.BlockSawbench;
+import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.item.*;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -71,14 +71,14 @@ public class ArchitectureContent {
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
     public BlockSawbench blockSawbench;
-    public Map<LegacyEnumShape, LegacyBlockShape> blockShapes;
-    public BlockEntityType<LegacyShapeBlockEntity> tileTypeShape;
+    public Map<EnumShape, BlockShape> blockShapes;
+    public BlockEntityType<BlockEntityShape> blockEntityTypeShape;
     public Item itemSawblade;
     public Item itemLargePulley;
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
-    public Map<LegacyEnumShape, ItemShape> itemShapes;
+    public Map<EnumShape, ItemShape> itemShapes;
     public MenuType<? extends Container> universalMenuType;
 
     @SubscribeEvent
@@ -105,10 +105,10 @@ public class ArchitectureContent {
         );
         registry.register(new ResourceLocation(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
                 .icon(() -> ArchitectureContent.this.itemShapes != null ?
-                        ArchitectureContent.this.itemShapes.get(LegacyEnumShape.ROOF_TILE).getDefaultInstance() :
+                        ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
                         ItemStack.EMPTY)
                 .displayItems((p, o) -> {
-                    for (LegacyEnumShape shape : LegacyEnumShape.values()) {
+                    for (var shape : EnumShape.values()) {
                         o.accept(new ItemStack(this.itemShapes.get(shape)));
                     }
                 }).build()
@@ -116,14 +116,14 @@ public class ArchitectureContent {
     }
 
     public void onBlockEntityRegister(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry) {
-        this.tileTypeShape = this.registerBlockEntity(registry, LegacyShapeBlockEntity::new, "shape");
+        this.blockEntityTypeShape = this.registerBlockEntity(registry, BlockEntityShape::new, "shape");
     }
 
     public void onBlockRegister(RegisterEvent.RegisterHelper<Block> registry) {
         this.blockSawbench = this.registerBlock(registry, "sawbench", new BlockSawbench());
         this.blockShapes = Maps.newHashMap();
-        for (LegacyEnumShape shape : LegacyEnumShape.values()) {
-            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getSerializedName(), new LegacyBlockShape(shape), (b) -> new ItemShape(b, new Item.Properties())));
+        for (var shape : EnumShape.values()) {
+            this.blockShapes.put(shape, this.registerBlock(registry, "shape_" + shape.getName(), new BlockShape(shape), (b) -> new ItemShape(b)));
         }
     }
 
@@ -136,7 +136,7 @@ public class ArchitectureContent {
 
         itemBlocksToRegister.forEach(e -> registry.register(e.getLeft(), e.getRight()));
         this.itemShapes = Maps.newHashMap();
-        Arrays.stream(LegacyEnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
+        Arrays.stream(EnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
         ArchitectureMod.PROXY.registerCustomRenderers();
     }
 

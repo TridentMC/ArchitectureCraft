@@ -1,5 +1,6 @@
 package com.tridevmc.architecture.common.shape;
 
+import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.model.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -22,10 +23,14 @@ public class ShapeMeshes {
     static {
         Arrays.stream(EnumShape.values()).forEach(
                 enumShape -> {
-                    var objson = OBJSON.fromResource(enumShape.getAssetLocation());
-                    var mesh = objson.mesh();
-                    var voxelizer = objson.voxelizer();
-                    register(enumShape, mesh, voxelizer);
+                    try {
+                        var objson = OBJSON.fromResource(enumShape.getAssetLocation());
+                        var mesh = objson.mesh();
+                        var voxelizer = objson.voxelizer();
+                        register(enumShape, mesh, voxelizer);
+                    } catch (Exception e) {
+                        ArchitectureLog.error("Failed to load mesh for shape: " + enumShape.getAssetLocation(), e);
+                    }
                 }
         );
     }

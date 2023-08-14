@@ -133,6 +133,7 @@ public enum EnumShape {
     private static final Map<ResourceLocation, EnumShape> ID_LOOKUP = Arrays.stream(values())
             .collect(Collectors.toMap(EnumShape::getId, Function.identity()));
     private final String name;
+    private final String localizationKey;
     private final ResourceLocation id;
     private final IShapePlacementLogic<?> placementLogic;
     private final IShapeTransformationResolver transformationResolver;
@@ -140,6 +141,7 @@ public enum EnumShape {
     EnumShape(String name, IShapePlacementLogic<?> placementLogic,
               IShapeTransformationResolver transformationResolver) {
         this.name = name;
+        this.localizationKey = String.format("shape.%s.%s", ArchitectureMod.MOD_ID, name);
         this.id = new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
@@ -178,7 +180,11 @@ public enum EnumShape {
     }
 
     public ResourceLocation getAssetLocation() {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shapes/%s.objson", this.name));
+        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
+    }
+
+    public String getLocalizationKey() {
+        return this.localizationKey;
     }
 
     public <T extends BlockArchitecture> IShapePlacementLogic<T> getPlacementLogic() {

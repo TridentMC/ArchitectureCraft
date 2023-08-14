@@ -63,7 +63,7 @@ public class LegacyShapeBlockEntity extends BlockEntity {
     private byte turn;
 
     public LegacyShapeBlockEntity(BlockPos pos, BlockState state) {
-        super(ArchitectureMod.CONTENT.tileTypeShape, pos, state);
+        super(ArchitectureMod.CONTENT.blockEntityTypeShape, pos, state);
         this.secondaryBlockState = Blocks.AIR.defaultBlockState();
     }
 

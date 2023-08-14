@@ -26,6 +26,7 @@ package com.tridevmc.architecture.legacy.common.block;
 
 import com.google.common.collect.Maps;
 import com.tridevmc.architecture.common.item.ItemShape;
+import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
 import com.tridevmc.architecture.legacy.base.LegacyBaseOrientation;
 import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
@@ -136,7 +137,8 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(level, pos);
         if (te != null)
-            return ItemShape.createStack(this.getArchitectureShape(), te.getBaseBlockState(), 1);
+            // Temp so we can compile, we're killing this class off anyway.
+            return ItemShape.createStack(EnumShape.ROOF_TILE, te.getBaseBlockState(), 1);
         else
             return ItemStack.EMPTY;
     }

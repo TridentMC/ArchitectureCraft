@@ -25,11 +25,11 @@
 package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.helpers.Utils;
-import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
-import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
-import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
@@ -49,27 +49,27 @@ import java.util.Map;
 
 public class ItemShape extends BlockItem {
 
-    private static final Map<LegacyEnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
-    private final LegacyEnumShape shape;
+    private static final Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
+    private final EnumShape shape;
 
-    public ItemShape(LegacyBlockShape block, Item.Properties builder) {
-        super(block, builder);
-        this.shape = block.getArchitectureShape();
-        SHAPE_ITEMS.put(block.getArchitectureShape(), this);
+    public ItemShape(BlockShape block) {
+        super(block, new Item.Properties());
+        this.shape = block.getShape();
+        SHAPE_ITEMS.put(block.getShape(), this);
     }
 
     @Nullable
-    public static ItemShape getItemFromShape(LegacyEnumShape shape) {
+    public static ItemShape getItemFromShape(EnumShape shape) {
         return SHAPE_ITEMS.getOrDefault(shape, null);
     }
 
     @Nonnull
-    public static ItemStack createStack(LegacyEnumShape shape, BlockState baseBlockState) {
+    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState) {
         return createStack(shape, baseBlockState, 1);
     }
 
     @Nonnull
-    public static ItemStack createStack(LegacyEnumShape shape, BlockState baseBlockState, int count) {
+    public static ItemStack createStack(EnumShape shape, BlockState baseBlockState, int count) {
         var tag = new CompoundTag();
         var stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
         tag.putInt("BaseBlockState", Block.getId(baseBlockState));
@@ -78,7 +78,7 @@ public class ItemShape extends BlockItem {
     }
 
     @Nullable
-    public static LegacyEnumShape getShapeFromStack(ItemStack stack) {
+    public static EnumShape getShapeFromStack(ItemStack stack) {
         var item = stack.getItem();
         if (item instanceof ItemShape) {
             return ((ItemShape) item).shape;
@@ -95,28 +95,13 @@ public class ItemShape extends BlockItem {
 
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState newState) {
-        var player = context.getPlayer();
-        var world = context.getLevel();
-        var pos = context.getClickedPos();
-        var face = context.getNearestLookingDirection();
-        var stack = context.getItemInHand();
-        var hitX = context.getClickLocation().x();
-        var hitY = context.getClickLocation().y();
-        var hitZ = context.getClickLocation().z();
-        if (!world.setBlock(pos, newState, 3))
-            return false;
-        var dirVec = LegacyVector3.getDirectionVec(face);
-        var hit = new LegacyVector3(hitX - dirVec.getX() - 0.5, hitY - dirVec.getY() - 0.5, hitZ - dirVec.getZ() - 0.5);
-        var tile = LegacyShapeBlockEntity.get(world, pos);
-        if (tile != null) {
-            var state = getStateFromStack(stack);
-            tile.setBaseBlockState(state);
-            var neighbourPos = tile.getBlockPos().relative(face.getOpposite());
-            var neighbourState = world.getBlockState(neighbourPos);
-            var neighbourTile = world.getBlockEntity(neighbourPos);
-            this.shape.orientOnPlacement(player, tile, neighbourPos, neighbourState, neighbourTile, face, hit);
+        var result = super.placeBlock(context, newState);
+        if (result && !context.getLevel().isClientSide()) {
+            BlockEntityShape.getAtOptionally(context.getLevel(), context.getClickedPos()).ifPresentOrElse(shape -> {
+                shape.setBaseMaterialState(getStateFromStack(context.getItemInHand()));
+            }, () -> ArchitectureLog.error("Failed to place shape block entity at position: " + context.getClickedPos()));
         }
-        return true;
+        return result;
     }
 
     @Nullable
@@ -130,7 +115,7 @@ public class ItemShape extends BlockItem {
         CompoundTag tag = stack.getTag();
         if (tag != null) {
             if (this.shape != null)
-                lines.set(0, Component.literal(this.shape.getLocalizedShapeName()));
+                lines.set(0, Component.translatable(this.shape.getLocalizationKey()));
             else
                 lines.set(0, Component.literal(lines.get(0).getString() + " (" + -1 + ")"));
             Block baseBlock = getStateFromStack(stack).getBlock();
@@ -140,7 +125,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public ItemStack getDefaultInstance() {
-        return createStack(LegacyEnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
+        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     @Override
@@ -150,6 +135,6 @@ public class ItemShape extends BlockItem {
             return super.getName(stack);
 
         BlockState state = getStateFromStack(stack);
-        return Component.literal(this.shape.getLocalizedShapeName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        return Component.literal(this.shape.getName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
     }
 }
