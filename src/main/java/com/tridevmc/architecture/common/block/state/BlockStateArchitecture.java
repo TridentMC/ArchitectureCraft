@@ -16,33 +16,54 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockStateArchitecture extends BlockState {
 
-    private final ITrans3Immutable cachedTransform;
-    private final CompletableFuture<VoxelShape> cachedShape;
+    private CachedProperties cachedProperties;
 
-    public BlockStateArchitecture(BlockArchitecture block,
-                                  ImmutableMap<Property<?>, Comparable<?>> properties,
-                                  MapCodec<BlockState> codec) {
+    private record CachedProperties(
+            ITrans3Immutable cachedTransform,
+            CompletableFuture<VoxelShape> cachedShape
+    ) {
+    }
+
+    protected BlockStateArchitecture(BlockArchitecture block,
+                                   ImmutableMap<Property<?>, Comparable<?>> properties,
+                                   MapCodec<BlockState> codec) {
         super(block, properties, codec);
-        this.cachedTransform = block.getTransformForState(this);
-        var boxesFuture = block.getBoxesForState(this);
-        this.cachedShape = boxesFuture.thenApply(boxes -> {
-            var shape = Shapes.empty();
-            for (var box : boxes) {
-                shape = Shapes.or(shape, Shapes.create(box.toMC()));
-            }
-            ArchitectureLog.debug("Finished creating shape for state: {}", this.toString());
-            return shape;
-        });
+    }
+
+    public static BlockStateArchitecture create(BlockArchitecture block,
+                                                ImmutableMap<Property<?>, Comparable<?>> properties,
+                                                MapCodec<BlockState> codec) {
+        var state = new BlockStateArchitecture(block, properties, codec);
+        state.postConstruct();
+        return state;
+    }
+
+    protected void postConstruct() {
+        this.cachedProperties = new CachedProperties(
+                this.self().getTransformForState(this),
+                this.self().getBoxesForState(this).thenApply(boxes -> {
+                    var shape = Shapes.empty();
+                    for (var box : boxes) {
+                        shape = Shapes.or(shape, Shapes.create(box.toMC()));
+                    }
+                    ArchitectureLog.debug("Finished creating shape for state: {}", this.toString());
+                    return shape;
+                })
+        );
+    }
+
+    private BlockArchitecture self() {
+        return (BlockArchitecture) this.getBlock();
     }
 
     @NotNull
     public ITrans3 getTransform() {
-        return this.cachedTransform;
+        return this.cachedProperties.cachedTransform;
     }
 
     @NotNull
     public VoxelShape getShape() {
-        return this.cachedShape.join();
+        return this.cachedProperties.cachedShape.join();
     }
 
 

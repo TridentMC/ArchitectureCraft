@@ -31,6 +31,7 @@ public class BlockStateShape extends BlockStateArchitecture {
                            ImmutableMap<Property<?>, Comparable<?>> properties, MapCodec<BlockState> codec) {
         super(block, properties, codec);
         this.cachedOrientation = orientationFunc.apply(this);
+        this.postConstruct();
     }
 
     @NotNull

@@ -8,6 +8,8 @@ import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.model.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPart;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -25,6 +27,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -129,23 +134,18 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         return this.shape.getMesh();
     }
 
-    /**
-     * Gets the boxes for the given state, with transformations applied.
-     * <p>
-     * The result of this method is cached within the state, it should not be called directly.
-     *
-     * @param state the state to get the boxes for.
-     * @return the boxes for the given state.
-     */
     @Override
-    public ImmutableList<AABB> getBoxesForStateNow(BlockStateArchitecture state) {
+    public CompletableFuture<ImmutableList<AABB>> getBoxesForState(BlockStateArchitecture state) {
         var shapeState = this.asShapeState(state);
         if (shapeState == null) {
             ArchitectureLog.error("BlockShape#getBoxesForState called with a non-shape state, this should not happen.");
-            return DEFAULT_BOX;
+            return CompletableFuture.completedFuture(DEFAULT_BOX);
         }
-        var transform = this.getShape().getTransformationResolver().resolve(shapeState);
-        return this.shape.getVoxelizer().voxelizeNow().stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList());
+        var transformationResolver = Optional.ofNullable(this.getShape().getTransformationResolver()).orElse(s -> ITrans3.ofIdentity());
+        var voxelizer = shape.getVoxelizer();
+        var transform = transformationResolver.resolve(shapeState);
+        var voxelsCompletableFuture = Optional.ofNullable(voxelizer).map(Voxelizer::voxelize).orElse(CompletableFuture.completedFuture(DEFAULT_BOX));
+        return voxelsCompletableFuture.thenApplyAsync(aabbs -> aabbs.stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList()));
     }
 
     @Nullable

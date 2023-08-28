@@ -95,6 +95,10 @@ public class Voxelizer {
      * @return A future that will complete with a list of AABBs representing the voxels that were found to be occupied.
      */
     public CompletableFuture<List<AABB>> voxelize() {
+        if(this.simplifiedVoxelsFuture != null) {
+            ArchitectureLog.debug("Voxelization of mesh {} has already been started, returning existing future.", this.mesh.getName());
+            return this.simplifiedVoxelsFuture;
+        }
 
         // Create a list of all the voxels that are intersected by the mesh, do this with a thread pool to speed up the process.
         var futures = new ArrayList<Future<AABB>>(this.totalVoxels());

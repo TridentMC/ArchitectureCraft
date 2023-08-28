@@ -41,7 +41,7 @@ public class BlockArchitecture extends Block {
         STATE_DEFINITION.set(this,
                 builder.create(Block::defaultBlockState,
                         (block, propertyValues, codec) ->
-                                new BlockStateArchitecture((BlockArchitecture) block, propertyValues, codec)
+                                BlockStateArchitecture.create((BlockArchitecture) block, propertyValues, codec)
                 )
         );
         this.registerDefaultState(this.getStateDefinition().any());
