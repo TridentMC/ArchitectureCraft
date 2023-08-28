@@ -1,4 +1,7 @@
-{
-    "loader": "architecturecraft:shape_loader",
-    "shapeName": "roof_overhang_gable_lh"
-}
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "roof_overhang_gable_lh"
+                          }
+                          

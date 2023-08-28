@@ -111,14 +111,14 @@ public enum LegacyEnumShape implements StringRepresentable {
 
     CLADDING_SHEET(60, "cladding_sheet", LegacyShapeBehaviour.DEFAULT, null, 1, 16, 0),
 
-    ARCH_D_1(61, "arch_d_1", new LegacyShapeBehaviourModel("arch_d1"), BILATERAL, 1, 1, 0xff, PLACE_UNDERNEATH),
-    ARCH_D_2(62, "arch_d_2", new LegacyShapeBehaviourModel("arch_d2"), BILATERAL, 1, 2, 0xfc, PLACE_UNDERNEATH),
-    ARCH_D_3_A(63, "arch_d_3_a", new LegacyShapeBehaviourModel("arch_d3a"), BILATERAL, 1, 2, 0xcc, PLACE_UNDERNEATH),
-    ARCH_D_3_B(64, "arch_d_3_b", new LegacyShapeBehaviourModel("arch_d3b"), BILATERAL, 1, 1, 0xfc, PLACE_UNDERNEATH),
-    ARCH_D_3_C(65, "arch_d_3_c", new LegacyShapeBehaviourModel("arch_d3c"), BILATERAL, 1, 1, 0xff, PLACE_UNDERNEATH),
-    ARCH_D_4_A(66, "arch_d_4_a", new LegacyShapeBehaviourModel("arch_d4a"), BILATERAL, 1, 2, 0xcc, PLACE_UNDERNEATH),
-    ARCH_D_4_B(67, "arch_d_4_b", new LegacyShapeBehaviourModel("arch_d4b"), BILATERAL, 1, 1, 0xfc, PLACE_UNDERNEATH),
-    ARCH_D_4_C(68, "arch_d_4_c", new LegacyShapeBehaviourModel("arch_d4c"), BILATERAL, 1, 2, 0x0, PLACE_UNDERNEATH),
+    ARCH_D_1(61, "arch_d1", new LegacyShapeBehaviourModel("arch_d1"), BILATERAL, 1, 1, 0xff, PLACE_UNDERNEATH),
+    ARCH_D_2(62, "arch_d2", new LegacyShapeBehaviourModel("arch_d2"), BILATERAL, 1, 2, 0xfc, PLACE_UNDERNEATH),
+    ARCH_D_3_A(63, "arch_d3a", new LegacyShapeBehaviourModel("arch_d3a"), BILATERAL, 1, 2, 0xcc, PLACE_UNDERNEATH),
+    ARCH_D_3_B(64, "arch_d3b", new LegacyShapeBehaviourModel("arch_d3b"), BILATERAL, 1, 1, 0xfc, PLACE_UNDERNEATH),
+    ARCH_D_3_C(65, "arch_d3c", new LegacyShapeBehaviourModel("arch_d3c"), BILATERAL, 1, 1, 0xff, PLACE_UNDERNEATH),
+    ARCH_D_4_A(66, "arch_d4a", new LegacyShapeBehaviourModel("arch_d4a"), BILATERAL, 1, 2, 0xcc, PLACE_UNDERNEATH),
+    ARCH_D_4_B(67, "arch_d4b", new LegacyShapeBehaviourModel("arch_d4b"), BILATERAL, 1, 1, 0xfc, PLACE_UNDERNEATH),
+    ARCH_D_4_C(68, "arch_d4c", new LegacyShapeBehaviourModel("arch_d4c"), BILATERAL, 1, 2, 0x0, PLACE_UNDERNEATH),
 
     BANISTER_PLAIN_BOTTOM(70, "banister_plain_bottom", new LegacyShapeBehaviourBanister("balustrade_stair_plain_bottom"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
     BANISTER_PLAIN(71, "banister_plain", new LegacyShapeBehaviourBanister("balustrade_stair_plain"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),

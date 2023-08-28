@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
@@ -109,7 +110,7 @@ public class ArchitectureContent {
                         ItemStack.EMPTY)
                 .displayItems((p, o) -> {
                     for (var shape : EnumShape.values()) {
-                        o.accept(new ItemStack(this.itemShapes.get(shape)));
+                        o.accept(this.itemShapes.get(shape).getDefaultInstance());
                     }
                 }).build()
         );
@@ -162,19 +163,19 @@ public class ArchitectureContent {
         return tileType;
     }
 
-    private <T extends Block> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block) {
+    private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block) {
         return this.registerBlock(registry, id, block, true);
     }
 
-    private <T extends Block> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, boolean withItemBlock) {
+    private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, boolean withItemBlock) {
         registry.register(new ResourceLocation(REGISTRY_PREFIX, id), block);
         if (withItemBlock)
-            itemBlocksToRegister.add(ImmutablePair.of(new ResourceLocation(REGISTRY_PREFIX, id), new BlockItem(block, new Item.Properties())));
+            itemBlocksToRegister.add(ImmutablePair.of(new ResourceLocation(REGISTRY_PREFIX, id), new ItemBlockArchitecture(block, new Item.Properties())));
         registeredBlocks.put(id, block);
         return (T) registeredBlocks.get(id);
     }
 
-    private <T extends Block> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, Function<T, ? extends BlockItem> itemBlockGenerator) {
+    private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, Function<T, ? extends ItemBlockArchitecture> itemBlockGenerator) {
         registry.register(new ResourceLocation(REGISTRY_PREFIX, id), block);
         var itemBlock = itemBlockGenerator.apply(block);
         itemBlocksToRegister.add(ImmutablePair.of(new ResourceLocation(REGISTRY_PREFIX, id), itemBlock));

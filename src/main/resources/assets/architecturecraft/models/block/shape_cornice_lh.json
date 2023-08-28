@@ -1,4 +1,7 @@
-{
-    "loader": "architecturecraft:shape_loader",
-    "shapeName": "cornice_lh"
-}
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "cornice_lh"
+                          }
+                          

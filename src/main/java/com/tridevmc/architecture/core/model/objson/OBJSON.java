@@ -44,7 +44,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
     private static IMesh<String, PolygonData> createMesh(OBJSONData data) {
         // TODO: Might be able to simplify this now that our faces pool vertices for faster transforms just like OBJSON does?
         // OBJSON stores parts and faces in a slightly different way to how our mesh implementation, so we'll need to convert as we build.
-        var builder = new Mesh.Builder<String, PolygonData>();
+        var builder = new Mesh.Builder<String, PolygonData>(data.name());
 
         for (var partData : data.parts()) {
             var part = new Part.Builder<String, PolygonData>().setId(partData.name());

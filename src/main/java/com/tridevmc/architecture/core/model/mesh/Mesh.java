@@ -15,6 +15,7 @@ import java.util.*;
  */
 public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
 
+    private final String name;
     private final ImmutableMap<I, IPart<I, D>> parts;
     private final ImmutableList<IFace<D>> faces;
     private final AABBTree<IPolygon<D>> aabbTree;
@@ -24,7 +25,8 @@ public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
      *
      * @param faces The faces of the mesh.
      */
-    public Mesh(@NotNull ImmutableMap<I, IPart<I, D>> parts, @NotNull ImmutableList<IFace<D>> faces) {
+    public Mesh(@NotNull String name, @NotNull ImmutableMap<I, IPart<I, D>> parts, @NotNull ImmutableList<IFace<D>> faces) {
+        this.name = name;
         this.parts = parts;
         this.faces = faces;
         this.aabbTree = new AABBTree<>(
@@ -56,11 +58,17 @@ public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
     @Override
     @NotNull
     public IMesh<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs) {
-        var builder = new Builder<I, D>();
+        var builder = new Builder<I, D>(name);
         for (var p : this.getParts().values()) {
             builder.addPart(p.transform(trans, transformUVs));
         }
         return builder.build();
+    }
+
+    @Override
+    @NotNull
+    public String getName() {
+        return this.name;
     }
 
     @Override
@@ -92,8 +100,13 @@ public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
      */
     public static class Builder<I, D extends IPolygonData<D>> {
 
+        private final String name;
         private final Map<I, IPart<I, D>> parts = new HashMap<>();
         private final List<IFace<D>> faces = new ArrayList<>();
+
+        public Builder(String name) {
+            this.name = name;
+        }
 
         /**
          * Adds a part to the mesh.
@@ -114,7 +127,7 @@ public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
          * @return The new mesh.
          */
         public Mesh<I, D> build() {
-            return new Mesh<>(ImmutableMap.copyOf(this.parts), ImmutableList.copyOf(this.faces));
+            return new Mesh<>(this.name, ImmutableMap.copyOf(this.parts), ImmutableList.copyOf(this.faces));
         }
 
     }

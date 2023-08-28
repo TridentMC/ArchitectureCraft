@@ -60,6 +60,14 @@ public interface IMesh<I, D extends IPolygonData<D>> {
     IMesh<I, D> transform(@NotNull ITrans3 trans, boolean transformUVs);
 
     /**
+     * Gets the name of this mesh, used for debugging.
+     *
+     * @return The name of this mesh.
+     */
+    @NotNull
+    String getName();
+
+    /**
      * Applies the given transformation to this mesh, returning a new mesh with the transformed parts and faces.
      *
      * @param trans The transformation to apply.

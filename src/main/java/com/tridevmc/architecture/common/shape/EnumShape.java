@@ -85,14 +85,14 @@ public enum EnumShape {
 
     CLADDING_SHEET("cladding_sheet", null, null),
 
-    ARCH_D_1("arch_d_1", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_2("arch_d_2", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_3_A("arch_d_3_a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_3_B("arch_d_3_b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_3_C("arch_d_3_c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_4_A("arch_d_4_a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_4_B("arch_d_4_b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D_4_C("arch_d_4_c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D1("arch_d1", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D2("arch_d2", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D3A("arch_d3a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D3B("arch_d3b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D3C("arch_d3c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D4A("arch_d4a", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D4B("arch_d4b", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D4C("arch_d4c", ShapePlacementLogicPointedWithSpin.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
     BANISTER_PLAIN("banister_plain", null, null),

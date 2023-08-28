@@ -15,6 +15,7 @@ import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -60,7 +61,7 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
         final var isCulled = new AtomicBoolean(false);
         var quadBaker = new QuadBakingVertexConsumer(bakedQuad -> containerBuilder.addQuad(bakedQuad, isCulled.get()));
         var m = this.getMesh(transform.asImmutable());
-        var faces = partId == null ? m.getFaces() : m.getPart(partId).getFaces();
+        var faces = partId == null ? m.getFaces() : Objects.requireNonNull(m.getPart(partId), "Unable to find part with id: " + partId + " on mesh: " + this.mesh.getName()).getFaces();
         for (var face : faces) {
             for (var polygon : face.getPolygons()) {
                 var polygonData = polygon.getPolygonData();

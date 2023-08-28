@@ -1,0 +1,7 @@
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "balustrade_plain_inner_corner"
+                          }
+                          

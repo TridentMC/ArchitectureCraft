@@ -1,10 +1,15 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
@@ -19,6 +24,7 @@ import java.util.List;
  */
 public interface IArchitectureBakedModel extends IDynamicBakedModel {
 
+
     @Override
     default @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         if (state instanceof BlockStateArchitecture stateArchitecture) {
@@ -26,6 +32,16 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    default ItemOverrides getOverrides() {
+        return ItemOverrides.EMPTY;
+    }
+
+    @Override
+    default boolean isCustomRenderer() {
+        return true;
     }
 
     /**
@@ -40,4 +56,16 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
      */
     @NotNull List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
 
+    /**
+     * Gets a list of quads for the given stack.
+     *
+     * @param stack The stack to get quads for.
+     * @return A list of quads.
+     */
+    @NotNull List<BakedQuad> getQuads(@NotNull ItemStack stack);
+
+    @Override
+    default BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        return IDynamicBakedModel.super.applyTransform(transformType, poseStack, applyLeftHandTransform);
+    }
 }

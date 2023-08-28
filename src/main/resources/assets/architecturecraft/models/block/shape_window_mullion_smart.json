@@ -1,0 +1,7 @@
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "window_mullion_smart"
+                          }
+                          

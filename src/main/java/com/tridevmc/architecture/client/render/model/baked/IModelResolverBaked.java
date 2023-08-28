@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,4 +50,9 @@ public interface IModelResolverBaked<D> extends IArchitectureBakedModel {
         return modelResolver.getQuads(level, pos, state, trans).quadsFor(side);
     }
 
+    @Override
+    @NotNull
+    default List<BakedQuad> getQuads(@NotNull ItemStack stack) {
+        return getModelResolver().getQuads(stack).allQuads();
+    }
 }

@@ -1,5 +1,7 @@
-{
-    "loader": "architecturecraft:shape_loader",
-    "shapeName": "sphere_eighth_large_rev",
-    "generateUVs": false
-}
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "sphere_eighth_large_rev"
+                          }
+                          

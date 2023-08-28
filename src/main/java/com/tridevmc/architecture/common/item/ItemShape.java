@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class ItemShape extends BlockItem {
+public class ItemShape extends ItemBlockArchitecture {
 
     private static final Map<EnumShape, ItemShape> SHAPE_ITEMS = Maps.newHashMap();
     private final EnumShape shape;
@@ -125,7 +125,7 @@ public class ItemShape extends BlockItem {
 
     @Override
     public ItemStack getDefaultInstance() {
-        return createStack(EnumShape.ROOF_TILE, Blocks.OAK_PLANKS.defaultBlockState());
+        return createStack(this.shape, Blocks.OAK_PLANKS.defaultBlockState());
     }
 
     @Override

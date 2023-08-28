@@ -1,4 +1,7 @@
-{
-    "loader": "architecturecraft:shape_loader",
-    "shapeName": "window_corner"
-}
+
+                          {
+                            "parent": "block/block",
+                            "loader": "architecturecraft:shape_loader",
+                            "shapeName": "window_corner"
+                          }
+                          

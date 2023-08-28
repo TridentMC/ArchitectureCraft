@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.ImmutableList;
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -12,8 +13,11 @@ import com.tridevmc.architecture.core.model.mesh.IPart;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -28,7 +32,7 @@ import java.util.function.Function;
  *
  * @param <T> a self-referential generic type.
  */
-public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
+public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture implements EntityBlock {
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_DEFINITION = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
 
@@ -170,5 +174,11 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture {
     public boolean hasDynamicShape() {
         // By returning true here we tell the game to generate a Cache object on our state.
         return true;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BlockEntityShape(pos, state);
     }
 }

@@ -25,22 +25,27 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.client.render.model.geometry.IArchitectureModelGeometry;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
-import com.tridevmc.architecture.client.render.model.loader.ArchitectureGeometryLoader;
-import com.tridevmc.architecture.client.render.model.loader.ArchitectureShapeGeometryLoader;
+import com.tridevmc.architecture.client.render.model.geometry.ArchitectureGeometryLoader;
+import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeGeometryLoader;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class ClientProxy extends CommonProxy {
 
@@ -61,13 +66,19 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
-        e.register("sawbench_loader", new ArchitectureGeometryLoader(new BakedModelSawbench(), this.getTextures("blocks/sawbench-metal", "blocks/sawbench-wood")));
+        e.register("sawbench_loader", new ArchitectureGeometryLoader(
+                        () ->
+                                (context, baker, spriteGetter, modelState, overrides, modelLocation) ->
+                                        new BakedModelSawbench(context.getTransforms())
+                )
+        );
         e.register("shape_loader", new ArchitectureShapeGeometryLoader());
         this.registerDefaultModelLocations();
     }
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent e) {
+
     }
 
     @Override
