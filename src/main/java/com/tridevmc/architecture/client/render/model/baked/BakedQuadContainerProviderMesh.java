@@ -11,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -84,7 +84,7 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
                     quadBaker.vertex(v.getX(), v.getY(), v.getZ())
                             .color(-1)
                             .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
-                            .uv(texture.getU((v.getU()) * 16F), texture.getV((v.getV()) * 16F))
+                            .uv(texture.getU((float) v.getU()), texture.getV((float) v.getV()))
                             .uv2(1, 0)
                             .overlayCoords(1, 0)
                             .endVertex();

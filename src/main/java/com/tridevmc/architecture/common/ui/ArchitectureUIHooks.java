@@ -10,13 +10,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.network.IContainerFactory;
+import net.neoforged.neoforge.network.NetworkHooks;
+import net.neoforged.neoforge.registries.RegisterEvent;
+
 
 import java.util.Optional;
 
@@ -28,9 +29,11 @@ public class ArchitectureUIHooks {
     private static Optional<IElementProvider<AbstractContainerMenu>> lastProvider = Optional.empty();
 
     public static <C extends AbstractContainerMenu> MenuType<C> register(RegisterEvent.RegisterHelper<MenuType<?>> registry) {
-        MenuType<C> containerType = IForgeMenuType.create(getFactory());
+        MenuType<C> containerType = IMenuTypeExtension.create(getFactory());
         registry.register(new ResourceLocation(ArchitectureMod.MOD_ID, "containers"), containerType);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> MenuScreens.register(containerType, getScreenFactory()));
+        if (FMLEnvironment.dist.isClient()) {
+            MenuScreens.register(containerType, getScreenFactory());
+        }
         return containerType;
     }
 

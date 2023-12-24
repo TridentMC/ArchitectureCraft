@@ -8,12 +8,18 @@ ext {
     useElytraVersionFormat = true
     version = '4'
 
-    compoundVersion = '1.10.1-SNAPSHOT'
+    compoundVersion = '1.12.0-SNAPSHOT'
     compoundModules = ['all']
 
-    forge = "1.20.1-47.1.70"
-    mappingsChannel = "parchment"
-    mappingsVersion = "2023.07.30-1.20.1"
+    minecraftVersion = "1.20.4"
+    minecraftVersionRange = "[1.20.4,1.21)"
+
+    mappingsChannel = "official"
+    mappingsVersion = "1.20.4"
+
+    neoVersion = "20.4.47-beta"
+    neoVersionRange = "[20.4,)"
+    loaderVersionRange = "[2,)"
 }
 
 if (!ext.early) {

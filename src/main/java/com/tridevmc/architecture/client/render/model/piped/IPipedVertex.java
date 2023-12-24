@@ -129,7 +129,7 @@ public interface IPipedVertex<V extends IPipedVertex<V, Q, D>, Q extends IPipedB
             consumer.vertex(x, y, z)
                     .color(colour)
                     .normal(nX, nY, nZ)
-                    .uv(sprite.getU(u), sprite.getV(v))
+                    .uv(sprite.getU((float) u), sprite.getV((float) v))
                     .uv2(1, 0)
                     .overlayCoords(1, 0)
                     .endVertex();

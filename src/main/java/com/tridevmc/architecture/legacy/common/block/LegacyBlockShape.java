@@ -25,6 +25,8 @@
 package com.tridevmc.architecture.legacy.common.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.item.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.utils.DumbBlockReader;
@@ -43,6 +45,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -51,8 +55,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,6 +69,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     private static final Map<LegacyEnumShape, LegacyBlockShape> SHAPE_BLOCKS = Maps.newHashMap();
     public static IntegerProperty LIGHT = IntegerProperty.create("light", 0, 15);
     private final LegacyEnumShape architectureShape;
+    private final MapCodec<LegacyBlockShape> codec;
 
     public LegacyBlockShape(LegacyEnumShape architectureShape) {
         super(MapColor.DIRT);
@@ -71,6 +77,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
         if (this.architectureShape.behaviour instanceof LegacyShapeBehaviourModel sbm)
             this.setModelAndTextures(sbm.getModelName());
         SHAPE_BLOCKS.put(architectureShape, this);
+        this.codec = simpleCodec((p) -> new LegacyBlockShape(architectureShape));
     }
 
     public static float acBlockStrength(BlockState state, Player player, BlockGetter level, BlockPos pos) {
@@ -134,7 +141,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(level, pos);
         if (te != null)
             // Temp so we can compile, we're killing this class off anyway.
@@ -216,5 +223,10 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
             identity = 31 * identity + shapeBE.getTurn();
         }
         return identity;
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return this.codec;
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fml.loading.progress.StartupNotificationManager;
+import net.neoforged.fml.loading.progress.StartupNotificationManager;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;

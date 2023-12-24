@@ -37,6 +37,7 @@ import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -44,16 +45,14 @@ import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -83,11 +82,11 @@ public class ArchitectureContent {
     public MenuType<? extends Container> universalMenuType;
 
     @SubscribeEvent
-    public void onRegisterEvent(RegisterEvent e) {
-        e.register(ForgeRegistries.Keys.BLOCKS, this::onBlockRegister);
-        e.register(ForgeRegistries.Keys.ITEMS, this::onItemRegister);
-        e.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, this::onBlockEntityRegister);
-        e.register(ForgeRegistries.Keys.MENU_TYPES, this::onMenuTypeRegister);
+    public void onRegisterEvent(final RegisterEvent e) {
+        e.register(BuiltInRegistries.BLOCK.key(), this::onBlockRegister);
+        e.register(BuiltInRegistries.ITEM.key(), this::onItemRegister);
+        e.register(BuiltInRegistries.BLOCK_ENTITY_TYPE.key(), this::onBlockEntityRegister);
+        e.register(BuiltInRegistries.MENU.key(), this::onMenuTypeRegister);
         e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
     }
 

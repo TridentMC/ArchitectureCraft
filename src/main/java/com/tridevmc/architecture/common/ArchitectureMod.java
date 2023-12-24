@@ -27,12 +27,12 @@ package com.tridevmc.architecture.common;
 import com.tridevmc.architecture.client.proxy.ClientProxy;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.compound.network.core.CompoundNetwork;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+
 
 import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
@@ -47,14 +47,13 @@ public class ArchitectureMod {
 
     public ArchitectureMod() {
         ArchitectureMod.INSTANCE = this;
-        PROXY = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+        PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
 
-        FMLJavaModLoadingContext loadingContext = FMLJavaModLoadingContext.get();
-        loadingContext.getModEventBus().addListener(this::onSetup);
-        loadingContext.getModEventBus().register(CONTENT);
-        loadingContext.getModEventBus().register(PROXY);
-        MinecraftForge.EVENT_BUS.register(CONTENT);
-        MinecraftForge.EVENT_BUS.register(PROXY);
+        var loadingContext = ModLoadingContext.get();
+        var modEventBus = loadingContext.getActiveContainer().getEventBus();
+        modEventBus.addListener(this::onSetup);
+        modEventBus.register(CONTENT);
+        modEventBus.register(PROXY);
     }
 
     public void onSetup(FMLCommonSetupEvent e) {

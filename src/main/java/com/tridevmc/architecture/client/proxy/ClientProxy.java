@@ -36,13 +36,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.common.NeoForge;
+
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -53,7 +52,7 @@ public class ClientProxy extends CommonProxy {
     public void setup(FMLCommonSetupEvent e) {
         super.setup(e);
         if (!FMLEnvironment.production)
-            MinecraftForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
+            NeoForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
     }
 
     public void registerDefaultModelLocations() {
@@ -76,10 +75,6 @@ public class ClientProxy extends CommonProxy {
         this.registerDefaultModelLocations();
     }
 
-    @SubscribeEvent
-    public void onStitch(TextureStitchEvent e) {
-
-    }
 
     @Override
     public void registerHandlers() {

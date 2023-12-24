@@ -104,12 +104,6 @@ public class ItemShape extends ItemBlockArchitecture {
         return result;
     }
 
-    @Nullable
-    @Override
-    public CompoundTag getShareTag(ItemStack stack) {
-        return stack.getTag();
-    }
-
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> lines, TooltipFlag flagIn) {
         CompoundTag tag = stack.getTag();

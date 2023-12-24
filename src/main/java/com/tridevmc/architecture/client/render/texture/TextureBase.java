@@ -172,12 +172,12 @@ public abstract class TextureBase implements ITexture {
 
         @Override
         public double interpolateU(double u) {
-            return this.icon.getU(u * 16);
+            return this.icon.getU((float) (u * 16));
         }
 
         @Override
         public double interpolateV(double v) {
-            return this.icon.getV(v * 16);
+            return this.icon.getV((float) (v * 16));
         }
 
         @Override
