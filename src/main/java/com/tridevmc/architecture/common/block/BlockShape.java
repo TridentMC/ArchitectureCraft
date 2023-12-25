@@ -9,6 +9,7 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.ITrans3Immutable;
 import com.tridevmc.architecture.core.model.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPart;
@@ -135,6 +136,17 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     }
 
     @Override
+    public ITrans3Immutable getTransformForState(BlockStateArchitecture state) {
+        var shapeState = this.asShapeState(state);
+        if (shapeState == null) {
+            ArchitectureLog.error("BlockShape#getTransformForState called with a non-shape state, this should not happen.");
+            return ITrans3.ofIdentity();
+        }
+        var transformationResolver = Optional.ofNullable(this.getShape().getTransformationResolver()).orElse(s -> ITrans3.ofIdentity());
+        return transformationResolver.resolve(shapeState).asImmutable();
+    }
+
+    @Override
     public CompletableFuture<ImmutableList<AABB>> getBoxesForState(BlockStateArchitecture state) {
         var shapeState = this.asShapeState(state);
         if (shapeState == null) {
@@ -155,19 +167,26 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
             ArchitectureLog.error("BlockShape#getStateForPlacement called with a null player, this should not happen.");
             return this.defaultBlockState();
         }
+        ShapeOrientation safeShapeOrientation = null;
+        try {
+            safeShapeOrientation = this.getPlacementLogic().getShapeOrientationForPlacement(
+                    this.self(),
+                    context.getLevel(),
+                    context.getClickedPos(),
+                    context.getPlayer(),
+                    new BlockHitResult(
+                            context.getClickLocation(),
+                            context.getClickedFace(),
+                            context.getClickedPos(),
+                            context.isInside()
+                    )
+            );
+        } catch (Exception e) {
+            ArchitectureLog.error("BlockShape#getStateForPlacement threw an exception, this should not happen.", e);
+            safeShapeOrientation = ShapeOrientation.forState(asShapeState(this.defaultBlockState()));
+        }
         // Defer to the placement logic to get the correct state for the shape.
-        return this.getPlacementLogic().getShapeOrientationForPlacement(
-                this.self(),
-                context.getLevel(),
-                context.getClickedPos(),
-                context.getPlayer(),
-                new BlockHitResult(
-                        context.getClickLocation(),
-                        context.getClickedFace(),
-                        context.getClickedPos(),
-                        context.isInside()
-                )
-        ).applyToState(this.defaultBlockState());
+        return safeShapeOrientation.applyToState(this.defaultBlockState());
     }
 
     @Override
