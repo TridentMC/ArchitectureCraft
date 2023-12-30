@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.ImmutableList;
+import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
@@ -17,14 +18,23 @@ import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.ToolAction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -199,5 +209,25 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BlockEntityShape(pos, state);
+    }
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getShape().getVoxelizer());
+    }
+
+    @Override
+    public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return super.getInteractionShape(state, level, pos);
+    }
+
+    @Override
+    public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
+        return super.getToolModifiedState(state, context, toolAction, simulate);
+    }
+
+    @Override
+    public @Nullable PushReaction getPistonPushReaction(BlockState state) {
+        return super.getPistonPushReaction(state);
     }
 }

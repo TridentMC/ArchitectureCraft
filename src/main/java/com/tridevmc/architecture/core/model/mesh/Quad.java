@@ -157,19 +157,8 @@ public record Quad<D extends IPolygonData<D>>(@NotNull IFace<D> face,
     @Override
     public boolean intersect(AABB box) {
         // Check if any of the vertices are inside the box, if so, we intersect.
-
         if (box.contains(this.getVertex(0).getPos()) || box.contains(this.getVertex(1).getPos()) || box.contains(this.getVertex(2).getPos()) || box.contains(this.getVertex(3).getPos())) {
             return true;
-        }
-
-        // Check if any of the edges intersect the box, if so, we intersect.
-        for (var i = 0; i < 4; i++) {
-            var v1 = this.getVertex(i).getPos().asImmutable();
-            var v2 = this.getVertex((i + 1) % 4).getPos().asImmutable();
-            var ray = new Ray(v1, v2.sub(v1));
-            if (box.intersects(ray).findAny().isPresent()) {
-                return true;
-            }
         }
 
         // We've exhausted all of our quick checks, so we move on to the SAT test.

@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
  */
 public class Voxelizer {
 
-    private static final ExecutorService POOL = Executors.newCachedThreadPool();
+    private static final ExecutorService POOL = Executors.newWorkStealingPool();
     private static final IVector3 xNormal = IVector3.UNIT_X;
     private static final IVector3 yNormal = IVector3.UNIT_Y;
     private static final IVector3 zNormal = IVector3.UNIT_Z;
