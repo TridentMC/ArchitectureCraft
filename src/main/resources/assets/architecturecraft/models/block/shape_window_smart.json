@@ -1,7 +1,6 @@
-
-                          {
-                            "parent": "block/block",
-                            "loader": "architecturecraft:shape_loader",
-                            "shapeName": "window_smart"
-                          }
+{
+    "parent": "block/block",
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "window_smart"
+}
                           

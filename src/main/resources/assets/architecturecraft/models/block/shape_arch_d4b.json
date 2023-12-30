@@ -1,7 +1,6 @@
-
-                          {
-                            "parent": "block/block",
-                            "loader": "architecturecraft:shape_loader",
-                            "shapeName": "arch_d4b"
-                          }
+{
+    "parent": "block/block",
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "arch_d4b"
+}
                           

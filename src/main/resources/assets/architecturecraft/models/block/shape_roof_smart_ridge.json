@@ -1,7 +1,6 @@
-
-                          {
-                            "parent": "block/block",
-                            "loader": "architecturecraft:shape_loader",
-                            "shapeName": "roof_smart_ridge"
-                          }
+{
+    "parent": "block/block",
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "roof_smart_ridge"
+}
                           

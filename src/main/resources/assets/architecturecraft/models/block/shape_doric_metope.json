@@ -1,7 +1,6 @@
-
-                          {
-                            "parent": "block/block",
-                            "loader": "architecturecraft:shape_loader",
-                            "shapeName": "doric_metope"
-                          }
+{
+    "parent": "block/block",
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "doric_metope"
+}
                           

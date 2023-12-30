@@ -1,7 +1,6 @@
-
-                          {
-                            "parent": "block/block",
-                            "loader": "architecturecraft:shape_loader",
-                            "shapeName": "banister_fancy_bottom"
-                          }
+{
+    "parent": "block/block",
+    "loader": "architecturecraft:shape_loader",
+    "shapeName": "banister_fancy_bottom"
+}
                           
