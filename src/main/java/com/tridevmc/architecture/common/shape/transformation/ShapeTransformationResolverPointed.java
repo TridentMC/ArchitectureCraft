@@ -18,17 +18,17 @@ public class ShapeTransformationResolverPointed implements IShapeTransformationR
 
     @Override
     public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
-        // Assumes the object is facing NORTH, so rotate accordingly
+        // Assumes the object is facing WEST, so rotate accordingly
         ShapeOrientationProperty.Value<Direction> facingValue = orientation.getValue(ShapeOrientationPropertyFacing.INSTANCE);
         Direction facing = facingValue != null ? facingValue.value() : Direction.NORTH;
 
         return switch (facing) {
-            case UP -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90));
-            case DOWN -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
-            case NORTH -> ITrans3.ofIdentity();
-            case SOUTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0));
-            case WEST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0));
-            case EAST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0));
+            case UP -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
+            case DOWN -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90));
+            case NORTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0));
+            case SOUTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0));
+            case WEST -> ITrans3.ofIdentity();
+            case EAST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0));
         };
     }
 }

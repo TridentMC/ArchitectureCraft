@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -36,38 +37,13 @@ public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<
         var facing = Direction.orderedByNearest(placer)[0].getOpposite();
         facing = placer.isCrouching() ? facing.getOpposite() : facing;
 
-        // Assuming facing north then we use the following rules;
-        // if player clicked on top of block then EnumSpin.NONE
-        // if player clicked on bottom of block then EnumSpin.HALF
-        // if player clicked on the west side of block then EnumSpin.ONE_QUARTER
-        // if player clicked on the east side of block then EnumSpin.THREE_QUARTER
-        // if player clicked on the north side of block then EnumSpin.HALF
-        // if player clicked on the south side of block then EnumSpin.NONE
-        // All of these rules are rotated based on the facing of the block.
         var hitSide = hitResult.getDirection();
-        hitSide = placer.isCrouching() ? hitSide.getOpposite() : hitSide;
-        var spin = EnumSpin.NONE;
-        // Rotate the hit side to match the facing of the block.
-        hitSide = switch (facing) {
-            case NORTH -> hitSide;
-            case SOUTH -> hitSide.getOpposite();
-            case EAST -> hitSide.getClockWise();
-            case WEST -> hitSide.getCounterClockWise();
-            case UP -> hitSide.getClockWise(Direction.Axis.X);
-            case DOWN -> hitSide.getCounterClockWise(Direction.Axis.X);
-        };
+        ArchitectureLog.debug("Hit side: {}", hitSide);
 
-        // Now we can determine the spin.
-        spin = switch (hitSide) {
-            case UP, SOUTH -> EnumSpin.NONE;
-            case DOWN, NORTH -> EnumSpin.HALF;
-            case WEST -> EnumSpin.ONE_QUARTER;
-            case EAST -> EnumSpin.THREE_QUARTER;
-        };
 
         return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyFacing.of(facing),
-                ShapeOrientationPropertySpin.of(spin)
+                ShapeOrientationPropertySpin.of(EnumSpin.NONE)
         );
     }
 
