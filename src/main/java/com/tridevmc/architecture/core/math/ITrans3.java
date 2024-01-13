@@ -1,6 +1,9 @@
 package com.tridevmc.architecture.core.math;
 
 import com.tridevmc.architecture.core.math.floating.*;
+import com.tridevmc.architecture.core.math.integer.IVector3i;
+import com.tridevmc.architecture.core.math.integer.IVector3iImmutable;
+import com.tridevmc.architecture.core.math.integer.IVector3iMutable;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import com.tridevmc.architecture.core.model.mesh.MeshHelper;
@@ -298,6 +301,36 @@ public interface ITrans3 {
                 this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03(),
                 this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13(),
                 this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23()
+        );
+    }
+
+    /**
+     * Transforms the given position vector by this transformation, storing the result in the given vector.
+     *
+     * @param position The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3iMutable transformPos(@NotNull IVector3iMutable position) {
+        return position.set(
+                (int) Math.round(this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03()),
+                (int) Math.round(this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13()),
+                (int) Math.round(this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23())
+        );
+    }
+
+    /**
+     * Transforms the given position vector by this transformation, storing the result in a new vector.
+     *
+     * @param position The vector to transform.
+     * @return The given vector.
+     */
+    @NotNull
+    default IVector3iImmutable transformPosImmutable(@NotNull IVector3i position) {
+        return IVector3iImmutable.of(
+                (int) Math.round(this.matrix().m00() * position.x() + this.matrix().m01() * position.y() + this.matrix().m02() * position.z() + this.matrix().m03()),
+                (int) Math.round(this.matrix().m10() * position.x() + this.matrix().m11() * position.y() + this.matrix().m12() * position.z() + this.matrix().m13()),
+                (int) Math.round(this.matrix().m20() * position.x() + this.matrix().m21() * position.y() + this.matrix().m22() * position.z() + this.matrix().m23())
         );
     }
 

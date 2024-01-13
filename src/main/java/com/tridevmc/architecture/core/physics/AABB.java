@@ -3,6 +3,7 @@ package com.tridevmc.architecture.core.physics;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.IVector3Immutable;
 import com.tridevmc.architecture.core.model.mesh.IVertex;
+import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -241,6 +242,68 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
         return (this.minX() == other.maxX() || this.maxX() == other.minX()) ||
                 (this.minY() == other.maxY() || this.maxY() == other.minY()) ||
                 (this.minZ() == other.maxZ() || this.maxZ() == other.minZ());
+    }
+
+    /**
+     * Checks if this box shares a face with another.
+     *
+     * @param other The other box to check.
+     * @return True if the boxes share a face, false otherwise.
+     */
+    public boolean sharesFace(AABB other) {
+        // Calculate the offset between the two boxes, and use that to choose which face to check.
+        var dir = other.center().asMutable().sub(this.center());
+        // Confirm that at least two of the axes are 0, otherwise the boxes are not adjacent.
+        if(Math.ceil(dir.x()) + Math.ceil(dir.y()) + Math.ceil(dir.z()) > 1) {
+            return false;
+        }
+        var face = Direction.getNearest(dir.x(), dir.y(), dir.z());
+
+        switch (face) {
+            case NORTH -> {
+                return this.minZ() == other.maxZ()
+                        && this.minX() == other.minX()
+                        && this.maxX() == other.maxX()
+                        && this.minY() == other.minY()
+                        && this.maxY() == other.maxY();
+            }
+            case SOUTH -> {
+                return this.maxZ() == other.minZ()
+                        && this.minX() == other.minX()
+                        && this.maxX() == other.maxX()
+                        && this.minY() == other.minY()
+                        && this.maxY() == other.maxY();
+            }
+            case EAST -> {
+                return this.maxX() == other.minX()
+                        && this.minZ() == other.minZ()
+                        && this.maxZ() == other.maxZ()
+                        && this.minY() == other.minY()
+                        && this.maxY() == other.maxY();
+            }
+            case WEST -> {
+                return this.minX() == other.maxX()
+                        && this.minZ() == other.minZ()
+                        && this.maxZ() == other.maxZ()
+                        && this.minY() == other.minY()
+                        && this.maxY() == other.maxY();
+            }
+            case UP -> {
+                return this.maxY() == other.minY()
+                        && this.minX() == other.minX()
+                        && this.maxX() == other.maxX()
+                        && this.minZ() == other.minZ()
+                        && this.maxZ() == other.maxZ();
+            }
+            case DOWN -> {
+                return this.minY() == other.maxY()
+                        && this.minX() == other.minX()
+                        && this.maxX() == other.maxX()
+                        && this.minZ() == other.minZ()
+                        && this.maxZ() == other.maxZ();
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + face);
+        }
     }
 
     /**
