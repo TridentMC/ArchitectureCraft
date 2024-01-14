@@ -18,6 +18,115 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ShapePlacementLogicPointedWithSpin implements IShapePlacementLogic<BlockArchitecture> {
 
+    private enum RelativeBlockFaceSection {
+        TOP("Top"),
+        BOTTOM("Bottom"),
+        LEFT("Left"),
+        RIGHT("Right"),
+        MIDDLE("Middle");
+
+        String name;
+
+        RelativeBlockFaceSection(String name) {
+            this.name = name;
+        }
+
+        static RelativeBlockFaceSection fromHitResult(Direction playerHorizontalDirection, BlockHitResult hitResult) {
+            var hitVec = hitResult.getLocation();
+            var hitSide = hitResult.getDirection();
+            var hitX = hitVec.x - hitResult.getBlockPos().getX();
+            var hitY = hitVec.y - hitResult.getBlockPos().getY();
+            var hitZ = hitVec.z - hitResult.getBlockPos().getZ();
+
+            var hitCoord0 = 0D;
+            var hitCoord1 = 0D;
+            if (hitSide.getAxis().isHorizontal()) {
+                hitCoord0 = hitY;
+                switch (playerHorizontalDirection) {
+                    case NORTH -> {
+                        hitCoord1 = 1 - hitX;
+                    }
+                    case SOUTH -> {
+                        hitCoord1 = hitX;
+                    }
+                    case WEST -> {
+                        hitCoord1 = hitZ;
+                    }
+                    case EAST -> {
+                        hitCoord1 = 1 - hitZ;
+                    }
+                }
+            } else {
+                switch (playerHorizontalDirection) {
+                    case NORTH -> {
+                        hitCoord0 = 1 - hitZ;
+                        hitCoord1 = 1 - hitX;
+                    }
+                    case SOUTH -> {
+                        hitCoord0 = hitZ;
+                        hitCoord1 = hitX;
+                    }
+                    case WEST -> {
+                        hitCoord0 = 1 - hitX;
+                        hitCoord1 = hitZ;
+                    }
+                    case EAST -> {
+                        hitCoord0 = hitX;
+                        hitCoord1 = 1 - hitZ;
+                    }
+                }
+            }
+
+            hitCoord0 -= 0.5D;
+            hitCoord1 -= 0.5D;
+
+            // Middle is defined as 0 +- 0.1
+            if (Math.abs(hitCoord0) <= 0.1 && Math.abs(hitCoord1) <= 0.1) {
+                return MIDDLE;
+            }
+
+            // Top is defined as 0.1+, bottom is defined as -0.1-
+            // Left is defined as 0.1+, right is defined as -0.1-
+            // Select the dominant coordinate to calculate from.
+            var is0Dominant = Math.abs(hitCoord0) > Math.abs(hitCoord1);
+            var dominantCoord = is0Dominant ? hitCoord0 : hitCoord1;
+            var nonDominantCoord = is0Dominant ? hitCoord1 : hitCoord0;
+
+            if (is0Dominant) {
+                if (dominantCoord > 0.1) {
+                    return TOP;
+                } else if (dominantCoord < -0.1) {
+                    return BOTTOM;
+                } else {
+                    if (nonDominantCoord > 0) {
+                        return LEFT;
+                    } else {
+                        return RIGHT;
+                    }
+                }
+            } else {
+                if (dominantCoord > 0.1) {
+                    return LEFT;
+                } else if (dominantCoord < -0.1) {
+                    return RIGHT;
+                } else {
+                    if (nonDominantCoord > 0) {
+                        return TOP;
+                    } else {
+                        return BOTTOM;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "BlockHitSection{" +
+                    "name='" + name + '\'' +
+                    '}';
+        }
+    }
+
     public static final ShapePlacementLogicPointedWithSpin INSTANCE = new ShapePlacementLogicPointedWithSpin();
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
             ShapeOrientationPropertyFacing.INSTANCE,
