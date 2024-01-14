@@ -24,38 +24,26 @@ public class ShapeTransformationResolverPointedWithSpin implements IShapeTransfo
         var facing = facingValue != null ? facingValue.value() : Direction.NORTH;
         var spinValue = orientation.getValue(ShapeOrientationPropertySpin.INSTANCE);
         var spin = spinValue != null ? spinValue.value() : EnumSpin.NONE;
+        var spinMatrix = IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, spin.getDegrees(), 0, 0);
 
-        // Because the translation rotation function applies in the XYZ order we can just pass everything in at once.
         return switch (facing) {
             case UP -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), 0, 90
-                    )
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(spinMatrix)
             );
             case DOWN -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), 0, -90
-                    )
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(spinMatrix)
             );
             case NORTH -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), -90, 0
-                    )
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0).asMutable().mul(spinMatrix)
             );
             case SOUTH -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), 90, 0
-                    )
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0).asMutable().mul(spinMatrix)
             );
             case WEST -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), 0, 0
-                    )
+                    spinMatrix
             );
             case EAST -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(
-                            0.5, 0.5, 0.5, spin.getDegrees(), 180, 0
-                    )
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0).asMutable().mul(spinMatrix)
             );
         };
     }
