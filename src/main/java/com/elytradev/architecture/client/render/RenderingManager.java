@@ -375,11 +375,6 @@ public class RenderingManager {
                     rend = RenderingManager.this.getCustomRendererForState(block.getDefaultState());
             }
             if (rend != null) {
-                try {
-                    GlStateManager.shadeModel(GL_SMOOTH);
-                } catch (RuntimeException e) {
-                    ArchitectureLog.warn("Failed to enable smooth shading for item models, {}", e.getMessage());
-                }
                 RenderTargetBaked target = new RenderTargetBaked();
                 rend.renderItemStack(stack, target, itemTrans);
                 return target.getBakedModel();
