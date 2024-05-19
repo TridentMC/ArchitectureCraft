@@ -24,30 +24,29 @@
 
 package com.tridevmc.architecture.common.item;
 
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
-import net.minecraft.nbt.CompoundTag;
+import com.tridevmc.architecture.common.item.component.ComponentMaterial;
+import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemCladding extends ItemArchitecture {
 
     public ItemCladding() {
-        super(new Item.Properties());
+        super(new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT));
     }
 
     public ItemStack newStack(BlockState state, int stackSize) {
-        ItemStack result = new ItemStack(this, stackSize);
-        var nbt = new CompoundTag();
-        nbt.putInt("block", Block.getId(state));
-        result.setTag(nbt);
+        var result = new ItemStack(this, stackSize);
+        result.set(ArchitectureMod.CONTENT.componentMaterial, new ComponentMaterial(state));
         return result;
     }
 
@@ -56,33 +55,30 @@ public class ItemCladding extends ItemArchitecture {
     }
 
     public BlockState blockStateFromStack(ItemStack stack) {
-        var tag = stack.getTag();
-        if (tag != null) {
-            BlockState state = Block.stateById(tag.getInt("block"));
-            return state;
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        if (material == null) {
+            ArchitectureLog.error("ItemCladding: blockStateFromStack: material is null");
+            return Blocks.AIR.defaultBlockState();
         }
-        return null;
+        return material.base();
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> lines, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> lines, TooltipFlag flagIn) {
         lines.set(0, super.getName(stack));
 
-        var tag = stack.getTag();
-        if (tag != null) {
-            BlockState state = Block.stateById(tag.getInt("block"));
-            if (!state.isAir())
-                lines.add(Component.literal(Utils.displayNameOnlyOfBlock(state.getBlock())));
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        if (material != null) {
+            if (material.hasBase())
+                lines.add(Component.literal(Utils.displayNameOnlyOfBlock(material.base().getBlock())));
         }
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        var tag = stack.getTag();
-        if (tag == null)
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        if (material == null || !material.hasBase())
             return super.getName(stack);
-
-        BlockState state = Block.stateById(tag.getInt("block"));
-        return Component.translatable("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(state.getBlock()));
+        return Component.translatable("item.architecturecraft.cladding.name", Utils.displayNameOnlyOfBlock(material.safeBase().getBlock()));
     }
 }

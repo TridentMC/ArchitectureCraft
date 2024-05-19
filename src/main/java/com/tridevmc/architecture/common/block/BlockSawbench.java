@@ -78,7 +78,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
 
     @Override
     @NotNull
-    public InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    public InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, Player player, @NotNull BlockHitResult hit) {
         if (!player.isCrouching()) {
             if (!level.isClientSide()) {
                 ArchitectureUIHooks.openGui((ServerPlayer) player, this, pos);

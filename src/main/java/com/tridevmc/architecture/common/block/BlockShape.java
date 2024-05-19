@@ -18,7 +18,6 @@ import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -38,7 +37,6 @@ import net.neoforged.neoforge.common.ToolAction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -211,8 +209,9 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         return new BlockEntityShape(pos, state);
     }
 
+
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getShape().getVoxelizer());
     }
 

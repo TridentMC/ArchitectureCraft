@@ -493,7 +493,7 @@ public interface ITrans3 {
     @NotNull
     default IVector2Mutable transformNormalizedUV(@NotNull IVector3 faceNormal, IVector2Mutable uvs) {
         // Get the direction of the face from the normal.
-        var fromDirection = Direction.getNearestStable(
+        var fromDirection = Direction.getNearest(
                 (float) faceNormal.x(),
                 (float) faceNormal.y(),
                 (float) faceNormal.z()
@@ -584,7 +584,7 @@ public interface ITrans3 {
     @NotNull
     default IVector2FMutable transformNormalizedUV(@NotNull IVector3 faceNormal, IVector2FMutable uvs) {
         // Get the direction of the face from the normal.
-        var fromDirection = Direction.getNearestStable(
+        var fromDirection = Direction.getNearest(
                 (float) faceNormal.x(),
                 (float) faceNormal.y(),
                 (float) faceNormal.z()

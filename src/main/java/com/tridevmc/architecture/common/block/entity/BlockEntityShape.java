@@ -2,6 +2,7 @@ package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -47,16 +48,16 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
 
         tag.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
         tag.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
 
         this.baseMaterialState = Block.stateById(tag.getInt("BaseMaterialState"));
         this.secondaryMaterialState = Optional.of(tag.getInt("SecondaryMaterialState")).filter(id -> id != -1).map(Block::stateById).orElse(null);

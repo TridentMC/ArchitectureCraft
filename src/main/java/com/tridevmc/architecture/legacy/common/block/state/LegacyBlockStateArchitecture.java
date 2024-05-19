@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -23,7 +24,7 @@ import java.util.function.Predicate;
 @MethodsReturnNonnullByDefault
 @Deprecated
 public class LegacyBlockStateArchitecture extends BlockState {
-    public LegacyBlockStateArchitecture(LegacyBlockArchitecture block, ImmutableMap<Property<?>, Comparable<?>> propertyComparableImmutableMap, MapCodec<BlockState> blockStateMapCodec) {
+    public LegacyBlockStateArchitecture(LegacyBlockArchitecture block, Reference2ObjectArrayMap<Property<?>, Comparable<?>> propertyComparableImmutableMap, MapCodec<BlockState> blockStateMapCodec) {
         super(block, propertyComparableImmutableMap, blockStateMapCodec);
     }
 

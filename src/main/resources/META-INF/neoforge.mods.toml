@@ -1,11 +1,11 @@
 modLoader = "javafml"
-loaderVersion = "${loader_version_range}"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/TridentMC/ArchitectureCraft/issues"
 authors = "gcewing (Original Developer), darkevilmac (Maintainer)"
 license = "MIT License - Copyright (c) 2020 Benjamin K"
 
 [[mods]]
-modId = "${mod_id}"
+modId = "architecturecraft"
 version = "${mod_version}"
 displayName = "Architecture Craft"
 description = "Distinguished architectural features for your Minecraft buildings."

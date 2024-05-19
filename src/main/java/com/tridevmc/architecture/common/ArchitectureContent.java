@@ -28,18 +28,23 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Codec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.item.*;
+import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
@@ -78,6 +83,7 @@ public class ArchitectureContent {
     public Item itemChisel;
     public Item itemHammer;
     public ItemCladding itemCladding;
+    public DataComponentType<ComponentMaterial> componentMaterial;
     public Map<EnumShape, ItemShape> itemShapes;
     public MenuType<? extends Container> universalMenuType;
 
@@ -87,8 +93,10 @@ public class ArchitectureContent {
         e.register(BuiltInRegistries.ITEM.key(), this::onItemRegister);
         e.register(BuiltInRegistries.BLOCK_ENTITY_TYPE.key(), this::onBlockEntityRegister);
         e.register(BuiltInRegistries.MENU.key(), this::onMenuTypeRegister);
+        e.register(BuiltInRegistries.DATA_COMPONENT_TYPE.key(), this::onDataComponentTypeRegister);
         e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
     }
+
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
         registry.register(new ResourceLocation(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
@@ -138,6 +146,10 @@ public class ArchitectureContent {
         this.itemShapes = Maps.newHashMap();
         Arrays.stream(EnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
         ArchitectureMod.PROXY.registerCustomRenderers();
+    }
+
+    private void onDataComponentTypeRegister(RegisterEvent.RegisterHelper<DataComponentType<?>> registry) {
+        this.componentMaterial = this.registerDataComponentType(registry, "material", ComponentMaterial.CODEC, ComponentMaterial.STREAM_CODEC);
     }
 
     public void onMenuTypeRegister(final RegisterEvent.RegisterHelper<MenuType<?>> e) {
@@ -196,6 +208,16 @@ public class ArchitectureContent {
         registeredItems.put(id, item);
 
         return (T) registeredItems.get(id);
+    }
+
+    private <T> DataComponentType<T> registerDataComponentType(RegisterEvent.RegisterHelper<DataComponentType<?>> registry, String id, Codec<T> codec, StreamCodec<ByteBuf, T> streamCodec) {
+        return this.registerDataComponentType(registry, id, DataComponentType.<T>builder().persistent(codec).networkSynchronized(streamCodec));
+    }
+
+    private <T> DataComponentType<T> registerDataComponentType(RegisterEvent.RegisterHelper<DataComponentType<?>> registry, String id, DataComponentType.Builder<T> builder) {
+        DataComponentType<T> type = builder.build();
+        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), type);
+        return type;
     }
 
 }

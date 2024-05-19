@@ -25,7 +25,6 @@
 package com.tridevmc.architecture.legacy.common.block;
 
 import com.google.common.collect.Maps;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.item.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -37,7 +36,6 @@ import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehavi
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -52,12 +50,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -181,14 +177,14 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         ItemStack stack = player.getUseItem();
         if (!stack.isEmpty()) {
             LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(level, pos);
             if (te != null)
                 return te.applySecondaryMaterial(stack, player) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-        return super.use(state, level, pos, player, hand, hit);
+        return super.useWithoutItem(state, level, pos, player, hit);
     }
 
     @OnlyIn(Dist.CLIENT)

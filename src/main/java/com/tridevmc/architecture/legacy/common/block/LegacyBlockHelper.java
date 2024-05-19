@@ -68,11 +68,10 @@ public class LegacyBlockHelper {
     }
 
     static boolean isPoweringSide(Level level, BlockPos pos, Direction side) {
-        BlockState state = level.getBlockState(pos);
-        Block block = state.getBlock();
-        if (block.getSignal(state, level, pos, side) > 0)
+        var state = level.getBlockState(pos);
+        if (state.getSignal(level, pos, side) > 0)
             return true;
-        if (block.shouldCheckWeakPower(state, level, pos, side)) {
+        if (state.shouldCheckWeakPower(level, pos, side)) {
             for (Direction side2 : MiscUtils.facings) {
                 if (side2 != side.getOpposite())
                     if (level.getDirectSignal(pos.relative(side2), side2) > 0)

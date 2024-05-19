@@ -25,19 +25,18 @@
 package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.helpers.Utils;
+import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ItemShape extends ItemBlockArchitecture {
 
@@ -53,7 +53,7 @@ public class ItemShape extends ItemBlockArchitecture {
     private final EnumShape shape;
 
     public ItemShape(BlockShape block) {
-        super(block, new Item.Properties());
+        super(block, new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT));
         this.shape = block.getShape();
         SHAPE_ITEMS.put(block.getShape(), this);
     }
@@ -70,10 +70,8 @@ public class ItemShape extends ItemBlockArchitecture {
 
     @Nonnull
     public static ItemStack createStack(EnumShape shape, BlockState baseBlockState, int count) {
-        var tag = new CompoundTag();
         var stack = new ItemStack(SHAPE_ITEMS.get(shape), count);
-        tag.putInt("BaseBlockState", Block.getId(baseBlockState));
-        stack.setTag(tag);
+        stack.set(ArchitectureMod.CONTENT.componentMaterial, new ComponentMaterial(baseBlockState));
         return stack;
     }
 
@@ -89,8 +87,8 @@ public class ItemShape extends ItemBlockArchitecture {
 
     @Nonnull
     public static BlockState getStateFromStack(ItemStack stack) {
-        var tag = stack.getTag();
-        return Block.stateById(tag.getInt("BaseBlockState"));
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        return Optional.ofNullable(material).map(ComponentMaterial::base).orElse(Blocks.AIR.defaultBlockState());
     }
 
     @Override
@@ -105,9 +103,9 @@ public class ItemShape extends ItemBlockArchitecture {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> lines, TooltipFlag flagIn) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null) {
+    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> lines, TooltipFlag flagIn) {
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        if (material != null) {
             if (this.shape != null)
                 lines.set(0, Component.translatable(this.shape.getLocalizationKey()));
             else
@@ -124,11 +122,9 @@ public class ItemShape extends ItemBlockArchitecture {
 
     @Override
     public Component getName(ItemStack stack) {
-        var tag = stack.getTag();
-        if (tag == null)
+        var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
+        if (material == null || !material.hasBase())
             return super.getName(stack);
-
-        BlockState state = getStateFromStack(stack);
-        return Component.literal(this.shape.getName() + ": " + Utils.displayNameOnlyOfBlock(state.getBlock()));
+        return Component.literal(this.shape.getName() + ": " + Utils.displayNameOnlyOfBlock(material.safeBase().getBlock()));
     }
 }

@@ -3,23 +3,27 @@ package com.tridevmc.architecture.common.ui;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.IContainerFactory;
-import net.neoforged.neoforge.network.NetworkHooks;
 import net.neoforged.neoforge.registries.RegisterEvent;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Lifted from DV - Should probably move this into compound as it makes things nice to work with...
@@ -27,14 +31,18 @@ import java.util.Optional;
 public class ArchitectureUIHooks {
 
     private static Optional<IElementProvider<AbstractContainerMenu>> lastProvider = Optional.empty();
+    private static Consumer<RegisterMenuScreensEvent> registerMenuScreensEvent;
 
     public static <C extends AbstractContainerMenu> MenuType<C> register(RegisterEvent.RegisterHelper<MenuType<?>> registry) {
         MenuType<C> containerType = IMenuTypeExtension.create(getFactory());
         registry.register(new ResourceLocation(ArchitectureMod.MOD_ID, "containers"), containerType);
-        if (FMLEnvironment.dist.isClient()) {
-            MenuScreens.register(containerType, getScreenFactory());
-        }
+        // This is honestly the worst solution to this problem, but it works for now.
+        registerMenuScreensEvent = event -> event.register(containerType, ArchitectureUIHooks.getScreenFactory());
         return containerType;
+    }
+
+    public static void register(RegisterMenuScreensEvent event) {
+        registerMenuScreensEvent.accept(event);
     }
 
     private static <C extends AbstractContainerMenu> IContainerFactory<C> getFactory() {
@@ -78,27 +86,58 @@ public class ArchitectureUIHooks {
 
     public static void openGui(Player player, IElementProvider<AbstractContainerMenu> provider) {
         if (player instanceof ServerPlayer) {
-            if (provider instanceof BlockEntity) {
-                openGui((ServerPlayer) player, provider, ((BlockEntity) provider).getBlockPos());
-            } else if (provider instanceof Entity) {
-                openGui((ServerPlayer) player, provider, ((Entity) provider).getId());
+            if (provider instanceof BlockEntity be) {
+                openGui((ServerPlayer) player, provider, be);
+            } else if (provider instanceof Entity e) {
+                openGui((ServerPlayer) player, provider, e);
             }
         } else {
             throw new ClassCastException(String.format("Unable to cast type %s to ServerPlayerEntity", player.getClass().getName()));
         }
     }
 
-    public static void openGui(ServerPlayer player, IElementProvider<? extends AbstractContainerMenu> provider, BlockPos pos) {
-        NetworkHooks.openScreen(player, provider, packetBuffer -> {
-            packetBuffer.writeByte(UIType.TILE.id);
-            packetBuffer.writeBlockPos(pos);
+    public static void openGui(ServerPlayer player, IElementProvider<? extends AbstractContainerMenu> provider, BlockEntity blockEntity) {
+        player.openMenu(new MenuProvider() {
+            @Nullable
+            @Override
+            public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory inventory, @NotNull Player player) {
+                return provider.createMenu(new CreateMenuContext(pContainerId, player, inventory).setBlockState(blockEntity.getBlockState()).setBlockEntity(blockEntity).setPos(blockEntity.getBlockPos()));
+            }
+
+            @Override
+            public @NotNull Component getDisplayName() {
+                return provider.getDisplayName();
+            }
         });
     }
 
-    public static void openGui(ServerPlayer player, IElementProvider<? extends AbstractContainerMenu> provider, int entity) {
-        NetworkHooks.openScreen(player, provider, packetBuffer -> {
-            packetBuffer.writeByte(UIType.ENTITY.id);
-            packetBuffer.writeVarInt(entity);
+    public static void openGui(ServerPlayer player, IElementProvider<? extends AbstractContainerMenu> provider, BlockPos pos) {
+        player.openMenu(new MenuProvider() {
+            @Nullable
+            @Override
+            public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory inventory, @NotNull Player player) {
+                return provider.createMenu(new CreateMenuContext(pContainerId, player, inventory).setPos(pos));
+            }
+
+            @Override
+            public @NotNull Component getDisplayName() {
+                return provider.getDisplayName();
+            }
+        });
+    }
+
+    public static void openGui(ServerPlayer player, IElementProvider<? extends AbstractContainerMenu> provider, Entity entity) {
+        player.openMenu(new MenuProvider() {
+            @Nullable
+            @Override
+            public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory inventory, @NotNull Player player) {
+                return provider.createMenu(new CreateMenuContext(pContainerId, player, inventory).setEntity(entity));
+            }
+
+            @Override
+            public @NotNull Component getDisplayName() {
+                return provider.getDisplayName();
+            }
         });
     }
 

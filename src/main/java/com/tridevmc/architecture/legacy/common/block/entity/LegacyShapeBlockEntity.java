@@ -37,6 +37,7 @@ import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -112,8 +113,8 @@ public class LegacyShapeBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         this.readShapeFromNBT(tag);
         this.side = tag.getByte("Side");
         this.turn = tag.getByte("Turn");
@@ -129,8 +130,8 @@ public class LegacyShapeBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         this.writeShapeToNBT(tag);
 
         if (this.offsetX != 0) {

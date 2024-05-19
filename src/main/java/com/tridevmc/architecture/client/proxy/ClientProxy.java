@@ -25,26 +25,23 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.client.render.model.geometry.IArchitectureModelGeometry;
-import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeGeometryLoader;
+import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-
 import java.util.Arrays;
-import java.util.function.Function;
 
 public class ClientProxy extends CommonProxy {
 
@@ -65,16 +62,20 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
-        e.register("sawbench_loader", new ArchitectureGeometryLoader(
+        e.register(new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
                         () ->
                                 (context, baker, spriteGetter, modelState, overrides, modelLocation) ->
                                         new BakedModelSawbench(context.getTransforms())
                 )
         );
-        e.register("shape_loader", new ArchitectureShapeGeometryLoader());
+        e.register(new ResourceLocation(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeGeometryLoader());
         this.registerDefaultModelLocations();
     }
 
+    @SubscribeEvent
+    public void onMenuScreenRegisterEvent(RegisterMenuScreensEvent e) {
+        ArchitectureUIHooks.register(e);
+    }
 
     @Override
     public void registerHandlers() {
