@@ -43,7 +43,9 @@ public class ArchitectureDebugEventListeners {
         if (currentVoxelizationOffset == null)
             currentVoxelizationOffset = targetVoxelizer.min();
 
-        var matrix = event.getPoseStack();
+
+        var modelViewMatrix = event.getModelViewMatrix();
+        var pose = event.getPoseStack();
         var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         var cameraPos = camera.getPosition();
@@ -61,11 +63,12 @@ public class ArchitectureDebugEventListeners {
         var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_DEBUG_LINE);
 
         RenderSystem.disableDepthTest();
-        matrix.pushPose();
-        matrix.translate(-cameraPos.x + targetPos.getX(), -cameraPos.y + targetPos.getY(), -cameraPos.z + targetPos.getZ());
-        renderBox(matrix, lineBuffer, box);
+        pose.pushPose();
+        pose.mulPose(modelViewMatrix);
+        pose.translate(-cameraPos.x + targetPos.getX(), -cameraPos.y + targetPos.getY(), -cameraPos.z + targetPos.getZ());
+        renderBox(pose, lineBuffer, box);
         hits.forEach(hit -> {
-            renderRayHit(matrix, lineBuffer, point, hit);
+            renderRayHit(pose, lineBuffer, point, hit);
         });
         // Render each potential hit box in the mesh as purple.
         matchingPolys.forEach(b -> {
@@ -74,25 +77,25 @@ public class ArchitectureDebugEventListeners {
                 var v1 = quad.getVertex(1).getPos();
                 var v2 = quad.getVertex(2).getPos();
                 var v3 = quad.getVertex(3).getPos();
-                renderLine(matrix, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
-                renderLine(matrix, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
-                renderLine(matrix, lineBuffer, v2, v3, 1F, 0, 1F, 1F);
-                renderLine(matrix, lineBuffer, v3, v0, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v2, v3, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v3, v0, 1F, 0, 1F, 1F);
             } else if (b instanceof Tri<? extends IPolygonData<?>> tri) {
                 var v0 = tri.getVertex(0).getPos();
                 var v1 = tri.getVertex(1).getPos();
                 var v2 = tri.getVertex(2).getPos();
-                renderLine(matrix, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
-                renderLine(matrix, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
-                renderLine(matrix, lineBuffer, v2, v0, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
+                renderLine(pose, lineBuffer, v2, v0, 1F, 0, 1F, 1F);
             }
         });
         if (targetVoxelizer.isBoxValidVoxel(box)) {
-            LevelRenderer.renderLineBox(matrix, lineBuffer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
+            LevelRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
         } else {
-            LevelRenderer.renderLineBox(matrix, lineBuffer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
+            LevelRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
         }
-        matrix.popPose();
+        pose.popPose();
         bufferSource.endBatch(ARCHITECTURE_DEBUG_LINE);
         RenderSystem.enableDepthTest();
     }
