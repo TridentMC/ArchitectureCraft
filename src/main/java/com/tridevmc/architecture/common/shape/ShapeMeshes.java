@@ -1,7 +1,8 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.core.model.Voxelizer;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
@@ -18,7 +19,7 @@ public class ShapeMeshes {
     // TODO: There are likely special cases here we need to error for.
 
     private static final Map<EnumShape, IMesh<String, PolygonData>> MESHES = new HashMap<>();
-    private static final Map<EnumShape, Voxelizer> VOXELIZERS = new HashMap<>();
+    private static final Map<EnumShape, IVoxelizer> VOXELIZERS = new HashMap<>();
 
     static {
         Arrays.stream(EnumShape.values()).forEach(
@@ -35,7 +36,7 @@ public class ShapeMeshes {
         );
     }
 
-    private static void register(EnumShape enumShape, IMesh<String, PolygonData> mesh, Voxelizer voxelizer) {
+    private static void register(EnumShape enumShape, IMesh<String, PolygonData> mesh, IVoxelizer voxelizer) {
         MESHES.put(enumShape, mesh);
         VOXELIZERS.put(enumShape, voxelizer);
     }
@@ -44,7 +45,7 @@ public class ShapeMeshes {
         return MESHES.get(enumShape);
     }
 
-    public static Voxelizer getVoxelizer(EnumShape enumShape) {
+    public static IVoxelizer getVoxelizer(EnumShape enumShape) {
         return VOXELIZERS.get(enumShape);
     }
 

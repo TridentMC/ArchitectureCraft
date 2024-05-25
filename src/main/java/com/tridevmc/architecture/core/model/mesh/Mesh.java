@@ -42,7 +42,7 @@ public class Mesh<I, D extends IPolygonData<D>> implements IMesh<I, D> {
 
     @Override
     public @NotNull IPart<I, D> getPart(I id) {
-        return this.parts.get(id);
+        return Objects.requireNonNull(this.parts.get(id));
     }
 
     @Override

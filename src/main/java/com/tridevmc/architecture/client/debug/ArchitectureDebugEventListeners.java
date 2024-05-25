@@ -5,7 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
-import com.tridevmc.architecture.core.model.Voxelizer;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import com.tridevmc.architecture.core.model.mesh.Quad;
 import com.tridevmc.architecture.core.model.mesh.Tri;
@@ -32,7 +33,7 @@ import static com.tridevmc.architecture.client.debug.ArchitectureDebugRenderType
  */
 public class ArchitectureDebugEventListeners {
     public static BlockPos targetPos;
-    public static Voxelizer targetVoxelizer;
+    public static IVoxelizer targetVoxelizer;
     public static IVector3i currentVoxelizationOffset;
 
     @SubscribeEvent
@@ -41,7 +42,7 @@ public class ArchitectureDebugEventListeners {
             return;
 
         if (currentVoxelizationOffset == null)
-            currentVoxelizationOffset = targetVoxelizer.min();
+            currentVoxelizationOffset = targetVoxelizer.getMin();
 
 
         var modelViewMatrix = event.getModelViewMatrix();
@@ -53,13 +54,13 @@ public class ArchitectureDebugEventListeners {
         var box = targetVoxelizer.getBoxForOffset(currentVoxelizationOffset.x(), currentVoxelizationOffset.y(), currentVoxelizationOffset.z());
         var point = box.center();
 
-        var meshBounds = targetVoxelizer.mesh().getBounds();
+        var meshBounds = targetVoxelizer.getMesh().getBounds();
         var fromPoint = IVector3.ofImmutable(meshBounds.minX() - 1, point.y(), point.z());
         var rayDirection = IVector3.ofImmutable(1, 0, 0);
         var ray = new Ray(fromPoint, rayDirection);
-        var hits = ray.intersectUnfiltered(targetVoxelizer.mesh())
+        var hits = ray.intersectUnfiltered(targetVoxelizer.getMesh())
                 .toList();
-        var matchingPolys = targetVoxelizer.mesh().getAABBTree().searchStream(new com.tridevmc.architecture.core.physics.AABB(fromPoint, fromPoint.add(rayDirection.mul(1000D)))).toList();
+        var matchingPolys = targetVoxelizer.getMesh().getAABBTree().searchStream(new com.tridevmc.architecture.core.physics.AABB(fromPoint, fromPoint.add(rayDirection.mul(1000D)))).toList();
         var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_DEBUG_LINE);
 
         RenderSystem.disableDepthTest();
@@ -130,13 +131,13 @@ public class ArchitectureDebugEventListeners {
         return !FMLEnvironment.production && level.isClientSide && player.isCrouching();
     }
 
-    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, Voxelizer voxelizer) {
+    public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, IVoxelizer voxelizer) {
         if (!shouldAssignVoxelizer(level, player))
             return InteractionResult.PASS;
         if (!Objects.equals(ArchitectureDebugEventListeners.targetPos, pos)) {
             ArchitectureDebugEventListeners.targetPos = pos;
             ArchitectureDebugEventListeners.targetVoxelizer = voxelizer;
-            ArchitectureDebugEventListeners.currentVoxelizationOffset = voxelizer.min();
+            ArchitectureDebugEventListeners.currentVoxelizationOffset = voxelizer.getMin();
             player.sendSystemMessage(Component.literal("Voxelizer set to " + pos));
         } else {
             // Set the new voxelization offset using the player's facing direction and the current offset.

@@ -1,5 +1,6 @@
-package com.tridevmc.architecture.core.model;
+package com.tridevmc.architecture.core.model.voxelize;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.IVector3;
@@ -22,19 +23,14 @@ import java.util.stream.Stream;
 /**
  * Performs a series of collision tests on a given mesh to create a voxelized representation of it.
  */
-public class Voxelizer {
-
+public class Voxelizer implements IVoxelizer {
     private static final ExecutorService POOL = Executors.newWorkStealingPool();
-    private static final IVector3 xNormal = IVector3.UNIT_X;
-    private static final IVector3 yNormal = IVector3.UNIT_Y;
-    private static final IVector3 zNormal = IVector3.UNIT_Z;
-
     private final IMesh<?, ? extends IPolygonData<?>> mesh;
     private final int blockResolution;
     private final double resolution;
     private final IVector3i min, max;
     private final boolean[][][] voxels;
-    private CompletableFuture<List<AABB>> simplifiedVoxelsFuture;
+    private CompletableFuture<ImmutableList<AABB>> simplifiedVoxelsFuture;
 
     /**
      * Creates a new voxelizer for the given mesh.
@@ -67,7 +63,7 @@ public class Voxelizer {
         this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
     }
 
-    private List<AABB> getSimplifiedVoxelsResultSafely() {
+    private ImmutableList<AABB> getSimplifiedVoxelsResultSafely() {
         Objects.requireNonNull(this.simplifiedVoxelsFuture, "Voxelization has not been started yet, call voxelize() first.");
         try {
             return this.simplifiedVoxelsFuture.get();
@@ -82,7 +78,7 @@ public class Voxelizer {
      *
      * @return A list of AABBs representing the voxels that were found to be occupied.
      */
-    public List<AABB> voxelizeNow() {
+    public ImmutableList<AABB> voxelizeNow() {
         if (this.simplifiedVoxelsFuture == null) {
             this.voxelize();
         }
@@ -95,7 +91,7 @@ public class Voxelizer {
      *
      * @return A future that will complete with a list of AABBs representing the voxels that were found to be occupied.
      */
-    public CompletableFuture<List<AABB>> voxelize() {
+    public CompletableFuture<ImmutableList<AABB>> voxelize() {
         if (this.simplifiedVoxelsFuture != null) {
             ArchitectureLog.debug("Voxelization of mesh {} has already been started, returning existing future.", this.mesh.getName());
             return this.simplifiedVoxelsFuture;
@@ -134,7 +130,9 @@ public class Voxelizer {
         });
 
         // The resulting future should be complete once all the voxels have been checked, so we can simplify the list.
-        this.simplifiedVoxelsFuture = allRawVoxelsFuture.thenApplyAsync(f -> this.compressVoxels(f).toList(), POOL);
+        this.simplifiedVoxelsFuture = allRawVoxelsFuture.thenApplyAsync(f -> this.compressVoxels(f).collect(
+                ImmutableList.toImmutableList()
+        ), POOL);
 
         return this.simplifiedVoxelsFuture;
     }
@@ -235,13 +233,6 @@ public class Voxelizer {
         return out.stream();
     }
 
-    public AABB getBoxForOffset(int x, int y, int z) {
-        double bX = x * this.resolution;
-        double bY = y * this.resolution;
-        double bZ = z * this.resolution;
-        return new AABB(bX, bY, bZ, bX + this.resolution, bY + this.resolution, bZ + this.resolution);
-    }
-
     private int totalVoxels() {
         return this.voxels.length * this.voxels[0].length * this.voxels[0][0].length;
     }
@@ -260,80 +251,23 @@ public class Voxelizer {
         return count;
     }
 
-    public boolean isBoxValidVoxel(AABB box) {
-        return this.doesBoxIntersect(box) || this.isPointInsideMesh(box.center());
-    }
-
-    /**
-     * Checks if the given box intersects with the mesh.
-     *
-     * @param box The box to check.
-     * @return True if the box intersects with the mesh, false otherwise.
-     */
-    public boolean doesBoxIntersect(AABB box) {
-        var out = this.mesh.searchStream(box.deflate(1D / (this.blockResolution * 32))).anyMatch(p -> p.intersect(box));
-        return out;
-    }
-
-    /**
-     * Checks if the given point is inside the mesh.
-     *
-     * @param point The point to check.
-     * @return True if the point is inside the mesh, false otherwise.
-     */
-    private boolean isPointInsideMesh(IVector3 point) {
-        var meshBounds = this.mesh.getBounds();
-        var fromPoint = IVector3.ofImmutable(meshBounds.minX() - 1, point.y(), point.z());
-        var rayDirection = IVector3.ofImmutable(1, 0, 0);
-        var ray = new Ray(fromPoint, rayDirection);
-
-        List<ObjectDoubleImmutablePair<Ray.Hit>> hits = ray.intersect(this.mesh).map(h -> {
-            var hit = h.rounded();
-            return ObjectDoubleImmutablePair.of(hit, hit.distanceTo(point));
-        }).toList();
-
-        if (hits.isEmpty()) {
-            return false;
-        }
-        // We have to collect all the closest points, so we can choose an option if there are multiple.
-        // This is a safeguard against any bad geometry that might be present in the mesh.
-        var closestHits = Lists.newArrayList(hits.get(0));
-        for (var i = 1; i < hits.size(); i++) {
-            var hitData = hits.get(i);
-            if (Double.compare(hitData.rightDouble(), closestHits.get(0).rightDouble()) < 0) {
-                closestHits.clear();
-                closestHits.add(hitData);
-            } else if (Double.compare(hitData.rightDouble(), closestHits.get(0).rightDouble()) == 0) {
-                closestHits.add(hitData);
-            }
-        }
-
-        for (var closestHit : closestHits) {
-            if (closestHit.left().poly().isFacing(point)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public IMesh<?, ? extends IPolygonData<?>> mesh() {
+    public IMesh<?, ? extends IPolygonData<?>> getMesh() {
         return this.mesh;
     }
 
-    public int blockResolution() {
+    public int getBlockResolution() {
         return this.blockResolution;
     }
 
-    public double resolution() {
+    public double getResolution() {
         return this.resolution;
     }
 
-    public IVector3i min() {
+    public IVector3i getMin() {
         return this.min;
     }
 
-    public IVector3i max() {
+    public IVector3i getMax() {
         return this.max;
     }
 }

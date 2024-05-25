@@ -1,8 +1,10 @@
 package com.tridevmc.architecture.core.model.objson;
 
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.ITrans3;
-import com.tridevmc.architecture.core.model.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.*;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizers;
 import com.tridevmc.architecture.core.physics.AABB;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
@@ -11,10 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer voxelizer) {
+public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelizer voxelizer) {
 
     public OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, int blockResolution) {
-        this(data, mesh, new Voxelizer(mesh, blockResolution));
+        this(data, mesh, Voxelizers.of(mesh, blockResolution));
     }
 
     public OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh) {
@@ -95,7 +97,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, Voxelizer
         return this.data.name();
     }
 
-    public CompletableFuture<List<AABB>> voxelize() {
+    public CompletableFuture<ImmutableList<AABB>> voxelize() {
         return this.voxelizer.voxelize();
     }
 

@@ -11,7 +11,8 @@ import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
-import com.tridevmc.architecture.core.model.Voxelizer;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPart;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -164,7 +165,7 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         var transformationResolver = Optional.ofNullable(this.getShape().getTransformationResolver()).orElse(s -> ITrans3.ofIdentity());
         var voxelizer = shape.getVoxelizer();
         var transform = transformationResolver.resolve(shapeState);
-        var voxelsCompletableFuture = Optional.ofNullable(voxelizer).map(Voxelizer::voxelize).orElse(CompletableFuture.completedFuture(DEFAULT_BOX));
+        var voxelsCompletableFuture = Optional.ofNullable(voxelizer).map(IVoxelizer::voxelize).orElse(CompletableFuture.completedFuture(DEFAULT_BOX));
         return voxelsCompletableFuture.thenApplyAsync(aabbs -> aabbs.stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList()));
     }
 
