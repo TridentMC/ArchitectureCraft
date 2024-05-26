@@ -25,10 +25,10 @@ public class ShapeTransformationResolverSlab implements IShapeTransformationReso
         return switch (facing) {
             case UP -> ITrans3.ofTranslationImmutable(0, 0.5, 0);
             case DOWN -> ITrans3.ofIdentity();
-            case NORTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
-            case SOUTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90));
-            case WEST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 90, 0, 0));
-            case EAST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, -90, 0, 0));
+            case NORTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 90, 0, 0));
+            case SOUTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, -90, 0, 0));
+            case WEST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90));
+            case EAST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
         };
     }
 }
