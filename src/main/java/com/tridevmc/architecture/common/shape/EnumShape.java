@@ -3,15 +3,11 @@ package com.tridevmc.architecture.common.shape;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.placement.*;
-import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
-import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverOnAxis;
-import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
-import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
+import com.tridevmc.architecture.common.shape.transformation.*;
 import com.tridevmc.architecture.core.math.ITrans3;
-import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
-import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
@@ -63,7 +59,7 @@ public enum EnumShape {
     WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
 
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
-    SPHERE_HALF("sphere_half", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
     SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
