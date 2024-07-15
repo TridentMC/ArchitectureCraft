@@ -21,6 +21,9 @@ public record ShapeOrientation(
 
     /**
      * Gets an orientation with the given properties, creating one if a cached entry cannot be found.
+     * <p>
+     * Please note that calling this function will create an array of properties, which may be inefficient if you are
+     * calling this function frequently.
      *
      * @param properties the properties to get an orientation for.
      * @return the orientation with the given properties.
@@ -174,7 +177,6 @@ public record ShapeOrientation(
                 // Get or create a node for the given property.
                 return this.children.computeIfAbsent(property, (p) -> new Node(this.orientation.withProperty(p)));
             }
-
         }
 
     }
