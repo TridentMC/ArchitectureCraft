@@ -1,15 +1,15 @@
 package com.tridevmc.architecture.core.model.voxelize;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.*;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -19,66 +19,90 @@ public record VoxelizerRecord(ImmutableList<AABB> simplifiedVoxels, int blockRes
                               IVector3i max,
                               boolean[][][] voxels) {
 
-    private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(VoxelizerRecord.class, new VoxelizerRecordAdapter())
-            .create();
 
-    public static class VoxelizerRecordAdapter implements JsonSerializer<VoxelizerRecord>, JsonDeserializer<VoxelizerRecord> {
+    private static VoxelizerRecord deserialize(ByteBuf bb) {
+        var simplifiedVoxelsSize = bb.readInt();
+        var blockResolution = bb.readInt();
+        var resolution = bb.readDouble();
+        var minX = bb.readInt();
+        var minY = bb.readInt();
+        var minZ = bb.readInt();
+        var maxX = bb.readInt();
+        var maxY = bb.readInt();
+        var maxZ = bb.readInt();
 
-        @Override
-        public VoxelizerRecord deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            var obj = json.getAsJsonObject();
+        var voxelsX = bb.readInt();
+        var voxelsY = bb.readInt();
+        var voxelsZ = bb.readInt();
 
-            var minObj = obj.getAsJsonObject("min");
-            var maxObj = obj.getAsJsonObject("max");
-            var min = IVector3i.ofImmutable(minObj.get("x").getAsInt(), minObj.get("y").getAsInt(), minObj.get("z").getAsInt());
-            var max = IVector3i.ofImmutable(maxObj.get("x").getAsInt(), maxObj.get("y").getAsInt(), maxObj.get("z").getAsInt());
+        var voxels = new boolean[voxelsX][voxelsY][voxelsZ];
 
-            var simplifiedVoxelsObj = obj.getAsJsonArray("simplifiedVoxels");
-            var simplifiedVoxels = simplifiedVoxelsObj.asList().stream()
-                    .map(e -> {
-                        var minPoint = e.getAsJsonObject().getAsJsonObject("min");
-                        var maxPoint = e.getAsJsonObject().getAsJsonObject("max");
-                        return new AABB(minPoint.get("x").getAsDouble(), minPoint.get("y").getAsDouble(), minPoint.get("z").getAsDouble(),
-                                maxPoint.get("x").getAsDouble(), maxPoint.get("y").getAsDouble(), maxPoint.get("z").getAsDouble());
-                    }).collect(ImmutableList.toImmutableList());
-
-            var blockResolution = obj.get("blockResolution").getAsInt();
-            var resolution = obj.get("resolution").getAsDouble();
-            var voxels = new boolean[max.x()][max.y()][max.z()];
-            var voxelsObj = obj.getAsJsonArray("voxels");
-            for (int x = 0; x < voxelsObj.size(); x++) {
-                var yArray = voxelsObj.get(x).getAsJsonArray();
-                for (int y = 0; y < yArray.size(); y++) {
-                    var zArray = yArray.get(y).getAsJsonArray();
-                    for (int z = 0; z < zArray.size(); z++) {
-                        voxels[x][y][z] = zArray.get(z).getAsBoolean();
-                    }
+        for (var x = 0; x < voxelsX; x++) {
+            for (var y = 0; y < voxelsY; y++) {
+                for (var z = 0; z < voxelsZ; z++) {
+                    voxels[x][y][z] = bb.readBoolean();
                 }
             }
-
-            return new VoxelizerRecord(simplifiedVoxels, blockResolution, resolution, min, max, voxels);
         }
 
-        @Override
-        public JsonElement serialize(VoxelizerRecord src, Type typeOfSrc, JsonSerializationContext context) {
-            var obj = new JsonObject();
-            obj.add("simplifiedVoxels", context.serialize(src.simplifiedVoxels));
-            obj.addProperty("blockResolution", src.blockResolution);
-            obj.addProperty("resolution", src.resolution);
-            obj.add("min", context.serialize(src.min));
-            obj.add("max", context.serialize(src.max));
-            obj.add("voxels", context.serialize(src.voxels));
-            return obj;
+        var simplifiedVoxels = ImmutableList.<AABB>builder();
+        for (var i = 0; i < simplifiedVoxelsSize; i++) {
+            var minVX = bb.readDouble();
+            var minVY = bb.readDouble();
+            var minVZ = bb.readDouble();
+            var maxVX = bb.readDouble();
+            var maxVY = bb.readDouble();
+            var maxVZ = bb.readDouble();
+
+            simplifiedVoxels.add(new AABB(minVX, minVY, minVZ, maxVX, maxVY, maxVZ));
+        }
+
+
+        return new VoxelizerRecord(simplifiedVoxels.build(), blockResolution, resolution, IVector3i.ofImmutable(minX, minY, minZ), IVector3i.ofImmutable(maxX, maxY, maxZ), voxels);
+    }
+
+    private static void serialize(VoxelizerRecord src, ByteBuf bb) {
+        bb.writeInt(src.simplifiedVoxels.size());
+        bb.writeInt(src.blockResolution);
+        bb.writeDouble(src.resolution);
+        bb.writeInt(src.min.x());
+        bb.writeInt(src.min.y());
+        bb.writeInt(src.min.z());
+        bb.writeInt(src.max.x());
+        bb.writeInt(src.max.y());
+        bb.writeInt(src.max.z());
+
+        bb.writeInt(src.voxels.length);
+        bb.writeInt(src.voxels[0].length);
+        bb.writeInt(src.voxels[0][0].length);
+
+        for (var x = 0; x < src.voxels.length; x++) {
+            for (var y = 0; y < src.voxels[x].length; y++) {
+                for (var z = 0; z < src.voxels[x][y].length; z++) {
+                    bb.writeBoolean(src.voxels[x][y][z]);
+                }
+            }
+        }
+
+        for (var voxel : src.simplifiedVoxels) {
+            bb.writeDouble(voxel.min().x());
+            bb.writeDouble(voxel.min().y());
+            bb.writeDouble(voxel.min().z());
+            bb.writeDouble(voxel.max().x());
+            bb.writeDouble(voxel.max().y());
+            bb.writeDouble(voxel.max().z());
         }
     }
 
     public static VoxelizerRecord fromFile(Path filePath) {
-        try (var reader = Files.newBufferedReader(filePath)) {
-            ArchitectureLog.info("Loading VoxelizerRecord from file: " + filePath.toAbsolutePath());
-            return GSON.fromJson(reader, VoxelizerRecord.class);
+        try {
+            var bytes = Files.readAllBytes(filePath);
+            var bb = Unpooled.wrappedBuffer(bytes);
+            var record = deserialize(bb);
+            bb.release();
+            return record;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load VoxelizerRecord from file: " + filePath, e);
+            throw new RuntimeException("Failed to read VoxelizerRecord from file: " + filePath, e);
         }
     }
 
@@ -136,12 +160,16 @@ public record VoxelizerRecord(ImmutableList<AABB> simplifiedVoxels, int blockRes
             throw new RuntimeException("Failed to create file for VoxelizerRecord: " + filePath, e);
         }
 
-        try (var writer = Files.newBufferedWriter(filePath)) {
-            GSON.toJson(this, writer);
+        var bb = Unpooled.buffer();
+        serialize(this, bb);
+
+        try {
+            Files.write(filePath, bb.array());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save VoxelizerRecord to file: " + filePath, e);
+            throw new RuntimeException("Failed to write VoxelizerRecord to file: " + filePath, e);
         }
 
+        bb.release();
         ArchitectureLog.info("Saved VoxelizerRecord to file: " + filePath.toAbsolutePath());
     }
 }
