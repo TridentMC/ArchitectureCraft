@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.legacy.common.block.state;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockArchitecture;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;

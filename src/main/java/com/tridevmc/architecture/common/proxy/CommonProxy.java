@@ -29,7 +29,6 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
 import net.minecraft.resources.ResourceLocation;
-
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.NeoForge;

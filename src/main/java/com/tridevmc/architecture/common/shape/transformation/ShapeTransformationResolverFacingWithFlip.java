@@ -26,17 +26,22 @@ public class ShapeTransformationResolverFacingWithFlip implements IShapeTransfor
         IMatrix4Mutable matrix;
         if (Objects.requireNonNull(flip).value() == EnumFlip.FLIPPED) {
             // Shape is facing negative X, so we need to flip it while keeping it on the same side of the block.
-             matrix = IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 180).asMutable().translate(-0.5, 0, 0);
+            matrix = IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 180).asMutable().translate(-0.5, 0, 0);
         } else {
-             matrix = IMatrix4.ofMutable(IMatrix4.IDENTITY);
+            matrix = IMatrix4.ofMutable(IMatrix4.IDENTITY);
         }
 
         return switch (facing) {
-            case UP -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(matrix));
-            case DOWN -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(matrix));
-            case NORTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0).asMutable().mul(matrix));
-            case SOUTH -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0).asMutable().mul(matrix));
-            case WEST -> ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0).asMutable().mul(matrix));
+            case UP ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(matrix));
+            case DOWN ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(matrix));
+            case NORTH ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0).asMutable().mul(matrix));
+            case SOUTH ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0).asMutable().mul(matrix));
+            case WEST ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0).asMutable().mul(matrix));
             case EAST -> ITrans3.ofImmutable(matrix);
         };
     }

@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-
 import javax.annotation.Nullable;
 
 public interface IElementProvider<T extends AbstractContainerMenu> extends MenuProvider {

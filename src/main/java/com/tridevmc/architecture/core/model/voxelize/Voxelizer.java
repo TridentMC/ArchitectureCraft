@@ -3,13 +3,10 @@ package com.tridevmc.architecture.core.model.voxelize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import com.tridevmc.architecture.core.physics.AABB;
-import com.tridevmc.architecture.core.physics.Ray;
-import it.unimi.dsi.fastutil.objects.ObjectDoubleImmutablePair;
 
 import java.util.ArrayList;
 import java.util.List;

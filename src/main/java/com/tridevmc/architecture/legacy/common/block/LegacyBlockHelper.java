@@ -40,7 +40,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

@@ -5,7 +5,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-
 import javax.annotation.Nonnull;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;

@@ -34,6 +34,7 @@ public interface IShapePlacementLogic<T extends BlockArchitecture> {
             @NotNull BlockHitResult hitResult
     );
 
-    @NotNull ImmutableCollection<ShapeOrientationProperty<?>> getProperties();
+    @NotNull
+    ImmutableCollection<ShapeOrientationProperty<?>> getProperties();
 
 }

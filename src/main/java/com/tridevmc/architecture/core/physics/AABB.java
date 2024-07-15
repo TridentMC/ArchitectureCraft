@@ -254,7 +254,7 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
         // Calculate the offset between the two boxes, and use that to choose which face to check.
         var dir = other.center().asMutable().sub(this.center());
         // Confirm that at least two of the axes are 0, otherwise the boxes are not adjacent.
-        if(Math.ceil(dir.x()) + Math.ceil(dir.y()) + Math.ceil(dir.z()) > 1) {
+        if (Math.ceil(dir.x()) + Math.ceil(dir.y()) + Math.ceil(dir.z()) > 1) {
             return false;
         }
         var face = Direction.getNearest(dir.x(), dir.y(), dir.z());

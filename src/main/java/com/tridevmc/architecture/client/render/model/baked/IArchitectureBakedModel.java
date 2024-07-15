@@ -11,7 +11,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +54,8 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
      * @param renderType The render type.
      * @return A list of quads.
      */
-    @NotNull List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
+    @NotNull
+    List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
 
     /**
      * Gets a list of quads for the given stack.
@@ -63,7 +63,8 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
      * @param stack The stack to get quads for.
      * @return A list of quads.
      */
-    @NotNull List<BakedQuad> getQuads(@NotNull ItemStack stack);
+    @NotNull
+    List<BakedQuad> getQuads(@NotNull ItemStack stack);
 
     @Override
     default BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {

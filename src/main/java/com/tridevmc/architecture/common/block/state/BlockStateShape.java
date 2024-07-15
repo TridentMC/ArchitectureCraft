@@ -1,11 +1,9 @@
 package com.tridevmc.architecture.common.block.state;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.NotNull;

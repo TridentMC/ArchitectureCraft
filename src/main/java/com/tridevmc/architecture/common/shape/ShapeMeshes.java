@@ -1,11 +1,10 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.core.ArchitectureLog;
-import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
-import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
+import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 
 import java.util.Arrays;
 import java.util.HashMap;

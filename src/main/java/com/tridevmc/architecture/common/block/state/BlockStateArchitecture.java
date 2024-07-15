@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.common.block.state;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.core.ArchitectureLog;
@@ -27,7 +26,7 @@ public class BlockStateArchitecture extends BlockState {
 
     protected BlockStateArchitecture(BlockArchitecture block,
                                      Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties,
-                                   MapCodec<BlockState> codec) {
+                                     MapCodec<BlockState> codec) {
         super(block, properties, codec);
     }
 

@@ -30,9 +30,9 @@ public interface IVoxelizer {
         return this.doesBoxIntersect(box) || this.isPointInsideMesh(box.center());
     }
 
-   default boolean doesBoxIntersect(AABB box) {
-       return this.getMesh().searchStream(box.deflate(1D / (this.getBlockResolution() * 32))).anyMatch(p -> p.intersect(box));
-   }
+    default boolean doesBoxIntersect(AABB box) {
+        return this.getMesh().searchStream(box.deflate(1D / (this.getBlockResolution() * 32))).anyMatch(p -> p.intersect(box));
+    }
 
     default boolean isPointInsideMesh(IVector3 point) {
         var mesh = this.getMesh();
