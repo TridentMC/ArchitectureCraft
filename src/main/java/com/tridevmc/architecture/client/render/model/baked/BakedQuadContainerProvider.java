@@ -27,12 +27,11 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
     @Override
     public IBakedQuadContainer getQuads(IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean force) {
         var builder = new BakedQuadContainer.Builder();
-        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q -> {
-            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
-        });
+        var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            q.pipe(quadBakingVertexConsumer, transform, metadataResolver);
+            q.pipe(baker, transform, metadataResolver);
+            builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
         return builder.build();
     }
@@ -40,12 +39,11 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
     @Override
     public IBakedQuadContainer getQuads(@Nullable Void partId, LevelAccessor level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         var builder = new BakedQuadContainer.Builder();
-        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q -> {
-            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
-        });
+        var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            q.pipe(quadBakingVertexConsumer, transform, level, pos, state, metadataResolver);
+            q.pipe(baker, transform, level, pos, state, metadataResolver);
+            builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
         return builder.build();
     }
@@ -53,12 +51,11 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
     @Override
     public IBakedQuadContainer getQuads(@Nullable Void partId, ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         var builder = new BakedQuadContainer.Builder();
-        var quadBakingVertexConsumer = new QuadBakingVertexConsumer(q -> {
-            builder.addQuad(q, false); // TODO: We need our own BakedQuad implementation that references a cull face...
-        });
+        var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            q.pipe(quadBakingVertexConsumer, transform, stack, metadataResolver);
+            q.pipe(baker, transform, stack, metadataResolver);
+            builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
         return builder.build();
     }

@@ -28,7 +28,7 @@ public class ArchitectureShapeGeometryLoader implements IGeometryLoader<IArchite
             throw new IllegalArgumentException("Unknown shape: " + shapeName);
         }
 
-        return this.models.computeIfAbsent(shape, s -> (context, baker, spriteGetter, modelState, overrides, modelLocation) -> new BakedModelShapeGeneric(shape, context.getTransforms()));
+        return this.models.computeIfAbsent(shape, s -> (context, modelBaker, function, modelState, itemOverrides) -> new BakedModelShapeGeneric(shape, context.getTransforms()));
     }
 
 }

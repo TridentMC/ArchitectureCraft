@@ -99,7 +99,7 @@ public class ArchitectureContent {
 
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
-        registry.register(new ResourceLocation(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
+        registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
                 .icon(() -> ArchitectureContent.this.itemHammer != null ?
                         ArchitectureContent.this.itemHammer.getDefaultInstance() :
                         ItemStack.EMPTY)
@@ -111,7 +111,7 @@ public class ArchitectureContent {
                     o.accept(new ItemStack(this.blockSawbench));
                 }).build()
         );
-        registry.register(new ResourceLocation(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
+        registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
                 .icon(() -> ArchitectureContent.this.itemShapes != null ?
                         ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
                         ItemStack.EMPTY)
@@ -124,7 +124,8 @@ public class ArchitectureContent {
     }
 
     public void onBlockEntityRegister(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry) {
-        this.blockEntityTypeShape = this.registerBlockEntity(registry, BlockEntityShape::new, "shape");
+        var shapeBlocks = this.blockShapes.values().toArray(new Block[0]);
+        this.blockEntityTypeShape = this.registerBlockEntity(registry, BlockEntityShape::new, "shape", shapeBlocks);
     }
 
     public void onBlockRegister(RegisterEvent.RegisterHelper<Block> registry) {
@@ -156,8 +157,8 @@ public class ArchitectureContent {
         this.universalMenuType = ArchitectureUIHooks.register(e);
     }
 
-    private <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry, BlockEntityType.BlockEntitySupplier<T> tileSupplier, String id) {
-        ResourceLocation key = new ResourceLocation(REGISTRY_PREFIX, id);
+    private <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry, BlockEntityType.BlockEntitySupplier<T> tileSupplier, String id, Block... blocks) {
+        ResourceLocation key = ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id);
         Type<?> dataFixerType = null;
         try {
             dataFixerType = DataFixers.getDataFixer().getSchema(
@@ -169,8 +170,8 @@ public class ArchitectureContent {
         } catch (IllegalArgumentException e) {
             ArchitectureLog.error("No data fixer was registered for resource id {}", key);
         }
-        BlockEntityType<T> tileType = BlockEntityType.Builder.of(tileSupplier).build(dataFixerType);
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), tileType);
+        BlockEntityType<T> tileType = BlockEntityType.Builder.of(tileSupplier, blocks).build(dataFixerType);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), tileType);
         return tileType;
     }
 
@@ -179,17 +180,17 @@ public class ArchitectureContent {
     }
 
     private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, boolean withItemBlock) {
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), block);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
         if (withItemBlock)
-            itemBlocksToRegister.add(ImmutablePair.of(new ResourceLocation(REGISTRY_PREFIX, id), new ItemBlockArchitecture(block, new Item.Properties())));
+            itemBlocksToRegister.add(ImmutablePair.of(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), new ItemBlockArchitecture(block, new Item.Properties())));
         registeredBlocks.put(id, block);
         return (T) registeredBlocks.get(id);
     }
 
     private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, Function<T, ? extends ItemBlockArchitecture> itemBlockGenerator) {
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), block);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
         var itemBlock = itemBlockGenerator.apply(block);
-        itemBlocksToRegister.add(ImmutablePair.of(new ResourceLocation(REGISTRY_PREFIX, id), itemBlock));
+        itemBlocksToRegister.add(ImmutablePair.of(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), itemBlock));
         registeredBlocks.put(id, block);
 
         return (T) registeredBlocks.get(id);
@@ -197,14 +198,14 @@ public class ArchitectureContent {
 
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id) {
         ItemArchitecture item = new ItemArchitecture(new Item.Properties());
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), item);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 
         return (T) registeredItems.get(id);
     }
 
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id, T item) {
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), item);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 
         return (T) registeredItems.get(id);
@@ -216,7 +217,7 @@ public class ArchitectureContent {
 
     private <T> DataComponentType<T> registerDataComponentType(RegisterEvent.RegisterHelper<DataComponentType<?>> registry, String id, DataComponentType.Builder<T> builder) {
         DataComponentType<T> type = builder.build();
-        registry.register(new ResourceLocation(REGISTRY_PREFIX, id), type);
+        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), type);
         return type;
     }
 

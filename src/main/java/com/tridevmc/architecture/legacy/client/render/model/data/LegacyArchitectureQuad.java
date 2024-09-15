@@ -5,10 +5,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import com.tridevmc.architecture.legacy.client.render.model.builder.LegacyBakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -112,18 +112,18 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
         this.recalculateFace();
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
-            var builder = new LegacyBakedQuadBuilderVertexConsumer()
-                    .setSprite(sprite)
-                    .setTintIndex(colour)
-                    .setShade(true)
-                    .setHasAmbientOcclusion(true)
-                    .setDirection(facing);
+            var builder = new QuadBakingVertexConsumer();
+            builder.setSprite(sprite);
+            builder.setTintIndex(colour);
+            builder.setShade(true);
+            builder.setHasAmbientOcclusion(true);
+            builder.setDirection(facing);
             int[] vertexIndices = new int[]{0, 1, 2, 3};
             for (int i = 0; i < 4; i++) {
                 LegacyArchitectureVertex vertex = this.vertices[vertexIndices[i]];
                 vertex.pipe(builder, this, Optional.of(transform), sprite, colour);
             }
-            PrebuiltData baseQuad = new PrebuiltData(builder.getBakedQuad());
+            PrebuiltData baseQuad = new PrebuiltData(builder.bakeQuad());
             this.prebuiltQuads.put(transform, baseQuad);
             return baseQuad.baseQuad;
         } else {

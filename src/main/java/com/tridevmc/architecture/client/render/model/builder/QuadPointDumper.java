@@ -30,51 +30,39 @@ public class QuadPointDumper {
     private class DumpingVertexConsumer implements VertexConsumer {
 
         @Override
-        public VertexConsumer vertex(double x, double y, double z) {
+        public VertexConsumer addVertex(float x, float y, float z) {
+            if (QuadPointDumper.this.points.size() == 4) {
+                QuadPointDumper.this.immutablePoints = ImmutableList.copyOf(QuadPointDumper.this.points);
+            }
+
             QuadPointDumper.this.points.add(new Vec3(x, y, z));
             return this;
         }
 
         @Override
-        public VertexConsumer color(int r, int g, int b, int a) {
+        public VertexConsumer setColor(int i, int i1, int i2, int i3) {
             return this;
         }
 
         @Override
-        public VertexConsumer uv(float u, float v) {
+        public VertexConsumer setUv(float v, float v1) {
             return this;
         }
 
         @Override
-        public VertexConsumer overlayCoords(int u1, int v1) {
+        public VertexConsumer setUv1(int i, int i1) {
             return this;
         }
 
         @Override
-        public VertexConsumer uv2(int u2, int v2) {
+        public VertexConsumer setUv2(int i, int i1) {
             return this;
         }
 
         @Override
-        public VertexConsumer normal(float nX, float nY, float nZ) {
+        public VertexConsumer setNormal(float v, float v1, float v2) {
             return this;
         }
-
-        @Override
-        public void endVertex() {
-            if (QuadPointDumper.this.points.size() == 4) {
-                QuadPointDumper.this.immutablePoints = ImmutableList.copyOf(QuadPointDumper.this.points);
-            }
-        }
-
-        @Override
-        public void defaultColor(int r, int g, int b, int a) {
-        }
-
-        @Override
-        public void unsetDefaultColor() {
-        }
-
     }
 
 }

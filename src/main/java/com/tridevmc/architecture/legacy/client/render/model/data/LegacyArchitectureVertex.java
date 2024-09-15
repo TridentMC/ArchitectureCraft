@@ -100,13 +100,12 @@ public class LegacyArchitectureVertex {
             t.transformNormal(normals);
         });
         // TODO: UV2 seems to be lighting related, need to look at this closer as lighting is the biggest blocker atm
-        consumer.vertex(pos.x(), pos.y(), pos.z())
-                .color(colour)
-                .normal(normals.x(), normals.y(), normals.z())
-                .uv(sprite.getU(uvs[0]), sprite.getV(uvs[1]))
-                .uv2(1, 0)
-                .overlayCoords(1, 0)
-                .endVertex();
+        consumer.addVertex(pos.x(), pos.y(), pos.z())
+                .setColor(colour)
+                .setNormal(normals.x(), normals.y(), normals.z())
+                .setUv(sprite.getU(uvs[0]), sprite.getV(uvs[1]))
+                .setUv2(1, 0)
+                .setUv1(1, 0);
     }
 
     public int getFace() {

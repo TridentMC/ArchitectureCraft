@@ -122,8 +122,8 @@ public class ArchitectureDebugEventListeners {
     }
 
     private static void renderLine(PoseStack matrix, VertexConsumer consumer, IVector3 from, IVector3 to, float r, float g, float b, float a) {
-        consumer.vertex(matrix.last().pose(), (float) from.x(), (float) from.y(), (float) from.z()).color(r, g, b, a).endVertex();
-        consumer.vertex(matrix.last().pose(), (float) to.x(), (float) to.y(), (float) to.z()).color(r, g, b, a).endVertex();
+        consumer.addVertex(matrix.last().pose(), (float) from.x(), (float) from.y(), (float) from.z()).setColor(r, g, b, a);
+        consumer.addVertex(matrix.last().pose(), (float) to.x(), (float) to.y(), (float) to.z()).setColor(r, g, b, a);
     }
 
     private static boolean shouldAssignVoxelizer(Level level, Player player) {

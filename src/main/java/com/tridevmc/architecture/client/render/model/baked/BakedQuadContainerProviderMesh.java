@@ -58,22 +58,21 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
     private final IBakedQuadContainer getQuadsTakesAll(@Nullable I partId, @Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         // We ignore forceRebuild here, as we're not actually caching the resulting containers themselves.
         var containerBuilder = new BakedQuadContainer.Builder();
-        final var isCulled = new AtomicBoolean(false);
-        var quadBaker = new QuadBakingVertexConsumer(bakedQuad -> containerBuilder.addQuad(bakedQuad, isCulled.get()));
+        var baker = new QuadBakingVertexConsumer();
         var m = this.getMesh(transform.asImmutable());
         var faces = partId == null ? m.getFaces() : Objects.requireNonNull(m.getPart(partId), "Unable to find part with id: " + partId + " on mesh: " + this.mesh.getName()).getFaces();
         for (var face : faces) {
             for (var polygon : face.getPolygons()) {
                 var polygonData = polygon.getPolygonData();
-                isCulled.set(polygonData.cullFace() != CullFace.NONE);
+                var isCulled = polygonData.cullFace() != CullFace.NONE;
                 var texture = metadataResolver.getTexture(level, pos, state, stack, polygonData);
                 var tintIndex = metadataResolver.getTintIndex(level, pos, state, stack, polygonData);
                 var vertexCount = polygon.getVertexCount();
-                quadBaker.setSprite(texture);
-                quadBaker.setTintIndex(tintIndex);
-                quadBaker.setDirection(polygonData.face().toDirection());
-                quadBaker.setShade(true);
-                quadBaker.setHasAmbientOcclusion(true);
+                baker.setSprite(texture);
+                baker.setTintIndex(tintIndex);
+                baker.setDirection(polygonData.face().toDirection());
+                baker.setShade(true);
+                baker.setHasAmbientOcclusion(true);
                 var startIndex = 0;
                 if (polygon.getVertexCount() == 3) {
                     startIndex = -1;
@@ -81,14 +80,14 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
                 for (int i = startIndex; i < vertexCount; i++) {
                     var vertexIndex = Math.max(0, i);
                     var v = polygon.getVertex(vertexIndex);
-                    quadBaker.vertex(v.getX(), v.getY(), v.getZ())
-                            .color(-1)
-                            .normal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
-                            .uv(texture.getU((float) v.getU()), texture.getV((float) v.getV()))
-                            .uv2(1, 0)
-                            .overlayCoords(1, 0)
-                            .endVertex();
+                    baker.addVertex((float) v.getX(), (float) v.getY(), (float) v.getZ())
+                            .setColor(-1)
+                            .setNormal((float) v.getNormalX(), (float) v.getNormalY(), (float) v.getNormalZ())
+                            .setUv(texture.getU((float) v.getU()), texture.getV((float) v.getV()))
+                            .setUv2(1, 0)
+                            .setUv1(1, 0);
                 }
+                containerBuilder.addQuad(baker.bakeQuad(), isCulled);
             }
         }
         return containerBuilder.build();

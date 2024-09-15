@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -221,8 +221,8 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     }
 
     @Override
-    public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+    public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility itemAbility, boolean simulate) {
+        return super.getToolModifiedState(state, context, itemAbility, simulate);
     }
 
     @Override

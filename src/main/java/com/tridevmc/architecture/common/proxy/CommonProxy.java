@@ -67,6 +67,6 @@ public class CommonProxy {
     }
 
     public ResourceLocation modelLocation(String path) {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, path);
     }
 }

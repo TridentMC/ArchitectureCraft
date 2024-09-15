@@ -3,6 +3,7 @@ package com.tridevmc.architecture.client.debug;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 
@@ -33,11 +34,16 @@ public class ArchitectureDebugRenderTypes extends RenderStateShard {
     }
 
     private static class DisableDepthTest extends RenderStateShard.DepthTestStateShard {
+        private static final WrappedField<Runnable> SETUP_STATE = WrappedField.create(RenderStateShard.DepthTestStateShard.class, "setupState");
+
         public DisableDepthTest(String name) {
             super("disable_depth_test", 519);
-            this.setupState = () -> {
+            //this.setupState = () -> {
+            //    RenderSystem.disableDepthTest();
+            //};
+            SETUP_STATE.set(this, () -> {
                 RenderSystem.disableDepthTest();
-            };
+            });
 
         }
     }

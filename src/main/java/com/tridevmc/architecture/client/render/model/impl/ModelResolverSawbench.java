@@ -39,8 +39,8 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
         if (needsInit) {
             var textureGetter = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
             textures = new TextureAtlasSprite[]{
-                    textureGetter.apply(new ResourceLocation("block/oak_planks")),
-                    textureGetter.apply(new ResourceLocation("block/iron_block"))
+                    textureGetter.apply(ResourceLocation.withDefaultNamespace("block/oak_planks")),
+                    textureGetter.apply(ResourceLocation.withDefaultNamespace("block/iron_block"))
             };
             colours = new int[]{-1, -1};
             needsInit = false;

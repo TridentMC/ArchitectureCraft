@@ -2,6 +2,7 @@ package com.tridevmc.architecture.legacy.client.render.model.baked;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -41,8 +42,8 @@ public class LegacyTexturableBakedQuad extends BakedQuad {
         VertexFormat format = DefaultVertexFormat.BLOCK;
         vertices = Arrays.copyOf(vertices, vertices.length);
         for (int i = 0; i < 4; ++i) {
-            int j = format.getIntegerSize() * i;
-            int uvIndex = format.getOffset(0) / 4;
+            int j = format.getVertexSize() * i;
+            int uvIndex = format.getOffset(VertexFormatElement.UV) / 4;
             vertices[j + uvIndex] = Float.floatToRawIntBits(to.getU(getUnInterpolatedU(from, Float.intBitsToFloat(vertices[j + uvIndex]))));
             vertices[j + uvIndex + 1] = Float.floatToRawIntBits(to.getV(getUnInterpolatedV(from, Float.intBitsToFloat(vertices[j + uvIndex + 1]))));
         }

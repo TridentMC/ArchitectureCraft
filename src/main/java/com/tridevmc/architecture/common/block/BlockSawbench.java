@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
-    public static final OBJSON MODEL = OBJSON.fromResource(new ResourceLocation(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
+    public static final OBJSON MODEL = OBJSON.fromResource(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
     private final static DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
 
     public BlockSawbench() {

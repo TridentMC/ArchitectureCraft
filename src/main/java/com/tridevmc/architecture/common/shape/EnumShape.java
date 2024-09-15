@@ -139,7 +139,7 @@ public enum EnumShape {
               IShapeTransformationResolver transformationResolver) {
         this.name = name;
         this.localizationKey = String.format("shape.%s.%s", ArchitectureMod.MOD_ID, name);
-        this.id = new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
+        this.id =ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
     }
@@ -177,7 +177,7 @@ public enum EnumShape {
     }
 
     public ResourceLocation getAssetLocation() {
-        return new ResourceLocation(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
+        return ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
     }
 
     public String getLocalizationKey() {

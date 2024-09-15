@@ -62,13 +62,12 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
-        e.register(new ResourceLocation(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
+        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
                         () ->
-                                (context, baker, spriteGetter, modelState, overrides, modelLocation) ->
-                                        new BakedModelSawbench(context.getTransforms())
+                                (context, modelBaker, function, modelState, itemOverrides) -> new BakedModelSawbench(context.getTransforms())
                 )
         );
-        e.register(new ResourceLocation(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeGeometryLoader());
+        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeGeometryLoader());
         this.registerDefaultModelLocations();
     }
 
@@ -88,6 +87,6 @@ public class ClientProxy extends CommonProxy {
 
     private ResourceLocation[] getTextures(String... textureNames) {
         ResourceLocation[] out = new ResourceLocation[textureNames.length];
-        return Arrays.stream(textureNames).map(t -> t.contains(":") ? new ResourceLocation(t) : new ResourceLocation(ArchitectureMod.MOD_ID, t)).toList().toArray(out);
+        return Arrays.stream(textureNames).map(t -> t.contains(":") ? ResourceLocation.parse(t) : ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, t)).toList().toArray(out);
     }
 }

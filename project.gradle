@@ -1,5 +1,3 @@
-// See https://github.com/elytra/Skeleton/wiki for what all these values mean
-
 ext {
     group = 'com.tridevmc'
     projectPackage = 'com.tridevmc.architecture'
@@ -8,18 +6,18 @@ ext {
     useElytraVersionFormat = true
     version = '4'
 
-    compoundVersion = '1.13.0-SNAPSHOT'
+    compoundVersion = '1.14.0-SNAPSHOT'
     compoundModules = ['all']
 
-    minecraftVersion = "1.20.6"
-    minecraftVersionRange = "[1.20.6,1.21)"
+    minecraftVersion = "1.21.1"
+    minecraftVersionRange = "[1.21.1,1.22)"
 
     mappingsChannel = "parchment"
-    mappingsMinecraftVersion = "1.20.6"
-    mappingsVersion = "2024.05.01"
+    mappingsMinecraftVersion = "1.21"
+    mappingsVersion = "2024.07.28"
 
-    neoVersion = "20.6.70-beta"
-    neoVersionRange = "[20.4,)"
+    neoForgeVersion = "21.1.28"
+    neoForgeVersionRange = "[21.1,)"
     loaderVersionRange = "[2,)"
 }
 

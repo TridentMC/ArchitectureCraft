@@ -88,13 +88,12 @@ public interface IPipedVertex<V extends IPipedVertex<V, Q, D>, Q extends IPipedB
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull Q quadProvider,
                       @NotNull TextureAtlasSprite sprite, int colour) {
-        consumer.vertex(this.x(), this.y(), this.z())
-                .color(colour)
-                .normal(this.nX(), this.nY(), this.nZ())
-                .uv(sprite.getU(this.u()), sprite.getV(this.v()))
-                .uv2(1, 0)
-                .overlayCoords(1, 0)
-                .endVertex();
+        consumer.addVertex((float) this.x(), (float) this.y(), (float) this.z())
+                .setColor(colour)
+                .setNormal(this.nX(), this.nY(), this.nZ())
+                .setUv(sprite.getU(this.u()), sprite.getV(this.v()))
+                .setUv2(1, 0)
+                .setUv1(1, 0);
     }
 
     /**
@@ -126,13 +125,12 @@ public interface IPipedVertex<V extends IPipedVertex<V, Q, D>, Q extends IPipedB
             var nZ = normal.z();
             var u = uvs.getU();
             var v = uvs.getV();
-            consumer.vertex(x, y, z)
-                    .color(colour)
-                    .normal(nX, nY, nZ)
-                    .uv(sprite.getU((float) u), sprite.getV((float) v))
-                    .uv2(1, 0)
-                    .overlayCoords(1, 0)
-                    .endVertex();
+            consumer.addVertex((float) x, (float) y, (float) z)
+                    .setColor(colour)
+                    .setNormal(nX, nY, nZ)
+                    .setUv(sprite.getU((float) u), sprite.getV((float) v))
+                    .setUv2(1, 0)
+                    .setUv1(1, 0);
         }
     }
 

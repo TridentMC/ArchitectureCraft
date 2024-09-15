@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import com.tridevmc.architecture.legacy.client.render.model.builder.LegacyBakedQuadBuilderVertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -39,17 +39,17 @@ public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
 
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         if (facing == null) facing = this.facing();
-        var builder = new LegacyBakedQuadBuilderVertexConsumer()
-                .setSprite(sprite)
-                .setTintIndex(colour)
-                .setShade(true)
-                .setDirection(facing);
+        var builder = new QuadBakingVertexConsumer();
+                builder.setSprite(sprite);
+                builder.setTintIndex(colour);
+                builder.setShade(true);
+                builder.setDirection(facing);
         int[] vertexIndices = new int[]{0, 0, 1, 2};
         for (int i = 0; i < 4; i++) {
             var vertex = this.vertices[vertexIndices[i]];
             vertex.pipe(builder, this, Optional.of(transform), sprite, colour);
         }
-        return builder.getBakedQuad();
+        return builder.bakeQuad();
     }
 
     public Vector3f getFaceNormal() {

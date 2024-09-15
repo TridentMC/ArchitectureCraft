@@ -35,7 +35,7 @@ public class ArchitectureUIHooks {
 
     public static <C extends AbstractContainerMenu> MenuType<C> register(RegisterEvent.RegisterHelper<MenuType<?>> registry) {
         MenuType<C> containerType = IMenuTypeExtension.create(getFactory());
-        registry.register(new ResourceLocation(ArchitectureMod.MOD_ID, "containers"), containerType);
+        registry.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "containers"), containerType);
         // This is honestly the worst solution to this problem, but it works for now.
         registerMenuScreensEvent = event -> event.register(containerType, ArchitectureUIHooks.getScreenFactory());
         return containerType;
