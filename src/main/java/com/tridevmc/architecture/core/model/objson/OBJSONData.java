@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents the raw data deserialized from an OBJSON file, not to be used directly, use {@link OBJSON} instead.
@@ -36,8 +37,17 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @param bounds    The bounds of the part.
      * @param boxes     The boxes of the part.
      * @param triangles The triangles of the part.
+     * @param quads     The quads of the part.
      */
     record PartData(String name, double[] bounds, double[][] boxes, TriangleData[] triangles, QuadData[] quads) {
+
+        public Optional<TriangleData[]> trianglesAsOptional() {
+            return Optional.ofNullable(triangles);
+        }
+
+        public Optional<QuadData[]> quadsAsOptional() {
+            return Optional.ofNullable(quads);
+        }
 
     }
 

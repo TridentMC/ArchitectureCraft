@@ -66,7 +66,7 @@ public enum LegacyEnumShape implements StringRepresentable {
     CYLINDER_QUARTER(12, "cylinder_quarter", new LegacyShapeBehaviourModel("cylinder_quarter_r8h16"), UNILATERAL, 1, 1, 0x44),
     CYLINDER_LARGE_QUARTER(13, "cylinder_large_quarter", new LegacyShapeBehaviourModel("cylinder_quarter_r16h16"), UNILATERAL, 1, 1, 0xff),
     ANTICYLINDER_LARGE_QUARTER(14, "anticylinder_large_quarter", new LegacyShapeBehaviourModel("round_inner_corner"), UNILATERAL, 1, 2, 0xdd),
-    PILLAR(15, "pillar", new LegacyShapeBehaviourModel("cylinder_r6h16"), QUADRILATERAL, 1, 1, 0x106),
+    PILLAR(15, "pillar", new LegacyShapeBehaviourModel("pillar"), QUADRILATERAL, 1, 1, 0x106),
     POST(16, "post", new LegacyShapeBehaviourModel("cylinder_r4h16"), QUADRILATERAL, 1, 4, 0x104),
     POLE(17, "pole", new LegacyShapeBehaviourModel("cylinder_r2h16"), QUADRILATERAL, 1, 16, 0x102),
 
@@ -120,9 +120,9 @@ public enum LegacyEnumShape implements StringRepresentable {
     ARCH_D_4_B(67, "arch_d4b", new LegacyShapeBehaviourModel("arch_d4b"), BILATERAL, 1, 1, 0xfc, PLACE_UNDERNEATH),
     ARCH_D_4_C(68, "arch_d4c", new LegacyShapeBehaviourModel("arch_d4c"), BILATERAL, 1, 2, 0x0, PLACE_UNDERNEATH),
 
-    BANISTER_PLAIN_BOTTOM(70, "banister_plain_bottom", new LegacyShapeBehaviourBanister("balustrade_stair_plain_bottom"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
-    BANISTER_PLAIN(71, "banister_plain", new LegacyShapeBehaviourBanister("balustrade_stair_plain"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
-    BANISTER_PLAIN_TOP(72, "banister_plain_top", new LegacyShapeBehaviourBanister("balustrade_stair_plain_top"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
+    BANISTER_PLAIN_BOTTOM(70, "banister_plain_bottom", new LegacyShapeBehaviourBanister("banister_plain_bottom"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
+    BANISTER_PLAIN(71, "banister_plain", new LegacyShapeBehaviourBanister("banister_plain"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
+    BANISTER_PLAIN_TOP(72, "banister_plain_top", new LegacyShapeBehaviourBanister("banister_plain_top"), BILATERAL, 1, 10, 0x0, PLACE_OFFSET),
 
     BALUSTRADE_FANCY(73, "balustrade_fancy", new LegacyShapeBehaviourModel("balustrade_fancy"), BILATERAL, 1, 5, 0x0),
     BALUSTRADE_FANCY_CORNER(74, "balustrade_fancy_corner", new LegacyShapeBehaviourModel("balustrade_fancy_corner"), UNILATERAL, 1, 2, 0x0),
@@ -133,7 +133,7 @@ public enum LegacyEnumShape implements StringRepresentable {
     BALUSTRADE_PLAIN_OUTER_CORNER(78, "balustrade_plain_outer_corner", new LegacyShapeBehaviourModel("balustrade_plain_outer_corner"), UNILATERAL, 1, 4, 0x0),
     BALUSTRADE_PLAIN_WITH_NEWEL(79, "balustrade_plain_with_newel", new LegacyShapeBehaviourModel("balustrade_plain_with_newel"), BILATERAL, 1, 6, 0x0),
 
-    BANISTER_PLAIN_END(80, "banister_plain_end", new LegacyShapeBehaviourBanister("balustrade_stair_plain_end"), BILATERAL, 1, 8, 0x0, PLACE_OFFSET),
+    BANISTER_PLAIN_END(80, "banister_plain_end", new LegacyShapeBehaviourBanister("banister_plain_end"), BILATERAL, 1, 8, 0x0, PLACE_OFFSET),
 
     BANISTER_FANCY_NEWEL_TALL(81, "banister_fancy_newel_tall", new LegacyShapeBehaviourModel("balustrade_fancy_newel_tall"), UNILATERAL, 1, 2, 0x0),
 
@@ -145,7 +145,7 @@ public enum LegacyEnumShape implements StringRepresentable {
     BANISTER_FANCY_TOP(86, "banister_fancy_top", new LegacyShapeBehaviourBanister("balustrade_stair_fancy_top"), BILATERAL, 1, 5, 0x0, PLACE_OFFSET),
     BANISTER_FANCY_END(87, "banister_fancy_end", new LegacyShapeBehaviourBanister("balustrade_stair_fancy_end"), BILATERAL, 1, 2, 0x0, PLACE_OFFSET),
 
-    BANISTER_PLAIN_INNER_CORNER(88, "banister_plain_inner_corner", new LegacyShapeBehaviourModel("balustrade_stair_plain_inner_corner"), UNILATERAL, 1, 6, 0x0),
+    BANISTER_PLAIN_INNER_CORNER(88, "banister_plain_inner_corner", new LegacyShapeBehaviourModel("banister_plain_inner_corner"), UNILATERAL, 1, 6, 0x0),
 
     SLAB(90, "slab", new LegacyShapeBehaviourModel("slab"), QUADRILATERAL, 1, 2, 0x0),
     STAIRS(91, "stairs", new LegacyShapeBehaviourModel("stairs", Profile.Generic.lrStraight), BILATERAL, 3, 4, 0x0),

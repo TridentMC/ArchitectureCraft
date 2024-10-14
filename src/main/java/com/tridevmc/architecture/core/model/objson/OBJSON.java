@@ -52,7 +52,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelize
             var part = new Part.Builder<String, PolygonData>().setId(partData.name());
             var faceMap = new Int2ObjectOpenHashMap<Face.Builder<PolygonData>>();
 
-            for (OBJSONData.TriangleData triData : partData.triangles()) {
+            for (OBJSONData.TriangleData triData : partData.trianglesAsOptional().orElse(new OBJSONData.TriangleData[0])) {
                 // OBJSON doesn't currently support tinting, so we'll just use the default value of -1.
                 var tri = new Tri.Builder<PolygonData>();
                 var faceData = data.faces()[triData.face()];
@@ -68,7 +68,7 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelize
                 ).build());
             }
 
-            for (OBJSONData.QuadData quadData : partData.quads()) {
+            for (OBJSONData.QuadData quadData : partData.quadsAsOptional().orElse(new OBJSONData.QuadData[0])) {
                 var quad = new Quad.Builder<PolygonData>();
                 var faceData = data.faces()[quadData.face()];
                 var face = faceMap.computeIfAbsent(quadData.face(), i -> new Face.Builder<>());

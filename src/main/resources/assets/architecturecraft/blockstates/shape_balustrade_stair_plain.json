@@ -1,7 +1,7 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_balustrade_stair_plain"
+            "model": "architecturecraft:block/shape_banister_plain"
         }
     }
 }
