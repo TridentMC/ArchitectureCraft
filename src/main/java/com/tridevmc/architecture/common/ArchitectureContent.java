@@ -45,6 +45,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
@@ -72,7 +73,7 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 
 public class ArchitectureContent {
 
-    private static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
+    public static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
     private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
@@ -147,9 +148,9 @@ public class ArchitectureContent {
     public void onItemRegister(RegisterEvent.RegisterHelper<Item> registry) {
         this.itemSawblade = this.registerItem(registry, "sawblade");
         this.itemLargePulley = this.registerItem(registry, "large_pulley");
-        this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel());
-        this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer());
-        this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding());
+        this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "chisel")));
+        this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "hammer")));
+        this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "cladding")));
 
         itemBlocksToRegister.forEach(e -> registry.register(e.getLeft(), e.getRight()));
         this.itemShapes = Maps.newHashMap();
@@ -189,8 +190,10 @@ public class ArchitectureContent {
 
     private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, boolean withItemBlock) {
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
-        if (withItemBlock)
-            itemBlocksToRegister.add(ImmutablePair.of(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), new ItemBlockArchitecture(block, new Item.Properties())));
+        if (withItemBlock) {
+            var itemBlockId = ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id);
+            itemBlocksToRegister.add(ImmutablePair.of(itemBlockId, new ItemBlockArchitecture(block, new Item.Properties().setId(ResourceKey.create(Registries.ITEM, itemBlockId)))));
+        }
         registeredBlocks.put(id, block);
         return (T) registeredBlocks.get(id);
     }
@@ -205,7 +208,7 @@ public class ArchitectureContent {
     }
 
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id) {
-        ItemArchitecture item = new ItemArchitecture(new Item.Properties());
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id))));
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 

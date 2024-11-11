@@ -3,6 +3,7 @@ package com.tridevmc.architecture.common.block;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.ui.UISawbench;
+import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.container.ContainerSawbench;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
@@ -17,6 +18,8 @@ import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -40,7 +43,7 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     private final static EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public BlockSawbench() {
-        super(Properties.of());
+        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "sawbench"))));
     }
 
     @Override

@@ -28,7 +28,10 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -40,8 +43,8 @@ import java.util.List;
 
 public class ItemCladding extends ItemArchitecture {
 
-    public ItemCladding() {
-        super(new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT));
+    public ItemCladding(ResourceLocation id) {
+        super(new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT).setId(ResourceKey.create(Registries.ITEM, id)));
     }
 
     public ItemStack newStack(BlockState state, int stackSize) {

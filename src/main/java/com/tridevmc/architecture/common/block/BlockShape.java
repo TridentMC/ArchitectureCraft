@@ -2,6 +2,7 @@ package com.tridevmc.architecture.common.block;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
@@ -18,6 +19,9 @@ import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -59,7 +63,12 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     private final EnumShape shape;
 
     public BlockShape(EnumShape shape) {
-        this(shape, BlockBehaviour.Properties.of());
+        this(shape, BlockBehaviour.Properties.of().setId(
+                ResourceKey.create(Registries.BLOCK,
+                        ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
+                                "shape_" + shape.getName())
+                ))
+        );
     }
 
     public BlockShape(EnumShape shape, Properties properties) {

@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.common.item;
 
 import com.google.common.collect.Maps;
+import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
@@ -32,7 +33,10 @@ import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -53,7 +57,12 @@ public class ItemShape extends ItemBlockArchitecture {
     private final EnumShape shape;
 
     public ItemShape(BlockShape block) {
-        super(block, new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT));
+        super(block, new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT).setId(
+                ResourceKey.create(Registries.ITEM,
+                        ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
+                                "shape_" + block.getShape().getName())
+                )
+        ));
         this.shape = block.getShape();
         SHAPE_ITEMS.put(block.getShape(), this);
     }
