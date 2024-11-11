@@ -24,8 +24,8 @@
 
 package com.tridevmc.architecture.common.item;
 
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -52,10 +52,10 @@ public class ItemChisel extends Item {
         var hitY = (float) context.getClickLocation().y();
         var hitZ = (float) context.getClickLocation().z();
         var te = world.getBlockEntity(pos);
-        if (te instanceof LegacyShapeBlockEntity) {
+        if (te instanceof BlockEntityShape) {
             if (!world.isClientSide()) {
-                LegacyShapeBlockEntity ste = (LegacyShapeBlockEntity) te;
-                ste.onChiselUse(player, side, hitX, hitY, hitZ);
+                BlockEntityShape ste = (BlockEntityShape) te;
+                //ste.onChiselUse(player, side, hitX, hitY, hitZ);
             }
             return InteractionResult.SUCCESS;
         }

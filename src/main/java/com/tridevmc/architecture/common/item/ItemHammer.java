@@ -24,7 +24,7 @@
 
 package com.tridevmc.architecture.common.item;
 
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -45,9 +45,9 @@ public class ItemHammer extends Item {
         var hitX = (float) context.getClickLocation().x();
         var hitY = (float) context.getClickLocation().y();
         var hitZ = (float) context.getClickLocation().z();
-        LegacyShapeBlockEntity te = LegacyShapeBlockEntity.get(world, pos);
-        if (te != null) {
-            te.onHammerUse(player, side, hitX, hitY, hitZ);
+        var te = world.getBlockEntity(pos);
+        if (te instanceof BlockEntityShape) {
+            //te.onHammerUse(player, side, hitX, hitY, hitZ);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.FAIL;

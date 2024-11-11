@@ -26,7 +26,6 @@ package com.tridevmc.architecture.legacy.common.shape;
 
 import com.google.common.collect.ImmutableMap;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.common.shape.behaviour.*;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
@@ -224,42 +223,6 @@ public enum LegacyEnumShape implements StringRepresentable {
                 return 0;
         }
     }
-
-    public void orientOnPlacement(Player player, LegacyShapeBlockEntity te,
-                                  BlockPos npos, BlockState nstate, BlockEntity nte, Direction face, LegacyVector3 hit) {
-        if (!te.getArchitectureShape().behaviour.orientOnPlacement(player, te, npos, nstate, nte, face, hit)) {
-            this.orientFromHitPosition(player, te, face, hit);
-        }
-    }
-
-    private void orientFromHitPosition(Player player, LegacyShapeBlockEntity te, Direction face, LegacyVector3 hit) {
-        byte side, turn;
-        switch (face) {
-            case UP:
-                side = (byte) this.rightSideUpSide();
-                break;
-            case DOWN:
-                if (te.getArchitectureShape().behaviour.canPlaceUpsideDown())
-                    side = (byte) this.upsideDownSide();
-                else
-                    side = (byte) this.rightSideUpSide();
-                break;
-            default:
-                if (player.isCrouching())
-                    side = (byte) face.getOpposite().ordinal();
-                else if (hit.y() > 0.0 && te.getArchitectureShape().behaviour.canPlaceUpsideDown())
-                    side = (byte) this.upsideDownSide();
-                else
-                    side = (byte) this.rightSideUpSide();
-        }
-        turn = (byte) turnForPlacementHit(side, hit, this.symmetry);
-        te.setSide(side);
-        te.setTurn(turn);
-        if ((this.flags & PLACE_OFFSET) != 0) {
-            te.setOffsetX(this.offsetXForPlacementHit(side, turn, hit));
-        }
-    }
-
     public double offsetXForPlacementHit(int side, int turn, LegacyVector3 hit) {
         LegacyVector3 h = LegacyTrans3.sideTurn(side, turn).ip(hit);
         return this.signedPlacementOffsetX(h.x());

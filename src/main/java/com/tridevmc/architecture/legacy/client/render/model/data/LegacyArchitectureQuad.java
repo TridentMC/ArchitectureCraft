@@ -251,7 +251,7 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
      */
     public Direction recalculateFace() {
         Vector3f normals = this.getFaceNormal();
-        this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
+        this.face = Direction.getApproximateNearest(normals.x(), normals.y(), normals.z());
         return this.face;
     }
 
@@ -279,7 +279,7 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
 
         private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
             return new BakedQuad(quad.getVertices(), newTint, quad.getDirection(), quad.getSprite(),
-                    quad.isShade());
+                    quad.isShade(), quad.getLightEmission());
         }
 
     }

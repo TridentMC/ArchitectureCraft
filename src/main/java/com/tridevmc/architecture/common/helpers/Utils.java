@@ -24,8 +24,6 @@
 
 package com.tridevmc.architecture.common.helpers;
 
-import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
@@ -80,18 +78,6 @@ public class Utils {
 
         if (blockState.isAir())
             return null;
-
-        if (blockState.getBlock() instanceof LegacyBlockShape) {
-            LegacyShapeBlockEntity shape = LegacyShapeBlockEntity.get(world, pos);
-
-            if (renderPrimary) {
-                return getSpriteForBlockState(shape.getBaseBlockState());
-            } else {
-                return getSpriteForBlockState(shape.getSecondaryBlockState());
-            }
-        } else if (!renderPrimary) {
-            return null;
-        }
 
         return getSpriteForBlockState(blockState);
     }

@@ -73,7 +73,7 @@ public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
     public @NotNull Direction facing() {
         if (this.face == null) {
             Vector3f normals = this.getFaceNormal();
-            this.face = Direction.getNearest(normals.x(), normals.y(), normals.z());
+            this.face = Direction.getApproximateNearest(normals.x(), normals.y(), normals.z());
         }
         return this.face;
     }

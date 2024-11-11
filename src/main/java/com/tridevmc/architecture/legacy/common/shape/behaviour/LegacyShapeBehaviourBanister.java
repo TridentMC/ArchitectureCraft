@@ -2,8 +2,6 @@ package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.utils.MiscUtils;
-import com.tridevmc.architecture.legacy.common.block.LegacyBlockShape;
-import com.tridevmc.architecture.legacy.common.block.entity.LegacyShapeBlockEntity;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
 import net.minecraft.core.BlockPos;
@@ -34,41 +32,6 @@ public class LegacyShapeBehaviourBanister extends LegacyShapeBehaviourModel {
             return 0;
     }
 
-    @Override
-    public boolean orientOnPlacement(Player player, LegacyShapeBlockEntity te,
-                                     BlockPos nPos, BlockState nState, BlockEntity nte, Direction otherFace, LegacyVector3 hit) {
-        if (!player.isCrouching()) {
-            var nBlock = nState.getBlock();
-            boolean placedOnStair = false;
-            int nside = -1; // Side that the neighbouring block is placed on
-            int nturn = -1; // Turn of the neighbouring block
-            if (StairBlock.isStairs(nState) && (otherFace == UP || otherFace == DOWN)) {
-                placedOnStair = true;
-                nside = stairsSide(nState);
-                nturn = MiscUtils.turnToFace(SOUTH, stairsFacing(nState));
-                if (nside == 1 && (nturn & 1) == 0)
-                    nturn ^= 2;
-            } else if (nBlock instanceof LegacyBlockShape) {
-                if (nte instanceof LegacyShapeBlockEntity shapeBE) {
-                    placedOnStair = true;
-                    nside = shapeBE.getSide();
-                    nturn = shapeBE.getTurn();
-                }
-            }
-            if (placedOnStair) {
-                int side = otherFace.getOpposite().ordinal();
-                if (side == nside) {
-                    LegacyVector3 h = LegacyTrans3.sideTurn(side, 0).ip(hit);
-                    double offX = te.getArchitectureShape().offsetXForPlacementHit(side, nturn, hit);
-                    te.setSide(side);
-                    te.setTurn(nturn & 3);
-                    te.setOffsetX(offX);
-                    return true;
-                }
-            }
-        }
-        return super.orientOnPlacement(player, te, nPos, nState, nte, otherFace, hit);
-    }
 
     @Override
     public double placementOffsetX() {
