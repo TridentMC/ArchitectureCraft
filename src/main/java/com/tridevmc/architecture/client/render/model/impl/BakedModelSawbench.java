@@ -3,7 +3,7 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.tridevmc.architecture.client.render.model.baked.IModelResolverBaked;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
@@ -54,8 +54,8 @@ public class BakedModelSawbench implements IModelResolverBaked<PolygonData> {
     }
 
     @Override
-    public ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
+    public BakedOverrides overrides() {
+        return BakedOverrides.EMPTY;
     }
 
 }

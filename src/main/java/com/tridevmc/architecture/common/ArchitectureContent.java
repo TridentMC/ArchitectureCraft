@@ -57,6 +57,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -75,6 +76,8 @@ public class ArchitectureContent {
     private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
+
+    private List<IClientItemExtensionHolder> itemsWithClientExtensions = Lists.newArrayList();
     public BlockSawbench blockSawbench;
     public Map<EnumShape, BlockShape> blockShapes;
     public BlockEntityType<BlockEntityShape> blockEntityTypeShape;
@@ -95,6 +98,11 @@ public class ArchitectureContent {
         e.register(BuiltInRegistries.MENU.key(), this::onMenuTypeRegister);
         e.register(BuiltInRegistries.DATA_COMPONENT_TYPE.key(), this::onDataComponentTypeRegister);
         e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
+    }
+
+    @SubscribeEvent
+    public void onRegisterClientExtensionsEvent(RegisterClientExtensionsEvent e) {
+        this.itemsWithClientExtensions.forEach(i -> e.registerItem(i.getExtensions(), (Item) i));
     }
 
 
@@ -170,7 +178,7 @@ public class ArchitectureContent {
         } catch (IllegalArgumentException e) {
             ArchitectureLog.error("No data fixer was registered for resource id {}", key);
         }
-        BlockEntityType<T> tileType = BlockEntityType.Builder.of(tileSupplier, blocks).build(dataFixerType);
+        BlockEntityType<T> tileType = new BlockEntityType(tileSupplier, blocks);
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), tileType);
         return tileType;
     }
@@ -207,6 +215,10 @@ public class ArchitectureContent {
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id, T item) {
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
+
+        if (item instanceof IClientItemExtensionHolder) {
+            this.itemsWithClientExtensions.add((IClientItemExtensionHolder) item);
+        }
 
         return (T) registeredItems.get(id);
     }

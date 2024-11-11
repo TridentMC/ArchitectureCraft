@@ -27,7 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
     public static final OBJSON MODEL = OBJSON.fromResource(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
-    private final static DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    private final static EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public BlockSawbench() {
         super(Properties.of());

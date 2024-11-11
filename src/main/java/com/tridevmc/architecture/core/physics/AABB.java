@@ -257,7 +257,7 @@ public record AABB(@NotNull IVector3Immutable min, @NotNull IVector3Immutable ma
         if (Math.ceil(dir.x()) + Math.ceil(dir.y()) + Math.ceil(dir.z()) > 1) {
             return false;
         }
-        var face = Direction.getNearest(dir.x(), dir.y(), dir.z());
+        var face = Direction.getApproximateNearest(dir.x(), dir.y(), dir.z());
 
         switch (face) {
             case NORTH -> {

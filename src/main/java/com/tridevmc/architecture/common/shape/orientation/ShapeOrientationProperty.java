@@ -1,22 +1,35 @@
 package com.tridevmc.architecture.common.shape.orientation;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Defines a property used for orienting a shape in the world, combined with other properties to form a {@link ShapeOrientation}.
  */
-public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> extends EnumProperty<T> {
+public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> extends Property<T> {
 
-    private final Collection<Value<T>> values;
+    private final ImmutableList<Value<T>> values;
+    private final ImmutableMap<String, T> nameToValue;
+    private final ImmutableList<T> possibleValues;
+    private final int[] ordinalToValueIndex;
 
     protected ShapeOrientationProperty(String name, Class<T> type, Collection<T> values) {
-        super(name, type, values);
-        this.values = values.stream().map(v -> new Value<>(this, v)).toList();
+        super(name, type);
+        this.values = ImmutableList.copyOf(values.stream().map(v -> new Value<>(this, v)).toList());
+        this.nameToValue = this.values.stream().collect(ImmutableMap.toImmutableMap(v -> v.value.getSerializedName(), Value::value));
+        this.possibleValues = ImmutableList.copyOf(this.values.stream().map(Value::value).toList());
+        this.ordinalToValueIndex = new int[values.size()];
+        for (int i = 0; i < this.values.size(); i++) {
+            this.ordinalToValueIndex[this.values.get(i).value.ordinal()] = i;
+        }
     }
 
     /**
@@ -33,6 +46,27 @@ public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> e
     protected int order() {
         return this.getName().hashCode();
     }
+
+    @Override
+    public List<T> getPossibleValues() {
+        return this.possibleValues;
+    }
+
+    @Override
+    public String getName(T t) {
+        return t.getSerializedName();
+    }
+
+    @Override
+    public Optional<T> getValue(String s) {
+        return Optional.ofNullable(this.nameToValue.get(s));
+    }
+
+    @Override
+    public int getInternalIndex(T t) {
+        return this.ordinalToValueIndex[t.ordinal()];
+    }
+
 
     /**
      * Represents a possible value for a {@link ShapeOrientationProperty}.

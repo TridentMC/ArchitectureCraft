@@ -4,7 +4,7 @@ import com.tridevmc.architecture.client.render.model.baked.IModelResolverBaked;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public class BakedModelShapeGeneric implements IModelResolverBaked<PolygonData> 
 
     @Override
     @NotNull
-    public ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
+    public BakedOverrides overrides() {
+        return BakedOverrides.EMPTY;
     }
 }

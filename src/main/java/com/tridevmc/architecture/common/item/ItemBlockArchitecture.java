@@ -12,17 +12,15 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
-public class ItemBlockArchitecture extends BlockItem {
+public class ItemBlockArchitecture extends BlockItem implements IClientItemExtensionHolder {
 
     public ItemBlockArchitecture(BlockArchitecture pBlock, Properties pProperties) {
         super(pBlock, pProperties);
     }
 
     @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IArchitectureClientItemExtensions() {
+    public IClientItemExtensions getExtensions() {
+        return new IArchitectureClientItemExtensions() {
             IArchitectureBakedModel cachedModel;
 
             IArchitectureBakedModel getModel() {
@@ -40,13 +38,12 @@ public class ItemBlockArchitecture extends BlockItem {
             public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
                 var model = getModel();
                 var quads = model.getQuads(stack);
-                var fabulous = Minecraft.getInstance().options.graphicsMode().get().getId() >= 2;
-                for (var modelForPass : model.getRenderPasses(stack, fabulous)) {
-                    for (var rendertype : modelForPass.getRenderTypes(stack, fabulous)) {
+                for (var modelForPass : model.getRenderPasses(stack)) {
+                    for (var rendertype : modelForPass.getRenderTypes(stack)) {
                         Minecraft.getInstance().getItemRenderer().renderQuadList(poseStack, buffer.getBuffer(rendertype), quads, stack, packedLight, packedOverlay);
                     }
                 }
             }
-        });
+        };
     }
 }

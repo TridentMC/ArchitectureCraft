@@ -3,8 +3,8 @@ package com.tridevmc.architecture.client.render.model.baked;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -35,8 +35,9 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
     }
 
     @Override
-    default ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
+    @NotNull
+    default BakedOverrides overrides() {
+        return BakedOverrides.EMPTY;
     }
 
     @Override

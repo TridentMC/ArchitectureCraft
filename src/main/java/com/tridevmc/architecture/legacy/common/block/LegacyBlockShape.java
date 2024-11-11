@@ -85,7 +85,7 @@ public class LegacyBlockShape extends LegacyBlockArchitecture {
         }
         if (hardness < 0.0F)
             return 0.0F;
-        float strength = player.getDigSpeed(state, pos) / hardness;
+        float strength = player.getDestroySpeed(state, pos) / hardness;
         if (!acCanHarvestBlock(state, player))
             return strength / 100F;
         else

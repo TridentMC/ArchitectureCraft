@@ -12,6 +12,7 @@ import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import com.tridevmc.architecture.core.physics.Ray;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -91,9 +92,9 @@ public class ArchitectureDebugEventListeners {
             }
         });
         if (targetVoxelizer.isBoxValidVoxel(box)) {
-            LevelRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
+            ShapeRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
         } else {
-            LevelRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
+            ShapeRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
         }
         pose.popPose();
         bufferSource.endBatch(ARCHITECTURE_DEBUG_LINE);
@@ -102,16 +103,16 @@ public class ArchitectureDebugEventListeners {
 
     private static void renderBox(PoseStack matrix, VertexConsumer lineBuffer, com.tridevmc.architecture.core.physics.AABB box) {
         if (targetVoxelizer.doesBoxIntersect(box)) {
-            LevelRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 0, 1F, 0, .8F);
+            ShapeRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 0, 1F, 0, .8F);
         } else {
-            LevelRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 1F, 0, 0, .8F);
+            ShapeRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 1F, 0, 0, .8F);
         }
     }
 
     private static void renderRayHit(PoseStack matrix, VertexConsumer lineBuffer, IVector3 point, Ray.Hit hit) {
         if (hit.isValidHit()) {
             renderLine(matrix, lineBuffer, hit.ray().origin(), hit.point(), 0, 1F, 0, .8F);
-            LevelRenderer.renderLineBox(matrix, lineBuffer, new AABB(hit.point().x(), hit.point().y(), hit.point().z(), hit.point().x(), hit.point().y(), hit.point().z()).inflate(1D / 256D),
+            ShapeRenderer.renderLineBox(matrix, lineBuffer, new AABB(hit.point().x(), hit.point().y(), hit.point().z(), hit.point().x(), hit.point().y(), hit.point().z()).inflate(1D / 256D),
                     hit.point().x() < point.x() ? 1F : 0F,
                     1F,
                     0F,
@@ -137,7 +138,7 @@ public class ArchitectureDebugEventListeners {
             ArchitectureDebugEventListeners.targetPos = pos;
             ArchitectureDebugEventListeners.targetVoxelizer = voxelizer;
             ArchitectureDebugEventListeners.currentVoxelizationOffset = voxelizer.getMin();
-            player.sendSystemMessage(Component.literal("Voxelizer set to " + pos));
+            player.displayClientMessage(Component.literal("Voxelizer set to " + pos), true);
         } else {
             // Set the new voxelization offset using the player's facing direction and the current offset.
             var facing = hit.getDirection().getOpposite();
