@@ -26,7 +26,7 @@ package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureGeometryLoader;
-import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeGeometryLoader;
+import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeUnbakedModelLoader;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
@@ -61,13 +61,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onModelRegistryEvent(ModelEvent.RegisterGeometryLoaders e) {
+    public void onModelRegistryEvent(ModelEvent.RegisterLoaders e) {
         e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
-                        () ->
-                                (context, modelBaker, function, modelState, itemOverrides) -> new BakedModelSawbench(context.getTransforms())
+                        () -> (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelSawbench(itemTransforms)
                 )
         );
-        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeGeometryLoader());
+        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeUnbakedModelLoader());
         this.registerDefaultModelLocations();
     }
 

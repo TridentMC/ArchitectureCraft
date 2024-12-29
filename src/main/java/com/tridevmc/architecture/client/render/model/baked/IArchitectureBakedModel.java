@@ -3,7 +3,6 @@ package com.tridevmc.architecture.client.render.model.baked;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -34,17 +33,6 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
         }
     }
 
-    @Override
-    @NotNull
-    default BakedOverrides overrides() {
-        return BakedOverrides.EMPTY;
-    }
-
-    @Override
-    default boolean isCustomRenderer() {
-        return true;
-    }
-
     /**
      * Gets a list of quads for the given state, side, rand, extraData, and renderType.
      *
@@ -67,8 +55,4 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
     @NotNull
     List<BakedQuad> getQuads(@NotNull ItemStack stack);
 
-    @Override
-    default BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
-        return IDynamicBakedModel.super.applyTransform(transformType, poseStack, applyLeftHandTransform);
-    }
 }

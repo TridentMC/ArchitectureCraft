@@ -7,13 +7,13 @@ import com.tridevmc.architecture.client.render.model.impl.BakedModelShapeGeneric
 import com.tridevmc.architecture.common.shape.EnumShape;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 import java.util.Map;
 
-public class ArchitectureShapeGeometryLoader implements IGeometryLoader<IArchitectureModelGeometry>, ResourceManagerReloadListener {
+public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<IArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    private final Map<EnumShape, IArchitectureModelGeometry> models = Maps.newConcurrentMap();
+    private final Map<EnumShape, IArchitectureUnbakedModel> models = Maps.newConcurrentMap();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
@@ -21,14 +21,14 @@ public class ArchitectureShapeGeometryLoader implements IGeometryLoader<IArchite
     }
 
     @Override
-    public IArchitectureModelGeometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
+    public IArchitectureUnbakedModel read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
         var shapeName = modelContents.get("shapeName").getAsString();
         var shape = EnumShape.byName(shapeName);
         if (shape == null) {
             throw new IllegalArgumentException("Unknown shape: " + shapeName);
         }
 
-        return this.models.computeIfAbsent(shape, s -> (context, modelBaker, function, modelState, itemOverrides) -> new BakedModelShapeGeneric(shape, context.getTransforms()));
+        return this.models.computeIfAbsent(shape, s -> (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelShapeGeneric(s, itemTransforms));
     }
 
 }

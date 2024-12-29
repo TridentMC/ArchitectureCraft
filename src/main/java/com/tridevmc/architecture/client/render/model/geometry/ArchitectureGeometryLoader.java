@@ -4,20 +4,20 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 import java.util.function.Supplier;
 
-public class ArchitectureGeometryLoader implements IGeometryLoader<IArchitectureModelGeometry>, ResourceManagerReloadListener {
+public class ArchitectureGeometryLoader implements UnbakedModelLoader<IArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    private final Supplier<IArchitectureModelGeometry> geometrySupplier;
-    private IArchitectureModelGeometry cachedGeometry;
+    private final Supplier<IArchitectureUnbakedModel> geometrySupplier;
+    private IArchitectureUnbakedModel cachedGeometry;
 
-    public ArchitectureGeometryLoader(Supplier<IArchitectureModelGeometry> geometrySupplier) {
+    public ArchitectureGeometryLoader(Supplier<IArchitectureUnbakedModel> geometrySupplier) {
         this.geometrySupplier = geometrySupplier;
     }
 
-    private IArchitectureModelGeometry getGeometry() {
+    private IArchitectureUnbakedModel getGeometry() {
         if (this.cachedGeometry == null) {
             this.cachedGeometry = this.geometrySupplier.get();
         }
@@ -30,7 +30,7 @@ public class ArchitectureGeometryLoader implements IGeometryLoader<IArchitecture
     }
 
     @Override
-    public IArchitectureModelGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
+    public IArchitectureUnbakedModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
         return this.getGeometry();
     }
 

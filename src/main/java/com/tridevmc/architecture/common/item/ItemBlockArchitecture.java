@@ -36,13 +36,13 @@ public class ItemBlockArchitecture extends BlockItem implements IClientItemExten
 
             @Override
             public void renderByItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
-                var model = getModel();
-                var quads = model.getQuads(stack);
-                for (var modelForPass : model.getRenderPasses(stack)) {
-                    for (var rendertype : modelForPass.getRenderTypes(stack)) {
-                        Minecraft.getInstance().getItemRenderer().renderQuadList(poseStack, buffer.getBuffer(rendertype), quads, stack, packedLight, packedOverlay);
-                    }
-                }
+                //var model = getModel();
+                //var quads = model.getQuads(stack);
+                //for (var modelForPass : model.getRenderPasses(stack)) {
+                //    for (var rendertype : modelForPass.getRenderTypes(stack)) {
+                //        Minecraft.getInstance().getItemRenderer().renderQuadList(poseStack, buffer.getBuffer(rendertype), quads, stack, packedLight, packedOverlay);
+                //    }
+                //}
             }
         };
     }

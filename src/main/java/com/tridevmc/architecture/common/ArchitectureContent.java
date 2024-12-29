@@ -102,10 +102,11 @@ public class ArchitectureContent {
     }
 
     @SubscribeEvent
-    public void onRegisterClientExtensionsEvent(RegisterClientExtensionsEvent e) {
+    public void onRegisterClientExtensionsEvent(final RegisterClientExtensionsEvent e) {
+        // TODO: This registration happens __before__ the game actually registers items for whatever reason. So we need to have our item instances created in advance of the game actually registering them at all.
+        // Seems incredibly counter-intuitive, but we have to deal with it I guess.
         this.itemsWithClientExtensions.forEach(i -> e.registerItem(i.getExtensions(), (Item) i));
     }
-
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
         registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
@@ -168,18 +169,7 @@ public class ArchitectureContent {
 
     private <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry, BlockEntityType.BlockEntitySupplier<T> tileSupplier, String id, Block... blocks) {
         ResourceLocation key = ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id);
-        Type<?> dataFixerType = null;
-        try {
-            dataFixerType = DataFixers.getDataFixer().getSchema(
-                            DataFixUtils.makeKey(SharedConstants
-                                    .getCurrentVersion()
-                                    .getDataVersion()
-                                    .getVersion()))
-                    .getChoiceType(References.BLOCK_ENTITY, key.toString());
-        } catch (IllegalArgumentException e) {
-            ArchitectureLog.error("No data fixer was registered for resource id {}", key);
-        }
-        BlockEntityType<T> tileType = new BlockEntityType(tileSupplier, blocks);
+        BlockEntityType<T> tileType = new BlockEntityType<>(tileSupplier, blocks);
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), tileType);
         return tileType;
     }
