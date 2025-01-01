@@ -2,24 +2,29 @@ package com.tridevmc.architecture.client.render.model.geometry;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
-import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
-public class ArchitectureGeometryLoader implements UnbakedModelLoader<IArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    private final Supplier<IArchitectureUnbakedModel> geometrySupplier;
-    private IArchitectureUnbakedModel cachedGeometry;
+public class ArchitectureGeometryLoader implements UnbakedModelLoader<ArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    public ArchitectureGeometryLoader(Supplier<IArchitectureUnbakedModel> geometrySupplier) {
-        this.geometrySupplier = geometrySupplier;
+    private final IArchitectureBakedModelSupplier bakedModelSupplier;
+    private ArchitectureUnbakedModel cachedGeometry;
+
+    public ArchitectureGeometryLoader(IArchitectureBakedModelSupplier bakedModelSupplier) {
+        this.bakedModelSupplier = bakedModelSupplier;
     }
 
-    private IArchitectureUnbakedModel getGeometry() {
+    private ArchitectureUnbakedModel getGeometry(@Nullable ResourceLocation parentName, @Nullable ItemTransforms itemTransforms, @Nullable Boolean ambientOcclusion, @Nullable UnbakedModel.GuiLight guiLight) {
         if (this.cachedGeometry == null) {
-            this.cachedGeometry = this.geometrySupplier.get();
+            this.cachedGeometry = new ArchitectureUnbakedModel(this.bakedModelSupplier, parentName, itemTransforms, ambientOcclusion, guiLight);
         }
         return this.cachedGeometry;
     }
@@ -30,8 +35,30 @@ public class ArchitectureGeometryLoader implements UnbakedModelLoader<IArchitect
     }
 
     @Override
-    public IArchitectureUnbakedModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
-        return this.getGeometry();
+    public ArchitectureUnbakedModel read(JsonObject root, JsonDeserializationContext ctx) {
+        JsonObject jsonobject = root.getAsJsonObject();
+        String parentName = this.getParentName(jsonobject);
+        Boolean ambientOcclusionNullable = this.getAmbientOcclusion(jsonobject);
+        ItemTransforms itemTransforms = null;
+        if (jsonobject.has("display")) {
+            JsonObject displayObject = GsonHelper.getAsJsonObject(jsonobject, "display");
+            itemTransforms = ctx.deserialize(displayObject, ItemTransforms.class);
+        }
+        UnbakedModel.GuiLight guiLight = null;
+        if (jsonobject.has("gui_light")) {
+            guiLight = UnbakedModel.GuiLight.getByName(GsonHelper.getAsString(jsonobject, "gui_light"));
+        }
+        ResourceLocation resourcelocation = parentName.isEmpty() ? null : ResourceLocation.parse(parentName);
+
+        return this.getGeometry(resourcelocation, itemTransforms, ambientOcclusionNullable, guiLight);
     }
 
+    private String getParentName(JsonObject json) {
+        return GsonHelper.getAsString(json, "parent", "");
+    }
+
+    @Nullable
+    protected Boolean getAmbientOcclusion(JsonObject json) {
+        return json.has("ambientocclusion") ? GsonHelper.getAsBoolean(json, "ambientocclusion") : null;
+    }
 }

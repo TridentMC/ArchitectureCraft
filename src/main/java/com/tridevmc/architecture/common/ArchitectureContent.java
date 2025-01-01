@@ -156,7 +156,6 @@ public class ArchitectureContent {
         itemBlocksToRegister.forEach(e -> registry.register(e.getLeft(), e.getRight()));
         this.itemShapes = Maps.newHashMap();
         Arrays.stream(EnumShape.values()).forEach(s -> this.itemShapes.put(s, ItemShape.getItemFromShape(s)));
-        ArchitectureMod.PROXY.registerCustomRenderers();
     }
 
     private void onDataComponentTypeRegister(RegisterEvent.RegisterHelper<DataComponentType<?>> registry) {

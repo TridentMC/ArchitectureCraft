@@ -40,14 +40,10 @@ public class CommonProxy {
     private final Map<ResourceLocation, LegacyOBJSON> modelCache = Maps.newHashMap();
 
     public void setup(FMLCommonSetupEvent e) {
-
     }
 
     public void registerHandlers() {
         NeoForge.EVENT_BUS.register(this);
-    }
-
-    public void registerCustomRenderers() {
     }
 
     public LegacyOBJSON getCachedOBJSON(String name) {

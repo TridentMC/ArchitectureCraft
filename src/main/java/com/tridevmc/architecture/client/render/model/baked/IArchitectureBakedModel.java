@@ -28,6 +28,9 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
     default @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
         if (state instanceof BlockStateArchitecture stateArchitecture) {
             return this.getQuads(stateArchitecture, side, rand, extraData, renderType);
+        } else if (state == null) {
+            // This is likely an item model, so we'll still try to get quads for it.
+            return this.getQuads(null, side, rand, extraData, renderType);
         } else {
             return Collections.emptyList();
         }

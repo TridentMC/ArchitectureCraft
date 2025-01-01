@@ -27,12 +27,20 @@ package com.tridevmc.architecture.client.proxy;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureGeometryLoader;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeUnbakedModelLoader;
+import com.tridevmc.architecture.client.render.model.geometry.ArchitectureUnbakedModel;
+import com.tridevmc.architecture.client.render.model.geometry.IArchitectureBakedModelSupplier;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -52,22 +60,12 @@ public class ClientProxy extends CommonProxy {
             NeoForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
     }
 
-    public void registerDefaultModelLocations() {
-        Item itemToRegister;
-        ModelResourceLocation modelResourceLocation;
-    }
-
-    private void registerMesh(Item item, ModelResourceLocation resourceLocation) {
-    }
-
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterLoaders e) {
         e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
-                        () -> (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelSawbench(itemTransforms)
-                )
-        );
+                (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelSawbench(itemTransforms)
+        ));
         e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeUnbakedModelLoader());
-        this.registerDefaultModelLocations();
     }
 
     @SubscribeEvent
@@ -80,12 +78,4 @@ public class ClientProxy extends CommonProxy {
         super.registerHandlers();
     }
 
-    @Override
-    public void registerCustomRenderers() {
-    }
-
-    private ResourceLocation[] getTextures(String... textureNames) {
-        ResourceLocation[] out = new ResourceLocation[textureNames.length];
-        return Arrays.stream(textureNames).map(t -> t.contains(":") ? ResourceLocation.parse(t) : ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, t)).toList().toArray(out);
-    }
 }

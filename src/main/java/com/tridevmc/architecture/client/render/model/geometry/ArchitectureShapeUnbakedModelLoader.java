@@ -11,9 +11,9 @@ import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 
 import java.util.Map;
 
-public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<IArchitectureUnbakedModel>, ResourceManagerReloadListener {
+public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<ArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    private final Map<EnumShape, IArchitectureUnbakedModel> models = Maps.newConcurrentMap();
+    private final Map<EnumShape, ArchitectureGeometryLoader> models = Maps.newConcurrentMap();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
@@ -21,14 +21,15 @@ public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<I
     }
 
     @Override
-    public IArchitectureUnbakedModel read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
+    public ArchitectureUnbakedModel read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
         var shapeName = modelContents.get("shapeName").getAsString();
         var shape = EnumShape.byName(shapeName);
         if (shape == null) {
             throw new IllegalArgumentException("Unknown shape: " + shapeName);
         }
 
-        return this.models.computeIfAbsent(shape, s -> (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelShapeGeneric(s, itemTransforms));
+        // TODO: I hate this.
+        return this.models.computeIfAbsent(shape, s -> new ArchitectureGeometryLoader((textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelShapeGeneric(shape, itemTransforms))).read(modelContents, deserializationContext);
     }
 
 }
