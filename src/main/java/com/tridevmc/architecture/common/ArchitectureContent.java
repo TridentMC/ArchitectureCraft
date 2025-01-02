@@ -78,7 +78,6 @@ public class ArchitectureContent {
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
 
-    private List<IClientItemExtensionHolder> itemsWithClientExtensions = Lists.newArrayList();
     public BlockSawbench blockSawbench;
     public Map<EnumShape, BlockShape> blockShapes;
     public BlockEntityType<BlockEntityShape> blockEntityTypeShape;
@@ -101,12 +100,6 @@ public class ArchitectureContent {
         e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
     }
 
-    @SubscribeEvent
-    public void onRegisterClientExtensionsEvent(final RegisterClientExtensionsEvent e) {
-        // TODO: This registration happens __before__ the game actually registers items for whatever reason. So we need to have our item instances created in advance of the game actually registering them at all.
-        // Seems incredibly counter-intuitive, but we have to deal with it I guess.
-        this.itemsWithClientExtensions.forEach(i -> e.registerItem(i.getExtensions(), (Item) i));
-    }
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
         registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
@@ -207,10 +200,6 @@ public class ArchitectureContent {
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id, T item) {
         registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
-
-        if (item instanceof IClientItemExtensionHolder) {
-            this.itemsWithClientExtensions.add((IClientItemExtensionHolder) item);
-        }
 
         return (T) registeredItems.get(id);
     }
