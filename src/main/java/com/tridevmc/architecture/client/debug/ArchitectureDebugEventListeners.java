@@ -5,13 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
+import com.tridevmc.architecture.core.math.integer.IVector3iMutable;
 import com.tridevmc.architecture.core.model.mesh.IPolygonData;
 import com.tridevmc.architecture.core.model.mesh.Quad;
 import com.tridevmc.architecture.core.model.mesh.Tri;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.physics.Ray;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -20,11 +21,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.tridevmc.architecture.client.debug.ArchitectureDebugRenderTypes.ARCHITECTURE_DEBUG_LINE;
 
@@ -32,44 +35,58 @@ import static com.tridevmc.architecture.client.debug.ArchitectureDebugRenderType
  * Quick and dirty debug renderer for voxelization.
  */
 public class ArchitectureDebugEventListeners {
-    public static BlockPos targetPos;
-    public static IVoxelizer targetVoxelizer;
-    public static IVector3i currentVoxelizationOffset;
+
+    private record DebugRenderData(BlockPos pos, IVoxelizer voxelizer, IVector3iMutable offset) {
+        void onActivate(Player player, BlockHitResult hit) {
+            var face = hit.getDirection().getOpposite();
+            offset.add(face.getStepX(), face.getStepY(), face.getStepZ());
+            player.displayClientMessage(Component.literal("Voxelizer offset set to " + offset), true);
+        }
+    }
+
+    private static final int MAX_DEBUG_RENDER_DATA = 6;
+    private static final Map<BlockPos, DebugRenderData> debugRenderData = new HashMap<>();
+    private static final BlockPos[] debugRenderDataKeysByAge = new BlockPos[MAX_DEBUG_RENDER_DATA];
+
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (targetVoxelizer == null || targetPos == null || event.getStage() != RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS)
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES)
             return;
 
-        if (currentVoxelizationOffset == null)
-            currentVoxelizationOffset = targetVoxelizer.getMin();
-
-
-        var modelViewMatrix = event.getModelViewMatrix();
         var pose = event.getPoseStack();
-        var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        var cameraPos = camera.getPosition();
+        var camera = event.getCamera().getPosition();
+        var consumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(ARCHITECTURE_DEBUG_LINE);
 
-        var box = targetVoxelizer.getBoxForOffset(currentVoxelizationOffset.x(), currentVoxelizationOffset.y(), currentVoxelizationOffset.z());
+        for (var data : debugRenderData.values()) {
+            if (data != null) {
+                renderDebugData(pose, camera, consumer, data);
+            }
+        }
+    }
+
+    private static void renderDebugData(PoseStack pose, Vec3 camera, VertexConsumer consumer, DebugRenderData data) {
+        var voxelizer = data.voxelizer();
+        var pos = data.pos();
+        var voxOffset = data.offset();
+
+        var box = voxelizer.getBoxForOffset(voxOffset.x(), voxOffset.y(), voxOffset.z());
         var point = box.center();
 
-        var meshBounds = targetVoxelizer.getMesh().getBounds();
+        var meshBounds = voxelizer.getMesh().getBounds();
         var fromPoint = IVector3.ofImmutable(meshBounds.minX() - 1, point.y(), point.z());
         var rayDirection = IVector3.ofImmutable(1, 0, 0);
         var ray = new Ray(fromPoint, rayDirection);
-        var hits = ray.intersectUnfiltered(targetVoxelizer.getMesh())
-                .toList();
-        var matchingPolys = targetVoxelizer.getMesh().getAABBTree().searchStream(new com.tridevmc.architecture.core.physics.AABB(fromPoint, fromPoint.add(rayDirection.mul(1000D)))).toList();
-        var lineBuffer = bufferSource.getBuffer(ARCHITECTURE_DEBUG_LINE);
+        var hits = ray.intersectUnfiltered(voxelizer.getMesh()).toList();
+        var matchingPolys = voxelizer.getMesh().getAABBTree().searchStream(new com.tridevmc.architecture.core.physics.AABB(fromPoint, fromPoint.add(rayDirection.mul(1000D)))).toList();
 
         RenderSystem.disableDepthTest();
         pose.pushPose();
-        pose.mulPose(modelViewMatrix);
-        pose.translate(-cameraPos.x + targetPos.getX(), -cameraPos.y + targetPos.getY(), -cameraPos.z + targetPos.getZ());
-        renderBox(pose, lineBuffer, box);
+        var offset = Vec3.atLowerCornerOf(pos).subtract(camera);
+        pose.translate(offset.x, offset.y, offset.z);
+        renderBox(voxelizer, pose, consumer, box);
         hits.forEach(hit -> {
-            renderRayHit(pose, lineBuffer, point, hit);
+            renderRayHit(pose, consumer, point, hit);
         });
         // Render each potential hit box in the mesh as purple.
         matchingPolys.forEach(b -> {
@@ -78,31 +95,30 @@ public class ArchitectureDebugEventListeners {
                 var v1 = quad.getVertex(1).getPos();
                 var v2 = quad.getVertex(2).getPos();
                 var v3 = quad.getVertex(3).getPos();
-                renderLine(pose, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
-                renderLine(pose, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
-                renderLine(pose, lineBuffer, v2, v3, 1F, 0, 1F, 1F);
-                renderLine(pose, lineBuffer, v3, v0, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v0, v1, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v1, v2, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v2, v3, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v3, v0, 1F, 0, 1F, 1F);
             } else if (b instanceof Tri<? extends IPolygonData<?>> tri) {
                 var v0 = tri.getVertex(0).getPos();
                 var v1 = tri.getVertex(1).getPos();
                 var v2 = tri.getVertex(2).getPos();
-                renderLine(pose, lineBuffer, v0, v1, 1F, 0, 1F, 1F);
-                renderLine(pose, lineBuffer, v1, v2, 1F, 0, 1F, 1F);
-                renderLine(pose, lineBuffer, v2, v0, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v0, v1, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v1, v2, 1F, 0, 1F, 1F);
+                renderLine(pose, consumer, v2, v0, 1F, 0, 1F, 1F);
             }
         });
-        if (targetVoxelizer.isBoxValidVoxel(box)) {
-            ShapeRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
+        if (voxelizer.isBoxValidVoxel(box)) {
+            ShapeRenderer.renderLineBox(pose, consumer, box.deflate(1 / 32D).toMC(), 0, 0, 1F, 1);
         } else {
-            ShapeRenderer.renderLineBox(pose, lineBuffer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
+            ShapeRenderer.renderLineBox(pose, consumer, box.deflate(1 / 32D).toMC(), 1F, 0.5F, 0F, 1);
         }
         pose.popPose();
-        bufferSource.endBatch(ARCHITECTURE_DEBUG_LINE);
         RenderSystem.enableDepthTest();
     }
 
-    private static void renderBox(PoseStack matrix, VertexConsumer lineBuffer, com.tridevmc.architecture.core.physics.AABB box) {
-        if (targetVoxelizer.doesBoxIntersect(box)) {
+    private static void renderBox(IVoxelizer voxelizer, PoseStack matrix, VertexConsumer lineBuffer, com.tridevmc.architecture.core.physics.AABB box) {
+        if (voxelizer.doesBoxIntersect(box)) {
             ShapeRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 0, 1F, 0, .8F);
         } else {
             ShapeRenderer.renderLineBox(matrix, lineBuffer, box.toMC(), 1F, 0, 0, .8F);
@@ -134,21 +150,36 @@ public class ArchitectureDebugEventListeners {
     public static InteractionResult onVoxelizedBlockClicked(Level level, BlockPos pos, Player player, BlockHitResult hit, IVoxelizer voxelizer) {
         if (!shouldAssignVoxelizer(level, player))
             return InteractionResult.PASS;
-        if (!Objects.equals(ArchitectureDebugEventListeners.targetPos, pos)) {
-            ArchitectureDebugEventListeners.targetPos = pos;
-            ArchitectureDebugEventListeners.targetVoxelizer = voxelizer;
-            ArchitectureDebugEventListeners.currentVoxelizationOffset = voxelizer.getMin();
-            player.displayClientMessage(Component.literal("Voxelizer set to " + pos), true);
+
+        var data = debugRenderData.get(pos);
+
+        if (data == null) {
+            if (debugRenderData.size() == MAX_DEBUG_RENDER_DATA) {
+                var oldest = debugRenderDataKeysByAge[0];
+                debugRenderData.remove(oldest);
+                // Shift all keys down by one and assign the last key to null.
+                for (int i = 0; i < MAX_DEBUG_RENDER_DATA - 1; i++) {
+                    debugRenderDataKeysByAge[i] = debugRenderDataKeysByAge[i + 1];
+                }
+                debugRenderDataKeysByAge[MAX_DEBUG_RENDER_DATA - 1] = null;
+
+                player.displayClientMessage(Component.literal("Removed voxelizer debug data for " + oldest), true);
+            }
+
+            var debugData = new DebugRenderData(pos, voxelizer, IVector3i.ofMutable(0, 0, 0));
+            debugRenderData.put(pos, debugData);
+            for (int i = 0; i < MAX_DEBUG_RENDER_DATA; i++) {
+                if (debugRenderDataKeysByAge[i] == null) {
+                    debugRenderDataKeysByAge[i] = pos;
+                    break;
+                }
+            }
+
+            player.displayClientMessage(Component.literal("Added voxelizer debug data for " + pos), true);
         } else {
-            // Set the new voxelization offset using the player's facing direction and the current offset.
-            var facing = hit.getDirection().getOpposite();
-            ArchitectureDebugEventListeners.currentVoxelizationOffset = ArchitectureDebugEventListeners.currentVoxelizationOffset.asMutable().add(
-                    facing.getStepX(),
-                    facing.getStepY(),
-                    facing.getStepZ()
-            );
-            player.displayClientMessage(Component.literal("Voxelizer offset set to " + ArchitectureDebugEventListeners.currentVoxelizationOffset), true);
+            data.onActivate(player, hit);
         }
+
         return InteractionResult.SUCCESS;
     }
 

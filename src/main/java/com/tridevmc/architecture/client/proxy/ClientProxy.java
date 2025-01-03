@@ -25,31 +25,19 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.client.render.model.geometry.ArchitectureGeometryLoader;
+import com.tridevmc.architecture.client.render.model.geometry.ArchitectureUnbakedModelLoader;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeUnbakedModelLoader;
-import com.tridevmc.architecture.client.render.model.geometry.ArchitectureUnbakedModel;
-import com.tridevmc.architecture.client.render.model.geometry.IArchitectureBakedModelSupplier;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.block.model.TextureSlots;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.Arrays;
 
 public class ClientProxy extends CommonProxy {
 
@@ -62,7 +50,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelRegistryEvent(ModelEvent.RegisterLoaders e) {
-        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureGeometryLoader(
+        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureUnbakedModelLoader(
                 (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelSawbench(itemTransforms)
         ));
         e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeUnbakedModelLoader());

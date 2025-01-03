@@ -143,88 +143,112 @@ public class Voxelizer implements IVoxelizer {
             List<AABB>[] xPlane = new List[ySize];
             for (var y = 0; y < ySize; y++) {
                 var compressedLine = this.compressLine(grid[x][y]).toArray(AABB[]::new);
-                xPlane[y] = xPlane[y] == null ? Lists.newArrayList() : xPlane[y];
-                xPlane[y].addAll(Lists.newArrayList(compressedLine));
+                xPlane[y] = Lists.newArrayList(compressedLine);
             }
 
             var compressedPlane = this.compressPlane(xPlane).toArray(AABB[]::new);
             planes[x] = Lists.newArrayList(compressedPlane);
         }
 
-        // Planes should still be next to eachother, so we can compress them into a single list.
         var out = new ArrayList<AABB>();
         var compressedPlanes = this.compressPlane(planes).toArray(AABB[]::new);
         out.addAll(Lists.newArrayList(compressedPlanes));
 
-        ArchitectureLog.debug("Compressed {} voxels into {} ({}% reduction)", this.occupiedVoxels(), out.size(), 100D - Math.round(((double) out.size() / (double) this.occupiedVoxels()) * 10000D) / 100D);
+        ArchitectureLog.debug("Compressed {} voxels into {} ({}% reduction)",
+                this.occupiedVoxels(), out.size(),
+                100D - Math.round(((double) out.size() / (double) this.occupiedVoxels()) * 10000D) / 100D);
         return out.stream();
     }
 
     private Stream<AABB> compressPlane(List<AABB>[] plane) {
-        // First dimension represents different offsets along the plane, second dimension represents the line segments along that offset.
         var out = new ArrayList<AABB>();
-        var currentStack = new ArrayList<AABB>();
-        for (int planeOffset = 0; planeOffset < plane.length - 1; planeOffset++) {
+
+        // Handle empty plane case
+        if (plane.length == 0) {
+            return Stream.empty();
+        }
+
+        // Process all lines/planes
+        for (int planeOffset = 0; planeOffset < plane.length; planeOffset++) {
             var currentLines = plane[planeOffset];
-            if (currentLines.isEmpty()) {
+            if (currentLines == null || currentLines.isEmpty()) {
                 continue;
             }
 
+            // If this is the last plane, add all remaining lines and break
+            if (planeOffset == plane.length - 1) {
+                out.addAll(currentLines);
+                break;
+            }
+
             var nextLines = plane[planeOffset + 1];
-            if (nextLines.isEmpty()) {
-                // Add all the lines that are still present in the currentLines list to the output, we aren't going to be able to compress them any further.
+            if (nextLines == null || nextLines.isEmpty()) {
                 out.addAll(currentLines);
                 continue;
             }
 
+            // Try to merge current lines with next lines
+            boolean[] mergedCurrentLines = new boolean[currentLines.size()];
+            boolean[] mergedNextLines = new boolean[nextLines.size()];
+
             for (int j = 0; j < currentLines.size(); j++) {
                 var currentLine = currentLines.get(j);
+                if (currentLine == null) continue;
+
                 for (int k = 0; k < nextLines.size(); k++) {
                     var nextLine = nextLines.get(k);
-                    if (currentLine == null || nextLine == null) {
-                        continue;
-                    }
+                    if (nextLine == null || mergedNextLines[k]) continue;
+
                     if (currentLine.sharesFace(nextLine)) {
-                        // Remove the current line from currentLines list then replace the next line with the union of the two.
-                        currentLines.set(j, null);
                         nextLines.set(k, currentLine.union(nextLine));
+                        mergedCurrentLines[j] = true;
+                        mergedNextLines[k] = true;
+                        break;
                     }
                 }
             }
 
-            // Add all the lines that are still present in the currentLines list to the output.
-            out.addAll(currentLines.stream().filter(Objects::nonNull).toList());
+            // Add unmerged current lines to output
+            for (int j = 0; j < currentLines.size(); j++) {
+                if (!mergedCurrentLines[j] && currentLines.get(j) != null) {
+                    out.add(currentLines.get(j));
+                }
+            }
         }
 
         return out.stream();
     }
 
     private Stream<AABB> compressLine(AABB[] row) {
-        // Iterate over the row and compress neighbouring voxels if they share a face, if they don't then add our current voxel to the output and start a new stack.
         var out = new ArrayList<AABB>();
-        var currentStack = new ArrayList<AABB>();
-        for (int i = 0; i < row.length; i++) {
-            var currentVoxel = row[i];
-            if (currentVoxel == null) {
+        if (row == null || row.length == 0) {
+            return Stream.empty();
+        }
+
+        AABB current = null;
+
+        for (AABB voxel : row) {
+            if (voxel == null) {
+                if (current != null) {
+                    out.add(current);
+                    current = null;
+                }
                 continue;
             }
 
-            if (currentStack.isEmpty()) {
-                currentStack.add(currentVoxel);
+            if (current == null) {
+                current = voxel;
+            } else if (current.sharesFace(voxel)) {
+                current = current.union(voxel);
             } else {
-                var lastVoxel = currentStack.get(currentStack.size() - 1);
-                if (lastVoxel.isAdjacent(currentVoxel)) {
-                    currentStack.add(currentVoxel);
-                } else {
-                    out.add(currentStack.stream().reduce(AABB::union).get());
-                    currentStack.clear();
-                    currentStack.add(currentVoxel);
-                }
+                out.add(current);
+                current = voxel;
             }
         }
 
-        if (!currentStack.isEmpty()) {
-            out.add(currentStack.stream().reduce(AABB::union).get());
+        // Don't forget the last voxel/group
+        if (current != null) {
+            out.add(current);
         }
 
         return out.stream();

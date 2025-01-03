@@ -13,12 +13,12 @@ import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import javax.annotation.Nullable;
 
 
-public class ArchitectureGeometryLoader implements UnbakedModelLoader<ArchitectureUnbakedModel>, ResourceManagerReloadListener {
+public class ArchitectureUnbakedModelLoader implements UnbakedModelLoader<ArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
     private final IArchitectureBakedModelSupplier bakedModelSupplier;
     private ArchitectureUnbakedModel cachedGeometry;
 
-    public ArchitectureGeometryLoader(IArchitectureBakedModelSupplier bakedModelSupplier) {
+    public ArchitectureUnbakedModelLoader(IArchitectureBakedModelSupplier bakedModelSupplier) {
         this.bakedModelSupplier = bakedModelSupplier;
     }
 

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<ArchitectureUnbakedModel>, ResourceManagerReloadListener {
 
-    private final Map<EnumShape, ArchitectureGeometryLoader> models = Maps.newConcurrentMap();
+    private final Map<EnumShape, ArchitectureUnbakedModelLoader> models = Maps.newConcurrentMap();
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
@@ -29,7 +29,7 @@ public class ArchitectureShapeUnbakedModelLoader implements UnbakedModelLoader<A
         }
 
         // TODO: I hate this.
-        return this.models.computeIfAbsent(shape, s -> new ArchitectureGeometryLoader((textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelShapeGeneric(shape, itemTransforms))).read(modelContents, deserializationContext);
+        return this.models.computeIfAbsent(shape, s -> new ArchitectureUnbakedModelLoader((textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelShapeGeneric(shape, itemTransforms))).read(modelContents, deserializationContext);
     }
 
 }
