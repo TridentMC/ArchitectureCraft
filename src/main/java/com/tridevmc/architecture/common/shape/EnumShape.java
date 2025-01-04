@@ -31,7 +31,7 @@ public enum EnumShape {
     ROOF_OVERHANG_INNER_CORNER("roof_overhang_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     CYLINDER("cylinder", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
-    CYLINDER_HALF("cylinder_half", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
     CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
@@ -58,7 +58,7 @@ public enum EnumShape {
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
     WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
 
-    SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
+    SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()), // IMPLEMENTED
     SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
     SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
