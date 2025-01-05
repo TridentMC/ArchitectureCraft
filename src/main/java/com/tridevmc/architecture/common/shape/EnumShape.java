@@ -43,9 +43,9 @@ public enum EnumShape {
     BEVELLED_INNER_CORNER("bevelled_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     PILLAR_BASE("pillar_base", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
-    DORIC_CAPITAL("doric_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    DORIC_CAPITAL("doric_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     IONIC_CAPITAL("ionic_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    CORINTHIAN_CAPITAL("corinthian_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    CORINTHIAN_CAPITAL("corinthian_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_TRIGLYPH("doric_triglyph", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     DORIC_TRIGLYPH_CORNER("doric_triglyph_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     DORIC_METOPE("doric_metope", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
