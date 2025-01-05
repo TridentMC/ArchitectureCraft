@@ -42,7 +42,7 @@ public enum EnumShape {
     BEVELLED_OUTER_CORNER("bevelled_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     BEVELLED_INNER_CORNER("bevelled_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
-    PILLAR_BASE("pillar_base", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    PILLAR_BASE("pillar_base", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_CAPITAL("doric_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     IONIC_CAPITAL("ionic_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CORINTHIAN_CAPITAL("corinthian_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),

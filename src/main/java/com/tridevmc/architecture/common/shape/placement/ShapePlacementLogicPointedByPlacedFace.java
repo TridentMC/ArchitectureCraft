@@ -14,11 +14,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Implementation of {@link IShapePlacementLogic} that points the shape based on the player's look vector.
+ * Implementation of {@link IShapePlacementLogic} that points the shape based on the face that was clicked.
  */
-public class ShapePlacementLogicPointed implements IShapePlacementLogic<BlockArchitecture> {
+public class ShapePlacementLogicPointedByPlacedFace implements IShapePlacementLogic<BlockArchitecture> {
 
-    public static final ShapePlacementLogicPointed INSTANCE = new ShapePlacementLogicPointed();
+    public static final ShapePlacementLogicPointedByPlacedFace INSTANCE = new ShapePlacementLogicPointedByPlacedFace();
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
             ShapeOrientationPropertyFacing.INSTANCE
     );
@@ -31,11 +31,9 @@ public class ShapePlacementLogicPointed implements IShapePlacementLogic<BlockArc
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
             @NotNull BlockHitResult hitResult) {
-        // Pointed can point any direction, and is determined by the player's look vector.
-        // If the player is crouching, then the orientation will point towards their look vector instead of at the player.
-        Direction nearest = Direction.orderedByNearest(placer)[0].getOpposite();
+        var hitDir = hitResult.getDirection();
         return ShapeOrientation.forProperties(
-                ShapeOrientationPropertyFacing.of(placer.isCrouching() ? nearest.getOpposite() : nearest)
+                ShapeOrientationPropertyFacing.of(placer.isCrouching() ? hitDir.getOpposite() : hitDir)
         );
     }
 
