@@ -18,6 +18,33 @@ import java.util.stream.Collectors;
 
 public enum EnumShape {
 
+    SLAB("slab", ShapePlacementLogicSlab.INSTANCE, ShapeTransformationResolverSlab.INSTANCE),
+
+    STAIRS("stairs", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS_SMART("stairs_smart", null, null),
+
+    PILLAR("pillar", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
+    POST("post", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
+    POLE("pole", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
+
+    CYLINDER("cylinder", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
+    CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
+    CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+
+    SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
+    SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
+    SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+
+    BEVELLED_OUTER_CORNER("bevelled_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    BEVELLED_INNER_CORNER("bevelled_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+
     ROOF_TILE("roof_tile", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OUTER_CORNER("roof_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_INNER_CORNER("roof_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
@@ -29,18 +56,12 @@ public enum EnumShape {
     ROOF_OVERHANG("roof_overhang", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_OUTER_CORNER("roof_overhang_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_INNER_CORNER("roof_overhang_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-
-    CYLINDER("cylinder", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
-    CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
-    CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    PILLAR("pillar", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
-    POST("post", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
-    POLE("pole", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
-
-    BEVELLED_OUTER_CORNER("bevelled_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    BEVELLED_INNER_CORNER("bevelled_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", null, null),
+    ROOF_OVERHANG_GABLE_RH("roof_overhang_gable_rh", null, null),
+    ROOF_OVERHANG_GABLE_END_LH("roof_overhang_gable_end_lh", null, null),
+    ROOF_OVERHANG_GABLE_END_RH("roof_overhang_gable_end_rh", null, null),
+    ROOF_OVERHANG_RIDGE("roof_overhang_ridge", null, null),
+    ROOF_OVERHANG_VALLEY("roof_overhang_valley", null, null),
 
     PILLAR_BASE("pillar_base", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_CAPITAL("doric_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
@@ -52,26 +73,6 @@ public enum EnumShape {
     ARCHITRAVE("architrave", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCHITRAVE_CORNER("architrave_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
-    WINDOW_FRAME("window_frame", null, null),
-    WINDOW_CORNER("window_corner", null, null),
-    WINDOW_MULLION("window_mullion", null, null),
-    WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
-    WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()), // TODO: Use window class for placement logic instead of empty diamond
-
-    SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()), // IMPLEMENTED
-    SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
-    SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-
-    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", null, null),
-    ROOF_OVERHANG_GABLE_RH("roof_overhang_gable_rh", null, null),
-    ROOF_OVERHANG_GABLE_END_LH("roof_overhang_gable_end_lh", null, null),
-    ROOF_OVERHANG_GABLE_END_RH("roof_overhang_gable_end_rh", null, null),
-    ROOF_OVERHANG_RIDGE("roof_overhang_ridge", null, null),
-    ROOF_OVERHANG_VALLEY("roof_overhang_valley", null, null),
-
     CORNICE_LH("cornice_lh", null, null),
     CORNICE_RH("cornice_rh", null, null),
     CORNICE_END_LH("cornice_end_lh", null, null),
@@ -80,10 +81,14 @@ public enum EnumShape {
     CORNICE_VALLEY("cornice_valley", null, null),
     CORNICE_BOTTOM("cornice_bottom", null, null),
 
-    CLADDING_SHEET("cladding_sheet", null, null),
+    WINDOW_FRAME("window_frame", null, null),
+    WINDOW_CORNER("window_corner", null, null),
+    WINDOW_MULLION("window_mullion", null, null),
+    WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
+    WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
 
-    ARCH_D1("arch_d1",   null, null),
-    ARCH_D2("arch_d2",   null, null),
+    ARCH_D1("arch_d1", null, null),
+    ARCH_D2("arch_d2", null, null),
     ARCH_D3A("arch_d3a", null, null),
     ARCH_D3B("arch_d3b", null, null),
     ARCH_D3C("arch_d3c", null, null),
@@ -94,35 +99,27 @@ public enum EnumShape {
     BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
     BANISTER_PLAIN("banister_plain", null, null),
     BANISTER_PLAIN_TOP("banister_plain_top", null, null),
+    BANISTER_PLAIN_END("banister_plain_end", null, null),
+    BANISTER_PLAIN_INNER_CORNER("banister_plain_inner_corner", null, null),
+
+    BANISTER_FANCY_BOTTOM("banister_fancy_bottom", null, null),
+    BANISTER_FANCY("banister_fancy", null, null),
+    BANISTER_FANCY_TOP("banister_fancy_top", null, null),
+    BANISTER_FANCY_END("banister_fancy_end", null, null),
+    BANISTER_FANCY_NEWEL_TALL("banister_fancy_newel_tall", null, null),
+
+    BALUSTRADE_PLAIN("balustrade_plain", null, null),
+    BALUSTRADE_PLAIN_OUTER_CORNER("balustrade_plain_outer_corner", null, null),
+    BALUSTRADE_PLAIN_INNER_CORNER("balustrade_plain_inner_corner", null, null),
+    BALUSTRADE_PLAIN_WITH_NEWEL("balustrade_plain_with_newel", null, null),
+    BALUSTRADE_PLAIN_END("balustrade_plain_end", null, null),
 
     BALUSTRADE_FANCY("balustrade_fancy", null, null),
     BALUSTRADE_FANCY_OUTER_CORNER("balustrade_fancy_outer_corner", null, null),
     BALUSTRADE_FANCY_WITH_NEWEL("balustrade_fancy_with_newel", null, null),
     BALUSTRADE_FANCY_NEWEL("balustrade_fancy_newel", null, null),
 
-    BALUSTRADE_PLAIN("balustrade_plain", null, null),
-    BALUSTRADE_PLAIN_OUTER_CORNER("balustrade_plain_outer_corner", null, null),
-    BALUSTRADE_PLAIN_WITH_NEWEL("balustrade_plain_with_newel", null, null),
-
-    BANISTER_PLAIN_END("banister_plain_end", null, null),
-
-    BANISTER_FANCY_NEWEL_TALL("banister_fancy_newel_tall", null, null),
-
-    BALUSTRADE_PLAIN_INNER_CORNER("balustrade_plain_inner_corner", null, null),
-    BALUSTRADE_PLAIN_END("balustrade_plain_end", null, null),
-
-    BANISTER_FANCY_BOTTOM("banister_fancy_bottom", null, null),
-    BANISTER_FANCY("banister_fancy", null, null),
-    BANISTER_FANCY_TOP("banister_fancy_top", null, null),
-    BANISTER_FANCY_END("banister_fancy_end", null, null),
-
-    BANISTER_PLAIN_INNER_CORNER("banister_plain_inner_corner", null, null),
-
-    SLAB("slab", ShapePlacementLogicSlab.INSTANCE, ShapeTransformationResolverSlab.INSTANCE),
-    STAIRS("stairs", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    STAIRS_SMART("stairs_smart", null, null);
+    CLADDING_SHEET("cladding_sheet", null, null);
 
 
     private static final Map<String, EnumShape> NAME_LOOKUP = Arrays.stream(values())
@@ -139,7 +136,7 @@ public enum EnumShape {
               IShapeTransformationResolver transformationResolver) {
         this.name = name;
         this.localizationKey = String.format("shape.%s.%s", ArchitectureMod.MOD_ID, name);
-        this.id =ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
+        this.id = ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
     }
