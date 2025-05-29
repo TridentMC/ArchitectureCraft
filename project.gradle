@@ -16,7 +16,7 @@ ext {
     mappingsMinecraftVersion = "1.21.4"
     mappingsVersion = "2024.12.22"
 
-    neoForgeVersion = "21.4.38-beta"
+    neoForgeVersion = "21.4.101-beta"
     neoForgeVersionRange = "[21.4,)"
     loaderVersionRange = "[2,)"
 }

@@ -82,21 +82,21 @@ public enum EnumShape {
 
     CLADDING_SHEET("cladding_sheet", null, null),
 
-    ARCH_D1("arch_d1", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D2("arch_d2", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D3A("arch_d3a", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D3B("arch_d3b", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D3C("arch_d3c", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D4A("arch_d4a", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D4B("arch_d4b", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCH_D4C("arch_d4c", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCH_D1("arch_d1",   null, null),
+    ARCH_D2("arch_d2",   null, null),
+    ARCH_D3A("arch_d3a", null, null),
+    ARCH_D3B("arch_d3b", null, null),
+    ARCH_D3C("arch_d3c", null, null),
+    ARCH_D4A("arch_d4a", null, null),
+    ARCH_D4B("arch_d4b", null, null),
+    ARCH_D4C("arch_d4c", null, null),
 
     BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
     BANISTER_PLAIN("banister_plain", null, null),
     BANISTER_PLAIN_TOP("banister_plain_top", null, null),
 
     BALUSTRADE_FANCY("balustrade_fancy", null, null),
-    BALUSTRADE_FANCY_CORNER("balustrade_fancy_corner", null, null),
+    BALUSTRADE_FANCY_OUTER_CORNER("balustrade_fancy_outer_corner", null, null),
     BALUSTRADE_FANCY_WITH_NEWEL("balustrade_fancy_with_newel", null, null),
     BALUSTRADE_FANCY_NEWEL("balustrade_fancy_newel", null, null),
 

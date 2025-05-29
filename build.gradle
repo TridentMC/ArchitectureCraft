@@ -4,7 +4,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '1.0.23'
+    id 'net.neoforged.moddev' version '2.0.76'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
