@@ -1,0 +1,47 @@
+package com.tridevmc.architecture.common.shape.transformation;
+
+import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.core.math.IMatrix4;
+import com.tridevmc.architecture.core.math.IMatrix4Immutable;
+import com.tridevmc.architecture.core.math.IMatrix4Mutable;
+import com.tridevmc.architecture.core.math.ITrans3;
+import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+import static com.tridevmc.architecture.common.shape.orientation.EnumTurn.TURNED;
+
+public class ShapeTransformationResolverFacingWithTurn implements IShapeTransformationResolver {
+
+    public static final ShapeTransformationResolverFacingWithTurn INSTANCE = new ShapeTransformationResolverFacingWithTurn();
+
+    @Override
+    public @NotNull ITrans3 resolve(@NotNull ShapeOrientation orientation) {
+        var facingValue = orientation.getValue(ShapeOrientationPropertyFacing.INSTANCE);
+        var turn = orientation.getValue(ShapeOrientationPropertyTurn.INSTANCE);
+        var facing = facingValue != null ? facingValue.value() : Direction.NORTH;
+
+        IMatrix4Mutable matrix;
+        if (Objects.requireNonNull(turn).value() == TURNED) {
+            // Rotate 90 degrees around X axis
+            matrix = IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 90, 0, 0).asMutable();
+        } else {
+            matrix = IMatrix4.ofMutable(IMatrix4.IDENTITY);
+        }
+
+        return switch (facing) {
+            case UP ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(matrix));
+            case DOWN ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(matrix));
+            case NORTH ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0).asMutable().mul(matrix));
+            case SOUTH ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0).asMutable().mul(matrix));
+            case WEST ->
+                    ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 180, 0).asMutable().mul(matrix));
+            case EAST -> ITrans3.ofImmutable(matrix);
+        };
+    }
+}

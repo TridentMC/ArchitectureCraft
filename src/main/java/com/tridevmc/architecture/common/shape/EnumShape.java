@@ -87,8 +87,8 @@ public enum EnumShape {
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
     WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
 
-    ARCH_D1("arch_d1", null, null),
-    ARCH_D2("arch_d2", null, null),
+    ARCH_D1("arch_d1", ShapePlacementLogicFacingWithTurn.INSTANCE, ShapeTransformationResolverFacingWithTurn.INSTANCE),
+    ARCH_D2("arch_d2", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCH_D3A("arch_d3a", null, null),
     ARCH_D3B("arch_d3b", null, null),
     ARCH_D3C("arch_d3c", null, null),
