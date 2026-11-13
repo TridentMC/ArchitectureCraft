@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:item/cladding"
+        "type": "architecturecraft:mesh",
+        "shape": "cladding_sheet"
     }
 }

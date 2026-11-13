@@ -1,14 +1,13 @@
 package com.tridevmc.architecture.client.render.model.geometry;
 
-import com.mojang.blaze3d.platform.Transparency;
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMesh;
+import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
+import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
 import com.tridevmc.architecture.client.render.model.impl.ModelResolverShapeGeneric;
+import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ShapeMeshes;
-import com.tridevmc.architecture.client.render.model.baked.IArchitectureBakedModel;
-import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
-import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
@@ -20,6 +19,15 @@ import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.mesh.Quad;
 import com.tridevmc.architecture.core.model.mesh.Vertex;
 import com.tridevmc.architecture.testsupport.MinecraftTestBootstrap;
+
+import com.google.gson.JsonParser;
+import com.mojang.blaze3d.platform.Transparency;
+import com.mojang.serialization.JsonOps;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
@@ -37,16 +45,15 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.model.data.ModelData;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,7 +71,15 @@ import static org.mockito.Mockito.when;
 class ArchitectureRenderingTest {
 
     @Test
-    void itemAtlasIdentityAnimationAndParentTransformFollowRenderedContent() {
+    void itemAtlasIdentityAnimationAndParentTransformFollowRenderedContent() throws Exception {
+        try (var resource = getClass().getResourceAsStream("/assets/architecturecraft/items/cladding.json")) {
+            assertNotNull(resource);
+            var definition = JsonParser.parseReader(new InputStreamReader(resource, StandardCharsets.UTF_8))
+                    .getAsJsonObject().getAsJsonObject("model");
+            assertEquals("architecturecraft:mesh", definition.get("type").getAsString());
+            var cladding = ArchitectureItemModel.CODEC.codec().parse(JsonOps.INSTANCE, definition).getOrThrow();
+            assertSame(EnumShape.CLADDING_SHEET, cladding.shape().orElseThrow());
+        }
         var stack = mock(ItemStack.class);
         var material = mock(BakedQuad.MaterialInfo.class);
         when(material.itemRenderType()).thenReturn(mock(RenderType.class));
