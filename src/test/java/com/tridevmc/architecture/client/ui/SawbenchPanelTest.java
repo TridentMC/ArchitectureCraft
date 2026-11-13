@@ -11,7 +11,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.tridevmc.compound.ui.element.InventorySlot;
 import com.tridevmc.compound.ui.element.ItemDisplay;
 import com.tridevmc.compound.ui.element.Button;
-import com.tridevmc.compound.ui.element.ILazyCollection;
+import com.tridevmc.compound.ui.element.ListView;
 import com.tridevmc.compound.ui.element.Label;
 import com.tridevmc.compound.ui.element.Panel;
 import com.tridevmc.compound.ui.layout.Bounds;
@@ -209,7 +209,7 @@ class SawbenchPanelTest {
             tree.prepareFrame(320, 240, context);
             UiScreenshot.save(tree, 320, 240, Path.of("build/reports/ui/sawbench-search.png"));
 
-            var categoryList = tree.findNodesByElementType(ILazyCollection.class).getFirst();
+            var categoryList = tree.findNodesByElementType(ListView.class).getFirst();
             var categoryBounds = categoryList.getBounds();
             click(tree, new Bounds(categoryBounds.x(), categoryBounds.y(), categoryBounds.width(), 18));
             key(tree, InputConstants.KEY_END);

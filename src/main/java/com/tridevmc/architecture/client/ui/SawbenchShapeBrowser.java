@@ -10,41 +10,33 @@ import com.tridevmc.compound.ui.element.ILazySource;
 import com.tridevmc.compound.ui.element.ISelection;
 import com.tridevmc.compound.ui.element.ItemDisplay;
 import com.tridevmc.compound.ui.element.Label;
+import com.tridevmc.compound.ui.element.ListView;
 import com.tridevmc.compound.ui.element.Row;
 import com.tridevmc.compound.ui.element.ScrollArea;
 import com.tridevmc.compound.ui.element.Spacer;
-import com.tridevmc.compound.ui.element.Sprite;
 import com.tridevmc.compound.ui.element.Stack;
 import com.tridevmc.compound.ui.element.TextInput;
 import com.tridevmc.compound.ui.element.Tooltip;
 import com.tridevmc.compound.ui.layout.Alignment;
 import com.tridevmc.compound.ui.scope.ICompositionScope;
-import com.tridevmc.compound.ui.sprite.IScreenSprite;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 final class SawbenchShapeBrowser {
     private static final int CATEGORY_WIDTH = 84;
     private static final int CELL_SIZE = 24;
-    private static final IScreenSprite BUTTON = IScreenSprite.of(
-            Identifier.withDefaultNamespace("widget/button"));
-    private static final IScreenSprite SELECTED_BUTTON = IScreenSprite.of(
-            Identifier.withDefaultNamespace("widget/button_highlighted"));
     private final ILazySource.Mutable<EnumShape, EnumShape> source =
             ILazySource.mutable(ShapeCategory.ALL.getShapes(), shape -> shape);
-    private final ISelection<ShapeCategory> categories = ISelection.create(EnumSelectionMode.SINGLE);
+    private final ListView<ShapeCategory> categories = new ListView<>();
     private final ISelection<EnumShape> selection = ISelection.create(EnumSelectionMode.SINGLE);
     private final ScrollArea shapeScroll = new ScrollArea();
-    private final ScrollArea categoryScroll = new ScrollArea();
     private final TextInput search = new TextInput();
     private final Button clear = new Button(false);
     private final Function<EnumShape, ItemStack> preview;
@@ -53,11 +45,12 @@ final class SawbenchShapeBrowser {
 
     SawbenchShapeBrowser(Function<EnumShape, ItemStack> preview, Consumer<EnumShape> onSelection) {
         this.preview = preview;
-        this.categories.setKeys(List.of(ShapeCategory.values()));
-        this.categories.setSelectedKeys(List.of(this.category));
-        this.categories.setOnSelectionChanged(values -> {
-            if (!values.isEmpty()) this.setCategory(values.getFirst());
-        });
+        this.categories.setItems(List.of(ShapeCategory.values()));
+        this.categories.setDisplayTextProvider(value ->
+                Component.translatable(value.getTranslationKey()).getString());
+        this.categories.setItemHeight(18);
+        this.categories.setSelectedIndex(0);
+        this.categories.setOnSelectionChanged(this::setCategory);
         this.selection.setOnSelectionChanged(shapes -> {
             if (!this.syncingSelection && !shapes.isEmpty()) onSelection.accept(shapes.getFirst());
         });
@@ -82,13 +75,8 @@ final class SawbenchShapeBrowser {
         scope.e(new Spacer(0, 4));
         scope.e(new Row(), browser -> {
             browser.layout().fillMaxWidth().fixedHeight(height).spacing(8);
-            browser.e(this.categoryScroll, scroll -> {
-                scroll.layout().fixedWidth(CATEGORY_WIDTH).fillMaxHeight();
-                var values = ShapeCategory.values();
-                scroll.fillSlot(ScrollArea.CONTENT_SLOT, list -> list.e(ILazyCollection.list(
-                        ILazySource.immutable(values.length, i -> values[i], i -> values[i]),
-                        CATEGORY_WIDTH - 12, 18, 0, this::composeCategory).selection(this.categories)));
-            });
+            browser.e(this.categories, list ->
+                    list.layout().fixedWidth(CATEGORY_WIDTH).fillMaxHeight());
             browser.e(new Stack(), shapes -> {
                 shapes.layout().weight(1).fillMaxHeight();
                 shapes.e(new Label(() -> this.source.size() == 0
@@ -108,37 +96,19 @@ final class SawbenchShapeBrowser {
         });
     }
 
-    private void composeCategory(ShapeCategory value, ICompositionScope scope) {
-        this.composeChoice(scope, () -> this.categories.isSelected(value), content -> content.e(
-                new Label(Component.translatable(value.getTranslationKey()), 0xFFFFFF, true)));
-    }
-
     private void composeShape(EnumShape shape, ICompositionScope scope) {
         scope.e(new Tooltip(Component.translatable(shape.getLocalizationKey())), tooltip -> {
             tooltip.layout().fixedSize(CELL_SIZE, CELL_SIZE);
-            tooltip.fillSlot(Tooltip.CONTENT_SLOT, content -> this.composeChoice(content,
-                    () -> this.selection.isSelected(shape),
-                    icon -> icon.e(new ItemDisplay(() -> this.preview.apply(shape)))));
+            tooltip.fillSlot(Tooltip.CONTENT_SLOT, content -> content.e(new Box(), icon -> {
+                icon.layout().fillMax().contentAlignment(Alignment.CENTER);
+                icon.e(new ItemDisplay(() -> this.preview.apply(shape)));
+            }));
         });
     }
 
-    private void composeChoice(ICompositionScope scope, BooleanSupplier selected,
-                               Consumer<ICompositionScope> content) {
-        scope.e(new Stack(), cell -> {
-            cell.layout().fillMax();
-            cell.e(new Sprite(() -> selected.getAsBoolean() ? SELECTED_BUTTON : BUTTON),
-                    background -> background.layout().fillMax());
-            cell.e(new Box(), centered -> {
-                centered.layout().fillMax().contentAlignment(Alignment.CENTER);
-                content.accept(centered);
-            });
-        });
-    }
-
-    void setCategory(ShapeCategory category) {
+    private void setCategory(ShapeCategory category) {
         if (this.category == category) return;
         this.category = category;
-        this.categories.setSelectedKeys(List.of(category));
         this.filter(this.search.getValue());
     }
 
@@ -167,5 +137,4 @@ final class SawbenchShapeBrowser {
             this.syncingSelection = false;
         }
     }
-
 }
