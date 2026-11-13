@@ -11,9 +11,9 @@ import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -42,7 +42,7 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
     private static void doInit() {
         if (needsInit) {
-            Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(TextureAtlas.LOCATION_BLOCKS)::getSprite;
+            Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)::getSprite;
             textures = new TextureAtlasSprite[]{
                     textureGetter.apply(Identifier.withDefaultNamespace("block/oak_planks")),
                     textureGetter.apply(Identifier.withDefaultNamespace("block/iron_block"))

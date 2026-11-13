@@ -28,7 +28,8 @@ if (project.ext.useElytraVersionFormat) {
     }
     def commits = 'git rev-list --count HEAD'.execute().in.text.trim()
     def dirty = !'git diff-index HEAD'.execute().in.text.trim().isEmpty()
-    version = branch + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '')
+    def versionPrefix = (branch ==~ /\d+.*/) ? branch : project.ext.minecraftVersion + '-' + branch
+    version = versionPrefix + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '')
 } else {
     version = project.ext.version
 }
