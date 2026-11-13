@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.common.helpers;
 
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -43,7 +44,10 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 import java.util.Random;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
+import static java.lang.Math.floor;
+import static java.lang.Math.round;
 
 public class Utils {
 

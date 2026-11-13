@@ -28,18 +28,21 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.helpers.Utils;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.core.ArchitectureLog;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemCladding extends ItemArchitecture {
 
@@ -68,8 +71,8 @@ public class ItemCladding extends ItemArchitecture {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
-                                net.minecraft.world.item.component.TooltipDisplay display,
-                                java.util.function.Consumer<Component> tooltip, TooltipFlag flags) {
+                                TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flags) {
         var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
         if (material != null && material.hasBase()) {
             tooltip.accept(Component.literal(Utils.displayNameOnlyOfBlock(material.safeBase().getBlock())));

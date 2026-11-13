@@ -1,15 +1,21 @@
 package com.tridevmc.architecture.common.shape.placement;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
+import com.tridevmc.architecture.common.shape.orientation.EnumTurn;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyTurn;
+
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.*;
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
 
 public class ShapePlacementLogicFacingWithTurn implements IShapePlacementLogic<BlockArchitecture> {
 

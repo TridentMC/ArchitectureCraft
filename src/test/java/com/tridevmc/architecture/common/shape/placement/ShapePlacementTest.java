@@ -19,9 +19,9 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProper
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverBanister;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverCladding;
 import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.model.objson.OBJSON;
 import com.tridevmc.architecture.core.physics.AABB;
 import com.tridevmc.architecture.core.physics.Ray;
-import java.util.Comparator;
 import com.tridevmc.architecture.testsupport.MinecraftTestBootstrap;
 import com.tridevmc.architecture.testsupport.ShapeScreenshot;
 
@@ -43,6 +43,7 @@ import net.minecraft.world.phys.Vec3;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,7 +74,7 @@ class ShapePlacementTest {
                 assertEquals(1, face.getNormal().lengthSquared(), 1e-6, () -> shape.getName()
                         + " mesh=" + mesh.getName() + " normal=" + face.getNormal()
                         + " polygonNormals=" + face.getPolygons().stream().map(polygon -> polygon.getNormal().toString()).toList()
-                        + " importer=" + com.tridevmc.architecture.core.model.objson.OBJSON.class.getProtectionDomain().getCodeSource().getLocation());
+                        + " importer=" + OBJSON.class.getProtectionDomain().getCodeSource().getLocation());
             });
             mesh.getFaceStream().flatMap(face -> face.getPolygonStream()).forEach(polygon -> {
                 assertTrue(Double.isFinite(polygon.getNormal().lengthSquared()), shape.getName());

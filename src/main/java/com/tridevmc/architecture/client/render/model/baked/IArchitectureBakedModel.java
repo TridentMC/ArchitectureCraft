@@ -1,5 +1,8 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3fc;
+
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -20,10 +23,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3fc;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemModel {
     IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state);
@@ -86,7 +88,7 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemMod
         layer.setUsesBlockLight(this.usesBlockLight());
         layer.setParticleMaterial(this.particleMaterial());
         layer.setItemTransform(this.getTransforms().getTransform(displayContext));
-        layer.setExtents(() -> quads.stream().flatMap(q -> java.util.stream.IntStream.range(0, 4)
+        layer.setExtents(() -> quads.stream().flatMap(q -> IntStream.range(0, 4)
                 .mapToObj(q::position)).toArray(Vector3fc[]::new));
         if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
             output.setAnimated();

@@ -1,16 +1,19 @@
 package com.tridevmc.architecture.testsupport;
 
-import net.minecraft.server.Bootstrap;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.MockedStatic;
+
 import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.registries.VanillaRegistries;
+import net.minecraft.server.Bootstrap;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.GameData;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.mockito.MockedStatic;
+
+import java.util.List;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -28,7 +31,7 @@ public final class MinecraftTestBootstrap implements BeforeAllCallback {
         // A plain JVM has no discovered mods; NeoForge still asks the loader for feature flags.
         var loader = mock(FMLLoader.class, RETURNS_DEEP_STUBS);
         LOADER.when(FMLLoader::getCurrent).thenReturn(loader);
-        when(loader.getLoadingModList().getModFiles()).thenReturn(java.util.List.of());
+        when(loader.getLoadingModList().getModFiles()).thenReturn(List.of());
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
         REGISTRIES = VanillaRegistries.createWorldLookup();

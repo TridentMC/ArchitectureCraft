@@ -24,29 +24,39 @@
 
 package com.tridevmc.architecture.common;
 
+import com.tridevmc.architecture.common.block.BlockArchitecture;
+import com.tridevmc.architecture.common.block.BlockSawbench;
+import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.common.block.container.ContainerSawbench;
+import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
+import com.tridevmc.architecture.common.item.ItemArchitecture;
+import com.tridevmc.architecture.common.item.ItemBlockArchitecture;
+import com.tridevmc.architecture.common.item.ItemChisel;
+import com.tridevmc.architecture.common.item.ItemCladding;
+import com.tridevmc.architecture.common.item.ItemHammer;
+import com.tridevmc.architecture.common.item.ItemShape;
+import com.tridevmc.architecture.common.item.component.ComponentMaterial;
+import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
+import com.tridevmc.architecture.core.ArchitectureLog;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Codec;
-import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.block.BlockSawbench;
-import com.tridevmc.architecture.common.block.BlockShape;
-import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
-import com.tridevmc.architecture.common.item.*;
-import com.tridevmc.architecture.common.item.component.ComponentMaterial;
-import com.tridevmc.architecture.common.shape.EnumShape;
-import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
-import com.tridevmc.architecture.core.ArchitectureLog;
 import io.netty.buffer.ByteBuf;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import net.minecraft.SharedConstants;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.Container;
@@ -60,8 +70,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,7 +96,7 @@ public class ArchitectureContent {
     public ItemCladding itemCladding;
     public DataComponentType<ComponentMaterial> componentMaterial;
     public Map<EnumShape, ItemShape> itemShapes;
-    public MenuType<com.tridevmc.architecture.common.block.container.ContainerSawbench> universalMenuType;
+    public MenuType<ContainerSawbench> universalMenuType;
 
     @SubscribeEvent
     public void onRegisterEvent(final RegisterEvent e) {

@@ -1,13 +1,14 @@
 package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.tridevmc.architecture.common.ArchitectureMod;
-
 import com.tridevmc.architecture.legacy.common.shape.LegacyEnumShape;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -20,10 +21,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
-import static net.minecraft.core.Direction.*;
+import static net.minecraft.core.Direction.DOWN;
+import static net.minecraft.core.Direction.EAST;
+import static net.minecraft.core.Direction.NORTH;
+import static net.minecraft.core.Direction.SOUTH;
+import static net.minecraft.core.Direction.UP;
+import static net.minecraft.core.Direction.WEST;
 
 @Deprecated
 public class LegacyShapeBehaviour {

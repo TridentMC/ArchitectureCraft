@@ -1,12 +1,16 @@
 package com.tridevmc.architecture.common.shape.transformation;
 
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyTurn;
 import com.tridevmc.architecture.core.math.IMatrix4;
 import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.IMatrix4Mutable;
 import com.tridevmc.architecture.core.math.ITrans3;
-import net.minecraft.core.Direction;
+
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.core.Direction;
 
 import java.util.Objects;
 
