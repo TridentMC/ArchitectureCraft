@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -131,8 +131,8 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
                       @NotNull TextureAtlasSprite sprite, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
-            bakingConsumer.setDirection(this.cullFace(transform));
-            bakingConsumer.setSprite(sprite);
+            bakingConsumer.setDirection(this.face(transform));
+            bakingConsumer.setSprite(new net.minecraft.client.resources.model.sprite.Material.Baked(sprite, false));
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
@@ -158,7 +158,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
             bakingConsumer.setDirection(this.cullFace());
-            bakingConsumer.setSprite(sprite);
+            bakingConsumer.setSprite(new net.minecraft.client.resources.model.sprite.Material.Baked(sprite, false));
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
@@ -206,7 +206,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
-                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state,
                       @NotNull IQuadMetadataResolver<D> resolver) {
         this.pipe(consumer, transform, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
     }
@@ -221,7 +221,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
-                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state,
                       @NotNull IQuadMetadataResolver<D> resolver) {
         this.pipe(consumer, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
     }

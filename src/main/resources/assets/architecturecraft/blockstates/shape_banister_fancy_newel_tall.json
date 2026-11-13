@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_banister_fancy_newel_tall"
+            "type": "architecturecraft:mesh",
+            "shape": "banister_fancy_newel_tall"
         }
     }
 }

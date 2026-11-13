@@ -10,18 +10,17 @@ import com.tridevmc.architecture.core.physics.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
  * Performs a series of collision tests on a given mesh to create a voxelized representation of it.
  */
 public class Voxelizer implements IVoxelizer {
-    private static final ExecutorService POOL = Executors.newWorkStealingPool();
+    private static final ExecutorService POOL = Executors.newFixedThreadPool(2,
+            Thread.ofPlatform().daemon().name("architecturecraft-voxelizer-", 0).factory());
     private final IMesh<?, ? extends IPolygonData<?>> mesh;
     private final int blockResolution;
     private final double resolution;
@@ -47,12 +46,12 @@ public class Voxelizer implements IVoxelizer {
         var maxYBounds = this.mesh.getBounds().maxY();
         var maxZBounds = this.mesh.getBounds().maxZ();
 
-        var minX = (int) (this.resolution * Math.round(minXBounds / this.resolution) / this.resolution);
-        var minY = (int) (this.resolution * Math.round(minYBounds / this.resolution) / this.resolution);
-        var minZ = (int) (this.resolution * Math.round(minZBounds / this.resolution) / this.resolution);
-        var maxX = (int) (this.resolution * Math.round(maxXBounds / this.resolution) / this.resolution);
-        var maxY = (int) (this.resolution * Math.round(maxYBounds / this.resolution) / this.resolution);
-        var maxZ = (int) (this.resolution * Math.round(maxZBounds / this.resolution) / this.resolution);
+        var minX = (int) Math.floor(minXBounds / this.resolution);
+        var minY = (int) Math.floor(minYBounds / this.resolution);
+        var minZ = (int) Math.floor(minZBounds / this.resolution);
+        var maxX = Math.max(minX, (int) Math.ceil(maxXBounds / this.resolution) - 1);
+        var maxY = Math.max(minY, (int) Math.ceil(maxYBounds / this.resolution) - 1);
+        var maxZ = Math.max(minZ, (int) Math.ceil(maxZBounds / this.resolution) - 1);
 
         this.min = IVector3i.ofImmutable(minX, minY, minZ);
         this.max = IVector3i.ofImmutable(maxX, maxY, maxZ);
@@ -60,77 +59,35 @@ public class Voxelizer implements IVoxelizer {
         this.voxels = new boolean[maxX - minX + 1][maxY - minY + 1][maxZ - minZ + 1];
     }
 
-    private ImmutableList<AABB> getSimplifiedVoxelsResultSafely() {
-        Objects.requireNonNull(this.simplifiedVoxelsFuture, "Voxelization has not been started yet, call voxelize() first.");
-        try {
-            return this.simplifiedVoxelsFuture.get();
-        } catch (Exception e) {
-            ArchitectureLog.error("Failed to voxelize mesh {}, throwing exception", this.mesh);
-            throw new RuntimeException("Failed to voxelize mesh " + this.mesh, e);
-        }
-    }
-
-    /**
-     * Performs the voxelization process, blocking until completion.
-     *
-     * @return A list of AABBs representing the voxels that were found to be occupied.
-     */
+    @Override
     public ImmutableList<AABB> voxelizeNow() {
-        if (this.simplifiedVoxelsFuture == null) {
-            this.voxelize();
-        }
-
-        return this.getSimplifiedVoxelsResultSafely();
+        return this.voxelize().join();
     }
 
-    /**
-     * Performs the voxelization process asynchronously.
-     *
-     * @return A future that will complete with a list of AABBs representing the voxels that were found to be occupied.
-     */
-    public CompletableFuture<ImmutableList<AABB>> voxelize() {
-        if (this.simplifiedVoxelsFuture != null) {
-            ArchitectureLog.debug("Voxelization of mesh {} has already been started, returning existing future.", this.mesh.getName());
-            return this.simplifiedVoxelsFuture;
-        }
-
-        // Create a list of all the voxels that are intersected by the mesh, do this with a thread pool to speed up the process.
-        Future<AABB>[][][] futures = new Future[this.voxels.length][this.voxels[0].length][this.voxels[0][0].length];
-        for (var x = this.min.x(); x <= this.max.x(); x++) {
-            for (var y = this.min.y(); y <= this.max.y(); y++) {
-                for (var z = this.min.z(); z <= this.max.z(); z++) {
-                    var box = this.getBoxForOffset(x, y, z);
-                    var xIndex = x - this.min.x();
-                    var yIndex = y - this.min.y();
-                    var zIndex = z - this.min.z();
-                    futures[xIndex][yIndex][zIndex] = POOL.submit(() -> this.isBoxValidVoxel(box) ? box : null);
-                }
-            }
-        }
-
-        var allRawVoxelsFuture = CompletableFuture.supplyAsync(() -> {
-            var out = new AABB[this.voxels.length][this.voxels[0].length][this.voxels[0][0].length];
-            for (var x = 0; x < out.length; x++) {
-                for (var y = 0; y < out[x].length; y++) {
-                    for (var z = 0; z < out[x][y].length; z++) {
-                        try {
-                            out[x][y][z] = futures[x][y][z].get();
-                            this.voxels[x][y][z] = out[x][y][z] != null;
-                        } catch (Exception e) {
-                            ArchitectureLog.error("Failed to get result for voxel at {}, {}, {}, throwing exception", x, y, z);
-                            throw new RuntimeException("Failed to get result for voxel at " + x + ", " + y + ", " + z, e);
+    @Override
+    public synchronized CompletableFuture<ImmutableList<AABB>> voxelize() {
+        if (this.simplifiedVoxelsFuture == null) {
+            // One job per mesh avoids thousands of queued voxel tasks and workers waiting for other workers.
+            this.simplifiedVoxelsFuture = CompletableFuture.supplyAsync(() -> {
+                var grid = new AABB[this.voxels.length][this.voxels[0].length][this.voxels[0][0].length];
+                for (int x = 0; x < grid.length; x++) {
+                    for (int y = 0; y < grid[x].length; y++) {
+                        for (int z = 0; z < grid[x][y].length; z++) {
+                            var box = this.getBoxForOffset(x + this.min.x(), y + this.min.y(), z + this.min.z());
+                            if (this.isBoxValidVoxel(box)) {
+                                var bounds = this.mesh.getBounds();
+                                grid[x][y][z] = new AABB(
+                                        Math.max(box.minX(), bounds.minX()), Math.max(box.minY(), bounds.minY()),
+                                        Math.max(box.minZ(), bounds.minZ()), Math.min(box.maxX(), bounds.maxX()),
+                                        Math.min(box.maxY(), bounds.maxY()), Math.min(box.maxZ(), bounds.maxZ()));
+                                this.voxels[x][y][z] = true;
+                            }
                         }
                     }
                 }
-            }
-            return out;
-        });
-
-        // The resulting future should be complete once all the voxels have been checked, so we can simplify the list.
-        this.simplifiedVoxelsFuture = allRawVoxelsFuture.thenApplyAsync(f -> this.compressVoxels(f).collect(
-                ImmutableList.toImmutableList()
-        ), POOL);
-
+                return this.compressVoxels(grid).collect(ImmutableList.toImmutableList());
+            }, POOL);
+        }
         return this.simplifiedVoxelsFuture;
     }
 

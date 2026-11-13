@@ -46,7 +46,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.Container;
@@ -74,7 +74,7 @@ import static com.tridevmc.architecture.common.ArchitectureMod.MOD_ID;
 public class ArchitectureContent {
 
     public static final String REGISTRY_PREFIX = MOD_ID.toLowerCase();
-    private static final List<Pair<ResourceLocation, Item>> itemBlocksToRegister = Lists.newArrayList();
+    private static final List<Pair<Identifier, Item>> itemBlocksToRegister = Lists.newArrayList();
     public static HashMap<String, Block> registeredBlocks = Maps.newHashMap();
     public static HashMap<String, Item> registeredItems = Maps.newHashMap();
 
@@ -88,7 +88,7 @@ public class ArchitectureContent {
     public ItemCladding itemCladding;
     public DataComponentType<ComponentMaterial> componentMaterial;
     public Map<EnumShape, ItemShape> itemShapes;
-    public MenuType<? extends Container> universalMenuType;
+    public MenuType<com.tridevmc.architecture.common.block.container.ContainerSawbench> universalMenuType;
 
     @SubscribeEvent
     public void onRegisterEvent(final RegisterEvent e) {
@@ -102,7 +102,7 @@ public class ArchitectureContent {
 
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
-        registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
+        registry.register(Identifier.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))
                 .icon(() -> ArchitectureContent.this.itemHammer != null ?
                         ArchitectureContent.this.itemHammer.getDefaultInstance() :
                         ItemStack.EMPTY)
@@ -114,7 +114,7 @@ public class ArchitectureContent {
                     o.accept(new ItemStack(this.blockSawbench));
                 }).build()
         );
-        registry.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
+        registry.register(Identifier.fromNamespaceAndPath(MOD_ID, "shapes"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.shape"))
                 .icon(() -> ArchitectureContent.this.itemShapes != null ?
                         ArchitectureContent.this.itemShapes.get(EnumShape.ROOF_TILE).getDefaultInstance() :
                         ItemStack.EMPTY)
@@ -142,9 +142,9 @@ public class ArchitectureContent {
     public void onItemRegister(RegisterEvent.RegisterHelper<Item> registry) {
         this.itemSawblade = this.registerItem(registry, "sawblade");
         this.itemLargePulley = this.registerItem(registry, "large_pulley");
-        this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "chisel")));
-        this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "hammer")));
-        this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding(ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "cladding")));
+        this.itemChisel = this.registerItem(registry, "chisel", new ItemChisel(Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "chisel")));
+        this.itemHammer = this.registerItem(registry, "hammer", new ItemHammer(Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "hammer")));
+        this.itemCladding = this.registerItem(registry, "cladding", new ItemCladding(Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "cladding")));
 
         itemBlocksToRegister.forEach(e -> registry.register(e.getLeft(), e.getRight()));
         this.itemShapes = Maps.newHashMap();
@@ -160,9 +160,9 @@ public class ArchitectureContent {
     }
 
     private <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(RegisterEvent.RegisterHelper<BlockEntityType<?>> registry, BlockEntityType.BlockEntitySupplier<T> tileSupplier, String id, Block... blocks) {
-        ResourceLocation key = ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id);
+        Identifier key = Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id);
         BlockEntityType<T> tileType = new BlockEntityType<>(tileSupplier, blocks);
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), tileType);
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), tileType);
         return tileType;
     }
 
@@ -171,9 +171,9 @@ public class ArchitectureContent {
     }
 
     private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, boolean withItemBlock) {
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
         if (withItemBlock) {
-            var itemBlockId = ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id);
+            var itemBlockId = Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id);
             itemBlocksToRegister.add(ImmutablePair.of(itemBlockId, new ItemBlockArchitecture(block, new Item.Properties().setId(ResourceKey.create(Registries.ITEM, itemBlockId)))));
         }
         registeredBlocks.put(id, block);
@@ -181,24 +181,24 @@ public class ArchitectureContent {
     }
 
     private <T extends BlockArchitecture> T registerBlock(RegisterEvent.RegisterHelper<Block> registry, String id, T block, Function<T, ? extends ItemBlockArchitecture> itemBlockGenerator) {
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), block);
         var itemBlock = itemBlockGenerator.apply(block);
-        itemBlocksToRegister.add(ImmutablePair.of(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), itemBlock));
+        itemBlocksToRegister.add(ImmutablePair.of(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), itemBlock));
         registeredBlocks.put(id, block);
 
         return (T) registeredBlocks.get(id);
     }
 
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id) {
-        ItemArchitecture item = new ItemArchitecture(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id))));
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
+        ItemArchitecture item = new ItemArchitecture(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id))));
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 
         return (T) registeredItems.get(id);
     }
 
     private <T extends Item> T registerItem(RegisterEvent.RegisterHelper<Item> registry, String id, T item) {
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), item);
         registeredItems.put(id, item);
 
         return (T) registeredItems.get(id);
@@ -210,7 +210,7 @@ public class ArchitectureContent {
 
     private <T> DataComponentType<T> registerDataComponentType(RegisterEvent.RegisterHelper<DataComponentType<?>> registry, String id, DataComponentType.Builder<T> builder) {
         DataComponentType<T> type = builder.build();
-        registry.register(ResourceLocation.fromNamespaceAndPath(REGISTRY_PREFIX, id), type);
+        registry.register(Identifier.fromNamespaceAndPath(REGISTRY_PREFIX, id), type);
         return type;
     }
 

@@ -391,7 +391,7 @@ public interface ITrans3 {
         var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
         var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
         var length = Math.sqrt(x * x + y * y + z * z);
-        return IVector3Immutable.of(x / length, y / length, z / length);
+        return length == 0 ? IVector3Immutable.of(0, 0, 0) : IVector3Immutable.of(x / length, y / length, z / length);
     }
 
     /**
@@ -421,7 +421,8 @@ public interface ITrans3 {
         var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
         var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
         var length = Math.sqrt(x * x + y * y + z * z);
-        return IVector3FImmutable.of((float) (x / length), (float) (y / length), (float) (z / length));
+        return length == 0 ? IVector3FImmutable.of(0, 0, 0)
+                : IVector3FImmutable.of((float) (x / length), (float) (y / length), (float) (z / length));
     }
 
     /**

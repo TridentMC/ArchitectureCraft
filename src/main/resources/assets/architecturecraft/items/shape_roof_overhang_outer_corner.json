@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_roof_overhang_outer_corner"
+        "type": "architecturecraft:mesh",
+        "shape": "roof_overhang_outer_corner"
     }
 }

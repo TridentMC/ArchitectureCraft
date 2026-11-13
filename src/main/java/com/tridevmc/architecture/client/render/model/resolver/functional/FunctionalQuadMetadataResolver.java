@@ -4,7 +4,7 @@ import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResol
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -130,7 +130,7 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
     }
 
     @Override
-    public TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
+    public TextureAtlasSprite getTexture(BlockGetter level, BlockPos pos, BlockState state, T metadata) {
         return this.blockTextureResolver.getTexture(level, pos, state, metadata);
     }
 
@@ -145,7 +145,7 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
     }
 
     @Override
-    public int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, T metadata) {
+    public int getTintIndex(BlockGetter level, BlockPos pos, BlockState state, T metadata) {
         return this.blockTintIndexResolver.getTintIndex(level, pos, state, metadata);
     }
 

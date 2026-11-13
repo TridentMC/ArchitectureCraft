@@ -20,7 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,11 +39,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
-    public static final OBJSON MODEL = OBJSON.fromResource(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
+    public static final OBJSON MODEL = OBJSON.fromResource(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
     private final static EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public BlockSawbench() {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "sawbench"))));
+        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "sawbench"))));
     }
 
     @Override
@@ -99,6 +99,13 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(CreateMenuContext context) {
+        if (context.hasPos()) {
+            return new ContainerSawbench(
+                context.getPlayerInventory(),
+                context.getWindowId(),
+                net.minecraft.world.inventory.ContainerLevelAccess.create(context.getPlayer().level(), context.getPos())
+            );
+        }
         return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
     }
 

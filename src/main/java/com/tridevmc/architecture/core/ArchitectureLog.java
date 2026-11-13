@@ -6,47 +6,15 @@ import org.apache.logging.log4j.Logger;
 public class ArchitectureLog {
 
     public static final Logger LOG = LogManager.getLogger("ArchitectureCraft");
-    public static final boolean INDEV = true;
+    public static void debug(Object message) { LOG.debug(message); }
 
-    public static void debug(Object message) {
-        if (INDEV) {
-            LOG.info(message);
-        } else {
-            LOG.debug(message);
-        }
-    }
+    public static void debug(Object message, Throwable cause) { LOG.debug(message, cause); }
 
-    public static void debug(Object message, Throwable t) {
-        if (INDEV) {
-            LOG.info(message, t);
-        } else {
-            LOG.debug(message, t);
-        }
-    }
+    public static void debug(String message) { LOG.debug(message); }
 
-    public static void debug(String message) {
-        if (INDEV) {
-            LOG.info(message);
-        } else {
-            LOG.debug(message);
-        }
-    }
+    public static void debug(String message, Object... params) { LOG.debug(message, params); }
 
-    public static void debug(String message, Object... params) {
-        if (INDEV) {
-            LOG.info(message, params);
-        } else {
-            LOG.debug(message, params);
-        }
-    }
-
-    public static void debug(String message, Throwable t) {
-        if (INDEV) {
-            LOG.info(message, t);
-        } else {
-            LOG.debug(message, t);
-        }
-    }
+    public static void debug(String message, Throwable cause) { LOG.debug(message, cause); }
 
     public static void error(Object message) {
         LOG.error(message);

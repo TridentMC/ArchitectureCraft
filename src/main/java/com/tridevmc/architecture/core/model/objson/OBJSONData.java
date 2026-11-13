@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.InputStreamReader;
 import java.util.Objects;
@@ -24,7 +24,7 @@ public record OBJSONData(String name, double[] bounds, FaceData[] faces, PartDat
      * @return The loaded model.
      * @throws NullPointerException If no input stream could be found for the given resource location.
      */
-    public static OBJSONData fromResource(ResourceLocation location) {
+    public static OBJSONData fromResource(Identifier location) {
         var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
         var in = OBJSONData.class.getResourceAsStream(path);
         return GSON.fromJson(new InputStreamReader(Objects.requireNonNull(in, "Failed to obtain input stream for resource \"%s\"".formatted(path))), OBJSONData.class);

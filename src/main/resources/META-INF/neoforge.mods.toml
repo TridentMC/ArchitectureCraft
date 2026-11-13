@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[2,)"
+loaderVersion = "${loader_version_range}"
 issueTrackerURL = "https://github.com/TridentMC/ArchitectureCraft/issues"
 authors = "gcewing (Original Developer), darkevilmac (Maintainer)"
 license = "MIT License - Copyright (c) 2020 Benjamin K"
@@ -9,3 +9,16 @@ modId = "architecturecraft"
 version = "${mod_version}"
 displayName = "Architecture Craft"
 description = "Distinguished architectural features for your Minecraft buildings."
+[[dependencies.architecturecraft]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.architecturecraft]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"

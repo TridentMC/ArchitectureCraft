@@ -25,13 +25,11 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
-import com.tridevmc.architecture.client.render.model.geometry.ArchitectureUnbakedModelLoader;
-import com.tridevmc.architecture.client.render.model.geometry.ArchitectureShapeUnbakedModelLoader;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -44,16 +42,26 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void setup(FMLCommonSetupEvent e) {
         super.setup(e);
-        if (!FMLEnvironment.production)
+        if (!FMLEnvironment.isProduction())
             NeoForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
     }
 
     @SubscribeEvent
-    public void onModelRegistryEvent(ModelEvent.RegisterLoaders e) {
-        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "sawbench_loader"), new ArchitectureUnbakedModelLoader(
-                (textures, baker, modelState, useAmbientOcclusion, usesBlockLight, itemTransforms, additionalProperties) -> new BakedModelSawbench(itemTransforms)
-        ));
-        e.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "shape_loader"), new ArchitectureShapeUnbakedModelLoader());
+    public void onBlockModels(net.neoforged.neoforge.client.event.RegisterBlockStateModels event) {
+        event.registerModel(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "mesh"),
+                com.tridevmc.architecture.client.render.model.geometry.ArchitectureBlockModel.CODEC);
+    }
+
+    @SubscribeEvent
+    public void onItemModels(net.neoforged.neoforge.client.event.RegisterItemModelsEvent event) {
+        event.register(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "mesh"),
+                com.tridevmc.architecture.client.render.model.geometry.ArchitectureItemModel.CODEC);
+    }
+
+    @SubscribeEvent
+    public void onModelsBaked(ModelEvent.BakingCompleted event) {
+        com.tridevmc.architecture.client.render.model.impl.ModelResolverShapeGeneric.clearCache();
+        com.tridevmc.architecture.client.render.model.impl.ModelResolverSawbench.clearCache();
     }
 
     @SubscribeEvent

@@ -56,11 +56,11 @@ public enum EnumRelativeDirection {
         var value = this.identityDirection;
         return switch (facing) {
             case NORTH -> value;
-            case SOUTH -> value.getOpposite();
+            case SOUTH -> value.getClockWise(Direction.Axis.Y).getClockWise(Direction.Axis.Y);
             case EAST -> value.getClockWise(Direction.Axis.Y);
             case WEST -> value.getCounterClockWise(Direction.Axis.Y);
-            case UP -> value.getClockWise(Direction.Axis.X);
-            case DOWN -> value.getCounterClockWise(Direction.Axis.X);
+            case UP -> value.getCounterClockWise(Direction.Axis.X);
+            case DOWN -> value.getClockWise(Direction.Axis.X);
         };
     }
 

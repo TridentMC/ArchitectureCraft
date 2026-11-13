@@ -31,7 +31,7 @@ import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -43,7 +43,7 @@ import java.util.List;
 
 public class ItemCladding extends ItemArchitecture {
 
-    public ItemCladding(ResourceLocation id) {
+    public ItemCladding(Identifier id) {
         super(new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT).setId(ResourceKey.create(Registries.ITEM, id)));
     }
 
@@ -67,13 +67,12 @@ public class ItemCladding extends ItemArchitecture {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> lines, TooltipFlag flagIn) {
-        lines.set(0, super.getName(stack));
-
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                net.minecraft.world.item.component.TooltipDisplay display,
+                                java.util.function.Consumer<Component> tooltip, TooltipFlag flags) {
         var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
-        if (material != null) {
-            if (material.hasBase())
-                lines.add(Component.literal(Utils.displayNameOnlyOfBlock(material.base().getBlock())));
+        if (material != null && material.hasBase()) {
+            tooltip.accept(Component.literal(Utils.displayNameOnlyOfBlock(material.safeBase().getBlock())));
         }
     }
 

@@ -1,10 +1,7 @@
 package com.tridevmc.architecture.common.block.state;
 
-import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,19 +14,18 @@ public class BlockStateShape extends BlockStateArchitecture {
 
     private final ShapeOrientation cachedOrientation;
 
-    public BlockStateShape(BlockShape<?> block, Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties,
-                           MapCodec<BlockState> codec) {
-        this(block, ShapeOrientation::forState, properties, codec);
+    public BlockStateShape(BlockShape<?> block, Property<?>[] propertyKeys, Comparable<?>[] propertyValues) {
+        this(block, ShapeOrientation::forState, propertyKeys, propertyValues);
     }
 
     public BlockStateShape(BlockShape<?> block, ShapeOrientation orientation,
-                           Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties, MapCodec<BlockState> codec) {
-        this(block, s -> orientation, properties, codec);
+                           Property<?>[] propertyKeys, Comparable<?>[] propertyValues) {
+        this(block, s -> orientation, propertyKeys, propertyValues);
     }
 
     public BlockStateShape(BlockShape<?> block, Function<BlockStateShape, ShapeOrientation> orientationFunc,
-                           Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties, MapCodec<BlockState> codec) {
-        super(block, properties, codec);
+                           Property<?>[] propertyKeys, Comparable<?>[] propertyValues) {
+        super(block, propertyKeys, propertyValues);
         this.cachedOrientation = orientationFunc.apply(this);
         this.postConstruct();
     }

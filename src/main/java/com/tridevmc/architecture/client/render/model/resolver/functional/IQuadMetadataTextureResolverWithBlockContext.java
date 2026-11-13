@@ -2,7 +2,7 @@ package com.tridevmc.architecture.client.render.model.resolver.functional;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +23,6 @@ public interface IQuadMetadataTextureResolverWithBlockContext<D> {
      * @param metadata The metadata to resolve.
      * @return The texture to use.
      */
-    TextureAtlasSprite getTexture(@NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
+    TextureAtlasSprite getTexture(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
 
 }

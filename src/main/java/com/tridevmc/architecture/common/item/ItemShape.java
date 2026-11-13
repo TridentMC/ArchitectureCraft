@@ -36,7 +36,7 @@ import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -59,7 +59,7 @@ public class ItemShape extends ItemBlockArchitecture {
     public ItemShape(BlockShape block) {
         super(block, new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT).setId(
                 ResourceKey.create(Registries.ITEM,
-                        ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
+                        Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
                                 "shape_" + block.getShape().getName())
                 )
         ));
@@ -105,22 +105,22 @@ public class ItemShape extends ItemBlockArchitecture {
         var result = super.placeBlock(context, newState);
         if (result && !context.getLevel().isClientSide()) {
             BlockEntityShape.getAtOptionally(context.getLevel(), context.getClickedPos()).ifPresentOrElse(shape -> {
-                shape.setBaseMaterialState(getStateFromStack(context.getItemInHand()));
+                var material = context.getItemInHand().getOrDefault(
+                        ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT);
+                shape.setBaseMaterialState(material.safeBase());
+                shape.setSecondaryMaterialState(material.hasSecondary() ? material.secondary() : null);
             }, () -> ArchitectureLog.error("Failed to place shape block entity at position: " + context.getClickedPos()));
         }
         return result;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> lines, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                net.minecraft.world.item.component.TooltipDisplay display,
+                                java.util.function.Consumer<Component> tooltip, TooltipFlag flags) {
         var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
-        if (material != null) {
-            if (this.shape != null)
-                lines.set(0, Component.translatable(this.shape.getLocalizationKey()));
-            else
-                lines.set(0, Component.literal(lines.get(0).getString() + " (" + -1 + ")"));
-            Block baseBlock = getStateFromStack(stack).getBlock();
-            lines.add(Component.literal(Utils.displayNameOnlyOfBlock(baseBlock)));
+        if (material != null && material.hasBase()) {
+            tooltip.accept(Component.literal(Utils.displayNameOnlyOfBlock(material.safeBase().getBlock())));
         }
     }
 
