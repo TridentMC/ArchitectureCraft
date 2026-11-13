@@ -118,5 +118,13 @@
     "shape_category.architecturecraft.windows": "Windows",
     "shape_category.architecturecraft.arches": "Arches",
     "shape_category.architecturecraft.railings": "Railings",
-    "shape_category.architecturecraft.other": "Other"
+    "shape_category.architecturecraft.other": "Other",
+    "container.architecturecraft.sawbench.search": "Search shapes…",
+    "container.architecturecraft.sawbench.clear": "Clear",
+    "container.architecturecraft.sawbench.no_matches": "No matching shapes",
+    "container.architecturecraft.sawbench.shape_count": "%s shapes",
+    "container.architecturecraft.sawbench.cutting": "Cutting",
+    "container.architecturecraft.sawbench.choose_shape": "Choose a shape",
+    "container.architecturecraft.sawbench.add_material": "Add a material",
+    "container.architecturecraft.sawbench.shape_count_one": "%s shape"
 }

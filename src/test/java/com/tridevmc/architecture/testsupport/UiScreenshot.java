@@ -78,9 +78,10 @@ public final class UiScreenshot {
                 }
                 case "drawFormattedCharSequence", "drawFormattedCharSequenceWithShadow" -> {
                     var text = new StringBuilder();
+                    int color = args.length > 3 ? ((Number) args[3]).intValue() : 0xE0E0E0;
+                    graphics.setColor(new Color(color | 0xFF000000, true));
                     ((FormattedCharSequence) args[0]).accept((index, style, codePoint) -> {
-                        graphics.setColor(new Color(style.getColor() == null
-                                ? 0x404040 : style.getColor().getValue()));
+                        if (style.getColor() != null) graphics.setColor(new Color(style.getColor().getValue()));
                         text.appendCodePoint(codePoint);
                         return true;
                     });

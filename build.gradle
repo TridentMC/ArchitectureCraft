@@ -19,10 +19,10 @@ if (project.ext.useElytraVersionFormat) {
     if (System.env.BRANCH_NAME) {
         // Jenkins support
         branch = System.env.BRANCH_NAME
-        branch = branch.substring(branch.lastIndexOf('/') + 1)
     } else {
         branch = 'git rev-parse --abbrev-ref HEAD'.execute().in.text.trim()
     }
+    branch = branch.substring(branch.lastIndexOf('/') + 1)
     if (branch == "HEAD") {
         branch = 'git rev-parse --short HEAD'.execute().in.text.trim()
     }
