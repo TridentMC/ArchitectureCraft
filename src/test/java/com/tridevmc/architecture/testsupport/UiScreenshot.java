@@ -2,23 +2,26 @@ package com.tridevmc.architecture.testsupport;
 
 import com.tridevmc.compound.ui.Rect2F;
 import com.tridevmc.compound.ui.sprite.IScreenSprite;
-import net.minecraft.resources.Identifier;
 import com.tridevmc.compound.ui.screen.IScreenContext;
 import com.tridevmc.compound.ui.tree.UITree;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import org.mockito.Answers;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
@@ -33,7 +36,7 @@ public final class UiScreenshot {
         var textures = new HashMap<Identifier, BufferedImage>();
         graphics.setColor(new Color(0xFF252A30, true));
         graphics.fillRect(0, 0, width, height);
-        graphics.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 10));
+        graphics.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
         IScreenContext context = mock(IScreenContext.class, call -> {
             var args = call.getArguments();
             if (call.getMethod().isDefault()) {
@@ -113,14 +116,14 @@ public final class UiScreenshot {
         }
     }
 
-    private static BufferedImage texture(java.util.Map<Identifier, BufferedImage> textures,
+    private static BufferedImage texture(Map<Identifier, BufferedImage> textures,
             Identifier location) {
         return textures.computeIfAbsent(location, key -> {
             try (var resource = UiScreenshot.class.getResourceAsStream(
                     "/assets/" + key.getNamespace() + "/" + key.getPath())) {
                 return resource == null ? null : ImageIO.read(resource);
             } catch (IOException error) {
-                throw new java.io.UncheckedIOException(error);
+                throw new UncheckedIOException(error);
             }
         });
     }

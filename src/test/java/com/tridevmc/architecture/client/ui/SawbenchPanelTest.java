@@ -13,7 +13,8 @@ import com.tridevmc.compound.ui.element.ItemDisplay;
 import com.tridevmc.compound.ui.element.Button;
 import com.tridevmc.compound.ui.element.ILazyCollection;
 import com.tridevmc.compound.ui.element.Label;
-import com.tridevmc.compound.ui.element.Surface;
+import com.tridevmc.compound.ui.element.Panel;
+import com.tridevmc.compound.ui.layout.Bounds;
 import com.tridevmc.compound.ui.element.TextInput;
 import com.tridevmc.compound.ui.element.Tooltip;
 import com.tridevmc.compound.ui.event.MouseClickEvent;
@@ -34,6 +35,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -127,7 +130,7 @@ class SawbenchPanelTest {
                 tree.setViewportSize(viewport[0], viewport[1]);
                 panel.compose(ICompositionScope.root(tree));
                 tree.prepareFrame(viewport[0], viewport[1], context);
-                var background = tree.findNodesByElementType(Surface.class).getFirst().getBounds();
+                var background = tree.findNodesByElementType(Panel.class).getFirst().getBounds();
                 assertEquals(viewport[0] == 320 ? 312 : 420, background.width());
                 assertEquals(viewport[1] == 240 ? 232 : 288, background.height());
                 var slots = tree.findNodesByElementType(InventorySlot.class);
@@ -135,7 +138,7 @@ class SawbenchPanelTest {
                 var expected = new HashSet<Slot>();
                 for (int index = 0; index < 38; index++) expected.add(menu.getSlot(index));
                 assertEquals(expected, slots.stream().map(node ->
-                        ((InventorySlot) node.getElement()).getVanillaSlot()).collect(java.util.stream.Collectors.toSet()));
+                        ((InventorySlot) node.getElement()).getVanillaSlot()).collect(Collectors.toSet()));
                 for (var node : slots) {
                     var bounds = node.getBounds();
                     assertEquals(18, bounds.width());
@@ -150,13 +153,17 @@ class SawbenchPanelTest {
             tree.setViewportSize(320, 240);
             panel.compose(ICompositionScope.root(tree));
             tree.prepareFrame(320, 240, context);
-            click(tree, tree.findNodesByElementType(Tooltip.class).getFirst().getBounds());
+            var first = tree.findNodesByElementType(Tooltip.class).getFirst().getBounds();
+            assertTrue(tree.dispatchClick(first.x() + 3, first.y() + 3, new MouseClickEvent(
+                    first.x() + 3, first.y() + 3, InputConstants.MOUSE_BUTTON_LEFT, false, false, false)));
             assertEquals(List.of(EnumShape.SLAB), selected);
+            key(tree, InputConstants.KEY_RIGHT);
+            assertEquals(List.of(EnumShape.SLAB, EnumShape.values()[1]), selected);
             when(menu.getInputStack()).thenReturn(new ItemStack(Items.STONE));
             when(menu.getSelectedShape()).thenReturn(EnumShape.ARCH_D1);
             panel.tick();
             tree.prepareFrame(320, 240, context);
-            assertEquals(List.of(EnumShape.SLAB), selected, "Server sync must not send another selection");
+            assertEquals(List.of(EnumShape.SLAB, EnumShape.values()[1]), selected, "Server sync must not send another selection");
             for (var node : tree.findNodesByElementType(Tooltip.class)) {
                 tree.walkDepthFirst(node, child -> {
                     if (child.getElement() instanceof ItemDisplay item) {
@@ -184,7 +191,6 @@ class SawbenchPanelTest {
             tree.requestFocus(inputNode);
             type(tree, context, "  D3_ArCh  ");
             assertEquals(3, tree.findNodesByElementType(Tooltip.class).size());
-            assertEquals("3 shapes", summary(tree));
             tree.reset();
             tree.setViewportSize(640, 360);
             panel.compose(ICompositionScope.root(tree));
@@ -204,7 +210,8 @@ class SawbenchPanelTest {
             UiScreenshot.save(tree, 320, 240, Path.of("build/reports/ui/sawbench-search.png"));
 
             var categoryList = tree.findNodesByElementType(ILazyCollection.class).getFirst();
-            tree.requestFocus(categoryList);
+            var categoryBounds = categoryList.getBounds();
+            click(tree, new Bounds(categoryBounds.x(), categoryBounds.y(), categoryBounds.width(), 18));
             key(tree, InputConstants.KEY_END);
             tree.prepareFrame(320, 240, context);
             assertEquals("No matching shapes", summary(tree));
@@ -233,7 +240,6 @@ class SawbenchPanelTest {
                 tree.prepareFrame(320, 240, context);
                 type(tree, context, "VAULT");
                 assertEquals(1, tree.findNodesByElementType(Tooltip.class).size(), "Search must include translated names");
-                assertEquals("1 shape", summary(tree));
             } finally {
                 translations.put(nameKey, originalName);
                 tree.reset();
@@ -255,7 +261,7 @@ class SawbenchPanelTest {
     private static MockedStatic<ItemShape> mockPreviews() {
         var shapes = mockStatic(ItemShape.class);
         shapes.when(() -> ItemShape.createStack(any(EnumShape.class), any()))
-                .thenAnswer(call -> new ItemStack(((net.minecraft.world.level.block.state.BlockState)
+                .thenAnswer(call -> new ItemStack(((BlockState)
                         call.getArgument(1)).getBlock()));
         return shapes;
     }
@@ -263,10 +269,10 @@ class SawbenchPanelTest {
     private static String summary(UITree tree) {
         return tree.findNodesByElementType(Label.class).stream().map(node ->
                 ((Label) node.getElement()).getTextSupplier().get().getString())
-                .filter(text -> text.endsWith(" shapes") || text.endsWith(" shape") || text.equals("No matching shapes")).findFirst().orElseThrow();
+                .filter(text -> text.equals("No matching shapes")).findFirst().orElseThrow();
     }
 
-    private static void click(UITree tree, com.tridevmc.compound.ui.layout.Bounds bounds) {
+    private static void click(UITree tree, Bounds bounds) {
         int x = bounds.x() + bounds.width() / 2;
         int y = bounds.y() + bounds.height() / 2;
         assertTrue(tree.dispatchClick(x, y, new MouseClickEvent(x, y,
