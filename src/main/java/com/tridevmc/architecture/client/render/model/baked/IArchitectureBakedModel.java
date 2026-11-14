@@ -1,7 +1,5 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
@@ -12,7 +10,6 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -59,20 +56,7 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
                               RandomSource random, List<BlockStateModelPart> parts) {
         var quads = this.getQuads(level, pos, state);
         var material = this.particleMaterial(level, pos, state);
-        parts.add(new BlockStateModelPart() {
-            @Override
-            public List<BakedQuad> getQuads(@Nullable Direction direction) {
-                return quads.quadsFor(direction);
-            }
-            @Override
-            public boolean useAmbientOcclusion() { return IArchitectureBakedModel.this.useAmbientOcclusion(); }
-            @Override
-            public Material.Baked particleMaterial() { return material; }
-            @Override
-            public int materialFlags() {
-                return quads.allQuads().stream().mapToInt(q -> q.materialInfo().flags()).reduce(0, (a, b) -> a | b);
-            }
-        });
+        parts.add(new BakedModelPart(this, quads, material));
     }
 
     @Override

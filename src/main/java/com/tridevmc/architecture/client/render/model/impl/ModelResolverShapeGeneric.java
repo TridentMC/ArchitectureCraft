@@ -40,28 +40,10 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
         return Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state);
     }
 
-    private static IQuadMetadataResolver<PolygonData> metadata(Material.Baked base, Material.Baked secondary) {
-        return new IQuadMetadataResolver<>() {
-            @Override
-            public TextureAtlasSprite getTexture(PolygonData data) {
-                return (data.textureIndex() == 0 ? base : secondary).sprite();
-            }
-
-            @Override
-            public Material.Baked getMaterial(BlockGetter level, BlockPos pos, BlockState state,
-                                               ItemStack stack, PolygonData data) {
-                return data.textureIndex() == 0 ? base : secondary;
-            }
-
-            @Override
-            public int getTintIndex(PolygonData data) { return -1; }
-        };
-    }
-
     @Override
     public IQuadMetadataResolver<PolygonData> getMetadataResolver() {
         var sprite = material(Blocks.OAK_PLANKS.defaultBlockState());
-        return metadata(sprite, sprite);
+        return new ShapeQuadMetadataResolver(sprite, sprite);
     }
 
     @Override
@@ -90,7 +72,7 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
         var cached = QUADS.getIfPresent(key);
         if (cached != null) return cached;
         var quads = new BakedQuadContainerProviderMesh<>(mesh)
-                .getQuads(null, metadata(key.base, key.secondary), transform);
+                .getQuads(null, new ShapeQuadMetadataResolver(key.base, key.secondary), transform);
         QUADS.put(key, quads);
         return quads;
     }
