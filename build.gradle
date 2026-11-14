@@ -64,6 +64,7 @@ repositories {
 
 neoForge {
     version = neoForgeVersion
+    addModdingDependenciesTo sourceSets.test
 
     if (mappingsChannel == "parchment") {
         parchment {
@@ -138,6 +139,7 @@ if (needsShadow) {
         for (String module : project.ext.compoundModules) {
             def moduleIdentifier = 'com.tridevmc.compound:compound-' + module + ':' + project.ext.compoundVersion
             compileOnly(moduleIdentifier)
+            testImplementation(moduleIdentifier)
             shade(moduleIdentifier)
         }
     }
@@ -166,4 +168,16 @@ apply from: 'project.gradle'
 if (file('private.gradle').exists()) {
     apply plugin: 'maven-publish'
     apply from: 'private.gradle'
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.12.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    maxHeapSize = '512m'
+    jvmArgs '-XX:ActiveProcessorCount=2'
 }

@@ -6,7 +6,9 @@ import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerPro
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
+import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
+import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.shape.EnumShape;
@@ -67,7 +69,8 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     @Override
     public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        var selected = ShapeMeshes.getMesh(this.shape);
+        var selected = state instanceof BlockStateShape shapeState
+                ? ((BlockShape<?>) state.getBlock()).getMeshForState(shapeState) : ShapeMeshes.getMesh(this.shape);
         // Get the tile entity's model data so we can pull in the material states.
         var materials = level.getModelData(pos).get(BlockEntityShape.MATERIALS);
         var base = materials == null ? Blocks.OAK_PLANKS.defaultBlockState() : materials.base();
