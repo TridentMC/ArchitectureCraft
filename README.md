@@ -32,5 +32,7 @@ Run `gradle test` for headless placement, geometry, menu, and UI tests. The test
 previews under `build/reports/ui` and `build/reports/shapes`. Run
 `gradle runGameTestServer` to check mod loading without opening a game window.
 
-Use the sawbench's categories to choose a shape and insert a building material.
+Use the sawbench's search field and categories to find a shape, then insert a building material.
+Search matches translated and internal shape names; all search words must match. Clear resets the
+search within the current category and keeps the selected recipe.
 The hammer cycles a placed shape's valid orientations; crouch-click cycles backward.
