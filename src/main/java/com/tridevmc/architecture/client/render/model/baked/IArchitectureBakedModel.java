@@ -45,11 +45,17 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
 
     TextureAtlasSprite getParticleIcon();
 
-    default boolean useAmbientOcclusion() { return true; }
+    default boolean useAmbientOcclusion() {
+        return true;
+    }
 
-    default boolean usesBlockLight() { return true; }
+    default boolean usesBlockLight() {
+        return true;
+    }
 
-    default boolean isGui3d() { return true; }
+    default boolean isGui3d() {
+        return true;
+    }
 
     @Override
     default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state,
@@ -65,7 +71,9 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
     }
 
     @Override
-    default int materialFlags() { return BakedQuad.FLAG_TRANSLUCENT | BakedQuad.FLAG_ANIMATED; }
+    default int materialFlags() {
+        return BakedQuad.FLAG_TRANSLUCENT | BakedQuad.FLAG_ANIMATED;
+    }
 
     default ItemStackRenderState.LayerRenderState appendItemLayer(ItemStackRenderState output, ItemStack stack,
                                                                   ItemDisplayContext displayContext) {

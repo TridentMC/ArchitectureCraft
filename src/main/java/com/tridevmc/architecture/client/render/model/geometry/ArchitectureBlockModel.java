@@ -1,8 +1,10 @@
 package com.tridevmc.architecture.client.render.model.geometry;
 
+import com.tridevmc.architecture.common.shape.EnumShape;
+
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.tridevmc.architecture.common.shape.EnumShape;
+
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.neoforged.neoforge.client.model.block.CustomUnbakedBlockStateModel;
@@ -15,7 +17,9 @@ public record ArchitectureBlockModel(Optional<EnumShape> shape) implements Custo
                     .forGetter(ArchitectureBlockModel::shape)).apply(instance, ArchitectureBlockModel::new));
 
     @Override
-    public MapCodec<ArchitectureBlockModel> codec() { return CODEC; }
+    public MapCodec<ArchitectureBlockModel> codec() {
+        return CODEC;
+    }
 
     @Override
     public void resolveDependencies(Resolver resolver) {
@@ -23,5 +27,7 @@ public record ArchitectureBlockModel(Optional<EnumShape> shape) implements Custo
     }
 
     @Override
-    public BlockStateModel bake(ModelBaker baker) { return ArchitectureMeshModels.bake(this.shape, baker); }
+    public BlockStateModel bake(ModelBaker baker) {
+        return ArchitectureMeshModels.bake(this.shape, baker);
+    }
 }
