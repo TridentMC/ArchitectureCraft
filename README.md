@@ -28,8 +28,9 @@ gradle :publishToMavenLocal -PversionTag=-SNAPSHOT --max-workers=1 --no-parallel
 ```
 
 ArchitectureCraft resolves Compound from `mavenLocal()` before the Trident Maven repository.
-Run `gradle test` for headless rendering, menu, and UI tests. The tests write
-previews under `build/reports/ui`. Run
+Run `gradle test` for headless placement, geometry, menu, and UI tests. The tests write
+previews under `build/reports/ui` and `build/reports/shapes`. Run
 `gradle runGameTestServer` to check mod loading without opening a game window.
 
 Use the sawbench's categories to choose a shape and insert a building material.
+The hammer cycles a placed shape's valid orientations; crouch-click cycles backward.

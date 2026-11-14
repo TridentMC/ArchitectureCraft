@@ -3,7 +3,11 @@ package com.tridevmc.architecture.common.shape.placement;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -30,20 +34,17 @@ public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockA
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
             @NotNull BlockHitResult hitResult) {
-        var playerFacing = Direction.orderedByNearest(placer)[0];
-        playerFacing = placer.isCrouching() ? playerFacing.getOpposite() : playerFacing;
+        return orientationForPlacement(Direction.orderedByNearest(placer)[0], placer.getDirection(),
+                hitResult.getDirection(), EnumBlockFaceSection.fromHitResult(placer.getDirection(), hitResult), placer.isCrouching());
+    }
 
-        var horizontalDirection = placer.getDirection();
-
-        var hitSide = hitResult.getDirection();
-        var hitSection = EnumBlockFaceSection.fromHitResult(horizontalDirection, hitResult);
-        var facing = horizontalDirection.getOpposite();
-        var spin = this.getSpin(hitSide, playerFacing, hitSection);
-
-        return ShapeOrientation.forProperties(
-                ShapeOrientationPropertyFacing.of(facing),
-                ShapeOrientationPropertySpin.of(spin)
-        );
+    static ShapeOrientation orientationForPlacement(Direction nearest, Direction horizontal, Direction hitSide,
+            EnumBlockFaceSection section, boolean crouching) {
+        var playerFacing = crouching ? nearest.getOpposite() : nearest;
+        var facing = playerFacing.getAxis().isVertical() ? playerFacing.getOpposite() : horizontal.getOpposite();
+        var spin = facing.getAxis().isVertical() ? EnumSpin.byIndex(horizontal.get2DDataValue())
+                : INSTANCE.getSpin(hitSide, playerFacing, section);
+        return ShapeOrientation.forProperties(ShapeOrientationPropertyFacing.of(facing), ShapeOrientationPropertySpin.of(spin));
     }
 
     @NotNull

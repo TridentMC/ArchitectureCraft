@@ -2,9 +2,19 @@ package com.tridevmc.architecture.core.model.objson;
 
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.core.math.ITrans3;
-import com.tridevmc.architecture.core.model.mesh.*;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.model.mesh.Face;
+import com.tridevmc.architecture.core.model.mesh.IMesh;
+import com.tridevmc.architecture.core.model.mesh.IVertex;
+import com.tridevmc.architecture.core.model.mesh.Mesh;
+import com.tridevmc.architecture.core.model.mesh.MeshHelper;
+import com.tridevmc.architecture.core.model.mesh.Part;
+import com.tridevmc.architecture.core.model.mesh.PolygonData;
+import com.tridevmc.architecture.core.model.mesh.Quad;
+import com.tridevmc.architecture.core.model.mesh.Tri;
+import com.tridevmc.architecture.core.model.mesh.Vertex;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
-import com.tridevmc.architecture.core.model.voxelize.Voxelizers;
+import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 import com.tridevmc.architecture.core.physics.AABB;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.resources.Identifier;
@@ -16,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelizer voxelizer) {
 
     public OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, int blockResolution) {
-        this(data, mesh, Voxelizers.of(mesh, blockResolution));
+        this(data, mesh, new Voxelizer(mesh, blockResolution));
     }
 
     public OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh) {
@@ -52,35 +62,13 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelize
             var part = new Part.Builder<String, PolygonData>().setId(partData.name());
             var faceMap = new Int2ObjectOpenHashMap<Face.Builder<PolygonData>>();
 
-            for (OBJSONData.TriangleData triData : partData.trianglesAsOptional().orElse(new OBJSONData.TriangleData[0])) {
-                // OBJSON doesn't currently support tinting, so we'll just use the default value of -1.
-                var tri = new Tri.Builder<PolygonData>();
-                var faceData = data.faces()[triData.face()];
-                var face = faceMap.computeIfAbsent(triData.face(), i -> new Face.Builder<>());
-
-                for (int vertIndex : triData.vertices()) {
-                    var vertData = faceData.vertices()[vertIndex];
-                    tri.addVertex(new Vertex(vertData.pos(), faceData.normal(), vertData.uv()));
-                }
-
-                face.addPolygon(tri.setData(
-                        new PolygonData(triData.cullFace(), faceData.face(), triData.texture(), -1)
-                ).build());
+            for (var triangle : partData.trianglesAsOptional().orElse(new OBJSONData.TriangleData[0])) {
+                addPolygon(faceMap, triangle.face(), data.faces()[triangle.face()], triangle.vertices(),
+                        new PolygonData(triangle.cullFace(), data.faces()[triangle.face()].face(), triangle.texture(), -1));
             }
-
-            for (OBJSONData.QuadData quadData : partData.quadsAsOptional().orElse(new OBJSONData.QuadData[0])) {
-                var quad = new Quad.Builder<PolygonData>();
-                var faceData = data.faces()[quadData.face()];
-                var face = faceMap.computeIfAbsent(quadData.face(), i -> new Face.Builder<>());
-
-                for (int vertIndex : quadData.vertices()) {
-                    var vertData = faceData.vertices()[vertIndex];
-                    quad.addVertex(new Vertex(vertData.pos(), faceData.normal(), vertData.uv()));
-                }
-
-                face.addPolygon(quad.setData(
-                        new PolygonData(quadData.cullFace(), faceData.face(), quadData.texture(), -1)
-                ).build());
+            for (var quad : partData.quadsAsOptional().orElse(new OBJSONData.QuadData[0])) {
+                addPolygon(faceMap, quad.face(), data.faces()[quad.face()], quad.vertices(),
+                        new PolygonData(quad.cullFace(), data.faces()[quad.face()].face(), quad.texture(), -1));
             }
 
             for (var face : faceMap.values()) {
@@ -91,6 +79,63 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelize
         }
 
         return builder.build();
+    }
+
+    private static void addPolygon(Int2ObjectOpenHashMap<Face.Builder<PolygonData>> faces, int faceIndex,
+            OBJSONData.FaceData faceData, int[] indices, PolygonData metadata) {
+        var builder = ImmutableList.<IVertex>builder();
+        for (var index : indices) {
+            var vertex = faceData.vertices()[index];
+            builder.add(new Vertex(vertex.pos(), faceData.normal(), vertex.uv()));
+        }
+        var vertices = builder.build();
+        var authored = faceData.normal();
+        var authoredNormal = IVector3.ofImmutable(authored[0], authored[1], authored[2]);
+        if (vertices.size() == 4 && needsTriangulation(vertices, authoredNormal)) {
+            var internalDiagonal = normal(vertices, 0, 1, 2).dot(normal(vertices, 0, 2, 3)) >= 0;
+            if (internalDiagonal) {
+                addPolygon(faces, faceIndex, faceData, new int[]{indices[0], indices[1], indices[2]}, metadata);
+                addPolygon(faces, faceIndex, faceData, new int[]{indices[0], indices[2], indices[3]}, metadata);
+            } else {
+                addPolygon(faces, faceIndex, faceData, new int[]{indices[0], indices[1], indices[3]}, metadata);
+                addPolygon(faces, faceIndex, faceData, new int[]{indices[1], indices[2], indices[3]}, metadata);
+            }
+            return;
+        }
+        var normal = MeshHelper.calculateNormal(vertices.get(0), vertices.get(1), vertices.get(2));
+        if (!Double.isFinite(normal.lengthSquared()) || normal.lengthSquared() < 1e-12) {
+            return;
+        }
+        if (normal.dot(authoredNormal) < 0) {
+            vertices = vertices.reverse();
+        }
+        var face = faces.computeIfAbsent(faceIndex, index -> new Face.Builder<>());
+        if (vertices.size() == 3) {
+            face.addPolygon(Tri.getProvider(), metadata, vertices);
+        } else {
+            face.addPolygon(Quad.getProvider(), metadata, vertices);
+        }
+    }
+
+    private static boolean needsTriangulation(ImmutableList<IVertex> vertices, IVector3 authoredNormal) {
+        var positive = false;
+        var negative = false;
+        for (int i = 0; i < 4; i++) {
+            var normal = normal(vertices, i, (i + 1) % 4, (i + 2) % 4);
+            if (normal.lengthSquared() < 1e-18) {
+                return true;
+            }
+            var alignment = normal.dot(authoredNormal);
+            positive |= alignment > 1e-12;
+            negative |= alignment < -1e-12;
+        }
+        return positive && negative;
+    }
+
+    private static IVector3 normal(ImmutableList<IVertex> vertices, int first, int second, int third) {
+        var origin = vertices.get(first).getPos();
+        return vertices.get(second).getPos().asMutable().sub(origin)
+                .cross(vertices.get(third).getPos().asMutable().sub(origin));
     }
 
     public String name() {

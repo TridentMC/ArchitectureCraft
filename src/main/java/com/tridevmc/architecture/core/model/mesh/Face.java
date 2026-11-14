@@ -161,18 +161,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
         }
 
         public Builder<D> addPolygon(@NotNull IPolygonProvider<?, D> provider, @NotNull D data, @NotNull IVertex... vertices) {
-            var indices = new int[vertices.length];
-            for (var i = 0; i < vertices.length; i++) {
-                var vertex = vertices[i];
-                var vertexIndex = this.vertexPool.getOrDefault(vertex, -1);
-                if (vertexIndex == -1) {
-                    vertexIndex = this.vertexPool.size();
-                    this.vertexPool.put(vertex, this.vertexPool.size());
-                }
-                indices[i] = vertexIndex;
-            }
-            this.polygons.add(f -> provider.createPolygon(f, data, indices));
-            return this;
+            return this.addPolygon(provider, data, ImmutableList.copyOf(vertices));
         }
 
         public Builder<D> addPolygon(@NotNull IPolygonProvider<?, D> provider, @NotNull D data, @NotNull ImmutableList<IVertex> vertices) {

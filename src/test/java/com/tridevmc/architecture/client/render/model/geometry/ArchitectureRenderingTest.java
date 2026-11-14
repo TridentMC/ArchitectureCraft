@@ -124,7 +124,7 @@ class ArchitectureRenderingTest {
     }
 
     @Test
-    void quadMaterialsRetainTransparencyAndTrackModelData() {
+    void rotatedUnculledQuadsRetainTheirShadingDirectionAndForcedTransparency() {
         var sprite = mock(TextureAtlasSprite.class);
         when(sprite.atlasLocation()).thenReturn(TextureAtlas.LOCATION_BLOCKS);
         when(sprite.getU(anyFloat())).thenAnswer(call -> call.getArgument(0));
@@ -143,12 +143,14 @@ class ArchitectureRenderingTest {
                 new PolygonData(CullFace.NONE, FaceDirection.UP, 0, -1),
                 new Vertex(0, 0.25, 0, 0, 1, 0, 0, 0), new Vertex(0, 0.25, 1, 0, 1, 0, 0, 1),
                 new Vertex(1, 0.25, 1, 0, 1, 0, 1, 1), new Vertex(1, 0.25, 0, 0, 1, 0, 1, 0)).build();
+        assertEquals(1, face.getNormal().lengthSquared(), 1.0E-9);
         var mesh = new Mesh.Builder<String, PolygonData>("test")
                 .addPart(new Part.Builder<String, PolygonData>().setId("root").addFace(face).build()).build();
         var transform = ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
         var result = new BakedQuadContainerProviderMesh<>(mesh).getQuads(null, resolver, transform);
         assertEquals(1, result.generalQuads().size());
         var quad = result.allQuads().getFirst();
+        assertSame(Direction.WEST, quad.direction());
         assertSame(sprite, quad.materialInfo().sprite());
         assertSame(ChunkSectionLayer.TRANSLUCENT, quad.materialInfo().layer());
 
