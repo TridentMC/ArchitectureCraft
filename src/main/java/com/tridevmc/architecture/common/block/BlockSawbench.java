@@ -29,6 +29,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -101,6 +102,13 @@ public class BlockSawbench extends BlockArchitecture implements IElementProvider
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(CreateMenuContext context) {
+        if (context.hasPos()) {
+            return new ContainerSawbench(
+                context.getPlayerInventory(),
+                context.getWindowId(),
+                ContainerLevelAccess.create(context.getPlayer().level(), context.getPos())
+            );
+        }
         return new ContainerSawbench(context.getPlayerInventory(), context.getWindowId());
     }
 
