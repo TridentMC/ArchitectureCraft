@@ -45,7 +45,7 @@ public class ArchitectureDebugEventListeners {
 
 
     @SubscribeEvent
-    public static void onRenderLevelStage(ExtractLevelRenderStateEvent event) {
+    public static void onExtractLevelRenderState(ExtractLevelRenderStateEvent event) {
         try (var collector = event.getLevelExtractor().collectPerFrameMainThreadGizmos()) {
             for (var data : debugRenderData.values()) {
                 if (data != null) {
