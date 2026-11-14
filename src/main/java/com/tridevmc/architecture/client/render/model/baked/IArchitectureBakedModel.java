@@ -1,13 +1,10 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3fc;
 
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
-import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
@@ -17,7 +14,6 @@ import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -25,12 +21,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
- * Extension to {@link DynamicBlockStateModel} and {@link ItemModel} that delegates to our own block and item quad methods.
+ * Extension to {@link DynamicBlockStateModel} that delegates to our own block and item quad methods.
  */
-public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemModel {
+public interface IArchitectureBakedModel extends DynamicBlockStateModel {
     /**
      * Gets the quads for the given level, position, and state.
      *
@@ -88,13 +83,6 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemMod
     @Override
     default int materialFlags() { return BakedQuad.FLAG_TRANSLUCENT | BakedQuad.FLAG_ANIMATED; }
 
-    @Override
-    default void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver,
-                        ItemDisplayContext displayContext, @Nullable ClientLevel level,
-                        @Nullable ItemOwner owner, int seed) {
-        this.appendItemLayer(output, stack, displayContext);
-    }
-
     default ItemStackRenderState.LayerRenderState appendItemLayer(ItemStackRenderState output, ItemStack stack,
                                                                   ItemDisplayContext displayContext) {
         var quads = this.getQuads(stack);
@@ -105,8 +93,7 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemMod
         layer.setUsesBlockLight(this.usesBlockLight());
         layer.setParticleMaterial(this.particleMaterial());
         layer.setItemTransform(this.getTransforms().getTransform(displayContext));
-        layer.setExtents(() -> quads.stream().flatMap(q -> IntStream.range(0, 4)
-                .mapToObj(q::position)).toArray(Vector3fc[]::new));
+        layer.setExtents(() -> CuboidItemModelWrapper.computeExtents(quads));
         if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
             output.setAnimated();
         }
