@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -19,10 +20,7 @@ import java.util.Optional;
 
 public class BlockEntityShape extends BlockEntityArchitecture {
 
-    public static final ModelProperty<MaterialStates> MATERIALS = new ModelProperty<>();
-
-    public record MaterialStates(BlockState base, BlockState secondary) {
-    }
+    public static final ModelProperty<ComponentMaterial> MATERIALS = new ModelProperty<>();
 
     private BlockState baseMaterialState, secondaryMaterialState;
 
@@ -88,7 +86,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
 
     @Override
     public ModelData getModelData() {
-        return ModelData.of(MATERIALS, new MaterialStates(
+        return ModelData.of(MATERIALS, new ComponentMaterial(
                 this.getEffectiveBaseMaterialState(), this.getEffectiveSecondaryMaterialState()));
     }
 
