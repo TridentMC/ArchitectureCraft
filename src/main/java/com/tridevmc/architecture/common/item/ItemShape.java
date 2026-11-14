@@ -109,7 +109,10 @@ public class ItemShape extends ItemBlockArchitecture {
         var result = super.placeBlock(context, newState);
         if (result && !context.getLevel().isClientSide()) {
             BlockEntityShape.getAtOptionally(context.getLevel(), context.getClickedPos()).ifPresentOrElse(shape -> {
-                shape.setBaseMaterialState(getStateFromStack(context.getItemInHand()));
+                var material = context.getItemInHand().getOrDefault(
+                        ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT);
+                shape.setBaseMaterialState(material.safeBase());
+                shape.setSecondaryMaterialState(material.hasSecondary() ? material.secondary() : null);
             }, () -> ArchitectureLog.error("Failed to place shape block entity at position: " + context.getClickedPos()));
         }
         return result;
