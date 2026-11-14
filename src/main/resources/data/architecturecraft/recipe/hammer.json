@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "II ",
+        "d/I",
+        "d/ "
+    ],
+    "key": {
+        "I": "#c:ingots/iron",
+        "/": "#c:rods/wooden",
+        "d": "#c:dyes/orange"
+    },
+    "result": {
+        "id": "architecturecraft:hammer"
+    }
+}
