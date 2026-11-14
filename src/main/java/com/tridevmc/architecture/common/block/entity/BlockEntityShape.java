@@ -58,7 +58,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
-        output.putInt("BaseMaterialState", Block.getId(this.getEffectiveBaseMaterialState()));
+        output.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
         output.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
     }
 
@@ -66,8 +66,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.baseMaterialState = Block.stateById(input.getIntOr("BaseMaterialState", 0));
-        var secondaryMaterialId = input.getIntOr("SecondaryMaterialState", 0);
-        this.secondaryMaterialState = secondaryMaterialId == -1 ? null : Block.stateById(secondaryMaterialId);
+        this.secondaryMaterialState = Optional.of(input.getIntOr("SecondaryMaterialState", 0)).filter(id -> id != -1).map(Block::stateById).orElse(null);
         this.requestModelDataUpdate();
         if (this.level != null && this.level.isClientSide()) {
             this.notifyBlockUpdate();

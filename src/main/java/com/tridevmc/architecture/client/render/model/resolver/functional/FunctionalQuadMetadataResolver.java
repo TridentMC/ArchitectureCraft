@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.client.render.model.resolver.functional;
 
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -130,17 +130,17 @@ public class FunctionalQuadMetadataResolver<T> implements IQuadMetadataResolver<
     }
 
     @Override
-    public TextureAtlasSprite getTexture(BlockGetter level, BlockPos pos, BlockState state, T metadata) {
+    public Material.Baked getTexture(BlockGetter level, BlockPos pos, BlockState state, T metadata) {
         return this.blockTextureResolver.getTexture(level, pos, state, metadata);
     }
 
     @Override
-    public TextureAtlasSprite getTexture(ItemStack stack, T metadata) {
+    public Material.Baked getTexture(ItemStack stack, T metadata) {
         return this.itemTextureResolver.getTexture(stack, metadata);
     }
 
     @Override
-    public TextureAtlasSprite getTexture(T metadata) {
+    public Material.Baked getTexture(T metadata) {
         return this.textureResolver.getTexture(metadata);
     }
 

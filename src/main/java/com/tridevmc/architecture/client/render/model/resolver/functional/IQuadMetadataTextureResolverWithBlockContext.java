@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.resolver.functional;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,6 +23,6 @@ public interface IQuadMetadataTextureResolverWithBlockContext<D> {
      * @param metadata The metadata to resolve.
      * @return The texture to use.
      */
-    TextureAtlasSprite getTexture(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
+    Material.Baked getTexture(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
 
 }

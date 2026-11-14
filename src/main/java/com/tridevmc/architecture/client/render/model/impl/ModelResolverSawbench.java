@@ -12,6 +12,7 @@ import com.tridevmc.architecture.core.model.mesh.PolygonData;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
@@ -30,7 +31,7 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
     private static final IQuadMetadataResolver<PolygonData> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
-                return textures[Math.min(m.textureIndex(), textures.length - 1)];
+                return new Material.Baked(textures[Math.min(m.textureIndex(), textures.length - 1)], false);
             },
             m -> {
                 doInit();

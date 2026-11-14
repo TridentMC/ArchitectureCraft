@@ -45,17 +45,11 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
 
     TextureAtlasSprite getParticleIcon();
 
-    default boolean useAmbientOcclusion() {
-        return true;
-    }
+    boolean useAmbientOcclusion();
 
-    default boolean usesBlockLight() {
-        return true;
-    }
+    boolean usesBlockLight();
 
-    default boolean isGui3d() {
-        return true;
-    }
+    boolean isGui3d();
 
     @Override
     default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state,

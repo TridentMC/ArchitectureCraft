@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -131,21 +130,21 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param tintIndex the tintIndex to apply to the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
-                      @NotNull TextureAtlasSprite sprite, int tintIndex) {
+                      @NotNull Material.Baked sprite, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
             bakingConsumer.setDirection(this.face(transform));
-            bakingConsumer.setSprite(new Material.Baked(sprite, false));
+            bakingConsumer.setSprite(sprite);
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
         var vertices = this.vertices();
         for (V v : vertices) {
-            v.pipe(consumer, self, transform, sprite, tintIndex);
+            v.pipe(consumer, self, transform, sprite.sprite(), tintIndex);
         }
         if (vertices.size() == 3) {
             // If we have a triangle, we need to add a fourth vertex to make it a quad.
-            vertices.get(2).pipe(consumer, self, transform, sprite, tintIndex);
+            vertices.get(2).pipe(consumer, self, transform, sprite.sprite(), tintIndex);
         }
     }
 
@@ -157,21 +156,21 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param tintIndex the tintIndex to apply to the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
-                      @NotNull TextureAtlasSprite sprite, int tintIndex) {
+                      @NotNull Material.Baked sprite, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
             bakingConsumer.setDirection(this.cullFace());
-            bakingConsumer.setSprite(new Material.Baked(sprite, false));
+            bakingConsumer.setSprite(sprite);
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
         var vertices = this.vertices();
         for (V v : vertices) {
-            v.pipe(consumer, self, sprite, tintIndex);
+            v.pipe(consumer, self, sprite.sprite(), tintIndex);
         }
         if (vertices.size() == 3) {
             // If we have a triangle, we need to add a fourth vertex to make it a quad.
-            vertices.get(2).pipe(consumer, self, sprite, tintIndex);
+            vertices.get(2).pipe(consumer, self, sprite.sprite(), tintIndex);
         }
     }
 

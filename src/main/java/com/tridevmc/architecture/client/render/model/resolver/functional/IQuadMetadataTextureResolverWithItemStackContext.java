@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.resolver.functional;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +19,6 @@ public interface IQuadMetadataTextureResolverWithItemStackContext<D> {
      * @param metadata The metadata to resolve.
      * @return The texture to use.
      */
-    TextureAtlasSprite getTexture(@NotNull ItemStack stack, D metadata);
+    Material.Baked getTexture(@NotNull ItemStack stack, D metadata);
 
 }

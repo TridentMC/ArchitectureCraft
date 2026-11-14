@@ -26,7 +26,8 @@ package com.tridevmc.architecture.legacy.common.block;
 
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -43,6 +44,7 @@ import net.neoforged.neoforge.model.data.ModelData;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Deprecated
 public class LegacyBlockHelper {
@@ -113,6 +115,22 @@ public class LegacyBlockHelper {
 
     public static BlockPos getBlockEntityPos(BlockEntity te) {
         return te.getBlockPos();
+    }
+
+    public static boolean blockCanRenderInLayer(BlockAndTintGetter level, BlockPos pos, BlockState state, ChunkSectionLayer layer) {
+        // What a beautiful method, my favourite part is the newlines.
+        var parts = new ArrayList<BlockStateModelPart>();
+        Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state)
+                .collectParts(level, pos, state, RANDOM, parts);
+        for (var part : parts) {
+            if (part.getQuads(null).stream().anyMatch(quad -> quad.materialInfo().layer() == layer))
+                return true;
+            for (Direction side : Direction.values()) {
+                if (part.getQuads(side).stream().anyMatch(quad -> quad.materialInfo().layer() == layer))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public static ItemStack blockStackWithState(BlockState state, int size) {

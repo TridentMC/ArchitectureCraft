@@ -65,7 +65,7 @@ public class BakedQuadContainerProviderMesh<I, D extends IPolygonData<D>> implem
             for (var polygon : face.getPolygons()) {
                 var polygonData = polygon.getPolygonData();
                 var isCulled = polygonData.cullFace() != CullFace.NONE;
-                var material = metadataResolver.getMaterial(level, pos, state, stack, polygonData);
+                var material = metadataResolver.getTexture(level, pos, state, stack, polygonData);
                 var texture = material.sprite();
                 var tintIndex = metadataResolver.getTintIndex(level, pos, state, stack, polygonData);
                 var vertexCount = polygon.getVertexCount();

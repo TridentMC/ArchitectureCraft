@@ -1,6 +1,6 @@
 package com.tridevmc.architecture.client.render.model.resolver.functional;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 
 /**
  * A functional interface that resolves a quad's metadata to a texture.
@@ -16,6 +16,6 @@ public interface IQuadMetadataTextureResolver<D> {
      * @param metadata The metadata to resolve.
      * @return The texture to use.
      */
-    TextureAtlasSprite getTexture(D metadata);
+    Material.Baked getTexture(D metadata);
 
 }
