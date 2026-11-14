@@ -10,15 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
-final class ShapeQuadMetadataResolver implements IQuadMetadataResolver<PolygonData> {
-    private final Material.Baked base;
-    private final Material.Baked secondary;
-
-    ShapeQuadMetadataResolver(Material.Baked base, Material.Baked secondary) {
-        this.base = base;
-        this.secondary = secondary;
-    }
-
+record ShapeQuadMetadataResolver(Material.Baked base, Material.Baked secondary)
+        implements IQuadMetadataResolver<PolygonData> {
     @Override
     public TextureAtlasSprite getTexture(PolygonData data) {
         return (data.textureIndex() == 0 ? this.base : this.secondary).sprite();

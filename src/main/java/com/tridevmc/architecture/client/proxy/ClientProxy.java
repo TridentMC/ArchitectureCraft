@@ -29,7 +29,6 @@ import com.tridevmc.architecture.client.render.model.geometry.ArchitectureBlockM
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureItemModel;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
 import com.tridevmc.architecture.client.render.model.impl.ModelResolverSawbench;
-import com.tridevmc.architecture.client.render.model.impl.ModelResolverShapeGeneric;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
@@ -67,7 +66,6 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onModelsBaked(ModelEvent.BakingCompleted event) {
-        ModelResolverShapeGeneric.clearCache();
         ModelResolverSawbench.clearCache();
     }
 

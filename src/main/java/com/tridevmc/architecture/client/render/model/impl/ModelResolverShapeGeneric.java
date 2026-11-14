@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.client.render.model.impl;
 
 import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMesh;
+import com.tridevmc.architecture.client.render.model.baked.BakedQuadContainerProviderMeshCached;
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
@@ -10,12 +11,7 @@ import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ShapeMeshes;
 import com.tridevmc.architecture.core.math.ITrans3;
-import com.tridevmc.architecture.core.math.ITrans3Immutable;
-import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -27,40 +23,32 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
-    private final EnumShape shape;
-    private static final Cache<RenderKey, IBakedQuadContainer> QUADS = CacheBuilder.newBuilder()
-            .maximumSize(1024).build();
 
-    private record RenderKey(String meshName, ITrans3Immutable transform,
-                             Material.Baked base, Material.Baked secondary) {}
+    private final BakedQuadContainerProviderMesh<String, PolygonData> mesh;
 
     public ModelResolverShapeGeneric(EnumShape shape) {
-        this.shape = shape;
+        this.mesh = new BakedQuadContainerProviderMeshCached<>(ShapeMeshes.getMesh(shape));
     }
 
-    public static void clearCache() {
-        QUADS.invalidateAll();
-    }
-
-    private static Material.Baked material(BlockState state) {
+    private static Material.Baked getMaterialForState(BlockState state) {
         return Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state);
     }
 
     @Override
     public IQuadMetadataResolver<PolygonData> getMetadataResolver() {
-        var sprite = material(Blocks.OAK_PLANKS.defaultBlockState());
-        return new ShapeQuadMetadataResolver(sprite, sprite);
+        var material = getMaterialForState(Blocks.OAK_PLANKS.defaultBlockState());
+        return new ShapeQuadMetadataResolver(material, material);
     }
 
     @Override
     public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        var selected = ShapeMeshes.getMesh(this.shape);
         // Get the tile entity's model data so we can pull in the material states.
         var materials = level.getModelData(pos).get(BlockEntityShape.MATERIALS);
         var base = materials == null ? Blocks.OAK_PLANKS.defaultBlockState() : materials.base();
         var secondary = materials == null ? base : materials.secondary();
-        return this.bake(selected, transform, base, secondary);
+        return this.mesh.getQuads(null,
+                new ShapeQuadMetadataResolver(getMaterialForState(base), getMaterialForState(secondary)), transform);
     }
 
     @Override
@@ -68,25 +56,12 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
                                         ITrans3 transform) {
         // Pull the material states from the item stack, including any secondary material applied with cladding.
         var material = stack.getOrDefault(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT);
-        return this.bake(ShapeMeshes.getMesh(this.shape), transform,
-                material.safeBase(), material.safeSecondary());
-    }
-
-    private IBakedQuadContainer bake(IMesh<String, PolygonData> mesh, ITrans3 transform,
-                                     BlockState baseState, BlockState secondaryState) {
-        var key = new RenderKey(mesh.getName(), transform.asImmutable(), material(baseState), material(secondaryState));
-        var cached = QUADS.getIfPresent(key);
-        if (cached != null) {
-            return cached;
-        }
-        var quads = new BakedQuadContainerProviderMesh<>(mesh)
-                .getQuads(null, new ShapeQuadMetadataResolver(key.base, key.secondary), transform);
-        QUADS.put(key, quads);
-        return quads;
+        return this.mesh.getQuads(null, new ShapeQuadMetadataResolver(
+                getMaterialForState(material.safeBase()), getMaterialForState(material.safeSecondary())), transform);
     }
 
     @Override
     public TextureAtlasSprite getDefaultSprite() {
-        return material(Blocks.OAK_PLANKS.defaultBlockState()).sprite();
+        return getMaterialForState(Blocks.OAK_PLANKS.defaultBlockState()).sprite();
     }
 }
