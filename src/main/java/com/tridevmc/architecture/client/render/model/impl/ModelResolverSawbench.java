@@ -9,14 +9,17 @@ import com.tridevmc.architecture.client.render.model.resolver.functional.Functio
 import com.tridevmc.architecture.common.block.BlockSawbench;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.function.Function;
 
 public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
@@ -35,12 +38,14 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
             }
     );
 
+    public static void clearCache() { needsInit = true; }
+
     private static void doInit() {
         if (needsInit) {
-            var textureGetter = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
+            Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)::getSprite;
             textures = new TextureAtlasSprite[]{
-                    textureGetter.apply(ResourceLocation.withDefaultNamespace("block/oak_planks")),
-                    textureGetter.apply(ResourceLocation.withDefaultNamespace("block/iron_block"))
+                    textureGetter.apply(Identifier.withDefaultNamespace("block/oak_planks")),
+                    textureGetter.apply(Identifier.withDefaultNamespace("block/iron_block"))
             };
             colours = new int[]{-1, -1};
             needsInit = false;
@@ -53,7 +58,7 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state,
+    public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
         return MESH.getQuads("root", level, pos, state, resolver, transform);
     }

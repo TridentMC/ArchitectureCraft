@@ -1,6 +1,5 @@
 package com.tridevmc.architecture.common.block;
 
-import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.ui.UISawbench;
 import com.tridevmc.architecture.common.ArchitectureContent;
@@ -15,12 +14,17 @@ import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
 import com.tridevmc.architecture.core.physics.AABB;
+
+import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -32,18 +36,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class BlockSawbench extends BlockArchitecture implements IElementProvider<ContainerSawbench> {
 
-    public static final OBJSON MODEL = OBJSON.fromResource(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
+    public static final OBJSON MODEL = OBJSON.fromResource(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "block/sawbench_all.objson"));
     private final static EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public BlockSawbench() {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "sawbench"))));
+        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX, "sawbench"))));
     }
 
     @Override

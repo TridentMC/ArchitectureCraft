@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_roof_overhang_gable_end_lh"
+            "type": "architecturecraft:mesh",
+            "shape": "roof_overhang_gable_end_lh"
         }
     }
 }

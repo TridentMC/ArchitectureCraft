@@ -4,15 +4,25 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class BlockEntityShape extends BlockEntityArchitecture {
+
+    public static final ModelProperty<MaterialStates> MATERIALS = new ModelProperty<>();
+
+    public record MaterialStates(BlockState base, BlockState secondary) {
+    }
 
     private BlockState baseMaterialState, secondaryMaterialState;
 
@@ -27,7 +37,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @param pos   The position to get the BlockEntityShape from.
      * @return An optional containing the BlockEntityShape, or an empty optional if it does not exist.
      */
-    public static Optional<BlockEntityShape> getAtOptionally(LevelAccessor world, BlockPos pos) {
+    public static Optional<BlockEntityShape> getAtOptionally(BlockGetter world, BlockPos pos) {
         return Optional.ofNullable(world.getBlockEntity(pos)).map(te -> te instanceof BlockEntityShape ? (BlockEntityShape) te : null);
     }
 
@@ -39,7 +49,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return The BlockEntityShape, or null if it does not exist.
      */
     @Nullable
-    public static BlockEntityShape getAt(LevelAccessor world, BlockPos pos) {
+    public static BlockEntityShape getAt(BlockGetter world, BlockPos pos) {
         var te = world.getBlockEntity(pos);
         if (te instanceof BlockEntityShape) {
             return (BlockEntityShape) te;
@@ -48,19 +58,51 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-
-        tag.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
-        tag.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("BaseMaterialState", Block.getId(this.getEffectiveBaseMaterialState()));
+        output.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
     }
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        this.baseMaterialState = Block.stateById(input.getIntOr("BaseMaterialState", 0));
+        var secondaryMaterialId = input.getIntOr("SecondaryMaterialState", 0);
+        this.secondaryMaterialState = secondaryMaterialId == -1 ? null : Block.stateById(secondaryMaterialId);
+        this.requestModelDataUpdate();
+        if (this.level != null && this.level.isClientSide()) {
+            this.notifyBlockUpdate();
+        }
+    }
 
-        this.baseMaterialState = Block.stateById(tag.getInt("BaseMaterialState"));
-        this.secondaryMaterialState = Optional.of(tag.getInt("SecondaryMaterialState")).filter(id -> id != -1).map(Block::stateById).orElse(null);
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveCustomOnly(registries);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public ModelData getModelData() {
+        return ModelData.of(MATERIALS, new MaterialStates(
+                this.getEffectiveBaseMaterialState(), this.getEffectiveSecondaryMaterialState()));
+    }
+
+    private void materialsChanged() {
+        this.setChanged();
+        this.requestModelDataUpdate();
+        this.notifyBlockUpdate();
+    }
+
+    private void notifyBlockUpdate() {
+        if (this.level != null) {
+            var state = this.getBlockState();
+            this.level.sendBlockUpdated(this.getBlockPos(), state, state, Block.UPDATE_CLIENTS);
+        }
     }
 
     /**
@@ -79,7 +121,10 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return This BlockEntityShape instance.
      */
     public BlockEntityShape setBaseMaterialState(BlockState baseMaterialState) {
-        this.baseMaterialState = baseMaterialState;
+        if (this.baseMaterialState != baseMaterialState) {
+            this.baseMaterialState = baseMaterialState;
+            this.materialsChanged();
+        }
         return this;
     }
 
@@ -99,7 +144,10 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return This BlockEntityShape instance.
      */
     public BlockEntityShape setSecondaryMaterialState(BlockState secondaryMaterialState) {
-        this.secondaryMaterialState = secondaryMaterialState;
+        if (this.secondaryMaterialState != secondaryMaterialState) {
+            this.secondaryMaterialState = secondaryMaterialState;
+            this.materialsChanged();
+        }
         return this;
     }
 

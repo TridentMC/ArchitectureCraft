@@ -21,7 +21,7 @@ import com.tridevmc.compound.core.reflect.WrappedField;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -65,7 +65,7 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     public BlockShape(EnumShape shape) {
         this(shape, BlockBehaviour.Properties.of().setId(
                 ResourceKey.create(Registries.BLOCK,
-                        ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
+                        Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
                                 "shape_" + shape.getName())
                 ))
         );
@@ -92,8 +92,8 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         //noinspection DataFlowIssue -- We know this is not null, we check for it in the static block.
         STATE_DEFINITION.set(this,
                 builder.create(Block::defaultBlockState,
-                        (block, propertyValues, codec) ->
-                                new BlockStateShape((BlockShape<?>) block, orientationFunc, propertyValues, codec)
+                        (block, propertyKeys, propertyValues) ->
+                                new BlockStateShape((BlockShape<?>) block, orientationFunc, propertyKeys, propertyValues)
                 )
         );
         this.registerDefaultState(this.getStateDefinition().any());

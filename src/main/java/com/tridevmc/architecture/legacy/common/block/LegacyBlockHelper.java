@@ -26,19 +26,19 @@ package com.tridevmc.architecture.legacy.common.block;
 
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -113,16 +113,6 @@ public class LegacyBlockHelper {
 
     public static BlockPos getBlockEntityPos(BlockEntity te) {
         return te.getBlockPos();
-    }
-
-    public static boolean blockCanRenderInLayer(BlockState state, RenderType layer) {
-        // What a beautiful method, my favourite part is the newlines.
-        return Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModelShaper()
-                .getBlockModel(state)
-                .getRenderTypes(state, RANDOM, ModelData.EMPTY)
-                .contains(layer);
     }
 
     public static ItemStack blockStackWithState(BlockState state, int size) {
