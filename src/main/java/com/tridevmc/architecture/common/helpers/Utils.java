@@ -39,8 +39,6 @@ import net.minecraft.world.level.CommonLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Random;
@@ -81,7 +79,6 @@ public class Utils {
         return getSpriteForBlockState(blockState);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static int getColourFromState(BlockState state) {
         if (state == null)
             return -1;
