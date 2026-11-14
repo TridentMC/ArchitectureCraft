@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_balustrade_plain_with_newel"
+            "type": "architecturecraft:mesh",
+            "shape": "balustrade_plain_with_newel"
         }
     }
 }
