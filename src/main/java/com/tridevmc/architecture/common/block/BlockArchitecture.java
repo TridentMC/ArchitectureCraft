@@ -40,8 +40,8 @@ public class BlockArchitecture extends Block {
         //noinspection DataFlowIssue -- We know this is not null, we check for it in the static block.
         STATE_DEFINITION.set(this,
                 builder.create(Block::defaultBlockState,
-                        (block, propertyValues, codec) ->
-                                BlockStateArchitecture.create((BlockArchitecture) block, propertyValues, codec)
+                        (block, propertyKeys, propertyValues) ->
+                                BlockStateArchitecture.create((BlockArchitecture) block, propertyKeys, propertyValues)
                 )
         );
         this.registerDefaultState(this.getStateDefinition().any());

@@ -8,7 +8,7 @@ import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -124,11 +124,11 @@ public enum EnumShape {
 
     private static final Map<String, EnumShape> NAME_LOOKUP = Arrays.stream(values())
             .collect(Collectors.toMap(EnumShape::getName, Function.identity()));
-    private static final Map<ResourceLocation, EnumShape> ID_LOOKUP = Arrays.stream(values())
+    private static final Map<Identifier, EnumShape> ID_LOOKUP = Arrays.stream(values())
             .collect(Collectors.toMap(EnumShape::getId, Function.identity()));
     private final String name;
     private final String localizationKey;
-    private final ResourceLocation id;
+    private final Identifier id;
     private final IShapePlacementLogic<?> placementLogic;
     private final IShapeTransformationResolver transformationResolver;
 
@@ -136,7 +136,7 @@ public enum EnumShape {
               IShapeTransformationResolver transformationResolver) {
         this.name = name;
         this.localizationKey = String.format("shape.%s.%s", ArchitectureMod.MOD_ID, name);
-        this.id = ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
+        this.id = Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s", name));
         this.placementLogic = placementLogic;
         this.transformationResolver = transformationResolver;
     }
@@ -160,7 +160,7 @@ public enum EnumShape {
      * @return The EnumShape with the given id.
      * @throws NullPointerException if there is no EnumShape with the given id.
      */
-    public static EnumShape byId(ResourceLocation id) {
+    public static EnumShape byId(Identifier id) {
         var shape = ID_LOOKUP.get(id);
         return Objects.requireNonNull(shape, "No shape with id " + id);
     }
@@ -169,12 +169,12 @@ public enum EnumShape {
         return this.name;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return this.id;
     }
 
-    public ResourceLocation getAssetLocation() {
-        return ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
+    public Identifier getAssetLocation() {
+        return Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
     }
 
     public String getLocalizationKey() {

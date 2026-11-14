@@ -2,9 +2,10 @@ package com.tridevmc.architecture.client.render.model.resolver;
 
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +15,11 @@ import org.jetbrains.annotations.Nullable;
  * @param <D> The type of the quad metadata.
  */
 public interface IQuadMetadataResolver<D> {
+
+    default Material.Baked getMaterial(@Nullable BlockGetter level, @Nullable BlockPos pos,
+                                      @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
+        return new Material.Baked(this.getTexture(level, pos, state, stack, metadata), false);
+    }
 
     /**
      * Gets the texture to use for the quad, chooses the correct method to use based on the context provided.
@@ -25,7 +31,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The texture to use for the quad.
      */
-    default TextureAtlasSprite getTexture(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
+    default TextureAtlasSprite getTexture(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTexture(level, pos, state, stack, provider.metadata());
     }
 
@@ -40,7 +46,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The metadata to get the texture for.
      * @return The texture to use for the quad.
      */
-    default TextureAtlasSprite getTexture(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
+    default TextureAtlasSprite getTexture(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
         if (level != null && pos != null && state != null) {
             return this.getTexture(level, pos, state, metadata);
         } else if (stack != null) {
@@ -59,7 +65,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The texture to use for the quad.
      */
-    default TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
+    default TextureAtlasSprite getTexture(BlockGetter level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTexture(provider.metadata());
     }
 
@@ -72,7 +78,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The quad metadata.
      * @return The texture to use for the quad.
      */
-    default TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, D metadata) {
+    default TextureAtlasSprite getTexture(BlockGetter level, BlockPos pos, BlockState state, D metadata) {
         return this.getTexture(metadata);
     }
 
@@ -127,7 +133,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
+    default int getTintIndex(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTintIndex(level, pos, state, stack, provider.metadata());
     }
 
@@ -142,7 +148,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The metadata to get the tint index for.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
+    default int getTintIndex(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
         if (level != null && pos != null && state != null) {
             return this.getTintIndex(level, pos, state, metadata);
         } else if (stack != null) {
@@ -162,7 +168,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
+    default int getTintIndex(BlockGetter level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTintIndex(provider.metadata());
     }
 
@@ -175,7 +181,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The quad metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, D metadata) {
+    default int getTintIndex(BlockGetter level, BlockPos pos, BlockState state, D metadata) {
         return this.getTintIndex(metadata);
     }
 

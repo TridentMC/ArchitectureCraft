@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_pillar_base"
+        "type": "architecturecraft:mesh",
+        "shape": "pillar_base"
     }
 }

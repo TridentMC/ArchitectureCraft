@@ -1,53 +1,45 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3fc;
+
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
- * Extension to {@link IDynamicBakedModel} that delegates to a new method that accepts our own {@link BlockStateArchitecture} object instead of the vanilla {@link BlockState}.
+ * Extension to {@link DynamicBlockStateModel} and {@link ItemModel} that delegates to our own block and item quad methods.
  */
-public interface IArchitectureBakedModel extends IDynamicBakedModel {
-
-
-    @Override
-    default @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
-        if (state instanceof BlockStateArchitecture stateArchitecture) {
-            return this.getQuads(stateArchitecture, side, rand, extraData, renderType);
-        } else if (state == null) {
-            // This is likely an item model, so we'll still try to get quads for it.
-            return this.getQuads(null, side, rand, extraData, renderType);
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
+public interface IArchitectureBakedModel extends DynamicBlockStateModel, ItemModel {
     /**
-     * Gets a list of quads for the given state, side, rand, extraData, and renderType.
+     * Gets the quads for the given level, position, and state.
      *
-     * @param state      The state of the block.
-     * @param side       The side of the block to get quads for, refers to culled faces. Can be null for general quads.
-     * @param rand       The random source.
-     * @param extraData  The extra data.
-     * @param renderType The render type.
-     * @return A list of quads.
+     * @param level The level to get quads for.
+     * @param pos   The position of the block.
+     * @param state The state of the block.
+     * @return A container of quads, grouped into culled faces and general quads.
      */
-    @NotNull
-    List<BakedQuad> getQuads(@Nullable BlockStateArchitecture state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType);
+    IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state);
 
     /**
      * Gets a list of quads for the given stack.
@@ -55,7 +47,74 @@ public interface IArchitectureBakedModel extends IDynamicBakedModel {
      * @param stack The stack to get quads for.
      * @return A list of quads.
      */
-    @NotNull
-    List<BakedQuad> getQuads(@NotNull ItemStack stack);
+    List<BakedQuad> getQuads(ItemStack stack);
 
+    ItemTransforms getTransforms();
+
+    TextureAtlasSprite getParticleIcon();
+
+    default boolean useAmbientOcclusion() { return true; }
+
+    default boolean usesBlockLight() { return true; }
+
+    default boolean isGui3d() { return true; }
+
+    @Override
+    default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state,
+                              RandomSource random, List<BlockStateModelPart> parts) {
+        var quads = this.getQuads(level, pos, state);
+        var material = this.particleMaterial(level, pos, state);
+        parts.add(new BlockStateModelPart() {
+            @Override
+            public List<BakedQuad> getQuads(@Nullable Direction direction) {
+                return quads.quadsFor(direction);
+            }
+            @Override
+            public boolean useAmbientOcclusion() { return IArchitectureBakedModel.this.useAmbientOcclusion(); }
+            @Override
+            public Material.Baked particleMaterial() { return material; }
+            @Override
+            public int materialFlags() {
+                return quads.allQuads().stream().mapToInt(q -> q.materialInfo().flags()).reduce(0, (a, b) -> a | b);
+            }
+        });
+    }
+
+    @Override
+    default Material.Baked particleMaterial() {
+        return new Material.Baked(this.getParticleIcon(), false);
+    }
+
+    @Override
+    default int materialFlags() { return BakedQuad.FLAG_TRANSLUCENT | BakedQuad.FLAG_ANIMATED; }
+
+    @Override
+    default void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver,
+                        ItemDisplayContext displayContext, @Nullable ClientLevel level,
+                        @Nullable ItemOwner owner, int seed) {
+        this.appendItemLayer(output, stack, displayContext);
+    }
+
+    default ItemStackRenderState.LayerRenderState appendItemLayer(ItemStackRenderState output, ItemStack stack,
+                                                                  ItemDisplayContext displayContext) {
+        var quads = this.getQuads(stack);
+        output.appendModelIdentityElement(this);
+        output.appendModelIdentityElement(quads);
+        var layer = output.newLayer();
+        layer.setQuads(ItemQuads.split(quads));
+        layer.setUsesBlockLight(this.usesBlockLight());
+        layer.setParticleMaterial(this.particleMaterial());
+        layer.setItemTransform(this.getTransforms().getTransform(displayContext));
+        layer.setExtents(() -> quads.stream().flatMap(q -> IntStream.range(0, 4)
+                .mapToObj(q::position)).toArray(Vector3fc[]::new));
+        if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
+            output.setAnimated();
+        }
+        if (stack.hasFoil()) {
+            layer.setFoilType(ItemStackRenderState.FoilType.STANDARD);
+            output.appendModelIdentityElement(ItemStackRenderState.FoilType.STANDARD);
+            output.setAnimated();
+        }
+        return layer;
+    }
 }

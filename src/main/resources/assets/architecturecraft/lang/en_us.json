@@ -103,5 +103,20 @@
     "tooltip.architecturecraft.secondary_material": "Secondary: %s",
     "tooltip.architecturecraft.cut_from": "Cut from: %s",
     "architecturecraft.gui.sawbench.title": "Sawbench",
-    "architecturecraft.gui.sawbench.ratio": "%s makes %s"
+    "architecturecraft.gui.sawbench.ratio": "%s makes %s",
+    "container.architecturecraft.sawbench": "Sawbench",
+    "container.architecturecraft.sawbench.input": "Material",
+    "container.architecturecraft.sawbench.output": "Result",
+    "shape_category.architecturecraft.all": "All",
+    "shape_category.architecturecraft.basic": "Basic",
+    "shape_category.architecturecraft.stairs": "Stairs",
+    "shape_category.architecturecraft.roofs": "Roofs",
+    "shape_category.architecturecraft.rounded": "Rounded",
+    "shape_category.architecturecraft.pillars": "Pillars",
+    "shape_category.architecturecraft.classical": "Classical",
+    "shape_category.architecturecraft.cornices": "Cornices",
+    "shape_category.architecturecraft.windows": "Windows",
+    "shape_category.architecturecraft.arches": "Arches",
+    "shape_category.architecturecraft.railings": "Railings",
+    "shape_category.architecturecraft.other": "Other"
 }

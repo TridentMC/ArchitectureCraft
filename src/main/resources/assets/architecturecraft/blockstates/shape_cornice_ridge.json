@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_cornice_ridge"
+            "type": "architecturecraft:mesh",
+            "shape": "cornice_ridge"
         }
     }
 }

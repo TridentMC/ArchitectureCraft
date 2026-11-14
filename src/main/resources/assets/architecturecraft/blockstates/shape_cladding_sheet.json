@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_cladding_sheet"
+            "type": "architecturecraft:mesh",
+            "shape": "cladding_sheet"
         }
     }
 }

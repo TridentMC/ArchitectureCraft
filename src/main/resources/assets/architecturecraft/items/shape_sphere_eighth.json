@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_sphere_eighth"
+        "type": "architecturecraft:mesh",
+        "shape": "sphere_eighth"
     }
 }

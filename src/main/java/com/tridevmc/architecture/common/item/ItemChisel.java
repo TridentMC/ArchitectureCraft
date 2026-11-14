@@ -29,7 +29,7 @@ import com.tridevmc.architecture.legacy.common.block.LegacyBlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class ItemChisel extends Item {
 
-    public ItemChisel(ResourceLocation id) {
+    public ItemChisel(Identifier id) {
         super(new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, id)));
     }
 

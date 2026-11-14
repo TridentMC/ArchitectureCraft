@@ -1,39 +1,39 @@
 package com.tridevmc.architecture.client.ui;
 
 import com.tridevmc.architecture.common.block.container.ContainerSawbench;
-import com.tridevmc.compound.ui.Rect2F;
-import com.tridevmc.compound.ui.container.CompoundUIContainer;
-import com.tridevmc.compound.ui.element.ElementBox;
-import com.tridevmc.compound.ui.layout.*;
+import com.tridevmc.compound.ui.scope.ICompositionScope;
+import com.tridevmc.compound.ui.screen.ComposedUIContainer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
-public class UISawbench extends CompoundUIContainer<ContainerSawbench> {
-    private final Player player;
+public class UISawbench extends ComposedUIContainer<ContainerSawbench> {
+    private final SawbenchPanel panel;
 
-    public UISawbench(ContainerSawbench container, Player player) {
-        super(container);
-        this.player = player;
+    public UISawbench(ContainerSawbench menu, Inventory inventory, Component title) {
+        super(menu, inventory, title);
+        this.panel = new SawbenchPanel(menu, shape -> {
+            var client = Minecraft.getInstance();
+            if (client.gameMode != null && client.player != null
+                    && menu.clickMenuButton(client.player, shape.ordinal())) {
+                client.gameMode.handleInventoryButtonClick(menu.containerId, shape.ordinal());
+            }
+        });
+    }
+
+    public UISawbench(ContainerSawbench menu, Player player) {
+        this(menu, player.getInventory(), Component.translatable("container.architecturecraft.sawbench"));
     }
 
     @Override
-    public void initElements() {
-        // TODO: The size seems about right - no real elements in quite yet.
-        LayoutCentered boxLayout = new LayoutCentered(true, true);
-        ElementBox bg = new ElementBox(new Rect2F(0, 0, 256, 288), boxLayout);
-        this.addElement(bg);
+    protected void compose(ICompositionScope scope) {
+        this.panel.compose(scope);
+    }
 
-        LayoutGrid playerGrid = new LayoutGrid(new Rect2F(47, 204, 18 * 9, 18 * 3));
-        ILayout playerLayout = new LayoutMulti(playerGrid, new LayoutRelative(bg));
-
-        LayoutGrid hotbarGrid = new LayoutGrid(new Rect2F(47, 262, 18 * 9, 18));
-        ILayout hotbarLayout = new LayoutMulti(hotbarGrid, new LayoutRelative(bg));
-
-        for (int i = 0; i < this.getMenu().slots.size(); i++) {
-            if (i < 27) {
-                playerGrid.registerElement(this.addSlotElement(playerLayout, i));
-            } else {
-                hotbarGrid.registerElement(this.addSlotElement(hotbarLayout, i));
-            }
-        }
+    @Override
+    public void containerTick() {
+        super.containerTick();
+        this.panel.tick();
     }
 }
