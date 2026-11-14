@@ -45,13 +45,15 @@ public class ArchitectureMod {
 
     public ArchitectureMod() {
         ArchitectureMod.INSTANCE = this;
-        PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
+        PROXY = FMLEnvironment.getDist().isClient() ? new ClientProxy() : new CommonProxy();
 
         var loadingContext = ModLoadingContext.get();
         var modEventBus = loadingContext.getActiveContainer().getEventBus();
         modEventBus.addListener(this::onSetup);
         modEventBus.register(CONTENT);
-        modEventBus.register(PROXY);
+        if (FMLEnvironment.getDist().isClient()) {
+            modEventBus.register(PROXY);
+        }
     }
 
     public void onSetup(FMLCommonSetupEvent e) {

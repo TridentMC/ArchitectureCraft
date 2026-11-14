@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_bevelled_inner_corner"
+        "type": "architecturecraft:mesh",
+        "shape": "bevelled_inner_corner"
     }
 }

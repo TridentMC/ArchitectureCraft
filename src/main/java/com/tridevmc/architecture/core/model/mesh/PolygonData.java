@@ -15,8 +15,6 @@ public record PolygonData(@NotNull CullFace cullFace, @NotNull FaceDirection fac
 
     @Override
     public PolygonData transform(@NotNull ITrans3 trans) {
-        if (this.cullFace() == CullFace.NONE) return this;
-        // We're just going to transform the cull face then copy the rest of the data to a new instance.
         return new PolygonData(trans.transformCullFace(this.cullFace()),
                 trans.transformFaceDirection(this.face()),
                 this.textureIndex(),

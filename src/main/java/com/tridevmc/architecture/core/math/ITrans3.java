@@ -1,6 +1,11 @@
 package com.tridevmc.architecture.core.math;
 
-import com.tridevmc.architecture.core.math.floating.*;
+import com.tridevmc.architecture.core.math.floating.IVector2F;
+import com.tridevmc.architecture.core.math.floating.IVector2FImmutable;
+import com.tridevmc.architecture.core.math.floating.IVector2FMutable;
+import com.tridevmc.architecture.core.math.floating.IVector3F;
+import com.tridevmc.architecture.core.math.floating.IVector3FImmutable;
+import com.tridevmc.architecture.core.math.floating.IVector3FMutable;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
 import com.tridevmc.architecture.core.math.integer.IVector3iImmutable;
 import com.tridevmc.architecture.core.math.integer.IVector3iMutable;
@@ -8,8 +13,10 @@ import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import com.tridevmc.architecture.core.model.mesh.MeshHelper;
 import com.tridevmc.architecture.core.physics.AABB;
-import net.minecraft.core.Direction;
+
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.core.Direction;
 
 /**
  * A wrapper around a transformation matrix that provides methods for transforming points and vectors.

@@ -1,6 +1,5 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/sawbench"
+        "type": "architecturecraft:mesh"
     }
 }

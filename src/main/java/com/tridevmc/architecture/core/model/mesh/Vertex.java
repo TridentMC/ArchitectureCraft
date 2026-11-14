@@ -1,6 +1,13 @@
 package com.tridevmc.architecture.core.model.mesh;
 
-import com.tridevmc.architecture.core.math.*;
+import com.tridevmc.architecture.core.math.ITrans3;
+import com.tridevmc.architecture.core.math.IVector2;
+import com.tridevmc.architecture.core.math.IVector2Immutable;
+import com.tridevmc.architecture.core.math.IVector2Mutable;
+import com.tridevmc.architecture.core.math.IVector3;
+import com.tridevmc.architecture.core.math.IVector3Immutable;
+import com.tridevmc.architecture.core.math.IVector3Mutable;
+
 import org.jetbrains.annotations.NotNull;
 
 /**

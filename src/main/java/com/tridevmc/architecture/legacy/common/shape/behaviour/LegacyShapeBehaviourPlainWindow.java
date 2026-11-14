@@ -1,9 +1,13 @@
 package com.tridevmc.architecture.legacy.common.shape.behaviour;
 
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
+
 import net.minecraft.core.Direction;
 
-import static net.minecraft.core.Direction.*;
+import static net.minecraft.core.Direction.DOWN;
+import static net.minecraft.core.Direction.EAST;
+import static net.minecraft.core.Direction.UP;
+import static net.minecraft.core.Direction.WEST;
 
 @Deprecated
 public class LegacyShapeBehaviourPlainWindow extends LegacyShapeBehaviourWindow {

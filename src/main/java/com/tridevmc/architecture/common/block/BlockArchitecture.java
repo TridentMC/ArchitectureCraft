@@ -40,8 +40,8 @@ public class BlockArchitecture extends Block {
         //noinspection DataFlowIssue -- We know this is not null, we check for it in the static block.
         STATE_DEFINITION.set(this,
                 builder.create(Block::defaultBlockState,
-                        (block, propertyValues, codec) ->
-                                BlockStateArchitecture.create((BlockArchitecture) block, propertyValues, codec)
+                        (block, propertyKeys, propertyValues) ->
+                                BlockStateArchitecture.create((BlockArchitecture) block, propertyKeys, propertyValues)
                 )
         );
         this.registerDefaultState(this.getStateDefinition().any());
@@ -68,10 +68,12 @@ public class BlockArchitecture extends Block {
     public ImmutableList<AABB> getBoxesForStateNow(BlockStateArchitecture state) {
         try {
             return this.getBoxesForState(state).get();
-        } catch (InterruptedException | ExecutionException e) {
-            ArchitectureLog.fatal("Failed to get boxes for state, this is a critical error and will cause crashes.", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while getting boxes for " + state, e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Failed to get boxes for " + state, e.getCause());
         }
-        return DEFAULT_BOX;
     }
 
     /**

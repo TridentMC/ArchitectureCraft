@@ -24,11 +24,19 @@
 
 package com.tridevmc.architecture.legacy.common.shape;
 
-import com.google.common.collect.ImmutableMap;
 import com.tridevmc.architecture.common.helpers.Profile;
-import com.tridevmc.architecture.legacy.common.shape.behaviour.*;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviour;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourBanister;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourCornerWindow;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourModel;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourMullionWindow;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourPlainWindow;
+import com.tridevmc.architecture.legacy.common.shape.behaviour.LegacyShapeBehaviourRoof;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
+
+import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +50,10 @@ import java.util.Map;
 
 import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeFlags.PLACE_OFFSET;
 import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeFlags.PLACE_UNDERNEATH;
-import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeSymmetry.*;
+import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeSymmetry.BILATERAL;
+import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeSymmetry.QUADRILATERAL;
+import static com.tridevmc.architecture.legacy.common.shape.LegacyShapeSymmetry.UNILATERAL;
+
 import static java.lang.Math.abs;
 
 @Deprecated

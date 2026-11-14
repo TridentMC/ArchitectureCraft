@@ -1,10 +1,12 @@
 package com.tridevmc.architecture.legacy.client.render.model.objson;
 
-import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.common.utils.LegacyAABBTree;
+
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.Pair;
+
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -12,7 +14,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;

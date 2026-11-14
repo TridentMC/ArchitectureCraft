@@ -4,6 +4,7 @@ import com.tridevmc.architecture.common.helpers.Profile;
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 
-import static net.minecraft.core.Direction.*;
+
 
 @Deprecated
 public class LegacyShapeBehaviourBanister extends LegacyShapeBehaviourModel {
