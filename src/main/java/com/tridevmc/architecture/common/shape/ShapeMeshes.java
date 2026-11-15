@@ -63,7 +63,7 @@ public final class ShapeMeshes {
 
     public static boolean isWindow(EnumShape shape) {
         return switch (shape) {
-            case WINDOW_FRAME, WINDOW_CORNER, WINDOW_MULLION -> true;
+            case WINDOW_FRAME, WINDOW_CORNER, WINDOW_MULLION, WINDOW_SMART -> true;
             default -> false;
         };
     }
