@@ -28,10 +28,10 @@ public class ShapeTransformationResolverPointedWithSpin implements IShapeTransfo
 
         return switch (facing) {
             case UP -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(spinMatrix)
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(spinMatrix)
             );
             case DOWN -> ITrans3.ofImmutable(
-                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, -90).asMutable().mul(spinMatrix)
+                    IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90).asMutable().mul(spinMatrix)
             );
             case NORTH -> ITrans3.ofImmutable(
                     IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, -90, 0).asMutable().mul(spinMatrix)

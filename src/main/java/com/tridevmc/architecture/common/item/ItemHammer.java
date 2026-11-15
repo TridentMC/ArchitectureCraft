@@ -24,14 +24,15 @@
 
 package com.tridevmc.architecture.common.item;
 
-import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
+import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.common.shape.ShapeConnections;
+
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
-
 
 public class ItemHammer extends Item {
 
@@ -44,13 +45,12 @@ public class ItemHammer extends Item {
         var world = context.getLevel();
         var pos = context.getClickedPos();
         var player = context.getPlayer();
-        var side = context.getClickedFace();
-        var hitX = (float) context.getClickLocation().x();
-        var hitY = (float) context.getClickLocation().y();
-        var hitZ = (float) context.getClickLocation().z();
-        var te = world.getBlockEntity(pos);
-        if (te instanceof BlockEntityShape) {
-            //te.onHammerUse(player, side, hitX, hitY, hitZ);
+        var state = world.getBlockState(pos);
+        if (state.getBlock() instanceof BlockShape<?> block) {
+            if (!world.isClientSide()) {
+                var rotated = block.rotatePlacement(state, player != null && player.isCrouching());
+                world.setBlock(pos, ShapeConnections.update(rotated, world, pos), 3);
+            }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.FAIL;

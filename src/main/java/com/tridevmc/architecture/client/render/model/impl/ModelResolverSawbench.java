@@ -36,6 +36,10 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
             }
     );
 
+    public static void clearCache() {
+        needsInit = true;
+    }
+
     private static void doInit() {
         if (needsInit) {
             var atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS);

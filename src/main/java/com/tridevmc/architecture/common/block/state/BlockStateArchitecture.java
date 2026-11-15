@@ -1,5 +1,7 @@
 package com.tridevmc.architecture.common.block.state;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
@@ -14,11 +16,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class BlockStateArchitecture extends BlockState {
 
-    private CachedProperties cachedProperties;
+    private volatile CachedProperties cachedProperties;
 
     private record CachedProperties(
-            ITrans3Immutable cachedTransform,
-            CompletableFuture<VoxelShape> cachedShape
+            Supplier<ITrans3Immutable> cachedTransform,
+            Supplier<CompletableFuture<VoxelShape>> cachedShape
     ) {
     }
 
@@ -36,15 +38,15 @@ public class BlockStateArchitecture extends BlockState {
 
     protected void postConstruct() {
         this.cachedProperties = new CachedProperties(
-                this.self().getTransformForState(this),
-                this.self().getBoxesForState(this).thenApply(boxes -> {
+                Suppliers.memoize(() -> this.self().getTransformForState(this)),
+                Suppliers.memoize(() -> this.self().getBoxesForState(this).thenApply(boxes -> {
                     var shape = Shapes.empty();
                     for (var box : boxes) {
                         shape = Shapes.or(shape, Shapes.create(box.toMC()));
                     }
                     ArchitectureLog.debug("Finished creating shape for state: {}", this.toString());
                     return shape;
-                })
+                }))
         );
     }
 
@@ -54,12 +56,12 @@ public class BlockStateArchitecture extends BlockState {
 
     @NotNull
     public ITrans3 getTransform() {
-        return this.cachedProperties.cachedTransform;
+        return this.cachedProperties.cachedTransform.get();
     }
 
     @NotNull
     public VoxelShape getShape() {
-        return this.cachedProperties.cachedShape.join();
+        return this.cachedProperties.cachedShape.get().join();
     }
 
 

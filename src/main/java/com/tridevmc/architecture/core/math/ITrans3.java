@@ -1,6 +1,11 @@
 package com.tridevmc.architecture.core.math;
 
-import com.tridevmc.architecture.core.math.floating.*;
+import com.tridevmc.architecture.core.math.floating.IVector2F;
+import com.tridevmc.architecture.core.math.floating.IVector2FImmutable;
+import com.tridevmc.architecture.core.math.floating.IVector2FMutable;
+import com.tridevmc.architecture.core.math.floating.IVector3F;
+import com.tridevmc.architecture.core.math.floating.IVector3FImmutable;
+import com.tridevmc.architecture.core.math.floating.IVector3FMutable;
 import com.tridevmc.architecture.core.math.integer.IVector3i;
 import com.tridevmc.architecture.core.math.integer.IVector3iImmutable;
 import com.tridevmc.architecture.core.math.integer.IVector3iMutable;
@@ -8,8 +13,10 @@ import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
 import com.tridevmc.architecture.core.model.mesh.MeshHelper;
 import com.tridevmc.architecture.core.physics.AABB;
-import net.minecraft.core.Direction;
+
 import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.core.Direction;
 
 /**
  * A wrapper around a transformation matrix that provides methods for transforming points and vectors.
@@ -391,7 +398,7 @@ public interface ITrans3 {
         var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
         var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
         var length = Math.sqrt(x * x + y * y + z * z);
-        return IVector3Immutable.of(x / length, y / length, z / length);
+        return length == 0 ? IVector3Immutable.of(0, 0, 0) : IVector3Immutable.of(x / length, y / length, z / length);
     }
 
     /**
@@ -421,7 +428,8 @@ public interface ITrans3 {
         var y = this.matrix().m10() * normal.x() + this.matrix().m11() * normal.y() + this.matrix().m12() * normal.z();
         var z = this.matrix().m20() * normal.x() + this.matrix().m21() * normal.y() + this.matrix().m22() * normal.z();
         var length = Math.sqrt(x * x + y * y + z * z);
-        return IVector3FImmutable.of((float) (x / length), (float) (y / length), (float) (z / length));
+        return length == 0 ? IVector3FImmutable.of(0, 0, 0)
+                : IVector3FImmutable.of((float) (x / length), (float) (y / length), (float) (z / length));
     }
 
     /**

@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,8 @@ public class ShapeOrientationProperty<T extends Enum<T> & StringRepresentable> e
         this.values = ImmutableList.copyOf(values.stream().map(v -> new Value<>(this, v)).toList());
         this.nameToValue = this.values.stream().collect(ImmutableMap.toImmutableMap(v -> v.value.getSerializedName(), Value::value));
         this.possibleValues = ImmutableList.copyOf(this.values.stream().map(Value::value).toList());
-        this.ordinalToValueIndex = new int[values.size()];
+        this.ordinalToValueIndex = new int[type.getEnumConstants().length];
+        Arrays.fill(this.ordinalToValueIndex, -1);
         for (int i = 0; i < this.values.size(); i++) {
             this.ordinalToValueIndex[this.values.get(i).value.ordinal()] = i;
         }
