@@ -12,6 +12,7 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 import com.tridevmc.architecture.common.shape.rule.INeighbourConnectionRule;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
@@ -261,7 +262,8 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
             return state;
         }
         var properties = placementLogic.getProperties().stream()
-                .filter(property -> !(property instanceof ShapeOrientationPropertyRelativeConnection)).toList();
+                .filter(property -> !(property instanceof ShapeOrientationPropertyRelativeConnection))
+                .filter(property -> property != ShapeConnectionProperties.STAIRS).toList();
         for (var property : properties) {
             var result = cycle(state, property, reverse);
             state = result.state();

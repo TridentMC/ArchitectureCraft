@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.StairsShape;
 
 import java.util.EnumSet;
 
@@ -30,6 +31,9 @@ public final class ShapeConnections {
         var shape = ((BlockShape<?>) state.getBlock()).getShape();
         if (ShapeMeshes.isWindow(shape)) {
             return updateWindow(state, level, pos);
+        }
+        if (shape == EnumShape.STAIRS_SMART) {
+            return updateStairs(state, level, pos);
         }
         if (shape == EnumShape.ROOF_SMART_RIDGE || shape == EnumShape.ROOF_SMART_VALLEY) {
             for (int i = 0; i < ROOF_DIRECTIONS.length; i++) {
@@ -130,6 +134,39 @@ public final class ShapeConnections {
         return new PortProfile(normals, arms);
     }
 
+    private static BlockState updateStairs(BlockState state, BlockGetter level, BlockPos pos) {
+        var high = direction(state, Direction.EAST);
+        var up = direction(state, Direction.UP);
+        var right = direction(state, Direction.SOUTH);
+        var front = level.getBlockState(pos.relative(high));
+        if (isStair(front, up)) {
+            var otherHigh = direction(front, Direction.EAST);
+            if (otherHigh.getAxis() != high.getAxis() && !sameStair(level.getBlockState(pos.relative(otherHigh.getOpposite())), high, up)) {
+                return state.setValue(ShapeConnectionProperties.STAIRS,
+                        otherHigh == right ? StairsShape.OUTER_RIGHT : StairsShape.OUTER_LEFT);
+            }
+        }
+        var back = level.getBlockState(pos.relative(high.getOpposite()));
+        if (isStair(back, up)) {
+            var otherHigh = direction(back, Direction.EAST);
+            if (otherHigh.getAxis() != high.getAxis() && !sameStair(level.getBlockState(pos.relative(otherHigh)), high, up)) {
+                return state.setValue(ShapeConnectionProperties.STAIRS,
+                        otherHigh == right ? StairsShape.INNER_RIGHT : StairsShape.INNER_LEFT);
+            }
+        }
+        return state.setValue(ShapeConnectionProperties.STAIRS, StairsShape.STRAIGHT);
+    }
+
+    private static boolean sameStair(BlockState state, Direction high, Direction up) {
+        return isStair(state, up) && direction(state, Direction.EAST) == high;
+    }
+
+    private static boolean isStair(BlockState state, Direction up) {
+        return state.getBlock() instanceof BlockShape<?> block && switch (block.getShape()) {
+            case STAIRS, STAIRS_INNER_CORNER, STAIRS_OUTER_CORNER, STAIRS_SMART -> direction(state, Direction.UP) == up;
+            default -> false;
+        };
+    }
 
     private static EnumConnectionState connection(boolean connected) {
         return connected ? EnumConnectionState.CONNECTED : EnumConnectionState.DISCONNECTED;

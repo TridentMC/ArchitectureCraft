@@ -5,6 +5,8 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.IMatrix4Immutable;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.Mesh;
 import com.tridevmc.architecture.core.model.mesh.Part;
@@ -15,6 +17,7 @@ import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.StairsShape;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +73,10 @@ public final class ShapeMeshes {
 
 
     private static int variant(EnumShape shape, ShapeOrientation orientation) {
+        if (shape == EnumShape.STAIRS_SMART) {
+            var variant = orientation.getValue(ShapeConnectionProperties.STAIRS);
+            return variant == null ? StairsShape.STRAIGHT.ordinal() : variant.value().ordinal();
+        }
         var properties = isWindow(shape)
                 ? new ShapeOrientationPropertyRelativeConnection[]{ShapeOrientationPropertyRelativeConnection.BOTTOM,
                 ShapeOrientationPropertyRelativeConnection.RIGHT, ShapeOrientationPropertyRelativeConnection.TOP,
@@ -95,6 +102,20 @@ public final class ShapeMeshes {
             default -> false;
         }) {
             return ShapeGeometry.roof(shape, variant);
+        }
+        if (shape == EnumShape.STAIRS_SMART) {
+            var stair = StairsShape.values()[variant];
+            var model = switch (stair) {
+                case STRAIGHT -> asset(EnumShape.STAIRS);
+                case INNER_LEFT, INNER_RIGHT -> asset(EnumShape.STAIRS_INNER_CORNER);
+                case OUTER_LEFT, OUTER_RIGHT -> asset(EnumShape.STAIRS_OUTER_CORNER);
+            };
+            if (stair == StairsShape.INNER_LEFT || stair == StairsShape.OUTER_LEFT) {
+                model = model.transform(ITrans3.ofImmutable(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 90, 0)));
+            }
+            var builder = new Mesh.Builder<String, PolygonData>(shape.getName() + "_" + variant);
+            model.getParts().values().forEach(builder::addPart);
+            return builder.build();
         }
         if (isWindow(shape)) {
             return window(shape, variant);
