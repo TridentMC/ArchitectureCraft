@@ -117,7 +117,7 @@ public enum EnumShape {
     BANISTER_PLAIN("banister_plain", null, null),
     BANISTER_PLAIN_TOP("banister_plain_top", null, null),
     BANISTER_PLAIN_END("banister_plain_end", null, null),
-    BANISTER_PLAIN_INNER_CORNER("banister_plain_inner_corner", null, null),
+    BANISTER_PLAIN_INNER_CORNER("banister_plain_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     BANISTER_FANCY_BOTTOM("banister_fancy_bottom", null, null),
     BANISTER_FANCY("banister_fancy", null, null),
