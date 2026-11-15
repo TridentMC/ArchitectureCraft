@@ -1,6 +1,7 @@
 package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.core.ArchitectureLog;
+import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
@@ -24,7 +25,10 @@ public class ShapeMeshes {
         Arrays.stream(EnumShape.values()).forEach(
                 enumShape -> {
                     try {
-                        var objson = OBJSON.fromResource(enumShape.getAssetLocation());
+                        // Cladding is 1/16 thick and centered on 1/32 boundaries.
+                        var objson = enumShape == EnumShape.CLADDING_SHEET
+                                ? OBJSON.fromResource(enumShape.getAssetLocation(), ITrans3.BLOCK_CENTER, 32)
+                                : OBJSON.fromResource(enumShape.getAssetLocation());
                         var mesh = objson.mesh();
                         var voxelizer = objson.voxelizer();
                         register(enumShape, mesh, voxelizer);

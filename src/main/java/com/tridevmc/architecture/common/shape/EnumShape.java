@@ -3,6 +3,7 @@ package com.tridevmc.architecture.common.shape;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicCladding;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
@@ -13,6 +14,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStair
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
 import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverCladding;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlip;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithTurn;
@@ -135,7 +137,7 @@ public enum EnumShape {
     BALUSTRADE_FANCY_WITH_NEWEL("balustrade_fancy_with_newel", null, null),
     BALUSTRADE_FANCY_NEWEL("balustrade_fancy_newel", null, null),
 
-    CLADDING_SHEET("cladding_sheet", null, null);
+    CLADDING_SHEET("cladding_sheet", ShapePlacementLogicCladding.INSTANCE, ShapeTransformationResolverCladding.INSTANCE);
 
 
     private static final Map<String, EnumShape> NAME_LOOKUP = Arrays.stream(values())
@@ -190,7 +192,7 @@ public enum EnumShape {
     }
 
     public Identifier getAssetLocation() {
-        return Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this.name));
+        return Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, String.format("shape/%s.objson", this == CLADDING_SHEET ? "cladding" : this.name));
     }
 
     public String getLocalizationKey() {
