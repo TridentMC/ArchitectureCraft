@@ -3,6 +3,7 @@ package com.tridevmc.architecture.common.shape;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicBanister;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
@@ -13,6 +14,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStair
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
 import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverBanister;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlip;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithTurn;
@@ -113,7 +115,7 @@ public enum EnumShape {
     ARCH_D4B("arch_d4b", null, null),
     ARCH_D4C("arch_d4c", null, null),
 
-    BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
+    BANISTER_PLAIN_BOTTOM("banister_plain_bottom", ShapePlacementLogicBanister.INSTANCE, ShapeTransformationResolverBanister.INSTANCE),
     BANISTER_PLAIN("banister_plain", null, null),
     BANISTER_PLAIN_TOP("banister_plain_top", null, null),
     BANISTER_PLAIN_END("banister_plain_end", null, null),
