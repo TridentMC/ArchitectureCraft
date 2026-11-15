@@ -78,7 +78,7 @@ public enum EnumShape {
     ROOF_OVERHANG_GABLE_END_LH("roof_overhang_gable_end_lh", null, null),
     ROOF_OVERHANG_GABLE_END_RH("roof_overhang_gable_end_rh", null, null),
     ROOF_OVERHANG_RIDGE("roof_overhang_ridge", null, null),
-    ROOF_OVERHANG_VALLEY("roof_overhang_valley", null, null),
+    ROOF_OVERHANG_VALLEY("roof_overhang_valley", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     PILLAR_BASE("pillar_base", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_CAPITAL("doric_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
