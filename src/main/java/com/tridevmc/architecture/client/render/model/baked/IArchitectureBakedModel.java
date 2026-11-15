@@ -2,8 +2,11 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -39,7 +42,16 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
                               RandomSource random, List<BlockStateModelPart> parts) {
         var quads = this.getQuads(level, pos, state);
         var material = this.particleMaterial(level, pos, state);
-        parts.add(new BakedModelPart(quads, material));
+        var geometry = new QuadCollection.Builder();
+        for (var direction : Direction.values()) {
+            for (var quad : quads.quadsFor(direction)) {
+                geometry.addCulledFace(direction, quad);
+            }
+        }
+        for (var quad : quads.generalQuads()) {
+            geometry.addUnculledFace(quad);
+        }
+        parts.add(new SimpleModelWrapper(geometry.build(), true, material));
     }
 
     @Override
