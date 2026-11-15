@@ -22,7 +22,7 @@ public class BakedModelSawbench implements IModelResolverBaked<PolygonData> {
 
     @Override
     public Material.Baked particleMaterial() {
-        return new Material.Baked(RESOLVER.getDefaultSprite(), false);
+        return RESOLVER.getDefaultMaterial();
     }
 
 }

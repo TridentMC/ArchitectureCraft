@@ -25,13 +25,13 @@ import java.util.function.Function;
 public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
     private static final BakedQuadContainerProviderMesh<String, PolygonData> MESH = new BakedQuadContainerProviderMeshCached<>(BlockSawbench.MODEL.mesh());
-    private static TextureAtlasSprite[] textures;
+    private static Material.Baked[] materials;
     private static int[] colours;
     private static boolean needsInit = true;
     private static final IQuadMetadataResolver<PolygonData> resolver = FunctionalQuadMetadataResolver.of(
             m -> {
                 doInit();
-                return new Material.Baked(textures[Math.min(m.textureIndex(), textures.length - 1)], false);
+                return materials[Math.min(m.textureIndex(), materials.length - 1)];
             },
             m -> {
                 doInit();
@@ -42,9 +42,9 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
     private static void doInit() {
         if (needsInit) {
             Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)::getSprite;
-            textures = new TextureAtlasSprite[]{
-                    textureGetter.apply(Identifier.withDefaultNamespace("block/oak_planks")),
-                    textureGetter.apply(Identifier.withDefaultNamespace("block/iron_block"))
+            materials = new Material.Baked[]{
+                    new Material.Baked(textureGetter.apply(Identifier.withDefaultNamespace("block/oak_planks")), false),
+                    new Material.Baked(textureGetter.apply(Identifier.withDefaultNamespace("block/iron_block")), false)
             };
             colours = new int[]{-1, -1};
             needsInit = false;
@@ -68,9 +68,9 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public TextureAtlasSprite getDefaultSprite() {
+    public Material.Baked getDefaultMaterial() {
         doInit();
-        return textures[0];
+        return materials[0];
     }
 
 }

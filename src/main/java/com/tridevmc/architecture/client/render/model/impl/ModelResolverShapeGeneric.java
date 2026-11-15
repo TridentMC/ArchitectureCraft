@@ -14,7 +14,6 @@ import com.tridevmc.architecture.common.shape.ShapeMeshes;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -91,7 +90,7 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public TextureAtlasSprite getDefaultSprite() {
-        return ModelResolverShapeGeneric.getTextureForState(Blocks.OAK_PLANKS.defaultBlockState()).sprite();
+    public Material.Baked getDefaultMaterial() {
+        return ModelResolverShapeGeneric.getTextureForState(Blocks.OAK_PLANKS.defaultBlockState());
     }
 }

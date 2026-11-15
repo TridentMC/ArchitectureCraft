@@ -3,7 +3,7 @@ package com.tridevmc.architecture.client.render.model.resolver;
 
 import com.tridevmc.architecture.client.render.model.baked.IBakedQuadContainer;
 import com.tridevmc.architecture.core.math.ITrans3;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -47,11 +47,11 @@ public interface IModelResolver<D> {
     IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<D> resolver, ITrans3 transform);
 
     /**
-     * Gets the default sprite for this model.
+     * Gets the default material for this model.
      *
-     * @return The default sprite.
+     * @return The default material.
      */
-    TextureAtlasSprite getDefaultSprite();
+    Material.Baked getDefaultMaterial();
 
     /**
      * Gets the baked quads for the given BlockGetter, BlockPos and BlockState and transformation.

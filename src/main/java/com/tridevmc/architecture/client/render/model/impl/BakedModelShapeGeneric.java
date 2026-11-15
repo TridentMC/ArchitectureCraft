@@ -25,7 +25,7 @@ public class BakedModelShapeGeneric implements IModelResolverBaked<PolygonData> 
     @Override
     @NotNull
     public Material.Baked particleMaterial() {
-        return new Material.Baked(this.resolver.getDefaultSprite(), false);
+        return this.resolver.getDefaultMaterial();
     }
 
 }
