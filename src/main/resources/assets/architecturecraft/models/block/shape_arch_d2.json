@@ -1,6 +1,5 @@
 {
     "parent": "block/block",
-    "loader": "architecturecraft:shape_loader",
     "shapeName": "arch_d2"
 }
                           

@@ -2,6 +2,7 @@ package com.tridevmc.architecture.legacy.client.render.model.objson;
 
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 
 @Deprecated
 public class LegacyOBJSONQuadMetadataResolver implements IQuadMetadataResolver<LegacyOBJSONQuadMetadata> {
@@ -15,8 +16,8 @@ public class LegacyOBJSONQuadMetadataResolver implements IQuadMetadataResolver<L
     }
 
     @Override
-    public TextureAtlasSprite getTexture(LegacyOBJSONQuadMetadata metadata) {
-        return this.textures[Math.min(metadata.texture(), this.textures.length - 1)];
+    public Material.Baked getMaterial(LegacyOBJSONQuadMetadata metadata) {
+        return new Material.Baked(this.textures[Math.min(metadata.texture(), this.textures.length - 1)], false);
     }
 
     @Override

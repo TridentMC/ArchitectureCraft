@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_arch_d3a"
+        "type": "architecturecraft:mesh",
+        "shape": "arch_d3a"
     }
 }

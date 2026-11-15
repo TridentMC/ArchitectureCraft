@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_anticylinder_large_quarter"
+        "type": "architecturecraft:mesh",
+        "shape": "anticylinder_large_quarter"
     }
 }

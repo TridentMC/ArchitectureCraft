@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_banister_fancy"
+        "type": "architecturecraft:mesh",
+        "shape": "banister_fancy"
     }
 }

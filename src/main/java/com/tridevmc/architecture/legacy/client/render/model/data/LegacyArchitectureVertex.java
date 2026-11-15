@@ -94,7 +94,7 @@ public class LegacyArchitectureVertex {
         var p = this.getPosition();
         Vector4f pos = new Vector4f(p.x(), p.y(), p.z(), 1);
         Vector3f normals = this.getNormals();
-        float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(Transformation.identity()));
+        float[] uvs = this.getUVs(bakedQuadProvider, transform.orElse(Transformation.IDENTITY));
         transform.ifPresent((t) -> {
             t.transformPosition(pos);
             t.transformNormal(normals);

@@ -1,6 +1,5 @@
 {
     "parent": "block/block",
-    "loader": "architecturecraft:shape_loader",
     "shapeName": "sphere_eighth_large"
 }
                           

@@ -7,16 +7,22 @@ import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3fc;
+
+import java.util.function.Consumer;
 
 public record SpecialSawbenchModelRenderer(BakedModelSawbench model) implements SpecialModelRenderer<Void> {
     @Override
-    public void render(@Nullable Void patterns, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay, boolean hasFoilType) {
+    public void submit(@Nullable Void patterns, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, int packedOverlay, boolean hasFoilType, int outlineColor) {
+
+    }
+
+    @Override
+    public void getExtents(Consumer<Vector3fc> output) {
 
     }
 
@@ -32,7 +38,7 @@ public record SpecialSawbenchModelRenderer(BakedModelSawbench model) implements 
         // Create the special model renderer, or null if it fails
         @Nullable
         @Override
-        public SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
+        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
             return new SpecialSawbenchModelRenderer(
                     new BakedModelSawbench()
             );

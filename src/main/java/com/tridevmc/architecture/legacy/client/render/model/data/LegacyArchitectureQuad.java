@@ -5,10 +5,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.neoforged.neoforge.client.model.quad.MutableQuad;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -113,10 +115,9 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
         if (prebuiltData == null) {
             if (facing == null) facing = this.recalculateFace();
             var builder = new QuadBakingVertexConsumer();
-            builder.setSprite(sprite);
+            builder.setSprite(new Material.Baked(sprite, false));
             builder.setTintIndex(colour);
-            builder.setShade(true);
-            builder.setHasAmbientOcclusion(true);
+            builder.setAmbientOcclusion(true);
             builder.setDirection(facing);
             int[] vertexIndices = new int[]{0, 1, 2, 3};
             for (int i = 0; i < 4; i++) {
@@ -262,7 +263,7 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
 
         private PrebuiltData(BakedQuad baseQuad) {
             this.baseQuad = baseQuad;
-            this.quadsForSprite.put(baseQuad.getSprite(), baseQuad);
+            this.quadsForSprite.put(baseQuad.materialInfo().sprite(), baseQuad);
         }
 
         private BakedQuad getQuad(TextureAtlasSprite sprite, int tint) {
@@ -278,8 +279,7 @@ public class LegacyArchitectureQuad<T> extends LegacyBakedQuadProvider<T> {
         }
 
         private BakedQuad reTintQuad(BakedQuad quad, int newTint) {
-            return new BakedQuad(quad.getVertices(), newTint, quad.getDirection(), quad.getSprite(),
-                    quad.isShade(), quad.getLightEmission());
+            return new MutableQuad().setFrom(quad).setTintIndex(newTint).toBakedQuad();
         }
 
     }

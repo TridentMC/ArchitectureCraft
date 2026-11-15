@@ -26,11 +26,11 @@ package com.tridevmc.architecture.client.render.texture;
 
 import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class TextureBase implements ITexture {
 
-    public ResourceLocation location;
+    public Identifier location;
     public int tintIndex;
     public double red = 1, green = 1, blue = 1;
     public boolean isEmissive;
@@ -76,7 +76,7 @@ public abstract class TextureBase implements ITexture {
     }
 
     @Override
-    public ResourceLocation location() {
+    public Identifier location() {
         return this.location;
     }
 
@@ -133,7 +133,7 @@ public abstract class TextureBase implements ITexture {
         }
 
 //      @Override
-//      public ResourceLocation location() {
+//      public Identifier location() {
 //          return base.location();
 //      }
 

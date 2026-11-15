@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_cornice_bottom"
+        "type": "architecturecraft:mesh",
+        "shape": "cornice_bottom"
     }
 }

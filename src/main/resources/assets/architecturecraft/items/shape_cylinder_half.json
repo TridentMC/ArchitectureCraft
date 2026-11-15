@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_cylinder_half"
+        "type": "architecturecraft:mesh",
+        "shape": "cylinder_half"
     }
 }

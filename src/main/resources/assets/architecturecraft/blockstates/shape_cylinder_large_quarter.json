@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_cylinder_large_quarter"
+            "type": "architecturecraft:mesh",
+            "shape": "cylinder_large_quarter"
         }
     }
 }

@@ -1,120 +1,120 @@
 package com.tridevmc.architecture.client.render.model.resolver;
 
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Defines two methods that are used to resolve the texture and tint index for a quad using the quad's metadata as well as any additional context required.
+ * Defines two methods that are used to resolve the material and tint index for a quad using the quad's metadata as well as any additional context required.
  *
  * @param <D> The type of the quad metadata.
  */
 public interface IQuadMetadataResolver<D> {
 
     /**
-     * Gets the texture to use for the quad, chooses the correct method to use based on the context provided.
+     * Gets the material to use for the quad, chooses the correct method to use based on the context provided.
      *
-     * @param level    The level to get the texture for, can be null.
-     * @param pos      The position to get the texture for, can be null.
-     * @param state    The state to get the texture for, can be null.
-     * @param stack    The stack to get the texture for, can be null.
+     * @param level    The level to get the material for, can be null.
+     * @param pos      The position to get the material for, can be null.
+     * @param state    The state to get the material for, can be null.
+     * @param stack    The stack to get the material for, can be null.
      * @param provider The quad provider containing the metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
-        return this.getTexture(level, pos, state, stack, provider.metadata());
+    default Material.Baked getMaterial(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
+        return this.getMaterial(level, pos, state, stack, provider.metadata());
     }
 
 
     /**
-     * Gets the texture to use for the quad, chooses the correct method to use based on the context provided.
+     * Gets the material to use for the quad, chooses the correct method to use based on the context provided.
      *
-     * @param level    The level to get the texture for, can be null.
-     * @param pos      The position to get the texture for, can be null.
-     * @param state    The state to get the texture for, can be null.
-     * @param stack    The stack to get the texture for, can be null.
-     * @param metadata The metadata to get the texture for.
-     * @return The texture to use for the quad.
+     * @param level    The level to get the material for, can be null.
+     * @param pos      The position to get the material for, can be null.
+     * @param state    The state to get the material for, can be null.
+     * @param stack    The stack to get the material for, can be null.
+     * @param metadata The metadata to get the material for.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
+    default Material.Baked getMaterial(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
         if (level != null && pos != null && state != null) {
-            return this.getTexture(level, pos, state, metadata);
+            return this.getMaterial(level, pos, state, metadata);
         } else if (stack != null) {
-            return this.getTexture(stack, metadata);
+            return this.getMaterial(stack, metadata);
         } else {
-            return this.getTexture(metadata);
+            return this.getMaterial(metadata);
         }
     }
 
     /**
-     * Gets the texture to use for the quad.
+     * Gets the material to use for the quad.
      *
-     * @param level    The level to get the texture for.
-     * @param pos      The position to get the texture for.
-     * @param state    The state to get the texture for.
+     * @param level    The level to get the material for.
+     * @param pos      The position to get the material for.
+     * @param state    The state to get the material for.
      * @param provider The quad provider containing the metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
-        return this.getTexture(provider.metadata());
+    default Material.Baked getMaterial(BlockGetter level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
+        return this.getMaterial(provider.metadata());
     }
 
     /**
-     * Gets the texture to use for the quad.
+     * Gets the material to use for the quad.
      *
-     * @param level    The level to get the texture for.
-     * @param pos      The position to get the texture for.
-     * @param state    The state to get the texture for.
+     * @param level    The level to get the material for.
+     * @param pos      The position to get the material for.
+     * @param state    The state to get the material for.
      * @param metadata The quad metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(LevelAccessor level, BlockPos pos, BlockState state, D metadata) {
-        return this.getTexture(metadata);
+    default Material.Baked getMaterial(BlockGetter level, BlockPos pos, BlockState state, D metadata) {
+        return this.getMaterial(metadata);
     }
 
     /**
-     * Gets the texture to use for the quad.
+     * Gets the material to use for the quad.
      *
-     * @param stack    The stack to get the texture for.
+     * @param stack    The stack to get the material for.
      * @param provider The quad provider containing the metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
-        return this.getTexture(provider.metadata());
+    default Material.Baked getMaterial(ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
+        return this.getMaterial(provider.metadata());
     }
 
     /**
-     * Gets the texture to use for the quad.
+     * Gets the material to use for the quad.
      *
-     * @param stack    The stack to get the texture for.
+     * @param stack    The stack to get the material for.
      * @param metadata The quad metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(ItemStack stack, D metadata) {
-        return this.getTexture(metadata);
+    default Material.Baked getMaterial(ItemStack stack, D metadata) {
+        return this.getMaterial(metadata);
     }
 
     /**
-     * Gets the texture to use for the quad.
+     * Gets the material to use for the quad.
      *
      * @param provider The quad provider containing the metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    default TextureAtlasSprite getTexture(IPipedBakedQuad<?, ?, D> provider) {
-        return this.getTexture(provider.metadata());
+    default Material.Baked getMaterial(IPipedBakedQuad<?, ?, D> provider) {
+        return this.getMaterial(provider.metadata());
     }
 
     /**
-     * Gets the texture to use for the quad, should be used primarily as a fallback or for quads that aren't context-sensitive.
+     * Gets the material to use for the quad, should be used primarily as a fallback or for quads that aren't context-sensitive.
      *
      * @param metadata The quad metadata.
-     * @return The texture to use for the quad.
+     * @return The material to use for the quad.
      */
-    TextureAtlasSprite getTexture(D metadata);
+    Material.Baked getMaterial(D metadata);
 
 
     /**
@@ -127,7 +127,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
+    default int getTintIndex(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTintIndex(level, pos, state, stack, provider.metadata());
     }
 
@@ -142,7 +142,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The metadata to get the tint index for.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(@Nullable LevelAccessor level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
+    default int getTintIndex(@Nullable BlockGetter level, @Nullable BlockPos pos, @Nullable BlockState state, @Nullable ItemStack stack, D metadata) {
         if (level != null && pos != null && state != null) {
             return this.getTintIndex(level, pos, state, metadata);
         } else if (stack != null) {
@@ -162,7 +162,7 @@ public interface IQuadMetadataResolver<D> {
      * @param provider The quad provider containing the metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
+    default int getTintIndex(BlockGetter level, BlockPos pos, BlockState state, IPipedBakedQuad<?, ?, D> provider) {
         return this.getTintIndex(provider.metadata());
     }
 
@@ -175,7 +175,7 @@ public interface IQuadMetadataResolver<D> {
      * @param metadata The quad metadata.
      * @return The tint index to use for the quad.
      */
-    default int getTintIndex(LevelAccessor level, BlockPos pos, BlockState state, D metadata) {
+    default int getTintIndex(BlockGetter level, BlockPos pos, BlockState state, D metadata) {
         return this.getTintIndex(metadata);
     }
 

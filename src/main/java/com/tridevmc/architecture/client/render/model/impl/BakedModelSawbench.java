@@ -3,28 +3,16 @@ package com.tridevmc.architecture.client.render.model.impl;
 import com.tridevmc.architecture.client.render.model.baked.IModelResolverBaked;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 
 public class BakedModelSawbench implements IModelResolverBaked<PolygonData> {
 
     private static ModelResolverSawbench RESOLVER;
-    private final ItemTransforms itemTransforms;
 
     public BakedModelSawbench() {
-        this(ItemTransforms.NO_TRANSFORMS);
-    }
-
-    public BakedModelSawbench(ItemTransforms itemTransforms) {
         if (RESOLVER == null) {
             RESOLVER = new ModelResolverSawbench();
         }
-        this.itemTransforms = itemTransforms;
-    }
-
-    @Override
-    public ItemTransforms getTransforms() {
-        return this.itemTransforms;
     }
 
     @Override
@@ -33,23 +21,8 @@ public class BakedModelSawbench implements IModelResolverBaked<PolygonData> {
     }
 
     @Override
-    public boolean useAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return true;
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return true;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
-        return RESOLVER.getDefaultSprite();
+    public Material.Baked particleMaterial() {
+        return RESOLVER.getDefaultMaterial();
     }
 
 }

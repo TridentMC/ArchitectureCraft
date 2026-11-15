@@ -5,13 +5,12 @@ import com.tridevmc.architecture.legacy.client.render.model.LegacyIArchitectureM
 import com.tridevmc.architecture.legacy.client.render.model.data.LegacyArchitectureModelData;
 import com.tridevmc.architecture.legacy.client.render.model.data.LegacyArchitectureModelDataQuads;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Tuple;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -35,14 +34,14 @@ public abstract class LegacyOBJSONModel implements LegacyIArchitectureModel<Lega
         this.convertedModelData = new LegacyArchitectureModelData<>();
         this.generateUVs = generateUVs;
         this.generateNormals = generateNormals;
-        List<Tuple<Integer, LegacyOBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> new Tuple<>(i, this.objson.getFaces()[i])).collect(Collectors.toList());
-        mappedFaces = mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getB().texture)).collect(Collectors.toList());
-        int minTexture = mappedFaces.get(0).getB().texture;
-        mappedFaces.forEach(mF -> mF.getB().texture = mF.getB().texture - minTexture);
+        List<Pair<Integer, LegacyOBJSON.Face>> mappedFaces = IntStream.range(0, this.objson.getFaces().length).mapToObj(i -> Pair.of(i, this.objson.getFaces()[i])).collect(Collectors.toList());
+        mappedFaces = mappedFaces.stream().sorted(Comparator.comparingInt(o -> o.getSecond().texture)).collect(Collectors.toList());
+        int minTexture = mappedFaces.get(0).getSecond().texture;
+        mappedFaces.forEach(mF -> mF.getSecond().texture = mF.getSecond().texture - minTexture);
 
-        for (Tuple<Integer, LegacyOBJSON.Face> indexedFace : mappedFaces) {
-            int faceIndex = indexedFace.getA();
-            LegacyOBJSON.Face face = indexedFace.getB();
+        for (Pair<Integer, LegacyOBJSON.Face> indexedFace : mappedFaces) {
+            int faceIndex = indexedFace.getFirst();
+            LegacyOBJSON.Face face = indexedFace.getSecond();
             for (LegacyOBJSON.Triangle tri : face.triangles) {
                 this.addTri(this.convertedModelData, faceIndex, face.texture, 0, tri, face.vertices);
             }
@@ -117,7 +116,7 @@ public abstract class LegacyOBJSONModel implements LegacyIArchitectureModel<Lega
 
     @Override
     public TextureAtlasSprite getDefaultSprite() {
-        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(MissingTextureAtlasSprite.getLocation());
+        return Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).missingSprite();
     }
 
     @Override

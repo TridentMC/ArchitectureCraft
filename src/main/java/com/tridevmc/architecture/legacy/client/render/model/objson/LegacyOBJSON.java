@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.math.LegacyTrans3;
 import com.tridevmc.architecture.legacy.math.LegacyVector3;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -28,11 +28,11 @@ public class LegacyOBJSON {
     private LegacyOBJSONVoxelizer voxelizer;
     private VoxelShape voxelized;
 
-    public static LegacyOBJSON fromResource(ResourceLocation location) {
+    public static LegacyOBJSON fromResource(Identifier location) {
         return fromResource(location, LegacyTrans3.blockCenter);
     }
 
-    public static LegacyOBJSON fromResource(ResourceLocation location, LegacyTrans3 trans) {
+    public static LegacyOBJSON fromResource(Identifier location, LegacyTrans3 trans) {
         // Can't use resource manager because this needs to work on the server
         var path = String.format("/data/%s/objson/%s", location.getNamespace(), location.getPath());
         var in = LegacyOBJSON.class.getResourceAsStream(path);

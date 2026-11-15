@@ -1,11 +1,9 @@
 package com.tridevmc.architecture.common.block.state;
 
-import com.mojang.serialization.MapCodec;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -25,15 +23,13 @@ public class BlockStateArchitecture extends BlockState {
     }
 
     protected BlockStateArchitecture(BlockArchitecture block,
-                                     Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties,
-                                     MapCodec<BlockState> codec) {
-        super(block, properties, codec);
+                                     Property<?>[] propertyKeys, Comparable<?>[] propertyValues) {
+        super(block, propertyKeys, propertyValues);
     }
 
     public static BlockStateArchitecture create(BlockArchitecture block,
-                                                Reference2ObjectArrayMap<Property<?>, Comparable<?>> properties,
-                                                MapCodec<BlockState> codec) {
-        var state = new BlockStateArchitecture(block, properties, codec);
+                                                Property<?>[] propertyKeys, Comparable<?>[] propertyValues) {
+        var state = new BlockStateArchitecture(block, propertyKeys, propertyValues);
         state.postConstruct();
         return state;
     }

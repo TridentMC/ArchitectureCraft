@@ -7,12 +7,10 @@ import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.builder.QuadPointDumper;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -36,7 +34,7 @@ public class LegacyArchitectureModelData<T> {
     public LegacyArchitectureModelData() {
     }
 
-    public LegacyArchitectureModelData(BakedModel sourceData) {
+    public LegacyArchitectureModelData(BlockStateModelPart sourceData) {
         this.loadFromBakedModel(sourceData);
     }
 
@@ -59,21 +57,19 @@ public class LegacyArchitectureModelData<T> {
         return Direction.getApproximateNearest(vec.x(), vec.y(), vec.z());
     }
 
-    public void loadFromBakedModel(BakedModel sourceData) {
+    public void loadFromBakedModel(BlockStateModelPart sourceData) {
         for (int i = -1; i < Direction.values().length; i++) {
-            RandomSource rand = RandomSource.create();
-            rand.setSeed(42L);
             Direction facing = null;
             if (i != -1) {
                 facing = Direction.from3DDataValue(i);
             }
-            List<BakedQuad> quads = sourceData.getQuads(Blocks.AIR.defaultBlockState(), facing, rand);
+            List<BakedQuad> quads = sourceData.getQuads(facing);
 
             for (BakedQuad quad : quads) {
                 var points = new QuadPointDumper(quad).getPoints();
                 for (Vec3 point : points) {
                     this.addQuadInstruction(null,
-                            quad.getDirection(),
+                            quad.direction(),
                             (float) point.x(),
                             (float) point.y(),
                             (float) point.z());

@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.math.Transformation;
 import com.tridevmc.architecture.client.render.model.piped.IPipedBakedQuad;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -40,9 +41,8 @@ public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
     public BakedQuad bake(Transformation transform, Direction facing, TextureAtlasSprite sprite, int colour) {
         if (facing == null) facing = this.facing();
         var builder = new QuadBakingVertexConsumer();
-                builder.setSprite(sprite);
+                builder.setSprite(new Material.Baked(sprite, false));
                 builder.setTintIndex(colour);
-                builder.setShade(true);
                 builder.setDirection(facing);
         int[] vertexIndices = new int[]{0, 0, 1, 2};
         for (int i = 0; i < 4; i++) {

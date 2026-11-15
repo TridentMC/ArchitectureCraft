@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "I*I",
+        "/0/",
+        "/_/"
+    ],
+    "key": {
+        "I": "#c:ingots/iron",
+        "*": "architecturecraft:sawblade",
+        "/": "#c:rods/wooden",
+        "_": "#minecraft:wooden_pressure_plates",
+        "0": "architecturecraft:large_pulley"
+    },
+    "result": {
+        "id": "architecturecraft:sawbench"
+    }
+}

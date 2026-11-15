@@ -26,23 +26,25 @@ package com.tridevmc.architecture.legacy.common.block;
 
 import com.tridevmc.architecture.common.utils.MiscUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Deprecated
 public class LegacyBlockHelper {
@@ -115,14 +117,20 @@ public class LegacyBlockHelper {
         return te.getBlockPos();
     }
 
-    public static boolean blockCanRenderInLayer(BlockState state, RenderType layer) {
+    public static boolean blockCanRenderInLayer(BlockAndTintGetter level, BlockPos pos, BlockState state, ChunkSectionLayer layer) {
         // What a beautiful method, my favourite part is the newlines.
-        return Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModelShaper()
-                .getBlockModel(state)
-                .getRenderTypes(state, RANDOM, ModelData.EMPTY)
-                .contains(layer);
+        var parts = new ArrayList<BlockStateModelPart>();
+        Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state)
+                .collectParts(level, pos, state, RANDOM, parts);
+        for (var part : parts) {
+            if (part.getQuads(null).stream().anyMatch(quad -> quad.materialInfo().layer() == layer))
+                return true;
+            for (Direction side : Direction.values()) {
+                if (part.getQuads(side).stream().anyMatch(quad -> quad.materialInfo().layer() == layer))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public static ItemStack blockStackWithState(BlockState state, int size) {

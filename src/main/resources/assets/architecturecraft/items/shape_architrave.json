@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_architrave"
+        "type": "architecturecraft:mesh",
+        "shape": "architrave"
     }
 }

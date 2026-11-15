@@ -6,7 +6,7 @@ import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResol
 import com.tridevmc.architecture.core.math.ITrans3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
     }
 
     @Override
-    public IBakedQuadContainer getQuads(@Nullable Void partId, LevelAccessor level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
+    public IBakedQuadContainer getQuads(@Nullable Void partId, BlockGetter level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform, boolean forceRebuild) {
         var builder = new BakedQuadContainer.Builder();
         var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {

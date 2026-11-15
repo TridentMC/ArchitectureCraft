@@ -2,7 +2,7 @@ package com.tridevmc.architecture.legacy.client.render.model.data;
 
 import com.google.common.collect.Lists;
 import com.mojang.math.Transformation;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 

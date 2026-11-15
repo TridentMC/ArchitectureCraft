@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_sphere_full"
+        "type": "architecturecraft:mesh",
+        "shape": "sphere_full"
     }
 }

@@ -14,10 +14,10 @@ import com.tridevmc.architecture.common.shape.ShapeMeshes;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -26,27 +26,27 @@ import java.util.Objects;
 
 public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
 
-    private static final Map<BlockState, TextureAtlasSprite> TEXTURE_CACHE = Maps.newConcurrentMap();
+    private static final Map<BlockState, Material.Baked> MATERIAL_CACHE = Maps.newConcurrentMap();
     private static final IQuadMetadataResolver<PolygonData> METADATA_RESOLVER;
 
     static {
         var builder = FunctionalQuadMetadataResolver.<PolygonData>builder();
-        METADATA_RESOLVER = builder.textureResolver(
-                d -> getTextureForState(Blocks.OAK_PLANKS.defaultBlockState())
-        ).blockTextureResolver(
+        METADATA_RESOLVER = builder.materialResolver(
+                d -> getMaterialForState(Blocks.OAK_PLANKS.defaultBlockState())
+        ).blockMaterialResolver(
                 (level, pos, state, metadata) -> {
                     // Get the tile entity so we can pull in the material states.
                     var shapeBe = BlockEntityShape.getAt(level, pos);
                     Objects.requireNonNull(shapeBe, "Shape tile entity was null when resolving block texture.");
-                    return getTextureForState(shapeBe.getMaterialStateForIndex(metadata.textureIndex()));
+                    return getMaterialForState(shapeBe.getMaterialStateForIndex(metadata.textureIndex()));
                 }
-        ).itemTextureResolver(
+        ).itemMaterialResolver(
                 (stack, metadata) -> {
                     // Pull the shape and material states from the item stack, no secondary states are on the items. They get applied with cladding instead.
                     var shape = ItemShape.getShapeFromStack(stack);
                     var material = ItemShape.getStateFromStack(stack);
                     Objects.requireNonNull(shape, "Shape was null when resolving item texture.");
-                    return getTextureForState(material);
+                    return getMaterialForState(material);
                 }
         ).tintIndexResolver(
                 d -> -1
@@ -61,14 +61,14 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
         this.mesh = new BakedQuadContainerProviderMeshCached<>(ShapeMeshes.getMesh(shape));
     }
 
-    private static TextureAtlasSprite getTextureForState(BlockState state) {
-        return TEXTURE_CACHE.computeIfAbsent(state, ModelResolverShapeGeneric::calculateTextureForState);
+    private static Material.Baked getMaterialForState(BlockState state) {
+        return MATERIAL_CACHE.computeIfAbsent(state, ModelResolverShapeGeneric::calculateMaterialForState);
     }
 
-    private static TextureAtlasSprite calculateTextureForState(BlockState state) {
+    private static Material.Baked calculateMaterialForState(BlockState state) {
         if (state != null)
-            return Minecraft.getInstance().getBlockRenderer()
-                    .getBlockModelShaper().getBlockModel(state).getParticleIcon();
+            return Minecraft.getInstance().getModelManager()
+                    .getBlockStateModelSet().getParticleMaterial(state);
         else
             return null;
     }
@@ -79,7 +79,7 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public IBakedQuadContainer getQuads(LevelAccessor level, BlockPos pos, BlockState state,
+    public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
         return mesh.getQuads(null, resolver, transform);
     }
@@ -90,7 +90,7 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     }
 
     @Override
-    public TextureAtlasSprite getDefaultSprite() {
-        return ModelResolverShapeGeneric.getTextureForState(Blocks.OAK_PLANKS.defaultBlockState());
+    public Material.Baked getDefaultMaterial() {
+        return ModelResolverShapeGeneric.getMaterialForState(Blocks.OAK_PLANKS.defaultBlockState());
     }
 }

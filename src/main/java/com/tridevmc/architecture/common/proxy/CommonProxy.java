@@ -28,7 +28,7 @@ import com.google.common.collect.Maps;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.legacy.client.render.model.objson.LegacyOBJSON;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforge.common.NeoForge;
@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class CommonProxy {
 
-    private final Map<ResourceLocation, LegacyOBJSON> modelCache = Maps.newHashMap();
+    private final Map<Identifier, LegacyOBJSON> modelCache = Maps.newHashMap();
 
     public void setup(FMLCommonSetupEvent e) {
     }
@@ -47,7 +47,7 @@ public class CommonProxy {
     }
 
     public LegacyOBJSON getCachedOBJSON(String name) {
-        ResourceLocation loc = this.modelLocation(name);
+        Identifier loc = this.modelLocation(name);
         LegacyOBJSON model = this.modelCache.get(loc);
         if (model == null) {
             long t0 = System.nanoTime();
@@ -62,7 +62,7 @@ public class CommonProxy {
         return model;
     }
 
-    public ResourceLocation modelLocation(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, path);
+    public Identifier modelLocation(String path) {
+        return Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, path);
     }
 }

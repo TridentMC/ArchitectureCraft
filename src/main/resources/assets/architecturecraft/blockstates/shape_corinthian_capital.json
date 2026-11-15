@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_corinthian_capital"
+            "type": "architecturecraft:mesh",
+            "shape": "corinthian_capital"
         }
     }
 }

@@ -36,10 +36,11 @@ import com.tridevmc.architecture.core.ArchitectureLog;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -47,9 +48,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ItemShape extends ItemBlockArchitecture {
 
@@ -59,7 +60,7 @@ public class ItemShape extends ItemBlockArchitecture {
     public ItemShape(BlockShape block) {
         super(block, new Item.Properties().component(ArchitectureMod.CONTENT.componentMaterial, ComponentMaterial.DEFAULT).setId(
                 ResourceKey.create(Registries.ITEM,
-                        ResourceLocation.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
+                        Identifier.fromNamespaceAndPath(ArchitectureContent.REGISTRY_PREFIX,
                                 "shape_" + block.getShape().getName())
                 )
         ));
@@ -112,15 +113,13 @@ public class ItemShape extends ItemBlockArchitecture {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> lines, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flags) {
         var material = stack.get(ArchitectureMod.CONTENT.componentMaterial);
         if (material != null) {
-            if (this.shape != null)
-                lines.set(0, Component.translatable(this.shape.getLocalizationKey()));
-            else
-                lines.set(0, Component.literal(lines.get(0).getString() + " (" + -1 + ")"));
             Block baseBlock = getStateFromStack(stack).getBlock();
-            lines.add(Component.literal(Utils.displayNameOnlyOfBlock(baseBlock)));
+            tooltip.accept(Component.literal(Utils.displayNameOnlyOfBlock(baseBlock)));
         }
     }
 

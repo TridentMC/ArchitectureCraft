@@ -7,7 +7,7 @@ import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import com.tridevmc.architecture.core.model.voxelize.Voxelizers;
 import com.tridevmc.architecture.core.physics.AABB;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,15 +31,15 @@ public record OBJSON(OBJSONData data, IMesh<String, PolygonData> mesh, IVoxelize
         this(data, trans, 16);
     }
 
-    public static OBJSON fromResource(ResourceLocation location) {
+    public static OBJSON fromResource(Identifier location) {
         return OBJSON.fromResource(location, ITrans3.BLOCK_CENTER);
     }
 
-    public static OBJSON fromResource(ResourceLocation location, ITrans3 trans) {
+    public static OBJSON fromResource(Identifier location, ITrans3 trans) {
         return OBJSON.fromResource(location, trans, 16);
     }
 
-    public static OBJSON fromResource(ResourceLocation location, ITrans3 trans, int blockResolution) {
+    public static OBJSON fromResource(Identifier location, ITrans3 trans, int blockResolution) {
         return new OBJSON(OBJSONData.fromResource(location), trans, blockResolution);
     }
 

@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_doric_capital"
+            "type": "architecturecraft:mesh",
+            "shape": "doric_capital"
         }
     }
 }

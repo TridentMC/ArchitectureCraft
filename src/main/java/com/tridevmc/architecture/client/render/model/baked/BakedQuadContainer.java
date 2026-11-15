@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.client.render.model.baked;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public record BakedQuadContainer(ImmutableList<BakedQuad> allQuads,
          */
         public Builder addQuad(BakedQuad quad, boolean isCulled) {
             if (isCulled) {
-                this.addForDirection(quad, quad.getDirection());
+                this.addForDirection(quad, quad.direction());
             } else {
                 this.addForDirection(quad, null);
             }

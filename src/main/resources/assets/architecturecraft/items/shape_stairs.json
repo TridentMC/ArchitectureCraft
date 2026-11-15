@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_stairs"
+        "type": "architecturecraft:mesh",
+        "shape": "stairs"
     }
 }

@@ -1,20 +1,22 @@
 package com.tridevmc.architecture.client.render.model.piped;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.IVector3;
 import com.tridevmc.architecture.core.math.IVector3Mutable;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines an object that can provide a baked quad with data it already has prepared.
@@ -113,7 +115,7 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
     float maxZ();
 
     /**
-     * Gets the metadata about the quad provider used for fetching texture and tintIndex data prior to baking.
+     * Gets the metadata about the quad provider used for fetching material and tintIndex data prior to baking.
      *
      * @return the metadata for the quad provider.
      */
@@ -124,25 +126,25 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @param consumer  the consumer to pipe the quad to.
      * @param transform a transform to apply to the quad while baking.
-     * @param sprite    the sprite to apply to the quad.
+     * @param material  the material to apply to the quad.
      * @param tintIndex the tintIndex to apply to the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
-                      @NotNull TextureAtlasSprite sprite, int tintIndex) {
+                      @NotNull Material.Baked material, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
-            bakingConsumer.setDirection(this.cullFace(transform));
-            bakingConsumer.setSprite(sprite);
+            bakingConsumer.setDirection(this.face(transform));
+            bakingConsumer.setSprite(material);
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
         var vertices = this.vertices();
         for (V v : vertices) {
-            v.pipe(consumer, self, transform, sprite, tintIndex);
+            v.pipe(consumer, self, transform, material.sprite(), tintIndex);
         }
         if (vertices.size() == 3) {
             // If we have a triangle, we need to add a fourth vertex to make it a quad.
-            vertices.get(2).pipe(consumer, self, transform, sprite, tintIndex);
+            vertices.get(2).pipe(consumer, self, transform, material.sprite(), tintIndex);
         }
     }
 
@@ -150,25 +152,25 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
      * @param consumer  the consumer to pipe the quad to.
-     * @param sprite    the sprite to apply to the quad.
+     * @param material  the material to apply to the quad.
      * @param tintIndex the tintIndex to apply to the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
-                      @NotNull TextureAtlasSprite sprite, int tintIndex) {
+                      @NotNull Material.Baked material, int tintIndex) {
         if (consumer instanceof QuadBakingVertexConsumer bakingConsumer) {
             //noinspection DataFlowIssue - we can set the direction to null as that's a valid value.
             bakingConsumer.setDirection(this.cullFace());
-            bakingConsumer.setSprite(sprite);
+            bakingConsumer.setSprite(material);
             bakingConsumer.setTintIndex(tintIndex);
         }
         @SuppressWarnings("unchecked") Q self = (Q) this;
         var vertices = this.vertices();
         for (V v : vertices) {
-            v.pipe(consumer, self, sprite, tintIndex);
+            v.pipe(consumer, self, material.sprite(), tintIndex);
         }
         if (vertices.size() == 3) {
             // If we have a triangle, we need to add a fourth vertex to make it a quad.
-            vertices.get(2).pipe(consumer, self, sprite, tintIndex);
+            vertices.get(2).pipe(consumer, self, material.sprite(), tintIndex);
         }
     }
 
@@ -177,22 +179,22 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @param consumer  the consumer to pipe the quad into.
      * @param transform a transform to apply to the quad while baking.
-     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, transform, resolver.getTexture(this), resolver.getTintIndex(this));
+        this.pipe(consumer, transform, resolver.getMaterial(this), resolver.getTintIndex(this));
     }
 
     /**
      * Bakes the data into a quad with the given arguments. Implementations are expected to cache these results.
      *
      * @param consumer the consumer to pipe the quad into.
-     * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, resolver.getTexture(this), resolver.getTintIndex(this));
+        this.pipe(consumer, resolver.getMaterial(this), resolver.getTintIndex(this));
     }
 
     /**
@@ -203,12 +205,12 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param level     the level the quad is being baked in.
      * @param pos       the position the quad is being baked at.
      * @param state     the state the quad is being baked for.
-     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
-                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, transform, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
+        this.pipe(consumer, transform, resolver.getMaterial(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
     }
 
     /**
@@ -218,12 +220,12 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param level    the level the quad is being baked in.
      * @param pos      the position the quad is being baked at.
      * @param state    the state the quad is being baked for.
-     * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
-                      @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state,
+                      @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, resolver.getTexture(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
+        this.pipe(consumer, resolver.getMaterial(level, pos, state, this), resolver.getTintIndex(level, pos, state, this));
     }
 
     /**
@@ -232,12 +234,12 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      * @param consumer  the consumer to pipe the quad into.
      * @param transform a transform to apply to the quad while baking.
      * @param stack     the item stack the quad is being baked for.
-     * @param resolver  a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver  a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer, @NotNull ITrans3 transform,
                       @NotNull ItemStack stack,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, transform, resolver.getTexture(stack, this), resolver.getTintIndex(stack, this));
+        this.pipe(consumer, transform, resolver.getMaterial(stack, this), resolver.getTintIndex(stack, this));
     }
 
     /**
@@ -245,12 +247,12 @@ public interface IPipedBakedQuad<Q extends IPipedBakedQuad<Q, V, D>, V extends I
      *
      * @param consumer the consumer to pipe the quad into.
      * @param stack    the item stack the quad is being baked for.
-     * @param resolver a metadata resolver to use for pulling the tintIndex and texture for the quad.
+     * @param resolver a metadata resolver to use for pulling the tintIndex and material for the quad.
      */
     default void pipe(@NotNull VertexConsumer consumer,
                       @NotNull ItemStack stack,
                       @NotNull IQuadMetadataResolver<D> resolver) {
-        this.pipe(consumer, resolver.getTexture(stack, this), resolver.getTintIndex(stack, this));
+        this.pipe(consumer, resolver.getMaterial(stack, this), resolver.getTintIndex(stack, this));
     }
 
     /**

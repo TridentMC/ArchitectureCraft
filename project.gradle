@@ -6,18 +6,18 @@ ext {
     useElytraVersionFormat = true
     version = '4'
 
-    compoundVersion = '1.16.0-SNAPSHOT'
+    compoundVersion = '2.0.0-SNAPSHOT'
     compoundModules = ['all']
 
-    minecraftVersion = "1.21.4"
-    minecraftVersionRange = "[1.21.4,1.22)"
+    minecraftVersion = "26.3"
+    minecraftVersionRange = "[26.3,26.4)"
 
-    mappingsChannel = "parchment"
-    mappingsMinecraftVersion = "1.21.4"
+    mappingsChannel = "official"
+    mappingsMinecraftVersion = "26.3"
     mappingsVersion = "2024.12.22"
 
-    neoForgeVersion = "21.4.101-beta"
-    neoForgeVersionRange = "[21.4,)"
+    neoForgeVersion = "26.3.0.103"
+    neoForgeVersionRange = "[26.3.0.103,26.4)"
     loaderVersionRange = "[2,)"
 }
 

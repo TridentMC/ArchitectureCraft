@@ -1,7 +1,8 @@
 {
     "variants": {
         "": {
-            "model": "architecturecraft:block/shape_doric_triglyph_corner"
+            "type": "architecturecraft:mesh",
+            "shape": "doric_triglyph_corner"
         }
     }
 }

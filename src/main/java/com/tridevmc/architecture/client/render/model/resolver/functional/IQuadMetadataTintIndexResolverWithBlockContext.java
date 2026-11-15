@@ -1,7 +1,7 @@
 package com.tridevmc.architecture.client.render.model.resolver.functional;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +22,6 @@ public interface IQuadMetadataTintIndexResolverWithBlockContext<D> {
      * @param metadata The metadata to resolve.
      * @return The colour to use.
      */
-    int getTintIndex(@NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
+    int getTintIndex(@NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull BlockState state, D metadata);
 
 }

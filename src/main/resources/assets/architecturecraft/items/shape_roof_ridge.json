@@ -1,6 +1,6 @@
 {
     "model": {
-        "type": "minecraft:model",
-        "model": "architecturecraft:block/shape_roof_ridge"
+        "type": "architecturecraft:mesh",
+        "shape": "roof_ridge"
     }
 }

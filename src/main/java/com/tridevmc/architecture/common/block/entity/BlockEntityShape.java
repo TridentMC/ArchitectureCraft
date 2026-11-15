@@ -2,12 +2,12 @@ package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @param pos   The position to get the BlockEntityShape from.
      * @return An optional containing the BlockEntityShape, or an empty optional if it does not exist.
      */
-    public static Optional<BlockEntityShape> getAtOptionally(LevelAccessor world, BlockPos pos) {
+    public static Optional<BlockEntityShape> getAtOptionally(BlockGetter world, BlockPos pos) {
         return Optional.ofNullable(world.getBlockEntity(pos)).map(te -> te instanceof BlockEntityShape ? (BlockEntityShape) te : null);
     }
 
@@ -39,7 +39,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return The BlockEntityShape, or null if it does not exist.
      */
     @Nullable
-    public static BlockEntityShape getAt(LevelAccessor world, BlockPos pos) {
+    public static BlockEntityShape getAt(BlockGetter world, BlockPos pos) {
         var te = world.getBlockEntity(pos);
         if (te instanceof BlockEntityShape) {
             return (BlockEntityShape) te;
@@ -48,19 +48,19 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
 
         tag.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
         tag.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
     }
 
     @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
 
-        this.baseMaterialState = Block.stateById(tag.getInt("BaseMaterialState"));
-        this.secondaryMaterialState = Optional.of(tag.getInt("SecondaryMaterialState")).filter(id -> id != -1).map(Block::stateById).orElse(null);
+        this.baseMaterialState = Block.stateById(tag.getIntOr("BaseMaterialState", 0));
+        this.secondaryMaterialState = Optional.of(tag.getIntOr("SecondaryMaterialState", 0)).filter(id -> id != -1).map(Block::stateById).orElse(null);
     }
 
     /**

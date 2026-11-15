@@ -4,7 +4,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -13,8 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.IContainerFactory;
@@ -35,7 +33,7 @@ public class ArchitectureUIHooks {
 
     public static <C extends AbstractContainerMenu> MenuType<C> register(RegisterEvent.RegisterHelper<MenuType<?>> registry) {
         MenuType<C> containerType = IMenuTypeExtension.create(getFactory());
-        registry.register(ResourceLocation.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "containers"), containerType);
+        registry.register(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "containers"), containerType);
         // This is honestly the worst solution to this problem, but it works for now.
         registerMenuScreensEvent = event -> event.register(containerType, ArchitectureUIHooks.getScreenFactory());
         return containerType;
@@ -79,7 +77,6 @@ public class ArchitectureUIHooks {
         };
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static MenuScreens.ScreenConstructor getScreenFactory() {
         return (container, inv, name) -> lastProvider.map(eP -> eP.createScreen(container, inv.player)).orElse(null);
     }

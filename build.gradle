@@ -1,13 +1,13 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.gradleup.shadow' version '9.4.3'
     id 'java-library'
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.76'
+    id 'net.neoforged.moddev' version '2.0.147'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 ext.early = true
 apply from: 'project.gradle'
@@ -19,22 +19,23 @@ if (project.ext.useElytraVersionFormat) {
     if (System.env.BRANCH_NAME) {
         // Jenkins support
         branch = System.env.BRANCH_NAME
-        branch = branch.substring(branch.lastIndexOf('/') + 1)
     } else {
         branch = 'git rev-parse --abbrev-ref HEAD'.execute().in.text.trim()
     }
+    branch = branch.substring(branch.lastIndexOf('/') + 1)
     if (branch == "HEAD") {
         branch = 'git rev-parse --short HEAD'.execute().in.text.trim()
     }
     def commits = 'git rev-list --count HEAD'.execute().in.text.trim()
     def dirty = !'git diff-index HEAD'.execute().in.text.trim().isEmpty()
-    version = branch + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '')
+    def versionPrefix = (branch ==~ /\d+.*/) ? branch : project.ext.minecraftVersion + '-' + branch
+    version = versionPrefix + '-' + project.ext.version + '.' + commits + (dirty ? '-dirty' : '')
 } else {
     version = project.ext.version
 }
 
 group = project.ext.group
-archivesBaseName = project.ext.projectName
+base.archivesName = project.ext.projectName
 
 ext {
     compoundClassesDir = file('build/compound')
@@ -45,6 +46,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     maven { url = 'https://repo.tridevmc.com/' }
 }
 

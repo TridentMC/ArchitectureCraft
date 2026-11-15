@@ -25,11 +25,11 @@
 package com.tridevmc.architecture.client.render.texture;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface ITexture {
 
-    ResourceLocation location();
+    Identifier location();
 
     int tintIndex();
 

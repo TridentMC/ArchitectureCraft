@@ -27,7 +27,7 @@ package com.tridevmc.architecture.common.item;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -35,7 +35,7 @@ import net.minecraft.world.item.context.UseOnContext;
 
 public class ItemHammer extends Item {
 
-    public ItemHammer(ResourceLocation id) {
+    public ItemHammer(Identifier id) {
         super(new Item.Properties().stacksTo(1).setId(ResourceKey.create(Registries.ITEM, id)));
     }
 
