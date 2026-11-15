@@ -111,7 +111,7 @@ public enum EnumShape {
     ARCH_D3C("arch_d3c", null, null),
     ARCH_D4A("arch_d4a", null, null),
     ARCH_D4B("arch_d4b", null, null),
-    ARCH_D4C("arch_d4c", null, null),
+    ARCH_D4C("arch_d4c", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     BANISTER_PLAIN_BOTTOM("banister_plain_bottom", null, null),
     BANISTER_PLAIN("banister_plain", null, null),
