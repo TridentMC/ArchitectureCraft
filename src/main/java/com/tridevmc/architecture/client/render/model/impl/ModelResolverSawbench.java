@@ -39,10 +39,6 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
             }
     );
 
-    public static void clearCache() {
-        needsInit = true;
-    }
-
     private static void doInit() {
         if (needsInit) {
             Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)::getSprite;
