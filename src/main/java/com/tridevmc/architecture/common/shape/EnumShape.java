@@ -73,7 +73,7 @@ public enum EnumShape {
     ROOF_OVERHANG("roof_overhang", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_OUTER_CORNER("roof_overhang_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_INNER_CORNER("roof_overhang_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", null, null),
+    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_GABLE_RH("roof_overhang_gable_rh", null, null),
     ROOF_OVERHANG_GABLE_END_LH("roof_overhang_gable_end_lh", null, null),
     ROOF_OVERHANG_GABLE_END_RH("roof_overhang_gable_end_rh", null, null),
