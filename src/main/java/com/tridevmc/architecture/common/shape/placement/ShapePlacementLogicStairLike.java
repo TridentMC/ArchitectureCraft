@@ -3,7 +3,11 @@ package com.tridevmc.architecture.common.shape.placement;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -37,8 +41,11 @@ public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockA
 
         var hitSide = hitResult.getDirection();
         var hitSection = EnumBlockFaceSection.fromHitResult(horizontalDirection, hitResult);
-        var facing = horizontalDirection.getOpposite();
-        var spin = this.getSpin(hitSide, playerFacing, hitSection);
+        var facing = playerFacing.getAxis().isVertical()
+                ? playerFacing.getOpposite() : horizontalDirection.getOpposite();
+        var spin = facing.getAxis().isVertical()
+                ? EnumSpin.byIndex(horizontalDirection.get2DDataValue())
+                : this.getSpin(hitSide, playerFacing, hitSection);
 
         return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyFacing.of(facing),

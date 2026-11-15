@@ -2,8 +2,24 @@ package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.placement.*;
-import com.tridevmc.architecture.common.shape.transformation.*;
+import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnAxis;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPointedByPlacedFace;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
+import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlip;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlipAndTurn;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithTurn;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverOnAxis;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -56,7 +72,7 @@ public enum EnumShape {
     ROOF_OVERHANG("roof_overhang", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_OUTER_CORNER("roof_overhang_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_INNER_CORNER("roof_overhang_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", null, null),
+    ROOF_OVERHANG_GABLE_LH("roof_overhang_gable_lh", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_GABLE_RH("roof_overhang_gable_rh", null, null),
     ROOF_OVERHANG_GABLE_END_LH("roof_overhang_gable_end_lh", null, null),
     ROOF_OVERHANG_GABLE_END_RH("roof_overhang_gable_end_rh", null, null),
