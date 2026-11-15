@@ -66,7 +66,9 @@ public final class ShapeMeshes {
 
 
     private static IMesh<String, PolygonData> asset(EnumShape shape) {
-        var location = shape.getAssetLocation();
+        var location = shape == EnumShape.CLADDING_SHEET
+                ? Identifier.fromNamespaceAndPath(shape.getId().getNamespace(), "shape/cladding.objson")
+                : shape.getAssetLocation();
         return ASSETS.computeIfAbsent(location, key -> {
             try {
                 return OBJSON.fromResource(key).mesh();
