@@ -45,6 +45,7 @@ final class ShapeGeometry {
             case ROOF_OUTER_CORNER -> Math.min(1 - x, z);
             case ROOF_INNER_CORNER -> Math.max(1 - x, z);
             case ROOF_RIDGE -> 0.5 - Math.abs(z - 0.5);
+            case ROOF_VALLEY -> 0.5 + Math.abs(z - 0.5);
             case ROOF_SMART_RIDGE -> {
                 var result = 0.5 - Math.max(Math.abs(x - 0.5), Math.abs(z - 0.5));
                 var side = z == 0 && x == 0.5 ? 0 : z == 1 && x == 0.5 ? 1
