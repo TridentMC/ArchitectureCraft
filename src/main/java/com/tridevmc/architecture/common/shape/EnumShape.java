@@ -91,7 +91,7 @@ public enum EnumShape {
 
     CORNICE_LH("cornice_lh", null, null),
     CORNICE_RH("cornice_rh", null, null),
-    CORNICE_END_LH("cornice_end_lh", null, null),
+    CORNICE_END_LH("cornice_end_lh", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CORNICE_END_RH("cornice_end_rh", null, null),
     CORNICE_RIDGE("cornice_ridge", null, null),
     CORNICE_VALLEY("cornice_valley", null, null),
