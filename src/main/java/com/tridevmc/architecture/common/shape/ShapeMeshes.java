@@ -66,7 +66,7 @@ public final class ShapeMeshes {
 
     private static IMesh<String, PolygonData> createMesh(EnumShape shape, int variant) {
         if (switch (shape) {
-            case ROOF_TILE, ROOF_OUTER_CORNER, ROOF_INNER_CORNER -> true;
+            case ROOF_TILE, ROOF_OUTER_CORNER, ROOF_INNER_CORNER, ROOF_RIDGE -> true;
             default -> false;
         }) {
             return ShapeGeometry.roof(shape, variant);
