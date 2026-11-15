@@ -11,7 +11,6 @@ import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.data.AtlasIds;
@@ -19,8 +18,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.function.Function;
 
 public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
@@ -41,10 +38,10 @@ public class ModelResolverSawbench implements IModelResolver<PolygonData> {
 
     private static void doInit() {
         if (needsInit) {
-            Function<Identifier, TextureAtlasSprite> textureGetter = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)::getSprite;
+            var atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS);
             materials = new Material.Baked[]{
-                    new Material.Baked(textureGetter.apply(Identifier.withDefaultNamespace("block/oak_planks")), false),
-                    new Material.Baked(textureGetter.apply(Identifier.withDefaultNamespace("block/iron_block")), false)
+                    new Material.Baked(atlas.getSprite(Identifier.withDefaultNamespace("block/oak_planks")), false),
+                    new Material.Baked(atlas.getSprite(Identifier.withDefaultNamespace("block/iron_block")), false)
             };
             colours = new int[]{-1, -1};
             needsInit = false;

@@ -16,7 +16,7 @@ public class LegacyOBJSONQuadMetadataResolver implements IQuadMetadataResolver<L
     }
 
     @Override
-    public Material.Baked getTexture(LegacyOBJSONQuadMetadata metadata) {
+    public Material.Baked getMaterial(LegacyOBJSONQuadMetadata metadata) {
         return new Material.Baked(this.textures[Math.min(metadata.texture(), this.textures.length - 1)], false);
     }
 
