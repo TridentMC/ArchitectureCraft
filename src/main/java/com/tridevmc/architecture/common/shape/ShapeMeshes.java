@@ -3,17 +3,21 @@ package com.tridevmc.architecture.common.shape;
 import com.tridevmc.architecture.common.shape.orientation.EnumConnectionState;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
+import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
+import com.tridevmc.architecture.core.model.mesh.Mesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import com.tridevmc.architecture.core.model.voxelize.Voxelizer;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.Direction;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 
 /**
  * Responsible for getting a mesh for a given shape enum, and a voxelizer for a given shape enum.
@@ -27,6 +31,13 @@ public final class ShapeMeshes {
     private record MeshKey(EnumShape shape, int variant) {
     }
 
+    private enum EnumCornerKind {
+        DETACHED, HORIZONTAL, VERTICAL, INNER;
+
+        String partName() {
+            return this.name().toLowerCase(Locale.ROOT);
+        }
+    }
 
     private ShapeMeshes() {
     }
@@ -49,9 +60,21 @@ public final class ShapeMeshes {
         return VOXELIZERS.computeIfAbsent(mesh.getName(), key -> new Voxelizer(mesh, 16));
     }
 
+    public static boolean isWindow(EnumShape shape) {
+        return switch (shape) {
+            case WINDOW_FRAME -> true;
+            default -> false;
+        };
+    }
+
 
     private static int variant(EnumShape shape, ShapeOrientation orientation) {
-        var properties = new ShapeOrientationPropertyRelativeConnection[]{ShapeOrientationPropertyRelativeConnection.FRONT,
+        var properties = isWindow(shape)
+                ? new ShapeOrientationPropertyRelativeConnection[]{ShapeOrientationPropertyRelativeConnection.BOTTOM,
+                ShapeOrientationPropertyRelativeConnection.RIGHT, ShapeOrientationPropertyRelativeConnection.TOP,
+                ShapeOrientationPropertyRelativeConnection.LEFT, ShapeConnectionProperties.DOWN_LEFT,
+                ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT}
+                : new ShapeOrientationPropertyRelativeConnection[]{ShapeOrientationPropertyRelativeConnection.FRONT,
                 ShapeOrientationPropertyRelativeConnection.BACK, ShapeOrientationPropertyRelativeConnection.LEFT,
                 ShapeOrientationPropertyRelativeConnection.RIGHT};
         var mask = 0;
@@ -72,6 +95,9 @@ public final class ShapeMeshes {
         }) {
             return ShapeGeometry.roof(shape, variant);
         }
+        if (isWindow(shape)) {
+            return window(shape, variant);
+        }
         return asset(shape);
     }
 
@@ -87,5 +113,38 @@ public final class ShapeMeshes {
         });
     }
 
+    private static IMesh<String, PolygonData> window(EnumShape shape, int connections) {
+        var source = asset(EnumShape.WINDOW_FRAME);
+        var builder = new Mesh.Builder<String, PolygonData>(shape.getName() + "_" + connections);
+        var sides = new Direction[]{Direction.DOWN, Direction.EAST, Direction.UP, Direction.WEST};
+        addIfPresent(builder, source, "glass");
+        for (int i = 0; i < sides.length; i++) {
+            if ((connections & (1 << i)) == 0) {
+                addIfPresent(builder, source, "edge." + sides[i].getSerializedName());
+                addIfPresent(builder, source, "glass." + sides[i].getSerializedName());
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            var vertical = i < 2 ? 0 : 2;
+            var horizontal = (i & 1) == 0 ? 3 : 1;
+            var v = (connections & (1 << vertical)) != 0;
+            var h = (connections & (1 << horizontal)) != 0;
+            var diagonal = (connections & (1 << (i + 4))) != 0;
+            if (v && h && diagonal) {
+                continue;
+            }
+            var kind = v && h ? EnumCornerKind.INNER : v ? EnumCornerKind.VERTICAL : h ? EnumCornerKind.HORIZONTAL : EnumCornerKind.DETACHED;
+            addIfPresent(builder, source, "corner." + kind.partName() + "." + sides[vertical].getSerializedName()
+                    + "_" + sides[horizontal].getSerializedName());
+        }
+        return builder.build();
+    }
 
+    private static void addIfPresent(Mesh.Builder<String, PolygonData> builder,
+            IMesh<String, PolygonData> source, String name) {
+        var part = source.getParts().get(name);
+        if (part != null) {
+            builder.addPart(part);
+        }
+    }
 }

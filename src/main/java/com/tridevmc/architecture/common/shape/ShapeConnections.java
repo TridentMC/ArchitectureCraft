@@ -4,6 +4,7 @@ import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.orientation.EnumConnectionState;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
+import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,6 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public final class ShapeConnections {
 
+    private static final ShapeOrientationPropertyRelativeConnection[] WINDOW_PROPERTIES = {
+            ShapeOrientationPropertyRelativeConnection.BOTTOM, ShapeOrientationPropertyRelativeConnection.RIGHT,
+            ShapeOrientationPropertyRelativeConnection.TOP, ShapeOrientationPropertyRelativeConnection.LEFT};
     private static final ShapeOrientationPropertyRelativeConnection[] ROOF_PROPERTIES = {
             ShapeOrientationPropertyRelativeConnection.FRONT, ShapeOrientationPropertyRelativeConnection.BACK,
             ShapeOrientationPropertyRelativeConnection.LEFT, ShapeOrientationPropertyRelativeConnection.RIGHT};
@@ -23,6 +27,9 @@ public final class ShapeConnections {
 
     public static BlockState update(BlockState state, BlockGetter level, BlockPos pos) {
         var shape = ((BlockShape<?>) state.getBlock()).getShape();
+        if (ShapeMeshes.isWindow(shape)) {
+            return updateWindow(state, level, pos);
+        }
         if (shape == EnumShape.ROOF_SMART_RIDGE || shape == EnumShape.ROOF_SMART_VALLEY) {
             for (int i = 0; i < ROOF_DIRECTIONS.length; i++) {
                 var direction = direction(state, ROOF_DIRECTIONS[i]);
@@ -53,6 +60,52 @@ public final class ShapeConnections {
     private static Direction direction(BlockState state, Direction local) {
         var block = (BlockShape<?>) state.getBlock();
         return block.getShape().getTransformationResolver().resolve((BlockStateShape) state).transformDirection(local);
+    }
+
+    public static Direction[] windowDirections(BlockState state) {
+        var local = new Direction[]{Direction.DOWN, Direction.EAST, Direction.UP, Direction.WEST};
+        for (int i = 0; i < local.length; i++) {
+            local[i] = direction(state, local[i]);
+        }
+        return local;
+    }
+
+    private static BlockState updateWindow(BlockState state, BlockGetter level, BlockPos pos) {
+        var directions = windowDirections(state);
+        for (int i = 0; i < directions.length; i++) {
+            var connected = windowsConnect(state, level.getBlockState(pos.relative(directions[i])), directions[i]);
+            state = state.setValue(WINDOW_PROPERTIES[i], connection(connected));
+        }
+        for (int i = 0; i < 4; i++) {
+            var vertical = i < 2 ? 0 : 2;
+            var horizontal = (i & 1) == 0 ? 3 : 1;
+            var diagonal = level.getBlockState(pos.relative(directions[vertical]).relative(directions[horizontal]));
+            var connected = state.getValue(WINDOW_PROPERTIES[vertical]) == EnumConnectionState.CONNECTED
+                    && state.getValue(WINDOW_PROPERTIES[horizontal]) == EnumConnectionState.CONNECTED
+                    && windowsConnect(level.getBlockState(pos.relative(directions[vertical])), diagonal, directions[horizontal])
+                    && windowsConnect(level.getBlockState(pos.relative(directions[horizontal])), diagonal, directions[vertical]);
+            state = state.setValue(ShapeConnectionProperties.DIAGONALS.get(i), connection(connected));
+        }
+        return state;
+    }
+
+    private static boolean windowsConnect(BlockState state, BlockState other, Direction side) {
+        if (!(other.getBlock() instanceof BlockShape<?> block) || !ShapeMeshes.isWindow(block.getShape())) {
+            return false;
+        }
+        var ours = windowDirections(state);
+        var theirs = windowDirections(other);
+        for (int i = 0; i < ours.length; i++) {
+            if (ours[i] != side) {
+                continue;
+            }
+            for (int j = 0; j < theirs.length; j++) {
+                if (theirs[j] == side.getOpposite()) {
+                    return direction(state, Direction.NORTH).getAxis() == direction(other, Direction.NORTH).getAxis();
+                }
+            }
+        }
+        return false;
     }
 
 

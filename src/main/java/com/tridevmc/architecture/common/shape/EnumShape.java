@@ -4,6 +4,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicExtended;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
@@ -14,6 +15,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindowFrame;
 import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlip;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlipAndTurn;
@@ -22,6 +24,7 @@ import com.tridevmc.architecture.common.shape.transformation.ShapeTransformation
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverWindow;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -100,7 +103,7 @@ public enum EnumShape {
     CORNICE_VALLEY("cornice_valley", null, null),
     CORNICE_BOTTOM("cornice_bottom", null, null),
 
-    WINDOW_FRAME("window_frame", null, null),
+    WINDOW_FRAME("window_frame", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowFrame<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT), ShapeTransformationResolverWindow.FRAME),
     WINDOW_CORNER("window_corner", null, null),
     WINDOW_MULLION("window_mullion", null, null),
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),

@@ -12,6 +12,7 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.rule.INeighbourConnectionRule;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
@@ -38,6 +39,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
@@ -63,7 +65,7 @@ import java.util.function.Function;
  *
  * @param <T> a self-referential generic type.
  */
-public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture implements EntityBlock {
+public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture implements EntityBlock, INeighbourConnectionRule {
 
     private static final WrappedField<StateDefinition<Block, BlockState>> STATE_DEFINITION = WrappedField.create(Block.class, "stateDefinition", "f_49792_");
 
@@ -221,6 +223,10 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
                 context.getLevel(), context.getClickedPos());
     }
 
+    @Override
+    public boolean connectsToOnSide(BlockState other, Direction side) {
+        return other.getBlock() instanceof BlockShape<?> block && ShapeMeshes.isWindow(block.getShape());
+    }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
@@ -228,6 +234,26 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         return ShapeConnections.update(state, level, pos);
     }
 
+    @Override
+    protected void updateIndirectNeighbourShapes(BlockState state, LevelAccessor level, BlockPos pos, int flags, int recursionLeft) {
+        super.updateIndirectNeighbourShapes(state, level, pos, flags, recursionLeft);
+        if (!ShapeMeshes.isWindow(this.shape) || recursionLeft <= 0) {
+            return;
+        }
+        var directions = ShapeConnections.windowDirections(state);
+        for (int vertical : new int[]{0, 2}) {
+            for (int horizontal : new int[]{1, 3}) {
+                var diagonalPos = pos.relative(directions[vertical]).relative(directions[horizontal]);
+                var diagonal = level.getBlockState(diagonalPos);
+                if (diagonal.getBlock() instanceof BlockShape<?> block && ShapeMeshes.isWindow(block.getShape())) {
+                    var updated = ShapeConnections.update(diagonal, level, diagonalPos);
+                    if (updated != diagonal) {
+                        level.setBlock(diagonalPos, updated, flags, recursionLeft - 1);
+                    }
+                }
+            }
+        }
+    }
 
     public BlockState rotatePlacement(BlockState state, boolean reverse) {
         var placementLogic = this.getPlacementLogic();
