@@ -63,7 +63,7 @@ public final class ShapeMeshes {
 
     public static boolean isWindow(EnumShape shape) {
         return switch (shape) {
-            case WINDOW_FRAME, WINDOW_CORNER, WINDOW_MULLION, WINDOW_SMART -> true;
+            case WINDOW_FRAME, WINDOW_CORNER, WINDOW_MULLION, WINDOW_SMART, WINDOW_MULLION_SMART -> true;
             default -> false;
         };
     }
@@ -145,7 +145,7 @@ public final class ShapeMeshes {
             addIfPresent(builder, source, (connections & 1) != 0 ? "post.connected.down" : "post.down");
             addIfPresent(builder, source, (connections & 4) != 0 ? "post.connected.up" : "post.up");
         }
-        if (shape == EnumShape.WINDOW_MULLION) {
+        if (shape == EnumShape.WINDOW_MULLION || shape == EnumShape.WINDOW_MULLION_SMART) {
             var mullion = new Part.Builder<String, PolygonData>().setId("mullion");
             ShapeGeometry.box(mullion, 7 / 16D, 0, 13 / 32D, 9 / 16D, 1, 19 / 32D, 0);
             builder.addPart(mullion.build());
