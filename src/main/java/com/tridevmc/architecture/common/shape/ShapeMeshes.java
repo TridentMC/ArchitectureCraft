@@ -37,7 +37,7 @@ public final class ShapeMeshes {
 
     public static synchronized IMesh<String, PolygonData> getMesh(EnumShape shape, ShapeOrientation orientation) {
         var variant = variant(shape, orientation);
-        return MESHES.computeIfAbsent(new MeshKey(shape, variant), key -> asset(key.shape()));
+        return MESHES.computeIfAbsent(new MeshKey(shape, variant), key -> createMesh(key.shape(), key.variant()));
     }
 
     public static synchronized IVoxelizer getVoxelizer(EnumShape shape) {
@@ -64,6 +64,15 @@ public final class ShapeMeshes {
         return mask;
     }
 
+    private static IMesh<String, PolygonData> createMesh(EnumShape shape, int variant) {
+        if (switch (shape) {
+            case ROOF_TILE -> true;
+            default -> false;
+        }) {
+            return ShapeGeometry.roof(shape, variant);
+        }
+        return asset(shape);
+    }
 
     private static IMesh<String, PolygonData> asset(EnumShape shape) {
         var location = shape.getAssetLocation();
