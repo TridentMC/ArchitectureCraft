@@ -1,6 +1,5 @@
 {
     "parent": "block/block",
-    "loader": "architecturecraft:shape_loader",
     "shapeName": "balustrade_plain_end"
 }
                           

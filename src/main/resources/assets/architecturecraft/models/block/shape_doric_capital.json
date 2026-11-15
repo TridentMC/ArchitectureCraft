@@ -1,6 +1,5 @@
 {
     "parent": "block/block",
-    "loader": "architecturecraft:shape_loader",
     "shapeName": "doric_capital"
 }
                           

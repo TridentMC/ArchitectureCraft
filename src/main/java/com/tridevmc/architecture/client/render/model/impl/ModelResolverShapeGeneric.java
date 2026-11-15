@@ -8,7 +8,6 @@ import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.client.render.model.resolver.functional.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
-import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.item.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.ShapeMeshes;
@@ -38,15 +37,14 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
         ).blockTextureResolver(
                 (level, pos, state, metadata) -> {
                     // Get the tile entity so we can pull in the material states.
-                    var shapeBe = level.getModelData(pos).get(BlockEntityShape.MATERIALS);
+                    var shapeBe = BlockEntityShape.getAt(level, pos);
                     Objects.requireNonNull(shapeBe, "Shape tile entity was null when resolving block texture.");
-                    return getTextureForState(metadata.textureIndex() == 0 ? shapeBe.base() : shapeBe.secondary());
+                    return getTextureForState(shapeBe.getMaterialStateForIndex(metadata.textureIndex()));
                 }
         ).itemTextureResolver(
                 (stack, metadata) -> {
                     // Pull the shape and material states from the item stack, no secondary states are on the items. They get applied with cladding instead.
-                    var shape = stack.getItem() instanceof ItemCladding
-                            ? EnumShape.CLADDING_SHEET : ItemShape.getShapeFromStack(stack);
+                    var shape = ItemShape.getShapeFromStack(stack);
                     var material = ItemShape.getStateFromStack(stack);
                     Objects.requireNonNull(shape, "Shape was null when resolving item texture.");
                     return getTextureForState(material);
@@ -84,12 +82,12 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     @Override
     public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return mesh.getQuads(null, level, pos, state, resolver, transform, false);
+        return mesh.getQuads(null, resolver, transform);
     }
 
     @Override
     public IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return mesh.getQuads(null, stack, resolver, transform, false);
+        return mesh.getQuads(null, resolver, transform);
     }
 
     @Override

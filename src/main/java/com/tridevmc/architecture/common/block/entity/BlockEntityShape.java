@@ -1,26 +1,18 @@
 package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
-import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.model.data.ModelData;
-import net.neoforged.neoforge.model.data.ModelProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class BlockEntityShape extends BlockEntityArchitecture {
-
-    public static final ModelProperty<ComponentMaterial> MATERIALS = new ModelProperty<>();
 
     private BlockState baseMaterialState, secondaryMaterialState;
 
@@ -56,50 +48,19 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        output.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
-        output.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
+
+        tag.putInt("BaseMaterialState", Block.getId(this.getBaseMaterialState().orElse(Blocks.OAK_PLANKS.defaultBlockState())));
+        tag.putInt("SecondaryMaterialState", this.getSecondaryMaterialState().map(Block::getId).orElse(-1));
     }
 
     @Override
-    public void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        this.baseMaterialState = Block.stateById(input.getIntOr("BaseMaterialState", 0));
-        this.secondaryMaterialState = Optional.of(input.getIntOr("SecondaryMaterialState", 0)).filter(id -> id != -1).map(Block::stateById).orElse(null);
-        this.requestModelDataUpdate();
-        if (this.level != null && this.level.isClientSide()) {
-            this.notifyBlockUpdate();
-        }
-    }
+    public void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
 
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return this.saveCustomOnly(registries);
-    }
-
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public ModelData getModelData() {
-        return ModelData.of(MATERIALS, new ComponentMaterial(
-                this.getEffectiveBaseMaterialState(), this.getEffectiveSecondaryMaterialState()));
-    }
-
-    private void materialsChanged() {
-        this.setChanged();
-        this.requestModelDataUpdate();
-        this.notifyBlockUpdate();
-    }
-
-    private void notifyBlockUpdate() {
-        if (this.level != null) {
-            var state = this.getBlockState();
-            this.level.sendBlockUpdated(this.getBlockPos(), state, state, Block.UPDATE_CLIENTS);
-        }
+        this.baseMaterialState = Block.stateById(tag.getIntOr("BaseMaterialState", 0));
+        this.secondaryMaterialState = Optional.of(tag.getIntOr("SecondaryMaterialState", 0)).filter(id -> id != -1).map(Block::stateById).orElse(null);
     }
 
     /**
@@ -118,10 +79,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return This BlockEntityShape instance.
      */
     public BlockEntityShape setBaseMaterialState(BlockState baseMaterialState) {
-        if (this.baseMaterialState != baseMaterialState) {
-            this.baseMaterialState = baseMaterialState;
-            this.materialsChanged();
-        }
+        this.baseMaterialState = baseMaterialState;
         return this;
     }
 
@@ -141,10 +99,7 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      * @return This BlockEntityShape instance.
      */
     public BlockEntityShape setSecondaryMaterialState(BlockState secondaryMaterialState) {
-        if (this.secondaryMaterialState != secondaryMaterialState) {
-            this.secondaryMaterialState = secondaryMaterialState;
-            this.materialsChanged();
-        }
+        this.secondaryMaterialState = secondaryMaterialState;
         return this;
     }
 

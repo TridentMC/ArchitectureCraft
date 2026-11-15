@@ -1,4 +1,3 @@
 {
-    "parent": "minecraft:block/block",
-    "loader": "architecturecraft:sawbench_loader"
+    "parent": "minecraft:block/block"
 }
