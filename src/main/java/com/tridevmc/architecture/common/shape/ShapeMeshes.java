@@ -32,7 +32,7 @@ public final class ShapeMeshes {
     }
 
     private enum EnumCornerKind {
-        DETACHED, HORIZONTAL, VERTICAL, INNER;
+        DETACHED, HORIZONTAL, VERTICAL, INNER, OUTER, ACROSS;
 
         String partName() {
             return this.name().toLowerCase(Locale.ROOT);
@@ -62,7 +62,7 @@ public final class ShapeMeshes {
 
     public static boolean isWindow(EnumShape shape) {
         return switch (shape) {
-            case WINDOW_FRAME -> true;
+            case WINDOW_FRAME, WINDOW_CORNER -> true;
             default -> false;
         };
     }
@@ -114,9 +114,10 @@ public final class ShapeMeshes {
     }
 
     private static IMesh<String, PolygonData> window(EnumShape shape, int connections) {
-        var source = asset(EnumShape.WINDOW_FRAME);
+        var corner = shape == EnumShape.WINDOW_CORNER;
+        var source = asset(corner ? EnumShape.WINDOW_CORNER : EnumShape.WINDOW_FRAME);
         var builder = new Mesh.Builder<String, PolygonData>(shape.getName() + "_" + connections);
-        var sides = new Direction[]{Direction.DOWN, Direction.EAST, Direction.UP, Direction.WEST};
+        var sides = new Direction[]{Direction.DOWN, corner ? Direction.SOUTH : Direction.EAST, Direction.UP, Direction.WEST};
         addIfPresent(builder, source, "glass");
         for (int i = 0; i < sides.length; i++) {
             if ((connections & (1 << i)) == 0) {
@@ -133,9 +134,15 @@ public final class ShapeMeshes {
             if (v && h && diagonal) {
                 continue;
             }
-            var kind = v && h ? EnumCornerKind.INNER : v ? EnumCornerKind.VERTICAL : h ? EnumCornerKind.HORIZONTAL : EnumCornerKind.DETACHED;
+            var kind = corner ? (v ? EnumCornerKind.DETACHED : h ? EnumCornerKind.ACROSS : EnumCornerKind.OUTER)
+                    : v && h ? EnumCornerKind.INNER : v ? EnumCornerKind.VERTICAL : h ? EnumCornerKind.HORIZONTAL : EnumCornerKind.DETACHED;
             addIfPresent(builder, source, "corner." + kind.partName() + "." + sides[vertical].getSerializedName()
                     + "_" + sides[horizontal].getSerializedName());
+        }
+        if (corner) {
+            addIfPresent(builder, source, "post");
+            addIfPresent(builder, source, (connections & 1) != 0 ? "post.connected.down" : "post.down");
+            addIfPresent(builder, source, (connections & 4) != 0 ? "post.connected.up" : "post.up");
         }
         return builder.build();
     }

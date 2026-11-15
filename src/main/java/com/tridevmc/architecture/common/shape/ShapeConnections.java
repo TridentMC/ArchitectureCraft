@@ -11,6 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.EnumSet;
 
 public final class ShapeConnections {
 
@@ -63,7 +64,8 @@ public final class ShapeConnections {
     }
 
     public static Direction[] windowDirections(BlockState state) {
-        var local = new Direction[]{Direction.DOWN, Direction.EAST, Direction.UP, Direction.WEST};
+        var corner = ((BlockShape<?>) state.getBlock()).getShape() == EnumShape.WINDOW_CORNER;
+        var local = new Direction[]{Direction.DOWN, corner ? Direction.SOUTH : Direction.EAST, Direction.UP, Direction.WEST};
         for (int i = 0; i < local.length; i++) {
             local[i] = direction(state, local[i]);
         }
@@ -101,11 +103,31 @@ public final class ShapeConnections {
             }
             for (int j = 0; j < theirs.length; j++) {
                 if (theirs[j] == side.getOpposite()) {
-                    return direction(state, Direction.NORTH).getAxis() == direction(other, Direction.NORTH).getAxis();
+                    return portProfile(state, i).equals(portProfile(other, j));
                 }
             }
         }
         return false;
+    }
+
+    private record PortProfile(EnumSet<Direction.Axis> normals, EnumSet<Direction> arms) {
+    }
+
+    private static PortProfile portProfile(BlockState state, int port) {
+        var corner = ((BlockShape<?>) state.getBlock()).getShape() == EnumShape.WINDOW_CORNER;
+        var normals = EnumSet.noneOf(Direction.Axis.class);
+        if (!corner || port != 1) {
+            normals.add(direction(state, Direction.NORTH).getAxis());
+        }
+        if (corner && port != 3) {
+            normals.add(direction(state, Direction.EAST).getAxis());
+        }
+        var arms = EnumSet.noneOf(Direction.class);
+        if (corner && (port == 0 || port == 2)) {
+            arms.add(direction(state, Direction.SOUTH));
+            arms.add(direction(state, Direction.WEST));
+        }
+        return new PortProfile(normals, arms);
     }
 
 

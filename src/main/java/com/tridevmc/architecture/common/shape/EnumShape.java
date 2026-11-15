@@ -14,6 +14,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPoint
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindowCorner;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindowFrame;
 import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
@@ -104,7 +105,7 @@ public enum EnumShape {
     CORNICE_BOTTOM("cornice_bottom", null, null),
 
     WINDOW_FRAME("window_frame", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowFrame<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT), ShapeTransformationResolverWindow.FRAME),
-    WINDOW_CORNER("window_corner", null, null),
+    WINDOW_CORNER("window_corner", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowCorner<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT), ShapeTransformationResolverWindow.CORNER),
     WINDOW_MULLION("window_mullion", null, null),
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
     WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
