@@ -2,10 +2,7 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -37,27 +34,12 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
      */
     List<BakedQuad> getQuads(ItemStack stack);
 
-    ItemTransforms getTransforms();
-
-    TextureAtlasSprite getParticleIcon();
-
-    boolean useAmbientOcclusion();
-
-    boolean usesBlockLight();
-
-    boolean isGui3d();
-
     @Override
     default void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state,
                               RandomSource random, List<BlockStateModelPart> parts) {
         var quads = this.getQuads(level, pos, state);
         var material = this.particleMaterial(level, pos, state);
-        parts.add(new BakedModelPart(this, quads, material));
-    }
-
-    @Override
-    default Material.Baked particleMaterial() {
-        return new Material.Baked(this.getParticleIcon(), false);
+        parts.add(new BakedModelPart(quads, material));
     }
 
     @Override

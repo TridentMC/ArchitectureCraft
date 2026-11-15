@@ -7,7 +7,6 @@ import com.tridevmc.architecture.common.shape.EnumShape;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
@@ -19,9 +18,8 @@ final class ArchitectureMeshModels {
     private ArchitectureMeshModels() {
     }
 
-    static IArchitectureBakedModel bake(Optional<EnumShape> shape, ModelBaker baker) {
-        var transforms = baker.getModel(BASE_MODEL).getTopTransforms();
-        return shape.<IArchitectureBakedModel>map(s -> new BakedModelShapeGeneric(s, transforms))
-                .orElseGet(() -> new BakedModelSawbench(transforms));
+    static IArchitectureBakedModel bake(Optional<EnumShape> shape) {
+        return shape.<IArchitectureBakedModel>map(BakedModelShapeGeneric::new)
+                .orElseGet(BakedModelSawbench::new);
     }
 }

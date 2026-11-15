@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.world.entity.ItemOwner;
@@ -19,10 +20,12 @@ import net.minecraft.world.item.ItemStack;
 
 final class BakedItemModel implements ItemModel {
     private final IArchitectureBakedModel model;
+    private final ItemTransforms transforms;
     private final Matrix4fc transformation;
 
-    BakedItemModel(IArchitectureBakedModel model, Matrix4fc transformation) {
+    BakedItemModel(IArchitectureBakedModel model, ItemTransforms transforms, Matrix4fc transformation) {
         this.model = model;
+        this.transforms = transforms;
         this.transformation = new Matrix4f(transformation);
     }
 
@@ -35,9 +38,9 @@ final class BakedItemModel implements ItemModel {
         output.appendModelIdentityElement(quads);
         var layer = output.newLayer();
         layer.setQuads(ItemQuads.split(quads));
-        layer.setUsesBlockLight(this.model.usesBlockLight());
+        layer.setUsesBlockLight(true);
         layer.setParticleMaterial(this.model.particleMaterial());
-        layer.setItemTransform(this.model.getTransforms().getTransform(displayContext));
+        layer.setItemTransform(this.transforms.getTransform(displayContext));
         layer.setExtents(() -> CuboidItemModelWrapper.computeExtents(quads));
         if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
             output.setAnimated();

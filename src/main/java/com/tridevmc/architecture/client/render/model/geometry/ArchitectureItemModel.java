@@ -27,6 +27,7 @@ public record ArchitectureItemModel(Optional<EnumShape> shape) implements ItemMo
 
     @Override
     public ItemModel bake(ItemModel.BakingContext context, Matrix4fc transformation) {
-        return new BakedItemModel(ArchitectureMeshModels.bake(this.shape, context.blockModelBaker()), transformation);
+        var transforms = context.blockModelBaker().getModel(ArchitectureMeshModels.BASE_MODEL).getTopTransforms();
+        return new BakedItemModel(ArchitectureMeshModels.bake(this.shape), transforms, transformation);
     }
 }

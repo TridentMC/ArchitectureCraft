@@ -28,6 +28,6 @@ public record ArchitectureBlockModel(Optional<EnumShape> shape) implements Custo
 
     @Override
     public BlockStateModel bake(ModelBaker baker) {
-        return ArchitectureMeshModels.bake(this.shape, baker);
+        return ArchitectureMeshModels.bake(this.shape);
     }
 }

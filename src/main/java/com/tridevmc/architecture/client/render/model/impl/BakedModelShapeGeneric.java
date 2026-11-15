@@ -4,26 +4,17 @@ import com.tridevmc.architecture.client.render.model.baked.IModelResolverBaked;
 import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
-import net.minecraft.client.resources.model.cuboid.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import org.jetbrains.annotations.NotNull;
 
 public class BakedModelShapeGeneric implements IModelResolverBaked<PolygonData> {
 
     private final ModelResolverShapeGeneric resolver;
     private final EnumShape shape;
-    private final ItemTransforms transforms;
 
-    public BakedModelShapeGeneric(EnumShape shape, ItemTransforms transforms) {
+    public BakedModelShapeGeneric(EnumShape shape) {
         this.shape = shape;
         this.resolver = new ModelResolverShapeGeneric(shape);
-        this.transforms = transforms;
-    }
-
-    @Override
-    @NotNull
-    public ItemTransforms getTransforms() {
-        return this.transforms;
     }
 
     @Override
@@ -32,24 +23,9 @@ public class BakedModelShapeGeneric implements IModelResolverBaked<PolygonData> 
     }
 
     @Override
-    public boolean useAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return true;
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return true;
-    }
-
-    @Override
     @NotNull
-    public TextureAtlasSprite getParticleIcon() {
-        return this.resolver.getDefaultSprite();
+    public Material.Baked particleMaterial() {
+        return new Material.Baked(this.resolver.getDefaultSprite(), false);
     }
 
 }

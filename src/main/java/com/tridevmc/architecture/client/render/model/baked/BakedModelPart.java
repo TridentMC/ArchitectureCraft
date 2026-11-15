@@ -10,13 +10,10 @@ import net.minecraft.core.Direction;
 import java.util.List;
 
 final class BakedModelPart implements BlockStateModelPart {
-    private final IArchitectureBakedModel model;
     private final IBakedQuadContainer quads;
     private final Material.Baked particleMaterial;
 
-    BakedModelPart(IArchitectureBakedModel model, IBakedQuadContainer quads,
-                   Material.Baked particleMaterial) {
-        this.model = model;
+    BakedModelPart(IBakedQuadContainer quads, Material.Baked particleMaterial) {
         this.quads = quads;
         this.particleMaterial = particleMaterial;
     }
@@ -28,7 +25,7 @@ final class BakedModelPart implements BlockStateModelPart {
 
     @Override
     public boolean useAmbientOcclusion() {
-        return this.model.useAmbientOcclusion();
+        return true;
     }
 
     @Override
