@@ -7,9 +7,12 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -27,6 +30,23 @@ final class BakedItemModel implements ItemModel {
     public void update(ItemStackRenderState output, ItemStack stack, ItemModelResolver resolver,
                        ItemDisplayContext displayContext, @Nullable ClientLevel level,
                        @Nullable ItemOwner owner, int seed) {
-        this.model.appendItemLayer(output, stack, displayContext).setLocalTransform(this.transformation);
+        var quads = this.model.getQuads(stack);
+        output.appendModelIdentityElement(this.model);
+        output.appendModelIdentityElement(quads);
+        var layer = output.newLayer();
+        layer.setQuads(ItemQuads.split(quads));
+        layer.setUsesBlockLight(this.model.usesBlockLight());
+        layer.setParticleMaterial(this.model.particleMaterial());
+        layer.setItemTransform(this.model.getTransforms().getTransform(displayContext));
+        layer.setExtents(() -> CuboidItemModelWrapper.computeExtents(quads));
+        if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
+            output.setAnimated();
+        }
+        if (stack.hasFoil()) {
+            layer.setFoilType(ItemStackRenderState.FoilType.STANDARD);
+            output.appendModelIdentityElement(ItemStackRenderState.FoilType.STANDARD);
+            output.setAnimated();
+        }
+        layer.setLocalTransform(this.transformation);
     }
 }

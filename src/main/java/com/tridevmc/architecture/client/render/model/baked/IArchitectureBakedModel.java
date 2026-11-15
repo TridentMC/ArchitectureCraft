@@ -2,16 +2,12 @@ package com.tridevmc.architecture.client.render.model.baked;
 
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
-import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -67,27 +63,5 @@ public interface IArchitectureBakedModel extends DynamicBlockStateModel {
     @Override
     default int materialFlags() {
         return BakedQuad.FLAG_TRANSLUCENT | BakedQuad.FLAG_ANIMATED;
-    }
-
-    default ItemStackRenderState.LayerRenderState appendItemLayer(ItemStackRenderState output, ItemStack stack,
-                                                                  ItemDisplayContext displayContext) {
-        var quads = this.getQuads(stack);
-        output.appendModelIdentityElement(this);
-        output.appendModelIdentityElement(quads);
-        var layer = output.newLayer();
-        layer.setQuads(ItemQuads.split(quads));
-        layer.setUsesBlockLight(this.usesBlockLight());
-        layer.setParticleMaterial(this.particleMaterial());
-        layer.setItemTransform(this.getTransforms().getTransform(displayContext));
-        layer.setExtents(() -> CuboidItemModelWrapper.computeExtents(quads));
-        if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
-            output.setAnimated();
-        }
-        if (stack.hasFoil()) {
-            layer.setFoilType(ItemStackRenderState.FoilType.STANDARD);
-            output.appendModelIdentityElement(ItemStackRenderState.FoilType.STANDARD);
-            output.setAnimated();
-        }
-        return layer;
     }
 }
