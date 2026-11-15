@@ -43,7 +43,6 @@ public class LegacyArchitectureTri<T> extends LegacyBakedQuadProvider<T> {
         var builder = new QuadBakingVertexConsumer();
                 builder.setSprite(new Material.Baked(sprite, false));
                 builder.setTintIndex(colour);
-                builder.setAmbientOcclusion(false);
                 builder.setDirection(facing);
         int[] vertexIndices = new int[]{0, 0, 1, 2};
         for (int i = 0; i < 4; i++) {

@@ -30,7 +30,6 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
         var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            baker.setAmbientOcclusion(false);
             q.pipe(baker, transform, metadataResolver);
             builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
@@ -43,7 +42,6 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
         var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            baker.setAmbientOcclusion(false);
             q.pipe(baker, transform, level, pos, state, metadataResolver);
             builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
@@ -56,7 +54,6 @@ public class BakedQuadContainerProvider<D> implements IBakedQuadContainerProvide
         var baker = new QuadBakingVertexConsumer();
         for (int i = 0; i < this.quads.size(); i++) {
             var q = this.quads.get(i);
-            baker.setAmbientOcclusion(false);
             q.pipe(baker, transform, stack, metadataResolver);
             builder.addQuad(baker.bakeQuad(), false); // TODO: We need our own BakedQuad implementation that references a cull face...
         }
