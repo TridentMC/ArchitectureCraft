@@ -23,7 +23,7 @@ public final class ShapeConnections {
 
     public static BlockState update(BlockState state, BlockGetter level, BlockPos pos) {
         var shape = ((BlockShape<?>) state.getBlock()).getShape();
-        if (shape == EnumShape.ROOF_SMART_RIDGE) {
+        if (shape == EnumShape.ROOF_SMART_RIDGE || shape == EnumShape.ROOF_SMART_VALLEY) {
             for (int i = 0; i < ROOF_DIRECTIONS.length; i++) {
                 var direction = direction(state, ROOF_DIRECTIONS[i]);
                 var other = level.getBlockState(pos.relative(direction));
@@ -40,11 +40,12 @@ public final class ShapeConnections {
                 || direction(state, Direction.UP) != direction(other, Direction.UP)) {
             return false;
         }
+        var ridge = ((BlockShape<?>) state.getBlock()).getShape() == EnumShape.ROOF_SMART_RIDGE;
         var shape = block.getShape();
-        if (shape == EnumShape.ROOF_SMART_RIDGE) {
+        if (shape == (ridge ? EnumShape.ROOF_SMART_RIDGE : EnumShape.ROOF_SMART_VALLEY)) {
             return true;
         }
-        return shape == EnumShape.ROOF_RIDGE
+        return shape == (ridge ? EnumShape.ROOF_RIDGE : EnumShape.ROOF_VALLEY)
                 && (direction(other, Direction.WEST) == side.getOpposite()
                 || direction(other, Direction.EAST) == side.getOpposite());
     }

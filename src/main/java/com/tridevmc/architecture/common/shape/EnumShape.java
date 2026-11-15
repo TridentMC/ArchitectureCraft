@@ -70,7 +70,7 @@ public enum EnumShape {
     ROOF_RIDGE("roof_ridge", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_SMART_RIDGE("roof_smart_ridge", new ShapePlacementLogicExtended<>(ShapePlacementLogicStairLike.INSTANCE, ShapeOrientationPropertyRelativeConnection.FRONT, ShapeOrientationPropertyRelativeConnection.BACK, ShapeOrientationPropertyRelativeConnection.LEFT, ShapeOrientationPropertyRelativeConnection.RIGHT), ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_VALLEY("roof_valley", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ROOF_SMART_VALLEY("roof_smart_valley", null, null),
+    ROOF_SMART_VALLEY("roof_smart_valley", new ShapePlacementLogicExtended<>(ShapePlacementLogicStairLike.INSTANCE, ShapeOrientationPropertyRelativeConnection.FRONT, ShapeOrientationPropertyRelativeConnection.BACK, ShapeOrientationPropertyRelativeConnection.LEFT, ShapeOrientationPropertyRelativeConnection.RIGHT), ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     ROOF_OVERHANG("roof_overhang", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_OVERHANG_OUTER_CORNER("roof_overhang_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
