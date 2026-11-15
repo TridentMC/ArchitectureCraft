@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.item.CuboidItemModelWrapper;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.ItemQuads;
@@ -38,9 +39,8 @@ final class BakedItemModel implements ItemModel {
         output.appendModelIdentityElement(quads);
         var layer = output.newLayer();
         layer.setQuads(ItemQuads.split(quads));
-        layer.setUsesBlockLight(true);
-        layer.setParticleMaterial(this.model.particleMaterial());
-        layer.setItemTransform(this.transforms.getTransform(displayContext));
+        new ModelRenderProperties(true, this.model.particleMaterial(), this.transforms)
+                .applyToLayer(layer, displayContext);
         layer.setExtents(() -> CuboidItemModelWrapper.computeExtents(quads));
         if (quads.stream().anyMatch(q -> (q.materialInfo().flags() & BakedQuad.FLAG_ANIMATED) != 0)) {
             output.setAnimated();

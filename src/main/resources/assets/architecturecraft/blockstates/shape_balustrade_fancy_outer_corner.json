@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "": {
-            "type": "architecturecraft:mesh",
-            "shape": "balustrade_fancy_outer_corner"
-        }
-    }
-}

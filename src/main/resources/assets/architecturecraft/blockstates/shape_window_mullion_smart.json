@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "": {
-            "type": "architecturecraft:mesh",
-            "shape": "window_mullion_smart"
-        }
-    }
-}
