@@ -108,7 +108,7 @@ public enum EnumShape {
     ARCH_D2("arch_d2", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCH_D3A("arch_d3a", null, null),
     ARCH_D3B("arch_d3b", null, null),
-    ARCH_D3C("arch_d3c", null, null),
+    ARCH_D3C("arch_d3c", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCH_D4A("arch_d4a", null, null),
     ARCH_D4B("arch_d4b", null, null),
     ARCH_D4C("arch_d4c", null, null),
