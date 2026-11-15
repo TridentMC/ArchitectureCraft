@@ -2,7 +2,9 @@ package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicExtended;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
@@ -66,7 +68,7 @@ public enum EnumShape {
     ROOF_OUTER_CORNER("roof_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_INNER_CORNER("roof_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_RIDGE("roof_ridge", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ROOF_SMART_RIDGE("roof_smart_ridge", null, null),
+    ROOF_SMART_RIDGE("roof_smart_ridge", new ShapePlacementLogicExtended<>(ShapePlacementLogicStairLike.INSTANCE, ShapeOrientationPropertyRelativeConnection.FRONT, ShapeOrientationPropertyRelativeConnection.BACK, ShapeOrientationPropertyRelativeConnection.LEFT, ShapeOrientationPropertyRelativeConnection.RIGHT), ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_VALLEY("roof_valley", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ROOF_SMART_VALLEY("roof_smart_valley", null, null),
 

@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.common.item;
 
 import com.tridevmc.architecture.common.block.BlockShape;
+import com.tridevmc.architecture.common.shape.ShapeConnections;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -48,7 +49,7 @@ public class ItemHammer extends Item {
         if (state.getBlock() instanceof BlockShape<?> block) {
             if (!world.isClientSide()) {
                 var rotated = block.rotatePlacement(state, player != null && player.isCrouching());
-                world.setBlock(pos, rotated, 3);
+                world.setBlock(pos, ShapeConnections.update(rotated, world, pos), 3);
             }
             return InteractionResult.SUCCESS;
         }

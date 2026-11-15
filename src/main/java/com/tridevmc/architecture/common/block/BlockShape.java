@@ -6,6 +6,7 @@ import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.ShapeConnections;
 import com.tridevmc.architecture.common.shape.ShapeMeshes;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
@@ -25,9 +26,11 @@ import com.tridevmc.compound.core.reflect.WrappedField;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +38,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -212,7 +217,15 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
             safeShapeOrientation = ShapeOrientation.forState(asShapeState(this.defaultBlockState()));
         }
         // Defer to the placement logic to get the correct state for the shape.
-        return safeShapeOrientation.applyToState(this.defaultBlockState());
+        return ShapeConnections.update(safeShapeOrientation.applyToState(this.defaultBlockState()),
+                context.getLevel(), context.getClickedPos());
+    }
+
+
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+            BlockPos pos, Direction side, BlockPos neighborPos, BlockState neighbor, RandomSource random) {
+        return ShapeConnections.update(state, level, pos);
     }
 
 

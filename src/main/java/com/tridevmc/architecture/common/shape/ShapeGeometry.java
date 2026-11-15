@@ -45,6 +45,12 @@ final class ShapeGeometry {
             case ROOF_OUTER_CORNER -> Math.min(1 - x, z);
             case ROOF_INNER_CORNER -> Math.max(1 - x, z);
             case ROOF_RIDGE -> 0.5 - Math.abs(z - 0.5);
+            case ROOF_SMART_RIDGE -> {
+                var result = 0.5 - Math.max(Math.abs(x - 0.5), Math.abs(z - 0.5));
+                var side = z == 0 && x == 0.5 ? 0 : z == 1 && x == 0.5 ? 1
+                        : x == 0 && z == 0.5 ? 2 : x == 1 && z == 0.5 ? 3 : -1;
+                yield side >= 0 && (connections & (1 << side)) != 0 ? 0.5 : result;
+            }
             default -> throw new IllegalArgumentException("Not a procedural roof: " + shape);
         };
     }

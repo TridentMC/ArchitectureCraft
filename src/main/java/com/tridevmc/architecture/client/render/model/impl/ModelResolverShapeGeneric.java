@@ -8,7 +8,9 @@ import com.tridevmc.architecture.client.render.model.resolver.IModelResolver;
 import com.tridevmc.architecture.client.render.model.resolver.IQuadMetadataResolver;
 import com.tridevmc.architecture.client.render.model.resolver.functional.FunctionalQuadMetadataResolver;
 import com.tridevmc.architecture.common.ArchitectureMod;
+import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
+import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
 import com.tridevmc.architecture.common.item.ItemCladding;
 import com.tridevmc.architecture.common.item.ItemShape;
@@ -63,10 +65,13 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
 
     private final BakedQuadContainerProviderMesh<String, PolygonData> mesh;
     private final EnumShape shape;
+    private final Map<String, BakedQuadContainerProviderMesh<String, PolygonData>> meshes = Maps.newConcurrentMap();
 
     public ModelResolverShapeGeneric(EnumShape shape) {
         this.shape = shape;
-        this.mesh = new BakedQuadContainerProviderMeshCached<>(Objects.requireNonNull(ShapeMeshes.getMesh(shape), "Shape mesh was null: " + shape));
+        var mesh = Objects.requireNonNull(ShapeMeshes.getMesh(shape), "Shape mesh was null: " + shape);
+        this.mesh = new BakedQuadContainerProviderMeshCached<>(mesh);
+        this.meshes.put(mesh.getName(), this.mesh);
     }
 
     public static void clearCache() {
@@ -93,6 +98,12 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     @Override
     public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
+        var mesh = this.mesh;
+        if (state instanceof BlockStateShape shapeState) {
+            var selected = ((BlockShape<?>) state.getBlock()).getMeshForState(shapeState);
+            mesh = this.meshes.computeIfAbsent(selected.getName(),
+                    key -> new BakedQuadContainerProviderMeshCached<>(selected));
+        }
         return mesh.getQuads(null, level, pos, state, resolver, transform, false);
     }
 
