@@ -7,6 +7,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapeConnectionPropertie
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.Mesh;
+import com.tridevmc.architecture.core.model.mesh.Part;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.objson.OBJSON;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
@@ -62,7 +63,7 @@ public final class ShapeMeshes {
 
     public static boolean isWindow(EnumShape shape) {
         return switch (shape) {
-            case WINDOW_FRAME, WINDOW_CORNER -> true;
+            case WINDOW_FRAME, WINDOW_CORNER, WINDOW_MULLION -> true;
             default -> false;
         };
     }
@@ -143,6 +144,11 @@ public final class ShapeMeshes {
             addIfPresent(builder, source, "post");
             addIfPresent(builder, source, (connections & 1) != 0 ? "post.connected.down" : "post.down");
             addIfPresent(builder, source, (connections & 4) != 0 ? "post.connected.up" : "post.up");
+        }
+        if (shape == EnumShape.WINDOW_MULLION) {
+            var mullion = new Part.Builder<String, PolygonData>().setId("mullion");
+            ShapeGeometry.box(mullion, 7 / 16D, 0, 13 / 32D, 9 / 16D, 1, 19 / 32D, 0);
+            builder.addPart(mullion.build());
         }
         return builder.build();
     }

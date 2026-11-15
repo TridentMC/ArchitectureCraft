@@ -1,8 +1,10 @@
 package com.tridevmc.architecture.common.shape.transformation;
 
+import com.tridevmc.architecture.common.shape.orientation.EnumTurn;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyAxis;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyHorizontalFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyTurn;
 import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.IMatrix4Mutable;
 import com.tridevmc.architecture.core.math.ITrans3;
@@ -46,7 +48,10 @@ public final class ShapeTransformationResolverWindow implements IShapeTransforma
             } else if (axis == Direction.Axis.Y) {
                 matrix.mul(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 90, 0, 0));
             }
-
+            var turn = orientation.getValue(ShapeOrientationPropertyTurn.INSTANCE);
+            if (turn != null && turn.value() == EnumTurn.TURNED) {
+                matrix.mul(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 0, 0, 90));
+            }
         }
         return ITrans3.ofImmutable(matrix);
     }

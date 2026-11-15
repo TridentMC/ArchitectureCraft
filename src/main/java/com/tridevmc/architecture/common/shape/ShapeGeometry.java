@@ -58,6 +58,18 @@ final class ShapeGeometry {
         };
     }
 
+    static void box(Part.Builder<String, PolygonData> part, double x0, double y0, double z0,
+            double x1, double y1, double z1, int texture) {
+        var p = new IVector3[]{IVector3.ofImmutable(x0, y0, z0), IVector3.ofImmutable(x1, y0, z0),
+                IVector3.ofImmutable(x1, y1, z0), IVector3.ofImmutable(x0, y1, z0),
+                IVector3.ofImmutable(x0, y0, z1), IVector3.ofImmutable(x1, y0, z1),
+                IVector3.ofImmutable(x1, y1, z1), IVector3.ofImmutable(x0, y1, z1)};
+        int[][] faces = {{0, 3, 2, 1}, {4, 5, 6, 7}, {0, 4, 7, 3}, {1, 2, 6, 5}, {0, 1, 5, 4}, {3, 7, 6, 2}};
+        for (var face : faces) {
+            triangle(part, texture, p[face[0]], p[face[1]], p[face[2]]);
+            triangle(part, texture, p[face[0]], p[face[2]], p[face[3]]);
+        }
+    }
 
     private static void triangle(Part.Builder<String, PolygonData> part, int texture, IVector3 a, IVector3 b, IVector3 c) {
         var normal = b.asMutable().sub(a).cross(c.asMutable().sub(a));

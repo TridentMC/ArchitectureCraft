@@ -3,6 +3,7 @@ package com.tridevmc.architecture.common.shape;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyTurn;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.common.shape.placement.ShapeConnectionProperties;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicExtended;
@@ -106,7 +107,7 @@ public enum EnumShape {
 
     WINDOW_FRAME("window_frame", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowFrame<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT), ShapeTransformationResolverWindow.FRAME),
     WINDOW_CORNER("window_corner", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowCorner<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT), ShapeTransformationResolverWindow.CORNER),
-    WINDOW_MULLION("window_mullion", null, null),
+    WINDOW_MULLION("window_mullion", new ShapePlacementLogicExtended<>(new ShapePlacementLogicWindowFrame<>(), ShapeConnectionProperties.DOWN_LEFT, ShapeConnectionProperties.DOWN_RIGHT, ShapeConnectionProperties.UP_LEFT, ShapeConnectionProperties.UP_RIGHT, ShapeOrientationPropertyTurn.INSTANCE), ShapeTransformationResolverWindow.FRAME),
     WINDOW_SMART("window_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
     WINDOW_MULLION_SMART("window_mullion_smart", new ShapePlacementLogicWindow<>(), (s) -> ITrans3.ofIdentity()),
 
