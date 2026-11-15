@@ -34,17 +34,18 @@ public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockA
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
             @NotNull BlockHitResult hitResult) {
-        var playerFacing = Direction.orderedByNearest(placer)[0];
-        playerFacing = placer.isCrouching() ? playerFacing.getOpposite() : playerFacing;
+        var nearestDirection = Direction.orderedByNearest(placer)[0];
+        var playerFacing = placer.isCrouching() ? nearestDirection.getOpposite() : nearestDirection;
 
         var horizontalDirection = placer.getDirection();
 
         var hitSide = hitResult.getDirection();
         var hitSection = EnumBlockFaceSection.fromHitResult(horizontalDirection, hitResult);
-        var facing = playerFacing.getAxis().isVertical()
-                ? playerFacing.getOpposite() : horizontalDirection.getOpposite();
-        var spin = facing.getAxis().isVertical()
-                ? EnumSpin.byIndex(horizontalDirection.get2DDataValue())
+        // Secondary use on a side face opts into the vertical poses without changing normal mounting.
+        var vertical = placer.isSecondaryUseActive() && hitSide.getAxis().isHorizontal()
+                && nearestDirection.getAxis().isVertical();
+        var facing = vertical ? nearestDirection.getOpposite() : horizontalDirection.getOpposite();
+        var spin = vertical ? EnumSpin.byIndex(horizontalDirection.get2DDataValue())
                 : this.getSpin(hitSide, playerFacing, hitSection);
 
         return ShapeOrientation.forProperties(
