@@ -105,6 +105,9 @@ public class ArchitectureUIHooks {
             public @NotNull Component getDisplayName() {
                 return provider.getDisplayName();
             }
+        }, data -> {
+            data.writeByte(UIType.TILE.getId());
+            data.writeBlockPos(blockEntity.getBlockPos());
         });
     }
 
@@ -120,6 +123,9 @@ public class ArchitectureUIHooks {
             public @NotNull Component getDisplayName() {
                 return provider.getDisplayName();
             }
+        }, data -> {
+            data.writeByte(UIType.TILE.getId());
+            data.writeBlockPos(pos);
         });
     }
 
@@ -135,6 +141,9 @@ public class ArchitectureUIHooks {
             public @NotNull Component getDisplayName() {
                 return provider.getDisplayName();
             }
+        }, data -> {
+            data.writeByte(UIType.ENTITY.getId());
+            data.writeVarInt(entity.getId());
         });
     }
 
