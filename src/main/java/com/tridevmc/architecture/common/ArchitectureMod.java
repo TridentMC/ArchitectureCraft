@@ -51,6 +51,8 @@ public class ArchitectureMod {
         var modEventBus = loadingContext.getActiveContainer().getEventBus();
         modEventBus.addListener(this::onSetup);
         modEventBus.register(CONTENT);
+        // remove this check once we have an event handler in the commonproxy,
+        // latest event bus screams at us for registering an empty object.
         if (FMLEnvironment.getDist().isClient()) {
             modEventBus.register(PROXY);
         }
