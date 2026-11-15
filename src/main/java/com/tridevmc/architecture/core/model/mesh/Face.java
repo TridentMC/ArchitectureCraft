@@ -171,6 +171,7 @@ public final class Face<D extends IPolygonData<D>> implements IFace<D> {
                 }
                 indices[i] = vertexIndex;
             }
+            this.normal.add(MeshHelper.calculateNormal(vertices[0], vertices[1], vertices[2]));
             this.polygons.add(f -> provider.createPolygon(f, data, indices));
             return this;
         }

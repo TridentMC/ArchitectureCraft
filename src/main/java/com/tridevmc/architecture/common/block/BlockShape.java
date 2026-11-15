@@ -1,13 +1,15 @@
 package com.tridevmc.architecture.common.block;
 
-import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.common.ArchitectureContent;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
+import com.tridevmc.architecture.common.shape.ShapeMeshes;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyRelativeConnection;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
@@ -17,11 +19,16 @@ import com.tridevmc.architecture.core.model.mesh.IPart;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
 import com.tridevmc.architecture.core.physics.AABB;
+
+import com.google.common.collect.ImmutableList;
 import com.tridevmc.compound.core.reflect.WrappedField;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -37,9 +44,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ItemAbility;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -80,7 +88,7 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
     }
 
     public BlockShape(EnumShape shape, Properties properties, Function<BlockStateShape, ShapeOrientation> orientationFunc) {
-        super(properties);
+        super(properties.dynamicShape().noOcclusion());
         this.shape = shape;
         // We use a custom BlockState implementation, so we have to use reflection to force the state definition to use it.
         var builder = new StateDefinition.Builder<Block, BlockState>(this);
@@ -149,7 +157,7 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
      * @return the mesh for the given state.
      */
     public IMesh<String, PolygonData> getMeshForState(BlockStateShape state) {
-        return this.shape.getMesh();
+        return ShapeMeshes.getMesh(this.shape, state.getOrientation());
     }
 
     @Override
@@ -171,10 +179,11 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
             return CompletableFuture.completedFuture(DEFAULT_BOX);
         }
         var transformationResolver = Optional.ofNullable(this.getShape().getTransformationResolver()).orElse(s -> ITrans3.ofIdentity());
-        var voxelizer = shape.getVoxelizer();
+        var mesh = this.getMeshForState(shapeState);
+        var voxelizer = mesh == null ? null : ShapeMeshes.getVoxelizer(mesh);
         var transform = transformationResolver.resolve(shapeState);
         var voxelsCompletableFuture = Optional.ofNullable(voxelizer).map(IVoxelizer::voxelize).orElse(CompletableFuture.completedFuture(DEFAULT_BOX));
-        return voxelsCompletableFuture.thenApplyAsync(aabbs -> aabbs.stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList()));
+        return voxelsCompletableFuture.thenApply(aabbs -> aabbs.stream().map(transform::transformAABB).collect(ImmutableList.toImmutableList()));
     }
 
     @Nullable
@@ -206,9 +215,37 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
         return safeShapeOrientation.applyToState(this.defaultBlockState());
     }
 
+
+    public BlockState rotatePlacement(BlockState state, boolean reverse) {
+        var placementLogic = this.getPlacementLogic();
+        if (placementLogic == null) {
+            return state;
+        }
+        var properties = placementLogic.getProperties().stream()
+                .filter(property -> !(property instanceof ShapeOrientationPropertyRelativeConnection)).toList();
+        for (var property : properties) {
+            var result = cycle(state, property, reverse);
+            state = result.state();
+            if (!result.wrapped()) {
+                break;
+            }
+        }
+        return state;
+    }
+
+    private record CycleResult(BlockState state, boolean wrapped) {
+    }
+
+    private static <V extends Enum<V> & StringRepresentable> CycleResult cycle(
+            BlockState state, ShapeOrientationProperty<V> property, boolean reverse) {
+        var values = new ArrayList<>(property.getPossibleValues());
+        var index = values.indexOf(state.getValue(property));
+        var next = Math.floorMod(index + (reverse ? -1 : 1), values.size());
+        return new CycleResult(state.setValue(property, values.get(next)), reverse ? next == values.size() - 1 : next == 0);
+    }
+
     @Override
-    public boolean hasDynamicShape() {
-        // By returning true here we tell the game to generate a Cache object on our state.
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
@@ -221,7 +258,11 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit, getShape().getVoxelizer());
+        if (!level.isClientSide() || FMLEnvironment.isProduction()) {
+            return InteractionResult.PASS;
+        }
+        return ArchitectureDebugEventListeners.onVoxelizedBlockClicked(level, pos, player, hit,
+                ShapeMeshes.getVoxelizer(this.getMeshForState((BlockStateShape) state)));
     }
 
     @Override

@@ -2,12 +2,29 @@ package com.tridevmc.architecture.common.shape;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.placement.*;
-import com.tridevmc.architecture.common.shape.transformation.*;
+import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnAxis;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPointedByPlacedFace;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicWindow;
+import com.tridevmc.architecture.common.shape.transformation.IShapeTransformationResolver;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlip;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithFlipAndTurn;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverFacingWithTurn;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverOnAxis;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
 import com.tridevmc.architecture.core.model.voxelize.IVoxelizer;
+
 import net.minecraft.resources.Identifier;
 
 import java.util.Arrays;

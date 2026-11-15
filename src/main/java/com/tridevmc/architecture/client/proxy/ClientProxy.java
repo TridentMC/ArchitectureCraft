@@ -28,6 +28,8 @@ import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureBlockModel;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureItemModel;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
+import com.tridevmc.architecture.client.render.model.impl.ModelResolverSawbench;
+import com.tridevmc.architecture.client.render.model.impl.ModelResolverShapeGeneric;
 import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.proxy.CommonProxy;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
@@ -36,6 +38,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -60,6 +63,12 @@ public class ClientProxy extends CommonProxy {
     public void onItemModels(RegisterItemModelsEvent event) {
         event.register(Identifier.fromNamespaceAndPath(ArchitectureMod.MOD_ID, "mesh"),
                 ArchitectureItemModel.CODEC);
+    }
+
+    @SubscribeEvent
+    public void onModelsBaked(ModelEvent.BakingCompleted event) {
+        ModelResolverShapeGeneric.clearCache();
+        ModelResolverSawbench.clearCache();
     }
 
     @SubscribeEvent
