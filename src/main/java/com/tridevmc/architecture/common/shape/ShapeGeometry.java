@@ -43,6 +43,7 @@ final class ShapeGeometry {
         return switch (shape) {
             case ROOF_TILE -> z;
             case ROOF_OUTER_CORNER -> Math.min(1 - x, z);
+            case ROOF_INNER_CORNER -> Math.max(1 - x, z);
             default -> throw new IllegalArgumentException("Not a procedural roof: " + shape);
         };
     }
