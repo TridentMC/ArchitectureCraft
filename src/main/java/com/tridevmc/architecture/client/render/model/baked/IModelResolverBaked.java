@@ -8,7 +8,7 @@ import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -35,9 +35,8 @@ public interface IModelResolverBaked<D> extends IArchitectureBakedModel {
     }
 
     @Override
-    default IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state) {
-        var transform = state instanceof BlockStateArchitecture architecture
-                ? architecture.getTransform() : ITrans3.ofIdentity();
+    default IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, @Nullable BlockStateArchitecture state) {
+        var transform = state == null ? ITrans3.ofIdentity() : state.getTransform();
         return this.getModelResolver().getQuads(level, pos, state, transform);
     }
 
