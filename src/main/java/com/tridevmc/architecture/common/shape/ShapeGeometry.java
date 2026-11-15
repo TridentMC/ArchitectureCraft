@@ -42,6 +42,7 @@ final class ShapeGeometry {
     private static double height(EnumShape shape, double x, double z, int connections) {
         return switch (shape) {
             case ROOF_TILE -> z;
+            case ROOF_OUTER_CORNER -> Math.min(1 - x, z);
             default -> throw new IllegalArgumentException("Not a procedural roof: " + shape);
         };
     }
