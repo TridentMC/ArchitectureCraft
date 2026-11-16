@@ -32,7 +32,7 @@ public class ShapePlacementLogicSlab implements IShapePlacementLogic<BlockArchit
             @NotNull Player placer,
             @NotNull BlockHitResult hitResult) {
         // If the player isn't crouching then we're just doing normal slab placement
-        if (!placer.isCrouching()) {
+        if (!placer.isSecondaryUseActive()) {
             var faceClicked = hitResult.getDirection();
             return switch (faceClicked) {
                 case DOWN, UP ->
