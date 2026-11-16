@@ -6,7 +6,9 @@ import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
+import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
+import com.tridevmc.architecture.core.math.ITrans3;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -17,18 +19,22 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<BlockArchitecture> {
 
-    public static final ShapePlacementLogicOnFace ALONG_LOOK = new ShapePlacementLogicOnFace();
+    public static final ShapePlacementLogicOnFace CORNER = new ShapePlacementLogicOnFace(Mode.CORNER);
+    public static final ShapePlacementLogicOnFace ALONG_LOOK = new ShapePlacementLogicOnFace(Mode.ALONG_LOOK);
 
+    private final Mode mode;
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
             ShapeOrientationPropertyFacing.INSTANCE, ShapeOrientationPropertySpin.INSTANCE
     );
 
     private static final double EPSILON = 1E-6;
 
-    private ShapePlacementLogicOnFace() {
+    private ShapePlacementLogicOnFace(Mode mode) {
+        this.mode = mode;
     }
 
     @Override
@@ -36,7 +42,33 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
             @NotNull BlockArchitecture block, @NotNull Level level, @NotNull BlockPos pos,
             @NotNull Player player, @NotNull BlockHitResult hit) {
         var normal = hit.getDirection();
-        return along(normal, tangent(normal, player));
+        return switch (this.mode) {
+            case CORNER -> corner(normal, faceHit(normal, pos, hit));
+            case ALONG_LOOK -> along(normal, tangent(normal, player));
+        };
+    }
+
+    private static FaceHit faceHit(Direction normal, BlockPos pos, BlockHitResult hit) {
+        var basis = ShapeTransformationResolverPointed.INSTANCE.resolve(
+                ShapeOrientation.forProperties(ShapeOrientationPropertyFacing.of(normal)));
+        var matrix = basis.matrix();
+        var relative = hit.getLocation().subtract(Vec3.atCenterOf(pos));
+        // The basis is rigid; its transposed rotation projects the hit onto local X/Z.
+        double x = matrix.m00() * relative.x + matrix.m10() * relative.y
+                + matrix.m20() * relative.z;
+        double z = matrix.m02() * relative.x + matrix.m12() * relative.y
+                + matrix.m22() * relative.z;
+        return new FaceHit(basis, x, z);
+    }
+
+    private static ShapeOrientation corner(Direction normal, FaceHit hit) {
+        Direction forward;
+        if (hit.x() > EPSILON) {
+            forward = hit.z() < -EPSILON ? Direction.NORTH : Direction.EAST;
+        } else {
+            forward = hit.z() < -EPSILON ? Direction.WEST : Direction.SOUTH;
+        }
+        return along(normal, hit.basis().transformDirection(forward));
     }
 
     static ShapeOrientation along(Direction up, Direction forward) {
@@ -95,5 +127,10 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
         return this.properties;
     }
 
+    private enum Mode {
+        CORNER, ALONG_LOOK
+    }
 
+    private record FaceHit(ITrans3 basis, double x, double z) {
+    }
 }
