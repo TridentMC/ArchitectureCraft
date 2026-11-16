@@ -134,7 +134,7 @@ public enum EnumShape {
     BALUSTRADE_PLAIN_END("balustrade_plain_end", null, null),
 
     BALUSTRADE_FANCY("balustrade_fancy", null, null),
-    BALUSTRADE_FANCY_OUTER_CORNER("balustrade_fancy_outer_corner", null, null),
+    BALUSTRADE_FANCY_OUTER_CORNER("balustrade_fancy_outer_corner", ShapePlacementLogicOnFace.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     BALUSTRADE_FANCY_WITH_NEWEL("balustrade_fancy_with_newel", null, null),
     BALUSTRADE_FANCY_NEWEL("balustrade_fancy_newel", null, null),
 
