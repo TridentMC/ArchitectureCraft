@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 
 public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<BlockArchitecture> {
 
+    public static final ShapePlacementLogicOnFace EDGE = new ShapePlacementLogicOnFace(Mode.EDGE);
     public static final ShapePlacementLogicOnFace CORNER = new ShapePlacementLogicOnFace(Mode.CORNER);
     public static final ShapePlacementLogicOnFace ALONG_LOOK = new ShapePlacementLogicOnFace(Mode.ALONG_LOOK);
 
@@ -43,6 +44,7 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
             @NotNull Player player, @NotNull BlockHitResult hit) {
         var normal = hit.getDirection();
         return switch (this.mode) {
+            case EDGE -> edge(normal, faceHit(normal, pos, hit));
             case CORNER -> corner(normal, faceHit(normal, pos, hit));
             case ALONG_LOOK -> along(normal, tangent(normal, player));
         };
@@ -59,6 +61,16 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
         double z = matrix.m02() * relative.x + matrix.m12() * relative.y
                 + matrix.m22() * relative.z;
         return new FaceHit(basis, x, z);
+    }
+
+    private static ShapeOrientation edge(Direction normal, FaceHit hit) {
+        Direction forward;
+        if (Math.abs(hit.x()) > Math.abs(hit.z()) + EPSILON) {
+            forward = hit.x() > 0 ? Direction.EAST : Direction.WEST;
+        } else {
+            forward = hit.z() < -EPSILON ? Direction.NORTH : Direction.SOUTH;
+        }
+        return along(normal, hit.basis().transformDirection(forward));
     }
 
     private static ShapeOrientation corner(Direction normal, FaceHit hit) {
@@ -128,7 +140,7 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
     }
 
     private enum Mode {
-        CORNER, ALONG_LOOK
+        EDGE, CORNER, ALONG_LOOK
     }
 
     private record FaceHit(ITrans3 basis, double x, double z) {
