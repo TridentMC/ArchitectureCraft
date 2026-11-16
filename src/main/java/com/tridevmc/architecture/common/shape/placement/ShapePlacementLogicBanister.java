@@ -23,7 +23,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.properties.Half;
+import net.minecraft.world.level.block.state.properties.StairsShape;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Arrays;
 
@@ -61,12 +63,23 @@ public final class ShapePlacementLogicBanister implements IShapePlacementLogic<B
     }
 
     private ShapeOrientation alignToSupport(Level level, BlockPos pos, BlockHitResult hit, ShapeOrientation fallback) {
-        var support = level.getBlockState(pos.relative(hit.getDirection().getOpposite()));
         var face = hit.getDirection();
+        var supportPos = pos.relative(face.getOpposite());
+        var support = level.getBlockState(supportPos);
         if (support.getBlock() instanceof StairBlock) {
             var upsideDown = support.getValue(StairBlock.HALF) == Half.TOP;
             if (face == (upsideDown ? Direction.DOWN : Direction.UP)) {
                 var direction = support.getValue(StairBlock.FACING);
+                var stairShape = support.getValue(StairBlock.SHAPE);
+                if (stairShape != StairsShape.STRAIGHT) {
+                    var side = stairShape == StairsShape.INNER_LEFT
+                            || stairShape == StairsShape.OUTER_LEFT
+                            ? direction.getCounterClockWise() : direction.getClockWise();
+                    var inner = stairShape == StairsShape.INNER_LEFT
+                            || stairShape == StairsShape.INNER_RIGHT;
+                    return this.alignToCorner(face, direction, side, inner,
+                            hit.getLocation().subtract(Vec3.atCenterOf(supportPos)));
+                }
                 // Local +Y stays upright and local +Z follows the stair's ascending run.
                 return ShapeOrientation.forProperties(
                         ShapeOrientationPropertyFacing.of(upsideDown
@@ -80,13 +93,43 @@ public final class ShapePlacementLogicBanister implements IShapePlacementLogic<B
                     && up.getAxis() == face.getAxis()) {
                 return shape.getOrientation();
             }
-            if (up == face && shape.getBlock() instanceof BlockShape<?> block
-                    && block.getShape() == EnumShape.STAIRS) {
+            if (up == face && shape.getBlock() instanceof BlockShape<?> block) {
                 // Stairs rise along local X; the banister's run is local Z.
-                return ShapePlacementLogicOnFace.along(up, transform.transformDirection(Direction.EAST));
+                var forward = transform.transformDirection(Direction.EAST);
+                switch (block.getShape()) {
+                    case STAIRS -> {
+                        return ShapePlacementLogicOnFace.along(up, forward);
+                    }
+                    case STAIRS_INNER_CORNER, STAIRS_OUTER_CORNER -> {
+                        return this.alignToCorner(up, forward,
+                                transform.transformDirection(Direction.SOUTH),
+                                block.getShape() == EnumShape.STAIRS_INNER_CORNER,
+                                hit.getLocation().subtract(Vec3.atCenterOf(supportPos)));
+                    }
+                }
             }
         }
         return fallback;
+    }
+
+    private ShapeOrientation alignToCorner(Direction up, Direction forward, Direction side,
+            boolean inner, Vec3 hit) {
+        var forwardHit = hit.dot(forward.getUnitVec3());
+        var sideHit = hit.dot(side.getUnitVec3());
+        var alongForward = inner ? sideHit <= forwardHit + 1E-6 : sideHit >= forwardHit - 1E-6;
+        var run = alongForward ? forward : side;
+        var edge = alongForward ? side : forward;
+        if (inner) {
+            edge = edge.getOpposite();
+        }
+        // The other two edges are flat treads; a sloped rail must stay on a rising edge.
+        var orientation = ShapePlacementLogicOnFace.along(up, run);
+        var offsetDirection = ShapeTransformationResolverPointedWithSpin.INSTANCE.resolve(orientation)
+                .transformDirection(Direction.EAST);
+        var values = Arrays.copyOf(orientation.properties(), orientation.properties().length + 1);
+        values[values.length - 1] = ShapeOrientationPropertyOffset.of(
+                offsetDirection == edge ? EnumPlacementOffset.BACK : EnumPlacementOffset.FRONT);
+        return ShapeOrientation.forProperties(values);
     }
 
     @Override
