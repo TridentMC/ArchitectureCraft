@@ -53,7 +53,7 @@ public enum EnumShape {
     CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
     CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicRounded.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicRounded.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
     SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
