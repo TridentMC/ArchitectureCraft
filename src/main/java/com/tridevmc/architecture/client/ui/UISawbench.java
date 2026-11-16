@@ -3,7 +3,11 @@ package com.tridevmc.architecture.client.ui;
 import com.tridevmc.architecture.common.block.container.ContainerSawbench;
 import com.tridevmc.compound.ui.scope.ICompositionScope;
 import com.tridevmc.compound.ui.screen.ComposedUIContainer;
+
+import com.mojang.blaze3d.platform.InputConstants;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +28,15 @@ public class UISawbench extends ComposedUIContainer<ContainerSawbench> {
 
     public UISawbench(ContainerSawbench menu, Player player) {
         this(menu, player.getInventory(), Component.translatable("architecturecraft.gui.sawbench.title"));
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == InputConstants.KEY_ESCAPE) {
+            this.onClose();
+            return true;
+        }
+        return super.keyPressed(event);
     }
 
     @Override
