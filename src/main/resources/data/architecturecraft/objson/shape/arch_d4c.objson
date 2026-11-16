@@ -684,10 +684,10 @@
                     "cull_face": 2,
                     "texture": 1,
                     "vertices": [
-                        2,
                         3,
                         5,
-                        4
+                        4,
+                        2
                     ]
                 },
                 {
