@@ -57,7 +57,7 @@ public enum EnumShape {
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
     SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
     SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicOnFace.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
