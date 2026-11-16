@@ -26,6 +26,7 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
     public static final ShapePlacementLogicOnFace EDGE = new ShapePlacementLogicOnFace(Mode.EDGE);
     public static final ShapePlacementLogicOnFace CORNER = new ShapePlacementLogicOnFace(Mode.CORNER);
     public static final ShapePlacementLogicOnFace ALONG_LOOK = new ShapePlacementLogicOnFace(Mode.ALONG_LOOK);
+    public static final ShapePlacementLogicOnFace ARCH = new ShapePlacementLogicOnFace(Mode.ARCH);
 
     private final Mode mode;
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
@@ -47,6 +48,10 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
             case EDGE -> edge(normal, faceHit(normal, pos, hit));
             case CORNER -> corner(normal, faceHit(normal, pos, hit));
             case ALONG_LOOK -> along(normal, tangent(normal, player));
+            case ARCH -> {
+                var mount = player.isCrouching() ? normal.getOpposite() : normal;
+                yield encode(mount, cross(tangent(mount, player), mount));
+            }
         };
     }
 
@@ -140,7 +145,7 @@ public final class ShapePlacementLogicOnFace implements IShapePlacementLogic<Blo
     }
 
     private enum Mode {
-        EDGE, CORNER, ALONG_LOOK
+        EDGE, CORNER, ALONG_LOOK, ARCH
     }
 
     private record FaceHit(ITrans3 basis, double x, double z) {
