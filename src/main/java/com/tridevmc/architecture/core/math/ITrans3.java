@@ -6,7 +6,6 @@ import com.tridevmc.architecture.core.math.integer.IVector3iImmutable;
 import com.tridevmc.architecture.core.math.integer.IVector3iMutable;
 import com.tridevmc.architecture.core.model.mesh.CullFace;
 import com.tridevmc.architecture.core.model.mesh.FaceDirection;
-import com.tridevmc.architecture.core.model.mesh.MeshHelper;
 import com.tridevmc.architecture.core.physics.AABB;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
@@ -537,10 +536,10 @@ public interface ITrans3 {
             }
         }
 
-        // Transform the x, y, z as world coordinates without an allocated vector.
-        var tX = (this.matrix().m00() * x + this.matrix().m01() * y + this.matrix().m02() * z + this.matrix().m03());
-        var tY = (this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z + this.matrix().m13());
-        var tZ = (this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z + this.matrix().m23());
+        // Rotate around the UV center without placement translation or an allocated vector.
+        var tX = (this.matrix().m00() * (x - 0.5D) + this.matrix().m01() * (y - 0.5D) + this.matrix().m02() * (z - 0.5D) + 0.5D);
+        var tY = (this.matrix().m10() * (x - 0.5D) + this.matrix().m11() * (y - 0.5D) + this.matrix().m12() * (z - 0.5D) + 0.5D);
+        var tZ = (this.matrix().m20() * (x - 0.5D) + this.matrix().m21() * (y - 0.5D) + this.matrix().m22() * (z - 0.5D) + 0.5D);
 
         switch (toDirection) {
             case UP -> uvs.set(tX, tZ);
@@ -551,7 +550,7 @@ public interface ITrans3 {
             case EAST -> uvs.set((tZ - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
         }
 
-        return MeshHelper.wrapUVs(uvs);
+        return uvs;
     }
 
     /**
@@ -628,10 +627,10 @@ public interface ITrans3 {
             }
         }
 
-        // Transform the x, y, z as world coordinates without an allocated vector.
-        var tX = (this.matrix().m00() * x + this.matrix().m01() * y + this.matrix().m02() * z + this.matrix().m03());
-        var tY = (this.matrix().m10() * x + this.matrix().m11() * y + this.matrix().m12() * z + this.matrix().m13());
-        var tZ = (this.matrix().m20() * x + this.matrix().m21() * y + this.matrix().m22() * z + this.matrix().m23());
+        // Rotate around the UV center without placement translation or an allocated vector.
+        var tX = (this.matrix().m00() * (x - 0.5D) + this.matrix().m01() * (y - 0.5D) + this.matrix().m02() * (z - 0.5D) + 0.5D);
+        var tY = (this.matrix().m10() * (x - 0.5D) + this.matrix().m11() * (y - 0.5D) + this.matrix().m12() * (z - 0.5D) + 0.5D);
+        var tZ = (this.matrix().m20() * (x - 0.5D) + this.matrix().m21() * (y - 0.5D) + this.matrix().m22() * (z - 0.5D) + 0.5D);
 
         switch (toDirection) {
             case UP -> uvs.set(tX, tZ);
@@ -642,7 +641,7 @@ public interface ITrans3 {
             case EAST -> uvs.set((tZ - 1.0D) * -1.0D, (tY - 1.0D) * -1.0D);
         }
 
-        return MeshHelper.wrapUVs(uvs);
+        return uvs;
     }
 
     /**
