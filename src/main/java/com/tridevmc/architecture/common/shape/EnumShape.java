@@ -10,6 +10,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacin
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnAxis;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnFace;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPointedByPlacedFace;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicRounded;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStatic;
@@ -50,7 +51,7 @@ public enum EnumShape {
 
     CYLINDER("cylinder", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
     CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
-    CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicRounded.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
