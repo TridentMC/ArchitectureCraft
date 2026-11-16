@@ -130,7 +130,7 @@ public enum EnumShape {
     BALUSTRADE_PLAIN_OUTER_CORNER("balustrade_plain_outer_corner", null, null),
     BALUSTRADE_PLAIN_INNER_CORNER("balustrade_plain_inner_corner", null, null),
     BALUSTRADE_PLAIN_WITH_NEWEL("balustrade_plain_with_newel", null, null),
-    BALUSTRADE_PLAIN_END("balustrade_plain_end", null, null),
+    BALUSTRADE_PLAIN_END("balustrade_plain_end", ShapePlacementLogicBanister.INSTANCE, ShapeTransformationResolverBanister.INSTANCE),
 
     BALUSTRADE_FANCY("balustrade_fancy", null, null),
     BALUSTRADE_FANCY_OUTER_CORNER("balustrade_fancy_outer_corner", null, null),
