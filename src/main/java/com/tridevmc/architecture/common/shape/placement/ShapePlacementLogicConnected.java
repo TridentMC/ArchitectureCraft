@@ -3,8 +3,11 @@ package com.tridevmc.architecture.common.shape.placement;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
+import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
 import com.tridevmc.architecture.core.math.ITrans3;
 
@@ -57,9 +60,10 @@ public final class ShapePlacementLogicConnected implements IShapePlacementLogic<
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
             @NotNull BlockArchitecture block, @NotNull Level level, @NotNull BlockPos pos,
             @NotNull Player player, @NotNull BlockHitResult hit) {
-        if (!player.isSecondaryUseActive()) {
+        // Replacing a plant or snow does not mean the inferred neighbor was clicked.
+        if (!player.isSecondaryUseActive() && level.getBlockState(pos).isAir()) {
             var support = level.getBlockState(pos.relative(hit.getDirection().getOpposite()));
-            if (support instanceof BlockStateShape shape
+            if (support.is(block) && support instanceof BlockStateShape shape
                     && shape.getBlock() instanceof BlockShape<?> neighbor
                     && neighbor.getPlacementLogic() instanceof ShapePlacementLogicConnected connection) {
                 var transform = shape.getTransform();
@@ -79,6 +83,16 @@ public final class ShapePlacementLogicConnected implements IShapePlacementLogic<
                     }
                 }
             }
+        }
+        // Secondary use bypasses alignment and retains the full manual placement controls.
+        if (!player.isSecondaryUseActive()
+                && (this == STAIRS || this == STAIRS_OUTER_CORNER || this == STAIRS_INNER_CORNER)) {
+            var face = hit.getDirection();
+            var upsideDown = face == Direction.DOWN || face.getAxis().isHorizontal()
+                    && hit.getLocation().y - pos.getY() > 0.5;
+            return ShapeOrientation.forProperties(
+                    ShapeOrientationPropertyFacing.of(player.getDirection().getOpposite()),
+                    ShapeOrientationPropertySpin.of(upsideDown ? EnumSpin.HALF : EnumSpin.NONE));
         }
         return ShapePlacementLogicStairLike.INSTANCE.getShapeOrientationForPlacement(block, level, pos, player, hit);
     }
