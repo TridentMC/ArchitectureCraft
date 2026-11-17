@@ -22,10 +22,21 @@ import org.jetbrains.annotations.NotNull;
 public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final ShapePlacementLogicStairLike INSTANCE = new ShapePlacementLogicStairLike();
+    public static final ShapePlacementLogicStairLike CORNICE = new ShapePlacementLogicStairLike(true);
+
+    private final boolean mountOnHorizontalFace;
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
             ShapeOrientationPropertyFacing.INSTANCE,
             ShapeOrientationPropertySpin.INSTANCE
     );
+
+    public ShapePlacementLogicStairLike() {
+        this(false);
+    }
+
+    private ShapePlacementLogicStairLike(boolean mountOnHorizontalFace) {
+        this.mountOnHorizontalFace = mountOnHorizontalFace;
+    }
 
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
@@ -41,10 +52,13 @@ public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockA
 
         var hitSide = hitResult.getDirection();
         var hitSection = EnumBlockFaceSection.fromHitResult(horizontalDirection, hitResult);
-        // Secondary use on a side face opts into the vertical poses without changing normal mounting.
-        var vertical = placer.isSecondaryUseActive() && hitSide.getAxis().isHorizontal()
+        var secondaryUse = placer.isSecondaryUseActive();
+        var onHorizontalFace = this.mountOnHorizontalFace && hitSide.getAxis().isVertical() && !secondaryUse;
+        // Secondary use on a side face also allows vertical poses.
+        var vertical = onHorizontalFace || secondaryUse && hitSide.getAxis().isHorizontal()
                 && nearestDirection.getAxis().isVertical();
-        var facing = vertical ? nearestDirection.getOpposite() : horizontalDirection.getOpposite();
+        var facing = onHorizontalFace ? hitSide
+                : vertical ? nearestDirection.getOpposite() : horizontalDirection.getOpposite();
         var spin = vertical ? EnumSpin.byIndex(horizontalDirection.get2DDataValue())
                 : this.getSpin(hitSide, playerFacing, hitSection);
 
