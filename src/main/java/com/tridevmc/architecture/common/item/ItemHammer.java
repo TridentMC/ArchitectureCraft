@@ -39,6 +39,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 
 public class ItemHammer extends Item {
@@ -61,7 +62,7 @@ public class ItemHammer extends Item {
             return InteractionResult.PASS;
         }
         var rotated = this.rotate(state, player.isSecondaryUseActive());
-        if (rotated == state) {
+        if (rotated == state || !world.isUnobstructed(rotated, pos, CollisionContext.placementContext(player))) {
             return InteractionResult.PASS;
         }
         if (!world.isClientSide() && !world.setBlockAndUpdate(pos, rotated)) {
