@@ -89,7 +89,7 @@ public enum EnumShape {
     ARCHITRAVE("architrave", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCHITRAVE_CORNER("architrave_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
-    CORNICE_LH("cornice_lh", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    CORNICE_LH("cornice_lh", ShapePlacementLogicStairLike.CORNICE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CORNICE_RH("cornice_rh", null, null),
     CORNICE_END_LH("cornice_end_lh", null, null),
     CORNICE_END_RH("cornice_end_rh", null, null),
