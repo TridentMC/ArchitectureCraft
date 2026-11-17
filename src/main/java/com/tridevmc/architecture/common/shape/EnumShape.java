@@ -60,7 +60,7 @@ public enum EnumShape {
     SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicRounded.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     BEVELLED_OUTER_CORNER("bevelled_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     BEVELLED_INNER_CORNER("bevelled_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
