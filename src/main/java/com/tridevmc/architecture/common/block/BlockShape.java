@@ -3,12 +3,15 @@ package com.tridevmc.architecture.common.block;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
 import com.tridevmc.architecture.common.ArchitectureContent;
+import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.block.state.BlockStateArchitecture;
 import com.tridevmc.architecture.common.block.state.BlockStateShape;
+import com.tridevmc.architecture.common.item.ItemShape;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementSelection;
 import com.tridevmc.architecture.core.ArchitectureLog;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.math.ITrans3Immutable;
@@ -203,7 +206,14 @@ public class BlockShape<T extends BlockShape<T>> extends BlockArchitecture imple
             safeShapeOrientation = ShapeOrientation.forState(asShapeState(this.defaultBlockState()));
         }
         // Defer to the placement logic to get the correct state for the shape.
-        return safeShapeOrientation.applyToState(this.defaultBlockState());
+        var state = safeShapeOrientation.applyToState(this.defaultBlockState());
+        if (context.getItemInHand().getItem() instanceof ItemShape item && item.getBlock() == this) {
+            var selected = context.getPlayer().getExistingDataOrNull(ArchitectureMod.CONTENT.placementOrientation);
+            if (selected != null && selected.getBlock() == this) {
+                return ShapePlacementSelection.apply(state, selected);
+            }
+        }
+        return state;
     }
 
     @Override

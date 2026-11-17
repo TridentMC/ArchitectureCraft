@@ -35,6 +35,7 @@ import com.tridevmc.architecture.common.block.BlockShape;
 import com.tridevmc.architecture.common.block.entity.BlockEntityShape;
 import com.tridevmc.architecture.common.item.*;
 import com.tridevmc.architecture.common.item.component.ComponentMaterial;
+import com.tridevmc.architecture.common.network.SelectPlacementOrientation;
 import com.tridevmc.architecture.common.shape.EnumShape;
 import com.tridevmc.architecture.common.ui.ArchitectureUIHooks;
 import com.tridevmc.architecture.core.ArchitectureLog;
@@ -55,10 +56,15 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -87,6 +93,8 @@ public class ArchitectureContent {
     public Item itemHammer;
     public ItemCladding itemCladding;
     public DataComponentType<ComponentMaterial> componentMaterial;
+    public final AttachmentType<BlockState> placementOrientation =
+            AttachmentType.builder(() -> Blocks.AIR.defaultBlockState()).build();
     public Map<EnumShape, ItemShape> itemShapes;
     public MenuType<? extends Container> universalMenuType;
 
@@ -98,8 +106,16 @@ public class ArchitectureContent {
         e.register(BuiltInRegistries.MENU.key(), this::onMenuTypeRegister);
         e.register(BuiltInRegistries.DATA_COMPONENT_TYPE.key(), this::onDataComponentTypeRegister);
         e.register(Registries.CREATIVE_MODE_TAB, this::onCreativeTabRegisterEvent);
+        e.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES,
+                registry -> registry.register(SelectPlacementOrientation.ID, this.placementOrientation));
     }
 
+
+    @SubscribeEvent
+    public void onRegisterPlacementPayload(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(SelectPlacementOrientation.TYPE,
+                SelectPlacementOrientation.CODEC, SelectPlacementOrientation::handle);
+    }
 
     public void onCreativeTabRegisterEvent(RegisterEvent.RegisterHelper<CreativeModeTab> registry) {
         registry.register(Identifier.fromNamespaceAndPath(MOD_ID, "tools"), CreativeModeTab.builder().title(Component.translatable("item_group.architecture.tool"))

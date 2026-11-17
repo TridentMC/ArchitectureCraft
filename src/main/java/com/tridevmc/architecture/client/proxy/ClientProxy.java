@@ -25,6 +25,7 @@
 package com.tridevmc.architecture.client.proxy;
 
 import com.tridevmc.architecture.client.debug.ArchitectureDebugEventListeners;
+import com.tridevmc.architecture.client.placement.ShapePlacementControls;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureBlockModel;
 import com.tridevmc.architecture.client.render.model.geometry.ArchitectureItemModel;
 import com.tridevmc.architecture.client.render.model.impl.BakedModelSawbench;
@@ -39,6 +40,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class ClientProxy extends CommonProxy {
@@ -46,8 +48,14 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void setup(FMLCommonSetupEvent e) {
         super.setup(e);
+        NeoForge.EVENT_BUS.register(ShapePlacementControls.class);
         if (!FMLEnvironment.isProduction())
             NeoForge.EVENT_BUS.register(ArchitectureDebugEventListeners.class);
+    }
+
+    @SubscribeEvent
+    public void onPlacementKeyMappings(RegisterKeyMappingsEvent event) {
+        ShapePlacementControls.registerKeyMappings(event);
     }
 
     @SubscribeEvent
