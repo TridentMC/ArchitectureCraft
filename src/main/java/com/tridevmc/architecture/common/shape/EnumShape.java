@@ -90,7 +90,7 @@ public enum EnumShape {
     DORIC_TRIGLYPH_CORNER("doric_triglyph_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     DORIC_METOPE("doric_metope", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     ARCHITRAVE("architrave", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ARCHITRAVE_CORNER("architrave_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ARCHITRAVE_CORNER("architrave_corner", ShapePlacementLogicConnected.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
 
     CORNICE_LH("cornice_lh", null, null),
     CORNICE_RH("cornice_rh", null, null),
