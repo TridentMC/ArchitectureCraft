@@ -4,6 +4,7 @@ import com.tridevmc.architecture.common.ArchitectureMod;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
 import com.tridevmc.architecture.common.shape.placement.IShapePlacementLogic;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicBanister;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicConnected;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlip;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
@@ -38,7 +39,7 @@ public enum EnumShape {
 
     SLAB("slab", ShapePlacementLogicSlab.INSTANCE, ShapeTransformationResolverSlab.INSTANCE),
 
-    STAIRS("stairs", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS("stairs", ShapePlacementLogicConnected.STAIRS, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_SMART("stairs_smart", null, null),
