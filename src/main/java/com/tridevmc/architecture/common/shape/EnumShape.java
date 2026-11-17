@@ -41,7 +41,7 @@ public enum EnumShape {
 
     STAIRS("stairs", ShapePlacementLogicConnected.STAIRS, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicConnected.STAIRS_INNER_CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_SMART("stairs_smart", null, null),
 
     PILLAR("pillar", ShapePlacementLogicOnAxis.INSTANCE, ShapeTransformationResolverOnAxis.INSTANCE),
