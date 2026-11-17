@@ -1,5 +1,5 @@
 {
-    "name": "arch_d2",
+    "name": "arch_d2_v2",
     "bounds": [
         -0.5,
         -0.5,
@@ -984,10 +984,10 @@
                     "cull_face": 3,
                     "texture": 1,
                     "vertices": [
-                        2,
                         1,
                         0,
-                        6
+                        6,
+                        2
                     ]
                 },
                 {
@@ -1017,10 +1017,10 @@
                     "cull_face": 2,
                     "texture": 1,
                     "vertices": [
-                        4,
                         5,
                         7,
-                        6
+                        6,
+                        4
                     ]
                 },
                 {
@@ -1028,10 +1028,10 @@
                     "cull_face": 3,
                     "texture": 1,
                     "vertices": [
-                        2,
                         6,
                         4,
-                        3
+                        3,
+                        2
                     ]
                 },
                 {
