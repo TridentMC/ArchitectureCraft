@@ -40,7 +40,7 @@ public enum EnumShape {
     SLAB("slab", ShapePlacementLogicSlab.INSTANCE, ShapeTransformationResolverSlab.INSTANCE),
 
     STAIRS("stairs", ShapePlacementLogicConnected.STAIRS, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    STAIRS_OUTER_CORNER("stairs_outer_corner", ShapePlacementLogicConnected.STAIRS_OUTER_CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_INNER_CORNER("stairs_inner_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     STAIRS_SMART("stairs_smart", null, null),
 
