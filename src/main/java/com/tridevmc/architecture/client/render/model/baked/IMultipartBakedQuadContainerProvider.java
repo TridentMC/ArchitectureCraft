@@ -65,7 +65,7 @@ public interface IMultipartBakedQuadContainerProvider<I, D> {
      * @return The baked quad container.
      */
     default IBakedQuadContainer getQuads(@Nullable I partId, BlockGetter level, BlockPos pos, BlockState state, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform) {
-        return this.getQuads(partId, metadataResolver, transform, false);
+        return this.getQuads(partId, level, pos, state, metadataResolver, transform, false);
     }
 
 
@@ -79,7 +79,7 @@ public interface IMultipartBakedQuadContainerProvider<I, D> {
      * @return The baked quad container.
      */
     default IBakedQuadContainer getQuads(@Nullable I partId, ItemStack stack, IQuadMetadataResolver<D> metadataResolver, ITrans3 transform) {
-        return this.getQuads(partId, metadataResolver, transform, false);
+        return this.getQuads(partId, stack, metadataResolver, transform, false);
     }
 
     /**

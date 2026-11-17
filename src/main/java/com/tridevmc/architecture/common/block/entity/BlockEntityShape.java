@@ -2,6 +2,9 @@ package com.tridevmc.architecture.common.block.entity;
 
 import com.tridevmc.architecture.common.ArchitectureMod;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -48,6 +51,16 @@ public class BlockEntityShape extends BlockEntityArchitecture {
     }
 
     @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveCustomOnly(registries);
+    }
+
+    @Override
     protected void saveAdditional(ValueOutput tag) {
         super.saveAdditional(tag);
 
@@ -61,6 +74,9 @@ public class BlockEntityShape extends BlockEntityArchitecture {
 
         this.baseMaterialState = Block.stateById(tag.getIntOr("BaseMaterialState", 0));
         this.secondaryMaterialState = Optional.of(tag.getIntOr("SecondaryMaterialState", 0)).filter(id -> id != -1).map(Block::stateById).orElse(null);
+        if (this.level != null && this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+        }
     }
 
     /**
@@ -80,6 +96,10 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      */
     public BlockEntityShape setBaseMaterialState(BlockState baseMaterialState) {
         this.baseMaterialState = baseMaterialState;
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+        }
         return this;
     }
 
@@ -100,6 +120,10 @@ public class BlockEntityShape extends BlockEntityArchitecture {
      */
     public BlockEntityShape setSecondaryMaterialState(BlockState secondaryMaterialState) {
         this.secondaryMaterialState = secondaryMaterialState;
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), Block.UPDATE_CLIENTS);
+        }
         return this;
     }
 

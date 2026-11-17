@@ -81,12 +81,12 @@ public class ModelResolverShapeGeneric implements IModelResolver<PolygonData> {
     @Override
     public IBakedQuadContainer getQuads(BlockGetter level, BlockPos pos, BlockState state,
                                         IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return mesh.getQuads(null, resolver, transform);
+        return mesh.getQuads(null, level, pos, state, resolver, transform);
     }
 
     @Override
     public IBakedQuadContainer getQuads(ItemStack stack, IQuadMetadataResolver<PolygonData> resolver, ITrans3 transform) {
-        return mesh.getQuads(null, resolver, transform);
+        return mesh.getQuads(null, stack, resolver, transform);
     }
 
     @Override
