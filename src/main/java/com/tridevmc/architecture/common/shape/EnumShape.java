@@ -24,6 +24,7 @@ import com.tridevmc.architecture.common.shape.transformation.ShapeTransformation
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
+import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -53,7 +54,9 @@ public enum EnumShape {
     CYLINDER_HALF("cylinder_half", ShapePlacementLogicFacingWithFlipAndTurn.INSTANCE, ShapeTransformationResolverFacingWithFlipAndTurn.INSTANCE),
     CYLINDER_QUARTER("cylinder_quarter", ShapePlacementLogicRounded.CORNER, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CYLINDER_LARGE_QUARTER("cylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
-    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    ANTICYLINDER_LARGE_QUARTER("anticylinder_large_quarter", ShapePlacementLogicRounded.CORNER, orientation -> ITrans3.ofImmutable(
+            ShapeTransformationResolverPointedWithSpin.INSTANCE.resolve(orientation).matrix().asMutable()
+                    .mul(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, -90, 0, 0)))),
 
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
     SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
