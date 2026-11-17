@@ -24,6 +24,7 @@ import com.tridevmc.architecture.common.shape.transformation.ShapeTransformation
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointed;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverPointedWithSpin;
 import com.tridevmc.architecture.common.shape.transformation.ShapeTransformationResolverSlab;
+import com.tridevmc.architecture.core.math.IMatrix4Immutable;
 import com.tridevmc.architecture.core.math.ITrans3;
 import com.tridevmc.architecture.core.model.mesh.IMesh;
 import com.tridevmc.architecture.core.model.mesh.PolygonData;
@@ -57,7 +58,9 @@ public enum EnumShape {
 
     SPHERE_FULL("sphere_full", ShapePlacementLogicStatic.INSTANCE, (s) -> ITrans3.ofIdentity()),
     SPHERE_HALF("sphere_half", ShapePlacementLogicFacingWithFlip.INSTANCE, ShapeTransformationResolverFacingWithFlip.INSTANCE),
-    SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicRounded.EDGE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    SPHERE_QUARTER("sphere_quarter", ShapePlacementLogicRounded.EDGE, orientation -> ITrans3.ofImmutable(
+            ShapeTransformationResolverPointedWithSpin.INSTANCE.resolve(orientation).matrix().asMutable()
+                    .mul(IMatrix4Immutable.ofRotationXYZ(0.5, 0.5, 0.5, 180, 0, 0)))),
     SPHERE_EIGHTH("sphere_eighth", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE("sphere_eighth_large", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     SPHERE_EIGHTH_LARGE_REV("sphere_eighth_large_rev", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
