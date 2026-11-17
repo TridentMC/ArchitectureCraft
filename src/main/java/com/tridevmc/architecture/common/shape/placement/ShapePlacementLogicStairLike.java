@@ -3,7 +3,11 @@ package com.tridevmc.architecture.common.shape.placement;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.tridevmc.architecture.common.block.BlockArchitecture;
-import com.tridevmc.architecture.common.shape.orientation.*;
+import com.tridevmc.architecture.common.shape.orientation.EnumSpin;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientation;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationProperty;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertyFacing;
+import com.tridevmc.architecture.common.shape.orientation.ShapeOrientationPropertySpin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -18,10 +22,21 @@ import org.jetbrains.annotations.NotNull;
 public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockArchitecture> {
 
     public static final ShapePlacementLogicStairLike INSTANCE = new ShapePlacementLogicStairLike();
+    public static final ShapePlacementLogicStairLike CORNICE = new ShapePlacementLogicStairLike(true);
+
+    private final boolean mountOnHorizontalFace;
     private final ImmutableCollection<ShapeOrientationProperty<?>> properties = ImmutableList.of(
             ShapeOrientationPropertyFacing.INSTANCE,
             ShapeOrientationPropertySpin.INSTANCE
     );
+
+    public ShapePlacementLogicStairLike() {
+        this(false);
+    }
+
+    private ShapePlacementLogicStairLike(boolean mountOnHorizontalFace) {
+        this.mountOnHorizontalFace = mountOnHorizontalFace;
+    }
 
     @Override
     public @NotNull ShapeOrientation getShapeOrientationForPlacement(
@@ -30,15 +45,22 @@ public class ShapePlacementLogicStairLike implements IShapePlacementLogic<BlockA
             @NotNull BlockPos placementPos,
             @NotNull Player placer,
             @NotNull BlockHitResult hitResult) {
-        var playerFacing = Direction.orderedByNearest(placer)[0];
-        playerFacing = placer.isCrouching() ? playerFacing.getOpposite() : playerFacing;
+        var nearestDirection = Direction.orderedByNearest(placer)[0];
+        var playerFacing = placer.isCrouching() ? nearestDirection.getOpposite() : nearestDirection;
 
         var horizontalDirection = placer.getDirection();
 
         var hitSide = hitResult.getDirection();
         var hitSection = EnumBlockFaceSection.fromHitResult(horizontalDirection, hitResult);
-        var facing = horizontalDirection.getOpposite();
-        var spin = this.getSpin(hitSide, playerFacing, hitSection);
+        var secondaryUse = placer.isSecondaryUseActive();
+        var onHorizontalFace = this.mountOnHorizontalFace && hitSide.getAxis().isVertical() && !secondaryUse;
+        // Secondary use on a side face also allows vertical poses.
+        var vertical = onHorizontalFace || secondaryUse && hitSide.getAxis().isHorizontal()
+                && nearestDirection.getAxis().isVertical();
+        var facing = onHorizontalFace ? hitSide
+                : vertical ? nearestDirection.getOpposite() : horizontalDirection.getOpposite();
+        var spin = vertical ? EnumSpin.byIndex(horizontalDirection.get2DDataValue())
+                : this.getSpin(hitSide, playerFacing, hitSection);
 
         return ShapeOrientation.forProperties(
                 ShapeOrientationPropertyFacing.of(facing),
