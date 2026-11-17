@@ -8,6 +8,7 @@ import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacin
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithFlipAndTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicFacingWithTurn;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnAxis;
+import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicOnFace;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicPointedByPlacedFace;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicSlab;
 import com.tridevmc.architecture.common.shape.placement.ShapePlacementLogicStairLike;
@@ -83,7 +84,7 @@ public enum EnumShape {
 
     PILLAR_BASE("pillar_base", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_CAPITAL("doric_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
-    IONIC_CAPITAL("ionic_capital", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
+    IONIC_CAPITAL("ionic_capital", ShapePlacementLogicOnFace.ALONG_LOOK, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     CORINTHIAN_CAPITAL("corinthian_capital", ShapePlacementLogicPointedByPlacedFace.INSTANCE, ShapeTransformationResolverPointed.INSTANCE),
     DORIC_TRIGLYPH("doric_triglyph", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
     DORIC_TRIGLYPH_CORNER("doric_triglyph_corner", ShapePlacementLogicStairLike.INSTANCE, ShapeTransformationResolverPointedWithSpin.INSTANCE),
